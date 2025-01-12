@@ -38,16 +38,11 @@ export const metadata: Metadata = {
   manifest: `${siteConfig.url}/site.webmanifest`,
 };
 
-type Props = PropsWithChildren<{
-  dialog: React.ReactNode;
-}>;
-
-export default function RootLayout({ children, dialog }: Props) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <body className={azeret.className}>
-        <div className="relative">{children}</div>
-        {dialog}
+        <div>{children}</div>
       </body>
     </html>
   );
