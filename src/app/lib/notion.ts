@@ -52,7 +52,7 @@ export const fetchZines = async () => {
           properties["PDF"]?.files[0]?.file?.url ||
           "",
         author_name: properties["Autor"]?.rich_text[0]?.plain_text || "Unknown",
-        author_url: properties["Autor"]?.rich_text[0]?.text?.link?.url || "",
+        author_url: properties["author_url"]?.url || "",
       };
     }).filter((zine) => zine.title && zine.title !== "Untitled" && zine.title !== "Unknown");
 
@@ -93,7 +93,7 @@ export const fetchZineById = async (id: string) => {
         properties["PDF"]?.files[0]?.file?.url ||
         "",
       author_name: properties["Autor"]?.rich_text[0]?.plain_text || "Unknown",
-      author_url: properties["author_url"]?.rich_text[0]?.plain_text || "",
+      author_url: properties["author_url"]?.url || "",
     };
   } catch (error) {
     console.error("Failed to fetch zine:", error);
