@@ -1,12 +1,14 @@
-"use client"
+import { fetchZineById } from "@/app/lib/notion";
 import PDFViewer from "@/components/pdf-viewer";
-import { getZinePreview } from "@/data/zines";
-import { useParams } from "next/navigation";
 
-export default function ZinePreview() {
-  const { id } = useParams();
+export default async function ZinePreview({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
-  const preview = getZinePreview(id as string);
+  const preview = await fetchZineById(id as string);
 
   if (!preview) {
     return (
@@ -17,9 +19,11 @@ export default function ZinePreview() {
   }
   return (
     <div className="flex min-h-screen flex-col items-center w-full mx-auto p-4 md:p-0 gap-16">
-      <p className="text-sm">{preview.title} por {preview.author.name}</p>
+      <p className="text-sm">
+        {preview.title} por {preview.author_name}
+      </p>
       <div className="bg-neutral-500 w-full h-screen">
-        <PDFViewer url={preview.url} />
+        <PDFViewer url={preview.pdf_url} />
       </div>
     </div>
   );

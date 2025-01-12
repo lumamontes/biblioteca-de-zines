@@ -1,43 +1,48 @@
 import Image from "next/image";
 import Link from "next/link";
-import { zines } from "@/data/zines";
+import { fetchZines } from "../lib/notion";
+
 export default async function Zines() {
+  const zines = await fetchZines();
+
   return (
-      <div className="px-12 pt-12 pb-32 md:pt-12 md:px-0 gap-4 grid grid-cols-1 md:grid-cols-2">
-      {
-        zines.map((zine) => (
-          <div key={zine.slug} className="w-full pt-2 md:pt-8 md:p-0 gap-4  max-h-[500px] flex flex-col justify-between">
-            <div className="flex gap-4 flex-col justify-center items-center">
-              <Image
-                src={zine.cover}
-                alt="Girl in the city"
-                width={241}
-                height={238}
-                priority
-              />
-              <h1 className="text-xl">{zine.title} por {zine.author?.name ?? ''}</h1>
-              <p className="text-base">
-                {zine.description}
-              </p>
-            </div>
-            <div className="mt-8 flex flex-col gap-4 text-center md:flex-row justify-center">
-              <Link
-                href={`/zines/${zine.slug}`}
-                className="text-base px-4 py-2 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center"
-              >
-                Ver mais
-              </Link>
-              <Link
-                href={zine.author?.url || "#"}
-                target="_blank"
-                className="text-base px-4 py-2 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center"
-              >
-                Conhecer autor
-              </Link>
-            </div>
+    <div className="grid grid-cols-1 gap-6 px-4 py-8 sm:px-6 md:grid-cols-2 lg:grid-cols-3">
+      {zines.map((zine) => (
+        <div
+          key={zine.slug}
+          className="flex flex-col justify-between bg-white rounded-lg overflow-hidden"
+        >
+          <div className="flex flex-col items-center p-4">
+            <Image
+              src={zine.cover}
+              alt={zine.title}
+              width={200}
+              height={200}
+              className="rounded-md"
+              priority
+            />
+            <h1 className="mt-3 text-lg font-medium text-center">
+              {zine.title} <span className="text-gray-500 text-sm">por {zine.author_name ?? ''}</span>
+            </h1>
+            <p className="mt-2 text-sm text-gray-600 text-center">{zine.description}</p>
           </div>
-        ))
-      }
-      </div>
+          <div className="flex flex-col md:flex-row justify-center gap-2 p-4">
+            <Link
+              href={`/zines/${zine.slug}`}
+              className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-800 transition"
+            >
+              Ver mais
+            </Link>
+            <Link
+              href={zine.author_url || "#"}
+              target="_blank"
+              className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-black border border-black rounded-md hover:bg-neutral-100 transition"
+            >
+              Conhecer autor
+            </Link>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

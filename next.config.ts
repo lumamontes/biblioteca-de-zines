@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ["biblioteca-de-zines.vercel.app"],
+  }
 };
 
 export default nextConfig;

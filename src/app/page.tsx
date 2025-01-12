@@ -17,7 +17,8 @@ export default async function HomePage() {
           </p>
           <h1 className="text-4xl">Biblioteca de Zines</h1>
           <p className="text-base">
-            Uma biblioteca virtual para catalogar e arquivar iniciativas independentes em formato de zine{" "}
+            Uma biblioteca virtual para catalogar e arquivar iniciativas
+            independentes em formato de zine{" "}
           </p>
         </div>
         <div className="mt-8 flex flex-col gap-4 md:flex-row text-center">
@@ -56,7 +57,6 @@ export default async function HomePage() {
           loading="lazy"
         />
       </div>
-      {/* Fixed right header with social links */}
       <NavSocialLinks />
     </main>
   );
