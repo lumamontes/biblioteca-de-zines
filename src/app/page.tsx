@@ -1,13 +1,8 @@
 import NavSocialLinks from "@/components/nav-social-links";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
-import { getPreview } from "./lib/contentful";
-import LoadingPreview from "@/components/loading-preview";
 
 export default async function HomePage() {
-  const preview = await getPreview();
-
   return (
     <main className="flex min-h-screen items-center max-w-6xl mx-auto md:px-12 justify-between flex-col md:flex-row">
       <div className="w-full p-12 md:p-0 gap-4 ">
@@ -22,23 +17,12 @@ export default async function HomePage() {
           </p>
         </div>
         <div className="mt-8 flex flex-col gap-4 md:flex-row text-center">
-          <Suspense fallback={<LoadingPreview />}>
-            {preview ? (
-              <Link
-                href={`/preview`}
-                className="text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center"
-              >
-                Check out preview
-              </Link>
-            ) : (
-              <Link
-                href={`/zines`}
-                className="text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center"
-              >
-                Explorar :)
-              </Link>
-            )}
-          </Suspense>
+          <Link
+            href={`/zines`}
+            className="text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center"
+          >
+            Explorar :)
+          </Link>
           <Link
             href="https://substack.com/@bibliotecadezines?r=53s7hh&utm_campaign=profile&utm_medium=profile-page"
             target="_blank"

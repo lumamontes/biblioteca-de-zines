@@ -22,9 +22,14 @@ export default async function Zines() {
               priority
             />
             <h1 className="mt-3 text-lg font-medium text-center">
-              {zine.title} <span className="text-gray-500 text-sm">por {zine.author_name ?? ''}</span>
+              {zine.title}{" "}
+              <span className="text-gray-500 text-sm">
+                por {zine.author_name ?? ""}
+              </span>
             </h1>
-            <p className="mt-2 text-sm text-gray-600 text-center">{zine.description}</p>
+            <p className="mt-2 text-sm text-gray-600 text-center">
+              {zine.description}
+            </p>
           </div>
           <div className="flex flex-col md:flex-row justify-center gap-2 p-4">
             <Link
