@@ -49,7 +49,7 @@ export default async function HomePage() {
       </div>
       <div className="h-48 w-full  md:w-1/2 flex items-center justify-center">
         <Image
-          src="/cover.png"
+          src="/ezgif-5-847f1efa8d.gif"
           alt="Logo da biblioteca de zines"
           width={301}
           height={288}
