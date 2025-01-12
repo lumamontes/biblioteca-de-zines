@@ -47,13 +47,13 @@ export default async function HomePage() {
           </Link>
         </div>
       </div>
-      <div className="h-48 w-full  md:w-1/2 flex items-center justify-center">
+      <div className="h-48 w-full  mt-10 md:mt-0 md:w-1/2 flex items-center justify-center">
         <Image
           src="/ezgif-5-847f1efa8d.gif"
           alt="Logo da biblioteca de zines"
           width={301}
           height={288}
-          priority
+          loading="lazy"
         />
       </div>
       {/* Fixed right header with social links */}

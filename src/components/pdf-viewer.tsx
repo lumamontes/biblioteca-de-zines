@@ -5,15 +5,9 @@ interface PDFViewerProps {
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({ url }) => {
+  const fullUrl = `https://biblioteca-de-zines.vercel.app/${url}`;
   return (
-    <embed
-      style={{
-        width: "100%",
-        height: "100%",
-      }}
-      type="application/pdf"
-      src={url}
-    />
+      <iframe id="pdfviewer" src={`http://docs.google.com/gview?embedded=true&url=${fullUrl}&amp;embedded=true`}  frameBorder="0" width="100%" height="100%"></iframe>
   );
 };
 

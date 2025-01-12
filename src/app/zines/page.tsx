@@ -3,7 +3,7 @@ import Link from "next/link";
 import { zines } from "@/data/zines";
 export default async function Zines() {
   return (
-      <div className="p-12 md:pt-12 md:px-0 gap-4 grid grid-cols-1 md:grid-cols-2">
+      <div className="px-12 pt-12 pb-32 md:pt-12 md:px-0 gap-4 grid grid-cols-1 md:grid-cols-2">
       {
         zines.map((zine) => (
           <div key={zine.slug} className="w-full pt-2 md:pt-8 md:p-0 gap-4  max-h-[500px] flex flex-col justify-between">
