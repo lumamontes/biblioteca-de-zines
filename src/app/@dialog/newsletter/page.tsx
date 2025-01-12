@@ -1,5 +1,4 @@
 "use client";
-//Trocar pra substack
 import { useRouter } from "next/navigation";
 import { Dialog } from "../_components/dialog";
 import Image from "next/image";
@@ -47,6 +46,7 @@ export default function NewsletterPage() {
         setError(result.error || "An error occurred. Please try again later.");
       }
     } catch (error) {
+      console.log(error)
       setError("An error occurred. Please try again later.");
     } finally {
       setLoading(false);

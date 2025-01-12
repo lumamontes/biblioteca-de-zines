@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Header() {
   return (
     <header className="flex justify-between items-center p-4">
@@ -5,7 +7,7 @@ export default function Header() {
       <nav>
         <ul>
           <li>
-            <a href="/">Home</a>
+            <Link href="/">Home</Link>
           </li>
         </ul>
       </nav>
