@@ -9,7 +9,6 @@ type ZineCardProps = {
 const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
   return (
     <div
-      key={zine.uuid}
       className="flex flex-col justify-between bg-white rounded-lg overflow-hidden shadow-sm h-full"
     >
       <div className="flex flex-col items-center p-4flex-grow">
