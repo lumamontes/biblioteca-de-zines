@@ -30,6 +30,13 @@ export default async function HomePage() {
           >
             Newsletter
           </Link>
+          <Link
+            href="https://forms.gle/ydedperb4c2WbiRW9"
+            target="_blank"
+            className="text-base underline transition duration-300 flex items-center justify-center"
+          >
+            Sugerir Zine
+          </Link>
         </div>
       </div>
       <div className="h-48 w-full  mt-10 md:mt-0 md:w-1/2 flex items-center justify-center">
