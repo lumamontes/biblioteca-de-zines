@@ -40,7 +40,7 @@ export default function Error({
   );
 }
 
-function AlertCircleIcon(props: any) {
+function AlertCircleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
