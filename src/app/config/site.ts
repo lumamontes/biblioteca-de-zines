@@ -19,6 +19,6 @@ export const siteConfig: SiteConfig = {
 };
 
 export const siteExternalLinks = {
-  submissionsForm: "https://forms.gle/ydedperb4c2WbiRW9",
-  newsletter: "https://substack.com/@bibliotecadezines?r=53s7hh&utm_campaign=profile&utm_medium=profile-page",
+  SUBMISSIONS_FORM: "https://forms.gle/ydedperb4c2WbiRW9",
+  NEWSLETTER: "https://substack.com/@bibliotecadezines?r=53s7hh&utm_campaign=profile&utm_medium=profile-page",
 }
