@@ -17,3 +17,8 @@ export const siteConfig: SiteConfig = {
     github: "https://github.com/lumamontes/biblioteca-de-zines",
   },
 };
+
+export const siteExternalLinks = {
+  submissionsForm: "https://forms.gle/ydedperb4c2WbiRW9",
+  newsletter: "https://substack.com/@bibliotecadezines?r=53s7hh&utm_campaign=profile&utm_medium=profile-page",
+}

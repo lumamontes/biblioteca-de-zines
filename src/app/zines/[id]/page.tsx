@@ -1,5 +1,6 @@
-import { fetchZineById } from "@/app/lib/notion";
 import PDFViewer from "@/components/pdf-viewer";
+import { getZineByUuid } from "@/services/zine-service";
+import { getPreviewUrl } from "@/utils/assets";
 
 export default async function ZinePreview({
   params,
@@ -8,7 +9,7 @@ export default async function ZinePreview({
 }) {
   const { id } = await params;
 
-  const preview = await fetchZineById(id as string);
+    const preview = await getZineByUuid(id)
 
   if (!preview) {
     return (
@@ -22,8 +23,11 @@ export default async function ZinePreview({
       <p className="text-sm">
         {preview.title} por {preview.author_name}
       </p>
-      <div className="bg-neutral-500 w-full h-screen">
-        <PDFViewer url={preview.pdf_url} />
+      <p className="text-sm">
+        {preview.description}
+      </p>
+      <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
+        <PDFViewer url={getPreviewUrl(preview.pdf_url)} />
       </div>
     </div>
   );

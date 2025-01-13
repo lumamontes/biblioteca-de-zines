@@ -1,6 +1,7 @@
 import NavSocialLinks from "@/components/nav-social-links";
 import Image from "next/image";
 import Link from "next/link";
+import { siteExternalLinks } from "./config/site";
 
 export default async function HomePage() {
   return (
@@ -24,14 +25,14 @@ export default async function HomePage() {
             Explorar :)
           </Link>
           <Link
-            href="https://substack.com/@bibliotecadezines?r=53s7hh&utm_campaign=profile&utm_medium=profile-page"
+            href={siteExternalLinks.newsletter}
             target="_blank"
             className="text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center"
           >
             Newsletter
           </Link>
           <Link
-            href="https://forms.gle/ydedperb4c2WbiRW9"
+            href={siteExternalLinks.submissionsForm}
             target="_blank"
             className="text-base underline transition duration-300 flex items-center justify-center"
           >

@@ -1,52 +1,14 @@
-import Image from "next/image";
-import Link from "next/link";
-import { fetchZines } from "../lib/notion";
+import ZineCard from "@/components/zine-card";
+import { getPublishedZines } from "@/services/zine-service";
 
 export default async function Zines() {
-  const zines = await fetchZines();
+
+  const zines = await getPublishedZines();
 
   return (
     <div className="grid grid-cols-1 gap-6 px-4 py-8 sm:px-6 md:grid-cols-2 lg:grid-cols-3">
       {zines.map((zine) => (
-        <div
-          key={zine.slug}
-          className="flex flex-col justify-between bg-white rounded-lg overflow-hidden"
-        >
-          <div className="flex flex-col items-center p-4">
-            <Image
-              src={zine.cover}
-              alt={zine.title}
-              width={200}
-              height={200}
-              className="rounded-md"
-              priority
-            />
-            <h1 className="mt-3 text-lg font-medium text-center">
-              {zine.title}{" "}
-              <span className="text-gray-500 text-sm">
-                por {zine.author_name ?? ""}
-              </span>
-            </h1>
-            <p className="mt-2 text-sm text-gray-600 text-center">
-              {zine.description}
-            </p>
-          </div>
-          <div className="flex flex-col md:flex-row justify-center gap-2 p-4">
-            <Link
-              href={`/zines/${zine.slug}`}
-              className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-800 transition"
-            >
-              Ver mais
-            </Link>
-            <Link
-              href={zine.author_url || "#"}
-              target="_blank"
-              className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-black border border-black rounded-md hover:bg-neutral-100 transition"
-            >
-              Conhecer autor
-            </Link>
-          </div>
-        </div>
+        <ZineCard zine={zine} key={zine.uuid}/>
       ))}
     </div>
   );
