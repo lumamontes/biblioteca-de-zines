@@ -24,9 +24,9 @@ export default async function ZinePreview({
   return (
     <div className="flex min-h-screen flex-col items-center w-full mx-auto p-4 md:p-0 gap-16">
       <p className="text-sm">
-        {preview.title} por {preview.author_name}
+        <strong>{preview.title}</strong> por {preview.author_name}
       </p>
-      <p className="text-sm">
+      <p className="text-sm max-w-xl text-center">
         {preview.description}
       </p>
       <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
