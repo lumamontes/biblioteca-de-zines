@@ -7,6 +7,7 @@ type ZineCardProps = {
 };
 
 const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
+  const thumbnailUrl = getThumbnailUrl(zine.cover_image);
   return (
     <div
       className="flex flex-col justify-between bg-white rounded-lg overflow-hidden shadow-sm h-full"
@@ -14,7 +15,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
       <div className="flex flex-col items-center p-4flex-grow">
         <div className="relative w-full h-56 flex items-center justify-center">
           <Image
-            src={getThumbnailUrl(zine.cover_image)}
+            src={thumbnailUrl}
             alt={zine.title}
             fill
             className="rounded-md object-contain"

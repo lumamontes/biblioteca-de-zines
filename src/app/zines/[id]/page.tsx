@@ -9,7 +9,7 @@ export default async function ZinePreview({
 }) {
   const { id } = await params;
 
-    const preview = await getZineByUuid(id)
+  const preview = await getZineByUuid(id)
 
   if (!preview) {
     return (
@@ -18,6 +18,9 @@ export default async function ZinePreview({
       </p>
     );
   }
+
+  const previewUrl = getPreviewUrl(preview.pdf_url);
+
   return (
     <div className="flex min-h-screen flex-col items-center w-full mx-auto p-4 md:p-0 gap-16">
       <p className="text-sm">
@@ -27,7 +30,7 @@ export default async function ZinePreview({
         {preview.description}
       </p>
       <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
-        <PDFViewer url={getPreviewUrl(preview.pdf_url)} />
+        <PDFViewer url={getPreviewUrl(previewUrl)} />
       </div>
     </div>
   );

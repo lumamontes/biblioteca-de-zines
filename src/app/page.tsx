@@ -25,14 +25,14 @@ export default async function HomePage() {
             Explorar :)
           </Link>
           <Link
-            href={siteExternalLinks.newsletter}
+            href={siteExternalLinks.NEWSLETTER}
             target="_blank"
             className="text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center"
           >
             Newsletter
           </Link>
           <Link
-            href={siteExternalLinks.submissionsForm}
+            href={siteExternalLinks.SUBMISSIONS_FORM}
             target="_blank"
             className="text-base underline transition duration-300 flex items-center justify-center"
           >
