@@ -30,7 +30,7 @@ export default async function ZinePreview({
         {preview.description}
       </p>
       <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
-        <PDFViewer url={getPreviewUrl(previewUrl)} />
+        <PDFViewer url={previewUrl} />
       </div>
     </div>
   );
