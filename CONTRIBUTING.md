@@ -11,7 +11,7 @@ Todos os tipos de contribuições são encorajados e valorizados. Veja o [Índic
 - Fale sobre ele nas redes sociais
 - Indique este projeto no README do seu projeto
 - Mencione o projeto em encontros locais e conte aos seus amigos/colegas
-- Adicione zines à biblioteca!
+- [Adicione zines à biblioteca!](https://forms.gle/ydedperb4c2WbiRW9)
 
 <!-- omit in toc -->
 ## Índice
