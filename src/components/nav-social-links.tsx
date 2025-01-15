@@ -7,9 +7,9 @@ type SocialLink = {
 };
 const links: SocialLink[] = [
   {
-    alt: "Instagram",
-    src: "/instagram.svg",
-    href: "https://www.instagram.com/luana.g.m",
+    alt: "Telegram",
+    src: "/telegram.svg",
+    href: "https://t.me/+-irW84jni8ExYWFh",
   },
   {
     alt: "Github",
