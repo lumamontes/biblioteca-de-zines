@@ -21,7 +21,7 @@ Decidimos separar do seguinte modo:
   - branches
   - commits
 
-Como observado, vamos manter os termos do GitHub em inglês (Issues, PRs, etc).
+Como observado, vamos manter os termos do GitHub em inglês (Issues, PRs, etc). Além disso, também iremos manter em inglês a referência ao termo ADR(Architecture Decision Records) 
 
 ## Alternativas Consideradas
 
