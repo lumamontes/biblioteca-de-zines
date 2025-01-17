@@ -2,7 +2,7 @@
 
 ![ScreenRecording2025-01-12at20 47 59-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/66998486-ce02-4af1-aab7-fb2bb28ce066)
 
-### For English-speaking readers
+## For English-speaking readers
 
 _Biblioteca de Zines (Zine Library) is an open-source collaborative collection of digital zines and independent publications, focused on Brazilian production. The website is built using Next.js._
 
@@ -36,13 +36,7 @@ Você precisa de um arquivo `.env` na raiz do projeto com todas as variáveis ne
 Para rodar o servidor de desenvolvimento, digite no terminal: 
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) com seu browser para ver o site funcionando.
@@ -51,3 +45,4 @@ Abra [http://localhost:3000](http://localhost:3000) com seu browser para ver o s
 
 [![Avatar de lumamontes](https://github.com/lumamontes.png?size=50)](https://github.com/angelod1as)
 [![Avatar de angelod1as](https://github.com/angelod1as.png?size=50)](https://github.com/angelod1as)
+
