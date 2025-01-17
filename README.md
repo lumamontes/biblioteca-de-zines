@@ -40,3 +40,9 @@ pnpm dev
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) com seu browser para ver o site funcionando.
+
+## Mantenedores
+
+[![Avatar de lumamontes](https://github.com/lumamontes.png?size=50)](https://github.com/angelod1as)
+[![Avatar de angelod1as](https://github.com/angelod1as.png?size=50)](https://github.com/angelod1as)
+
