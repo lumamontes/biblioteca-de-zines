@@ -3,8 +3,12 @@ import { getZineByUuid } from "@/services/zine-service";
 import { getPreviewUrl } from "@/utils/assets";
 import { limitText } from "@/utils/utils";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const { id } = params;
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   const preview = await getZineByUuid(id);
 
   if (!preview) {
@@ -16,7 +20,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
   return {
     title: `${preview.title} por ${preview.author_name}`,
-    description: preview.description ? limitText(preview.description) : preview.title,
+    description: preview.description
+      ? limitText(preview.description)
+      : preview.title,
     openGraph: {
       title: preview.title,
       description: preview.description,
@@ -46,7 +52,7 @@ export default async function ZinePreview({
 }) {
   const { id } = await params;
 
-  const preview = await getZineByUuid(id)
+  const preview = await getZineByUuid(id);
 
   if (!preview) {
     return (
@@ -63,9 +69,7 @@ export default async function ZinePreview({
       <p className="text-sm">
         <strong>{preview.title}</strong> por {preview.author_name}
       </p>
-      <p className="text-sm max-w-xl text-center">
-        {preview.description}
-      </p>
+      <p className="text-sm max-w-xl text-center">{preview.description}</p>
       <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
         <PDFViewer url={previewUrl} />
       </div>
