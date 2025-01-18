@@ -6,7 +6,13 @@ Queremos configurar testes E2E na nossa aplicação para trazer mais confiança 
 
 ## Decisão
 
-Decidimos usar o [Playwright](https://playwright.dev/) para testes end to end, com o mínimo de cobertura sendo todas as páginas atuais da aplicação.
+Decidimos usar o [Playwright](https://playwright.dev/) para testes end to end, com o mínimo de cobertura sendo todas as páginas atuais da aplicação:
+
+- Página de tela inicial
+- Página de listagem de zines
+- Página de detalhamento de zine
+
+Para cada nova página será necessário adicionar testes para manter o mínimo de cobertura desejado.
 
 ## Alternativas Consideradas
 
@@ -29,6 +35,7 @@ Escolhemos o Playwright porque ele oferece suporte a múltiplos navegadores, boa
   - Maior confiabilidade
 - **Contras**
   - Curva de aprendizado necessária para aprender a usar a ferramenta
+  - Tempo maior de desenvolvimento para todas as tasks que necessitarem de testes
 
 ## Links
 
