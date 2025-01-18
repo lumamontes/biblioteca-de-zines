@@ -1,6 +1,7 @@
 import PDFViewer from "@/components/pdf-viewer";
 import { getZineByUuid } from "@/services/zine-service";
 import { getPreviewUrl } from "@/utils/assets";
+import { limitText } from "@/utils/utils";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
   return {
     title: `${preview.title} por ${preview.author_name}`,
-    description: preview.description,
+    description: preview.description ? limitText(preview.description) : preview.title,
     openGraph: {
       title: preview.title,
       description: preview.description,
