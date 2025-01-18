@@ -12,7 +12,7 @@ test.describe('Homepage', () => {
   });
 
   test('has correct title', async ({ page }) => {
-    await expect(page).toHaveTitle(new RegExp(EXPECTED_TITLE));
+    await expect(page).toHaveTitle(EXPECTED_TITLE);
   });
 
   test('has correct content', async ({ page }) => {
