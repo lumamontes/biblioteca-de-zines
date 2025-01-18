@@ -1,6 +1,6 @@
 import PDFViewer from "@/components/pdf-viewer";
 import { getZineByUuid } from "@/services/zine-service";
-import { getPreviewUrl } from "@/utils/assets";
+import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { limitText } from "@/utils/utils";
 
 export async function generateMetadata({
@@ -18,6 +18,8 @@ export async function generateMetadata({
     };
   }
 
+  const thumbnailUrl = getThumbnailUrl(preview.cover_image);
+
   return {
     title: `${preview.title} por ${preview.author_name}`,
     description: preview.description
@@ -28,7 +30,7 @@ export async function generateMetadata({
       description: preview.description,
       images: [
         {
-          url: preview.cover_image,
+          url: thumbnailUrl,
           width: 1200,
           height: 630,
         },
@@ -40,7 +42,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: preview.title,
       description: preview.description,
-      images: [preview.cover_image],
+      images: [thumbnailUrl],
     },
   };
 }
