@@ -4,8 +4,7 @@ import { getPublishedZines } from "@/services/zine-service";
 export default async function Zines() {
 
   const zines = await getPublishedZines();
-  
-  if (!zines || zines.length === 0) {
+  if (!zines?.length) {
     return <p role="status">Não há zines publicados no momento.</p>;
   }
 
