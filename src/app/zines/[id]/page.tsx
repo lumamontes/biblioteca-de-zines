@@ -13,11 +13,11 @@ export default async function ZinePreview({
 
   if (!preview) {
     return (
-      <p 
+      <h3 
         role="heading"
         className="text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center">
         Zine não encontrada!
-      </p>
+      </h3>
     );
   }
 
