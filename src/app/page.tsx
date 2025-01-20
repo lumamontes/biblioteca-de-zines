@@ -19,6 +19,7 @@ export default async function HomePage() {
         </div>
         <div className="mt-8 flex flex-col gap-4 md:flex-row text-center">
           <Link
+            role="link"
             href={`/zines`}
             className="text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center"
           >
