@@ -10,9 +10,10 @@ export type SiteConfig = {
 
 export const siteConfig: SiteConfig = {
   name: "Biblioteca de Zines",
-  description: "Website para arquivar e compartilhar zines de artistas independentes",
+  description:
+    "Website para arquivar e compartilhar zines de artistas independentes",
   url: "https://biblioteca-de-zines.vercel.app",
-  ogImage: "https://biblioteca-de-zines.vercel.app/og.jpg",
+  ogImage: "https://biblioteca-de-zines.vercel.app/manifest/og.jpg",
   links: {
     github: "https://github.com/lumamontes/biblioteca-de-zines",
   },
@@ -20,5 +21,6 @@ export const siteConfig: SiteConfig = {
 
 export const siteExternalLinks = {
   SUBMISSIONS_FORM: "https://forms.gle/ydedperb4c2WbiRW9",
-  NEWSLETTER: "https://substack.com/@bibliotecadezines?r=53s7hh&utm_campaign=profile&utm_medium=profile-page",
-}
+  NEWSLETTER:
+    "https://substack.com/@bibliotecadezines?r=53s7hh&utm_campaign=profile&utm_medium=profile-page",
+};
