@@ -24,7 +24,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
         <div className="flex flex-col mt-3 text-center">
           <h1 className="text-lg font-medium">
             {zine.title}{" "}
-            <span className="text-gray-500 text-sm">por {zine.author_name ?? ""}</span>
+            <span className="text-gray-500 text-sm">por {zine.library_zines_authors.map((a) => a.authors.name).join(", ")}</span>
           </h1>
           <p className="mt-2 text-sm text-gray-600">{zine.description}</p>
         </div>
@@ -37,15 +37,6 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
         >
           Ver mais
         </Link>
-        {zine.author_url && (
-          <Link
-            href={zine.author_url}
-            target="_blank"
-            className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-black border border-black rounded-md hover:bg-neutral-100 transition"
-          >
-            Conhecer autor
-          </Link>
-        )}
       </div>
     </div>
   );

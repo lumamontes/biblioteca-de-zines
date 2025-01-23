@@ -1,3 +1,13 @@
+type Author = {
+  authors: {
+    id: string;
+    uuid: string;
+    name: string;
+    bio: string;
+    url: string;
+  }
+};
+
 type Zine = {
   id: string;
   uuid: string;
@@ -6,6 +16,5 @@ type Zine = {
   tags: string[];
   cover_image: string;
   pdf_url: string;
-  author_name: string;
-  author_url: string;
+  library_zines_authors: Author[];
 };

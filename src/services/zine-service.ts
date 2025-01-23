@@ -5,8 +5,10 @@ export const getPublishedZines = async (): Promise<Zine[]> => {
   const supabase = await createClient();
 
   const { data, error }: PostgrestResponse<Zine> = await supabase
-    .from("zines")
-    .select("*")
+    .from("library_zines")
+    .select(
+      '*, library_zines_authors (authors (id, name, url))'
+    )
     .eq("is_published", true);
 
   if (error) {
@@ -21,8 +23,10 @@ export const getZineByUuid = async (uuid: string): Promise<Zine | null> => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("zines")
-    .select("*")
+    .from("library_zines")
+    .select(
+      '*, library_zines_authors (authors (id, name, url))'
+    )
     .eq("uuid", uuid)
     .eq("is_published", true)
     .single();
