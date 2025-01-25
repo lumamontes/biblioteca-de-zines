@@ -1,3 +1,4 @@
+import { Zine } from "@/@types/zine";
 import { createClient } from "@/utils/supabase/server";
 import { PostgrestResponse } from "@supabase/supabase-js";
 
