@@ -124,7 +124,15 @@ export type Database = {
           updated_at?: string | null
           uuid?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_library_zines"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "library_zines_authors"
+            referencedColumns: ["zine_id"]
+          },
+        ]
       }
       library_zines_authors: {
         Row: {
