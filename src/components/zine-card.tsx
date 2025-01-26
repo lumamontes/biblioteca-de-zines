@@ -1,13 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getThumbnailUrl } from "@/utils/assets";
+import { joinAuthors } from "@/utils/utils";
+import { Zine } from "@/@types/zine";
 
 type ZineCardProps = {
   zine: Zine;
 };
 
 const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
-  const thumbnailUrl = getThumbnailUrl(zine.cover_image);
+  const thumbnailUrl = zine.cover_image ? getThumbnailUrl(zine.cover_image) : "";
   return (
     <div
       className="flex flex-col justify-between bg-white rounded-lg overflow-hidden shadow-sm h-full"
@@ -24,7 +26,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
         <div className="flex flex-col mt-3 text-center">
           <h1 className="text-lg font-medium">
             {zine.title}{" "}
-            <span className="text-gray-500 text-sm">por {zine.author_name ?? ""}</span>
+            <span className="text-gray-500 text-sm">por {joinAuthors(zine.library_zines_authors)}</span>
           </h1>
           <p className="mt-2 text-sm text-gray-600">{zine.description}</p>
         </div>
@@ -37,15 +39,6 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
         >
           Ver mais
         </Link>
-        {zine.author_url && (
-          <Link
-            href={zine.author_url}
-            target="_blank"
-            className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-black border border-black rounded-md hover:bg-neutral-100 transition"
-          >
-            Conhecer autor
-          </Link>
-        )}
       </div>
     </div>
   );
