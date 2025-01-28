@@ -26,8 +26,3 @@ export function joinAuthors(
 ): string {
   return library_zines_authors.map((a) => a.authors.name).join(", ");
 }
-
-export function isUuid(string:string){
-  const validUuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return validUuidRegex.test(string);
-}

@@ -1,6 +1,5 @@
 import { Zine } from "@/@types/zine";
 import { createClient } from "@/utils/supabase/server";
-import { isUuid } from "@/utils/utils";
 import { PostgrestResponse } from "@supabase/supabase-js";
 
 export const getPublishedZines = async (): Promise<Zine[]> => {
