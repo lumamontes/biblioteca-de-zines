@@ -34,7 +34,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
 
       <div className="flex flex-col md:flex-row justify-center gap-2 p-4">
         <Link
-          href={`/zines/${zine.uuid}`}
+          href={`/zines/${zine.slug}`}
           className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-800 transition"
         >
           Ver mais

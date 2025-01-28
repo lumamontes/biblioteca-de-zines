@@ -1,5 +1,5 @@
 import PDFViewer from "@/components/pdf-viewer";
-import { getZineByUuid } from "@/services/zine-service";
+import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { joinAuthors, limitText } from "@/utils/utils";
 import Link from "next/link";
@@ -7,10 +7,10 @@ import Link from "next/link";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
-  const preview = await getZineByUuid(id);
+  const { slug } = await params;
+  const preview = await getZineBySlug(slug);
 
   if (!preview) {
     return {
@@ -32,11 +32,11 @@ export async function generateMetadata({
       images: [
         {
           url: thumbnailUrl,
-          width: 1200,
+          wslugth: 1200,
           height: 630,
         },
       ],
-      url: `https://biblioteca-de-zines.vercel.app/zine/${id}`,
+      url: `https://biblioteca-de-zines.vercel.app/zine/${slug}`,
       type: "article",
     },
     twitter: {
@@ -51,11 +51,11 @@ export async function generateMetadata({
 export default async function ZinePreview({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
+  const { slug } = await params;
 
-  const preview = await getZineByUuid(id);
+  const preview = await getZineBySlug(slug);
 
   if (!preview) {
     return (
