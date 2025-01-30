@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback } from "react";
 
@@ -18,20 +19,7 @@ export default function Header() {
         aria-label="Toggle menu"
         aria-expanded={menuOpen}
       >
-        <svg
-          className="w-6 h-6 text-black"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M4 6h16M4 12h16m-7 6h7"
-          ></path>
-        </svg>
+        <Image src="/menu.svg" alt="Menu" width={24} height={24} />
       </button>
 
       <nav className="hidden md:flex gap-4">
@@ -54,11 +42,16 @@ export default function Header() {
         </ul>
       </nav>
 
+      {/* Mobile */}
       {menuOpen && (
         <nav className="absolute top-16 z-10 left-0 w-full bg-white shadow-md flex flex-col items-center gap-4 py-4 md:hidden">
           <ul className="flex flex-col items-center gap-4">
             <li>
-              <Link href="/about" className="hover:underline" onClick={toggleMenu}>
+              <Link
+                href="/about"
+                className="hover:underline"
+                onClick={toggleMenu}
+              >
                 Sobre
               </Link>
             </li>
