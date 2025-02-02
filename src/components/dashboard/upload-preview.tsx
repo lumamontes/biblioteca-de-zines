@@ -66,14 +66,14 @@ export const UploadPreview = ({
         <p className="text-sm mt-2">
           Autor: {upload.author_name} -{" "}
           {upload.author_url ? (
-            <a
+            <Link
               href={upload.author_url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
               {upload.author_url}
-            </a>
+            </Link>
           ) : (
             upload.author_name
           )}
@@ -82,14 +82,14 @@ export const UploadPreview = ({
         <p className="text-sm mt-2">
           Link da zine:{" "}
           {upload.pdf_url ? (
-            <a
+            <Link
               href={upload.pdf_url ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
               {upload.pdf_url}
-            </a>
+            </Link>
           ) : (
             "Sem link disponível"
           )}
