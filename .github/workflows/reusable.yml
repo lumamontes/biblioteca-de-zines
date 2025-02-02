@@ -1,3 +1,4 @@
+# reusable.yml
 name: Common Setup
 on:
   workflow_call:
@@ -13,32 +14,36 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        task: ${{ fromJson('["test", "lint"]') }}
+        node-version: ['20']
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
-
-      - name: Use Node.js ${{ inputs.node-version }}
+          version: 8
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{ matrix.node-version }}
           cache: pnpm
 
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Run Task
+      - name: Run Task ${{ matrix.task }}
         shell: bash
         run: |
-          if [ "${{ inputs.task }}" = "test" ]; then
+          if [[ "${{ matrix.task }}" == "test" ]]; then  # Use [[ ]] for string comparison
             pnpm playwright install --with-deps
             pnpm playwright test
-          elif [ "${{ inputs.task }}" = "lint" ]; then
+          elif [[ "${{ matrix.task }}" == "lint" ]]; then
             pnpm run lint
           else
-            echo "Unknown task: ${{ inputs.task }}"
+            echo "Unknown task: ${{ matrix.task }}"
             exit 1
           fi
