@@ -7,16 +7,13 @@ on:
         type: string
         default: '20'
         required: false
-      task:
-        type: string
-        required: true
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        task: ${{ fromJson('["test", "lint"]') }}
+        task: ['test', 'lint']
         node-version: ['20']
 
     steps:
@@ -25,7 +22,8 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -38,7 +36,7 @@ jobs:
       - name: Run Task ${{ matrix.task }}
         shell: bash
         run: |
-          if [[ "${{ matrix.task }}" == "test" ]]; then  # Use [[ ]] for string comparison
+          if [[ "${{ matrix.task }}" == "test" ]]; then
             pnpm playwright install --with-deps
             pnpm playwright test
           elif [[ "${{ matrix.task }}" == "lint" ]]; then
