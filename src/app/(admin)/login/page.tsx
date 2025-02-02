@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { login } from "./actions";
 
 export default function LoginPage() {
@@ -50,9 +51,9 @@ export default function LoginPage() {
         </p>
 
         <p className="text-sm text-center mt-2">
-          <a href="/" className="text-indigo-600 hover:underline">
+          <Link href="/" className="text-indigo-600 hover:underline">
             Voltar para a página inicial
-          </a>
+          </Link>
         </p>
       </section>
     </main>

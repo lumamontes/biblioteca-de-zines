@@ -2,6 +2,7 @@ import Image from "next/image";
 import TelegramIcon from "@public/social/telegram.svg";
 import GithubIcon from "@public/social/github.svg";
 import EmailIcon from "@public/social/envelope.svg";
+import Link from "next/link";
 
 type SocialLink = {
   alt: string;
@@ -32,13 +33,13 @@ export default function NavSocialLinks() {
       <ul className="flex justify-center items-center gap-4 md:flex-col">
         {links.map(({ href, src, alt }, index) => (
           <li key={index} className="list-none">
-            <a href={href} target="_blank" rel="noopener noreferrer">
+            <Link href={href} target="_blank" rel="noopener noreferrer">
               <Image
                 src={src}
                 alt={alt}
                 className="p-1 hover:bg-neutral-100 text-red fill-red rounded-md transition-colors duration-300 w-7 h-7"
               />
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
