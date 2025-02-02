@@ -22,7 +22,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 8 # Or latest compatible
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -32,6 +32,15 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install
+
+      - name: Start Development Server
+        run: pnpm run dev &
+
+      - name: Install wait-for-port
+        run: npm install wait-for-port
+
+      - name: Wait for Server to Start
+        run: npx wait-for-port 3000 -t 60000
 
       - name: Run Task ${{ matrix.task }}
         shell: bash
@@ -45,3 +54,7 @@ jobs:
             echo "Unknown task: ${{ matrix.task }}"
             exit 1
           fi
+
+      - name: Stop Development Server
+        if: always()
+        run: pkill -f "pnpm run dev" # Replace with your actual start command if different
