@@ -75,7 +75,8 @@ export const searchZines = async ({
     .from("library_zines")
     .select(
       "*, library_zines_authors!inner(authors!inner(id, name, url))"
-    );
+    ).
+    eq("is_published", true);
 
   if (search) {
     query = query.textSearch("title_fts", search, {
@@ -114,7 +115,9 @@ export const searchZines = async ({
     let queryAuthorZines = supabase
       .from("library_zines")
       .select("*, library_zines_authors!inner(authors!inner(id, name, url))")
+      eq("is_published", true)
       .in("library_zines_authors.authors.id", authorIds);
+
 
     if (orderBy === "recent") {
       queryAuthorZines = queryAuthorZines.order("created_at", { ascending: false });
