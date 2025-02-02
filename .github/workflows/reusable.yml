@@ -1,0 +1,41 @@
+name: Common Setup
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: '20'
+        required: false
+      task:
+        type: string
+        required: true
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Use Node.js ${{ inputs.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: pnpm
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Run Task
+        run: |
+          if [ "${{ inputs.task }}" = "test" ]; then
+            pnpm playwright install --with-deps
+            pnpm playwright test
+          elif [ "${{ inputs.task }}" = "lint" ]; then
+            pnpm run lint
+          else
+            echo "Unknown task: ${{ inputs.task }}"

@@ -1,0 +1,19 @@
+name: Playwright Tests and Linting
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    uses: ./.github/workflows/reusable.yml
+    with:
+      node-version: '20'
+      task: 'test'
+
+  lint:
+    uses: ./.github/workflows/reusable.yml
+    with:
+      node-version: '20'
+      task: 'lint'
