@@ -115,7 +115,7 @@ export const searchZines = async ({
     let queryAuthorZines = supabase
       .from("library_zines")
       .select("*, library_zines_authors!inner(authors!inner(id, name, url))")
-      eq("is_published", true)
+      .eq("is_published", true)
       .in("library_zines_authors.authors.id", authorIds);
 
 
