@@ -3,6 +3,12 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -11,6 +17,13 @@ export async function login(formData: FormData) {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
+
+  const parsedData = loginSchema.safeParse(data);
+
+  if (!parsedData.success) {
+    throw new Error('Email ou senha inválidos');
+    return;
+  }
 
   const { error } = await supabase.auth.signInWithPassword(data);
 
