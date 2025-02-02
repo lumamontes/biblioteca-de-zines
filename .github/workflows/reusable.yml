@@ -40,3 +40,5 @@ jobs:
             pnpm run lint
           else
             echo "Unknown task: ${{ inputs.task }}"
+            exit 1
+          fi
