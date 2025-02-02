@@ -28,7 +28,7 @@ export const UploadPreview = ({
 
   return (
     <div
-      data-testId="upload-preview"
+      data-testid="upload-preview"
       className="flex flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
     >
       <div className="flex-shrink-0">
