@@ -67,4 +67,9 @@ jobs:
 
       - name: Stop Development Server
         if: always()
-        run: pkill -f "pnpm run dev" # Replace with your actual start command if different
+        run: |
+          if pkill -f "pnpm run dev"; then  # Try to kill the process
+            echo "Server stopped."
+          else
+            echo "Server was not running or already stopped."
+          fi
