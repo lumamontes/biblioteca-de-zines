@@ -20,7 +20,7 @@ export const getPublishedZines = async (): Promise<Zine[]> => {
   return data ?? [];
 };
 
-export const getZineByUuid = async (uuid: string): Promise<Zine | null> => {
+export const getZineBySlug = async (slug: string): Promise<Zine | null> => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -28,13 +28,13 @@ export const getZineByUuid = async (uuid: string): Promise<Zine | null> => {
     .select(
       '*, library_zines_authors (authors (id, name, url))'
     )
-    .eq("uuid", uuid)
+    .eq("slug", slug)
     .eq("is_published", true)
     .single();
 
   if (error) {
     console.error("Error fetching zine by slug:", error.message);
-    throw new Error(error.message);
+    throw new Error('Não foi possível encontrar a zine.');
   } 
 
   return data ?? null;
