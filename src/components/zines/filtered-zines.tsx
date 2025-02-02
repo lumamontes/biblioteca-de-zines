@@ -5,6 +5,7 @@ import ZineCard from "@/components/zine-card/zine-card";
 import { searchZines } from "@/services/zine-service";
 import { debounce } from "lodash";
 import { Zine } from "@/@types/zine";
+import ZineCardSkeleton from "../zine-card/zine-card.skeleton";
 
 export default function FilteredZines({
   initialZines,
@@ -17,14 +18,10 @@ export default function FilteredZines({
   const [loading, setLoading] = useState(false);
 
   const loadZines = () => {
-    if (loading) {
-      return <p role="status">Carregando zines...</p>;
-    }
-
-    if (zines.length === 0) {
+    if (loading)
+      return [...Array(6)].map((_, index) => <ZineCardSkeleton key={index} />);
+    if (zines.length === 0)
       return <p role="status">Nenhuma zine encontrada.</p>;
-    }
-
     return zines.map((zine) => <ZineCard zine={zine} key={zine.uuid} />);
   };
 
