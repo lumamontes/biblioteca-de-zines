@@ -1,4 +1,5 @@
 # reusable.yml
+# Made to be, well, reusable
 name: Common Setup
 on:
   workflow_call:
@@ -13,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        task: ['test', 'lint']
+        task: ['test', 'lint'] # Runs both tasks separately
         node-version: ['20']
 
     steps:
@@ -22,7 +23,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8 # Or latest compatible
+          version: 8
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -33,9 +34,11 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
+        # This part makes sure the secrets were loaded
       - name: Check for required secrets
         if: github.event_name == 'pull_request' || github.event_name == 'push'
         run: |
+          echo ${{secrets.NEXT_PUBLIC_SUPABASE_URL}}
           if [[ -z "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" || -z "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" ]]; then
             echo "Error: Required secrets NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY are missing."
             exit 1
