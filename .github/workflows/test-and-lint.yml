@@ -1,11 +1,10 @@
-name: Common Setup
+name: Test and Lint
+
 on:
-  workflow_call:
-    inputs:
-      node-version:
-        type: string
-        default: '20'
-        required: false
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 jobs:
   setup:
