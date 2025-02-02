@@ -33,13 +33,25 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
+      - name: Check for required secrets
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        run: |
+          if [[ -z "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" || -z "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" ]]; then
+            echo "Error: Required secrets NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY are missing."
+            exit 1
+          fi
+
       - name: Start Development Server
-        run: pnpm run dev &  # Replace with your actual start command
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: pnpm run dev &
+        continue-on-error: true # Allow workflow to continue even if server start fails
 
       - name: Wait for Server to Start (using curl)
         run: |
           for i in {1..60}; do
-            if curl --fail --silent http://localhost:3000 > /dev/null; then
+            if curl --fail --silent http://localhost:3000 > /dev/null; then # Adjust port if needed
               echo "Server is up!"
               break
             else
@@ -54,6 +66,9 @@ jobs:
 
       - name: Run Task ${{ matrix.task }}
         shell: bash
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           if [[ "${{ matrix.task }}" == "test" ]]; then
             pnpm playwright install --with-deps
@@ -65,10 +80,17 @@ jobs:
             exit 1
           fi
 
+      - name: Upload Playwright HTML Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report
+
       - name: Stop Development Server
         if: always()
         run: |
-          if pkill -f "pnpm run dev"; then  # Try to kill the process
+          if pkill -f "pnpm run dev"; then # Adjust command if needed
             echo "Server stopped."
           else
             echo "Server was not running or already stopped."

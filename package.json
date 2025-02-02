@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "playwright": "pnpm playwright test",
+    "playwright:install": "pnpm exec playwright install"
   },
   "dependencies": {
     "@mailchimp/mailchimp_marketing": "^3.0.80",
