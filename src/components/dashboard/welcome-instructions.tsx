@@ -10,7 +10,7 @@ export const WelcomeInstructions = ({
   const lastUpload = uploads.sort((a, b) => b.id - a.id)[0];
 
   return (
-    <section className="mt-6">
+    <section className="mt-6" data-testId="welcome-section">
       <h1 className="text-2xl font-semibold">Zines Recebidas</h1>
       <p className="text-gray-500 mt-2">
         Visualize as zines enviadas pelo Google Forms e publique-as no site.

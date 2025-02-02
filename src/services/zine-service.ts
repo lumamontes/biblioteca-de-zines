@@ -20,6 +20,23 @@ export const getPublishedZines = async (): Promise<Zine[]> => {
   return data ?? [];
 };
 
+export const getAllZines = async (): Promise<Zine[]> => {
+  const supabase = await createClient();
+
+  const { data, error }: PostgrestResponse<Zine> = await supabase
+    .from("library_zines")
+    .select(
+      '*, library_zines_authors (authors (id, name, url))'
+    );
+
+  if (error) {
+    console.error("Error fetching published zines:", error.message);
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+};
+
 export const getZineBySlug = async (slug: string): Promise<Zine | null> => {
   const supabase = await createClient();
 

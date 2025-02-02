@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useState } from "react";
 import { UploadPreview } from "./upload-preview";
 import Button from "../button";
@@ -7,16 +7,16 @@ import { Zine } from "@/@types/zine";
 
 export const FilteredUploads = ({
   uploads,
-  publishedZines,
+  zines,
 }: {
-  uploads: Tables<'form_uploads'>[];
-  publishedZines: Zine[];
+  uploads: Tables<"form_uploads">[];
+  zines: Zine[];
 }) => {
   const [filter, setFilter] = useState<"all" | "published" | "unpublished">(
     "all"
   );
   const filteredUploads = uploads.filter((upload) => {
-    const isPublished = publishedZines.some(
+    const isPublished = zines.some(
       (zine) => zine.title === upload.title && zine.is_published
     );
     if (filter === "published") return isPublished;
@@ -25,7 +25,7 @@ export const FilteredUploads = ({
   });
 
   return (
-    <section className="mt-8">
+    <section className="mt-8" data-testid="uploads-section">
       <div className="flex gap-4">
         <Button
           onClick={() => setFilter("all")}
@@ -64,15 +64,9 @@ export const FilteredUploads = ({
       ) : (
         <div className="flex flex-col mt-6 space-y-4">
           {filteredUploads.map((upload) => {
-            const publishedZine = publishedZines.find(
-              (zine) => zine.title === upload.title
-            );
+            const findZine = zines.find((zine) => zine.title === upload.title);
             return (
-              <UploadPreview
-                key={upload.id}
-                upload={upload}
-                publishedZine={publishedZine}
-              />
+              <UploadPreview key={upload.id} upload={upload} zine={findZine} />
             );
           })}
         </div>

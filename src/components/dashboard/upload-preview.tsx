@@ -5,15 +5,19 @@ import Button from "../button";
 import Link from "next/link";
 import { getThumbnailUrl } from "@/utils/assets";
 import { Tables } from "../../../database.types";
-import { publishZine, unpublishZine } from "@/app/(admin)/dashboard/actions";
+import {
+  publishZine,
+  unpublishZine,
+  updatePublishedZine,
+} from "@/app/(admin)/dashboard/actions";
 import { Zine } from "@/@types/zine";
 
 export const UploadPreview = ({
   upload,
-  publishedZine,
+  zine,
 }: {
   upload: Tables<"form_uploads">;
-  publishedZine?: Zine;
+  zine?: Zine;
 }) => {
   const [isPending, startTransition] = useTransition();
 
@@ -23,7 +27,10 @@ export const UploadPreview = ({
     : "/placeholder.png";
 
   return (
-    <div className="flex flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4">
+    <div
+      data-testId="upload-preview"
+      className="flex flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
+    >
       <div className="flex-shrink-0">
         <Image
           src={thumbnailUrl}
@@ -35,9 +42,7 @@ export const UploadPreview = ({
       </div>
 
       <div className="flex flex-col flex-grow">
-        <p className="text-sm text-gray-500">
-          {publishedZine?.slug}
-        </p>
+        <p className="text-sm text-gray-500">{zine?.slug}</p>
         <h2 className="text-lg font-semibold">{upload.title}</h2>
         <p className="text-sm text-gray-600">{upload.collection_title}</p>
 
@@ -92,14 +97,14 @@ export const UploadPreview = ({
       </div>
 
       <div className="flex flex-col justify-center gap-2 mt-4 sm:mt-0 sm:ml-4 min-w-[200px]">
-        {publishedZine?.slug && (
+        {zine?.is_published && (
           <Button asChild className="w-full">
-            <Link href={`/zines/${publishedZine?.slug}`}>Ver no site</Link>
+            <Link href={`/zines/${zine?.slug}`}>Ver no site</Link>
           </Button>
         )}
-        {publishedZine?.is_published ? (
+        {zine?.is_published ? (
           <Button
-            onClick={() => startTransition(() => unpublishZine(publishedZine.id))}
+            onClick={() => startTransition(() => unpublishZine(zine.id))}
             disabled={isPending}
             className="py-2 w-full bg-red-500 text-white"
           >
@@ -107,11 +112,17 @@ export const UploadPreview = ({
           </Button>
         ) : (
           <Button
-            onClick={() => startTransition(() => publishZine(upload.id))}
+            onClick={() =>
+              startTransition(() =>
+                zine?.slug
+                  ? updatePublishedZine(zine.id)
+                  : publishZine(upload.id)
+              )
+            }
             disabled={isPending}
             className="py-2 w-full bg-green-500 text-white"
           >
-            {isPending ? "Aguarde..." : "Publicar"}
+            {isPending ? "Aguarde..." : zine?.slug ? "Republicar" : "Publicar"}
           </Button>
         )}
       </div>
