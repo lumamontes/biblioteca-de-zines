@@ -1,5 +1,5 @@
 # test.yml
-name: Playwright Tests and Linting
+name: QA
 on:
   push:
     branches: [main, master]
@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 jobs:
-  quality-assurance:
+  test-and-lint:
     uses: ./.github/workflows/reusable.yml
     permissions:
       contents: read
