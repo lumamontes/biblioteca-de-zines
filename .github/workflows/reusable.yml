@@ -37,10 +37,10 @@ jobs:
         run: pnpm run dev &
 
       - name: Install wait-for-port
-        run: npm install wait-for-port
+        run: pnpm add wait-for-port # Use pnpm add
 
       - name: Wait for Server to Start
-        run: npx wait-for-port 3000 -t 60000
+        run: pnpm exec wait-for-port 3000 -t 60000  # Use pnpm exec
 
       - name: Run Task ${{ matrix.task }}
         shell: bash
