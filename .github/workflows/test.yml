@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 jobs:
-  build:
+  quality-assurance:
     uses: ./.github/workflows/reusable.yml
     permissions:
       contents: read
