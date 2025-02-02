@@ -34,13 +34,23 @@ jobs:
         run: pnpm install
 
       - name: Start Development Server
-        run: pnpm run dev &
+        run: pnpm run dev &  # Replace with your actual start command
 
-      - name: Install wait-for-port
-        run: pnpm add wait-for-port # Use pnpm add
-
-      - name: Wait for Server to Start
-        run: pnpm exec wait-for-port 3000 -t 60000  # Use pnpm exec
+      - name: Wait for Server to Start (using curl)
+        run: |
+          for i in {1..60}; do
+            if curl --fail --silent http://localhost:3000 > /dev/null; then
+              echo "Server is up!"
+              break
+            else
+              echo "Waiting for server..."
+              sleep 1
+            fi
+          done
+          if [[ $i -eq 60 ]]; then
+            echo "Server did not start after 60 seconds."
+            exit 1
+          fi
 
       - name: Run Task ${{ matrix.task }}
         shell: bash
