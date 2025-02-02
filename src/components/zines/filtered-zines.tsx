@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ZineCard from "@/components/zine-card";
+import ZineCard from "@/components/zine-card/zine-card";
 import { searchZines } from "@/services/zine-service";
 import { debounce } from "lodash";
 import { Zine } from "@/@types/zine";
+import ZineCardSkeleton from "../zine-card/zine-card.skeleton";
 
 export default function FilteredZines({
   initialZines,
@@ -15,6 +16,14 @@ export default function FilteredZines({
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(false);
+
+  const loadZines = () => {
+    if (loading)
+      return [...Array(6)].map((_, index) => <ZineCardSkeleton key={index} />);
+    if (zines.length === 0)
+      return <p role="status">Nenhuma zine encontrada.</p>;
+    return zines.map((zine) => <ZineCard zine={zine} key={zine.uuid} />);
+  };
 
   useEffect(() => {
     const fetchZines = async () => {
@@ -76,13 +85,7 @@ export default function FilteredZines({
         role="grid"
         className="grid grid-cols-1 gap-6 px-4 py-8 sm:px-6 md:grid-cols-2 lg:grid-cols-3"
       >
-        {loading ? (
-          <p role="status">Carregando zines...</p>
-        ) : zines.length === 0 ? (
-          <p role="status">Nenhuma zine encontrada.</p>
-        ) : (
-          zines.map((zine) => <ZineCard zine={zine} key={zine.uuid} />)
-        )}
+        {loadZines()}
       </div>
     </div>
   );
