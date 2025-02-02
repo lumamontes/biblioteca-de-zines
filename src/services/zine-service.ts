@@ -1,7 +1,7 @@
 import { Zine } from "@/@types/zine";
 import { createClient } from "@/utils/supabase/server";
 import { createClient as createBrowser } from "@/utils/supabase/client";
-import { PostgrestResponse, PostgrestSingleResponse } from "@supabase/supabase-js";
+import { PostgrestResponse } from "@supabase/supabase-js";
 
 export const getPublishedZines = async (): Promise<Zine[]> => {
   const supabase = await createClient();
@@ -68,7 +68,7 @@ type SearchZineProps = {
 export const searchZines = async ({
   search = null,
   orderBy = "all",
-}): Promise<Zine[]> => {
+}: SearchZineProps): Promise<Zine[]> => {
   const supabase = await createBrowser();
 
   let query = supabase

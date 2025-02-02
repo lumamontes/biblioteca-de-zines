@@ -1,6 +1,5 @@
-import ZineCard from "@/components/zine-card";
 import FilteredZines from "@/components/zines/filtered-zines";
-import { getPublishedZines, searchZines } from "@/services/zine-service";
+import { getPublishedZines } from "@/services/zine-service";
 
 export default async function Zines() {
   const zines = await getPublishedZines();
