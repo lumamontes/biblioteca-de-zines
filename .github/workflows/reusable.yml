@@ -1,5 +1,3 @@
-# reusable.yml
-# Made to be, well, reusable
 name: Common Setup
 on:
   workflow_call:
@@ -38,7 +36,6 @@ jobs:
       - name: Check for required secrets
         if: github.event_name == 'pull_request' || github.event_name == 'push'
         run: |
-          echo ${{secrets.NEXT_PUBLIC_SUPABASE_URL}}
           if [[ -z "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" || -z "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" ]]; then
             echo "Error: Required secrets NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY are missing."
             exit 1
