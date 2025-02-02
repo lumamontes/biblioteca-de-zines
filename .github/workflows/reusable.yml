@@ -31,6 +31,7 @@ jobs:
         run: pnpm install
 
       - name: Run Task
+        shell: bash
         run: |
           if [ "${{ inputs.task }}" = "test" ]; then
             pnpm playwright install --with-deps
