@@ -1,4 +1,3 @@
-// src/utils/supabase/server.ts
 import { createServerClient } from '@supabase/ssr'
 
 export async function createClient() {
