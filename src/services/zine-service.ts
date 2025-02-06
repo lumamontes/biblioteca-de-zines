@@ -27,7 +27,7 @@ export const getAllZines = async (): Promise<Zine[]> => {
   const { data, error }: PostgrestResponse<Zine> = await supabase
     .from("library_zines")
     .select(
-      '*, library_zines_authors (authors (id, name, url))'
+      '*, library_zines_authors (authors (id, name, url, email))'
     );
 
   if (error) {
@@ -44,7 +44,7 @@ export const getZineBySlug = async (slug: string): Promise<Zine | null> => {
   const { data, error } = await supabase
     .from("library_zines")
     .select(
-      '*, library_zines_authors (authors (id, name, url))'
+      '*, library_zines_authors (authors (id, name, url, email))'
     )
     .eq("slug", slug)
     .eq("is_published", true)
