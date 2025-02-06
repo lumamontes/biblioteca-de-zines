@@ -126,7 +126,7 @@ export const UploadPreview = ({
         <Button
           onClick={() =>
             startTransition(() =>
-              zine?.slug ? updatePublishedZine(zine.id) : publishZine(upload.id)
+              zine?.is_published ? unpublishZine(zine.id) : zine?.slug ? updatePublishedZine(zine.id) : publishZine(upload.id)
             )
           }
           disabled={isPending}
@@ -134,7 +134,7 @@ export const UploadPreview = ({
             zine?.is_published ? "bg-red-500" : "bg-green-500"
           }`}
         >
-          {isPending ? "Aguarde..." : zine?.slug ? "Republicar" : "Publicar"}
+          {isPending ? "Aguarde..." : zine?.is_published ? "Despublicar" : "Publicar"}
         </Button>
 
         {zine && !zine?.send_email && zine?.library_zines_authors?.length > 0 && (
