@@ -57,7 +57,7 @@ export async function publishZine(uploadId: number) {
     .single();
 
   let zineId;
-  if (!existingZine) {
+  if (!existingZine?.id) {
     const { data: newZine, error: insertError } = await supabase
       .from("library_zines")
       .insert([
@@ -70,6 +70,7 @@ export async function publishZine(uploadId: number) {
           tags: upload.tags,
           is_published: true,
           slug: slug,
+          year: upload.published_year,
         },
       ])
       .select("id")
@@ -96,10 +97,12 @@ export async function publishZine(uploadId: number) {
         .single();
 
       let authorId;
-      if (!existingAuthor) {
+      if (!existingAuthor?.id) {
         const { data: newAuthor, error: authorError } = await supabase
           .from("authors")
-          .insert([{ name, url: upload.author_url }])
+          .insert([
+            { name, url: upload.author_url, email: upload.author_email },
+          ])
           .select("id")
           .single();
 
@@ -133,3 +136,100 @@ export async function publishZine(uploadId: number) {
 
   revalidatePath("/dashboard");
 }
+
+export async function updateZinesWithFormUploads() {
+  try {
+    const supabase = await createClient();
+
+    const { data: uploads, error } = await supabase
+      .from("form_uploads")
+      .select("*");
+
+    if (error) throw new Error(`Erro ao buscar uploads: ${error.message}`);
+
+    for (const upload of uploads) {
+      const slug = generateSlug(upload.author_name, upload.title);
+
+      const { data: existingZine, error: zineError } = await supabase
+        .from("library_zines")
+        .select("id, year, pdf_url, slug")
+        .eq("slug", slug)
+        .single();
+
+      if (zineError) {
+        console.warn(`Zine não encontrada para slug: ${slug}`);
+        continue;
+      }
+
+      if (existingZine?.id) {
+        const { error: updateZineError } = await supabase
+          .from("library_zines")
+          .update({
+            year: upload.published_year,
+            pdf_url: upload.pdf_url,
+          })
+          .eq("id", existingZine.id);
+
+        if (updateZineError) {
+          throw new Error(`Erro ao atualizar zine: ${updateZineError.message}`);
+        }
+      }
+    }
+
+    console.log("Sincronização concluída com sucesso!");
+  } catch (err) {
+    console.error(
+      "Erro ao sincronizar uploads com zines:",
+      JSON.stringify(err, null, 2)
+    );
+    throw new Error("Falha ao sincronizar uploads com zines.");
+  }
+}
+
+export async function sendEmailToAuthor(authorEmail: string, zineId: number) {
+  const supabase = await createClient();
+
+  try {
+
+    if (!authorEmail || !authorEmail.includes("@")) {
+      throw new Error("E-mail inválido para o autor.");
+    }
+    const response = await fetch(
+      "https://yuafnmuqgjxbiumcdqsl.supabase.co/functions/v1/resend",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          author_email: authorEmail,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Falha ao enviar o e-mail: ${JSON.stringify(errorData)}`);
+    }
+
+    const { error } = await supabase
+      .from("library_zines")
+      .update({ send_email: true })
+      .eq("id", zineId);
+
+    if (error) {
+      throw new Error(`Erro ao atualizar o status de envio: ${error.message}`);
+    }
+
+    return { success: true, message: "E-mail enviado com sucesso." };
+  } catch (error) {
+    if(error instanceof Error) {
+      console.error("Erro ao enviar e-mail para o autor:", error.message);
+      return { success: false, error: error.message };
+    }
+    console.error("Erro ao enviar e-mail para o autor:", error);
+    return { success: false, error: "Erro ao enviar e-mail para o autor." };
+  }
+}
+
+

@@ -13,24 +13,30 @@ export type Database = {
         Row: {
           bio: string | null
           created_at: string | null
+          email: string | null
           id: number
           name: string
+          name_fts: unknown | null
           updated_at: string | null
           url: string | null
         }
         Insert: {
           bio?: string | null
           created_at?: string | null
+          email?: string | null
           id?: number
           name: string
+          name_fts?: unknown | null
           updated_at?: string | null
           url?: string | null
         }
         Update: {
           bio?: string | null
           created_at?: string | null
+          email?: string | null
           id?: number
           name?: string
+          name_fts?: unknown | null
           updated_at?: string | null
           url?: string | null
         }
@@ -38,6 +44,7 @@ export type Database = {
       }
       form_uploads: {
         Row: {
+          author_email: string | null
           author_name: string | null
           author_url: string | null
           collection_title: string | null
@@ -47,11 +54,13 @@ export type Database = {
           id: number
           is_published: boolean | null
           pdf_url: string | null
+          published_year: string | null
           tags: Json | null
           title: string
           uuid: string | null
         }
         Insert: {
+          author_email?: string | null
           author_name?: string | null
           author_url?: string | null
           collection_title?: string | null
@@ -61,11 +70,13 @@ export type Database = {
           id?: number
           is_published?: boolean | null
           pdf_url?: string | null
+          published_year?: string | null
           tags?: Json | null
           title: string
           uuid?: string | null
         }
         Update: {
+          author_email?: string | null
           author_name?: string | null
           author_url?: string | null
           collection_title?: string | null
@@ -75,6 +86,7 @@ export type Database = {
           id?: number
           is_published?: boolean | null
           pdf_url?: string | null
+          published_year?: string | null
           tags?: Json | null
           title?: string
           uuid?: string | null
@@ -90,11 +102,14 @@ export type Database = {
           id: number
           is_published: boolean | null
           pdf_url: string | null
+          send_email: boolean | null
           slug: string | null
           tags: Json | null
           title: string
+          title_fts: unknown | null
           updated_at: string | null
           uuid: string | null
+          year: string | null
         }
         Insert: {
           collection_title?: string | null
@@ -104,11 +119,14 @@ export type Database = {
           id?: number
           is_published?: boolean | null
           pdf_url?: string | null
+          send_email?: boolean | null
           slug?: string | null
           tags?: Json | null
           title: string
+          title_fts?: unknown | null
           updated_at?: string | null
           uuid?: string | null
+          year?: string | null
         }
         Update: {
           collection_title?: string | null
@@ -118,21 +136,16 @@ export type Database = {
           id?: number
           is_published?: boolean | null
           pdf_url?: string | null
+          send_email?: boolean | null
           slug?: string | null
           tags?: Json | null
           title?: string
+          title_fts?: unknown | null
           updated_at?: string | null
           uuid?: string | null
+          year?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "fk_library_zines"
-            columns: ["id"]
-            isOneToOne: false
-            referencedRelation: "library_zines_authors"
-            referencedColumns: ["zine_id"]
-          },
-        ]
+        Relationships: []
       }
       library_zines_authors: {
         Row: {
