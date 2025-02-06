@@ -4,10 +4,8 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const handler = async (request: Request): Promise<Response> => {
   try {
-    // Parse request body (expecting JSON with author_email)
     const { author_email } = await request.json();
 
-    // Ensure the email is valid; fallback to a default email if missing
     const recipientEmail = author_email.includes("@") ? author_email : "bibliotecadezines@gmail.com";
 
     const res = await fetch("https://api.resend.com/emails", {
@@ -17,9 +15,9 @@ const handler = async (request: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Biblioteca de Zines <noreply@biblioteca-de-zines.com.br>", // Use verified sender
-        reply_to: "bibliotecadezines@gmail.com", // Redirect responses
-        to: recipientEmail, // Dynamic recipient
+        from: "Biblioteca de Zines <noreply@biblioteca-de-zines.com.br>",
+        reply_to: "bibliotecadezines@gmail.com",
+        to: recipientEmail,
         subject: "📚 Sua Zine Foi Publicada!",
         html: `
           <p>Olá, tudo bem?</p>
