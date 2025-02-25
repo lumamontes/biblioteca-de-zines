@@ -14,7 +14,7 @@ export default function FilteredZines({
 }) {
   const [zines, setZines] = useState(initialZines);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("recent");
   const [loading, setLoading] = useState(false);
 
   const loadZines = () => {
@@ -47,6 +47,18 @@ export default function FilteredZines({
   return (
     <div>
       <div className="flex flex-wrap gap-4 mb-4">
+      <button
+          className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-300
+      ${
+        filter === "recent"
+          ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg"
+          : "bg-gray-200 text-gray-800 hover:bg-gray-300 hover:text-gray-900"
+      }`}
+          onClick={() => setFilter("recent")}
+        >
+          Mais recentes
+        </button>
+
         <button
           className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-300
       ${
@@ -57,18 +69,6 @@ export default function FilteredZines({
           onClick={() => setFilter("all")}
         >
           Todas
-        </button>
-
-        <button
-          className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-300
-      ${
-        filter === "recent"
-          ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg"
-          : "bg-gray-200 text-gray-800 hover:bg-gray-300 hover:text-gray-900"
-      }`}
-          onClick={() => setFilter("recent")}
-        >
-          Mais recentes
         </button>
       </div>
 
