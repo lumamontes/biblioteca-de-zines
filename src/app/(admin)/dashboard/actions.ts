@@ -186,7 +186,7 @@ export async function updateZinesWithFormUploads() {
   }
 }
 
-export async function sendEmailToAuthor(authorEmail: string, zineId: number) {
+export async function sendEmailToAuthor(zineTitle: string, authorEmail: string, zineId: number) {
   const supabase = await createClient();
 
   try {
@@ -203,6 +203,7 @@ export async function sendEmailToAuthor(authorEmail: string, zineId: number) {
         },
         body: JSON.stringify({
           author_email: authorEmail,
+          zine_title: zineTitle
         }),
       }
     );

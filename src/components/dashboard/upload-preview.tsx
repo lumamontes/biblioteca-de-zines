@@ -33,7 +33,7 @@ export const UploadPreview = ({
 
   const handleSendEmail = () => {
     startEmailTransition(() => {
-      sendEmailToAuthor(authorEmail, zine!.id)
+      sendEmailToAuthor(zine!.title, authorEmail, zine!.id)
         .then((res) => res.success
           ? console.log("Email enviado:", res.message)
           : console.error("Erro ao enviar email:", res.error))
