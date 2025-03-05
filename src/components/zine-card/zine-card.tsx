@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getThumbnailUrl } from "@/utils/assets";
 import { joinAuthors } from "@/utils/utils";
@@ -16,11 +15,11 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
     >
       <div className="flex flex-col items-center p-4flex-grow">
         <div className="relative w-full h-56 flex items-center justify-center">
-          <Image
+          <img
             src={thumbnailUrl}
             alt={zine.title}
-            fill
-            className="rounded-md object-contain"
+            className="rounded-md object-contain w-full h-full"
+            loading="lazy"
           />
         </div>
         <div className="flex flex-col mt-3 text-center">
