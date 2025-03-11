@@ -1,0 +1,96 @@
+name: Test and Lint
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        task: ['test', 'lint'] # Runs both tasks separately
+        node-version: ['20']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - name: Install Dependencies
+        run: pnpm install
+
+        # This part makes sure the secrets were loaded
+      - name: Check for required secrets
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        run: |
+          if [[ -z "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" || -z "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" ]]; then
+            echo "Error: Required secrets NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY are missing."
+            exit 1
+          fi
+
+      - name: Start Development Server
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: pnpm run dev &
+        continue-on-error: true # Allow workflow to continue even if server start fails
+
+      - name: Wait for Server to Start (using curl)
+        run: |
+          for i in {1..60}; do
+            if curl --fail --silent http://localhost:3000 > /dev/null; then # Adjust port if needed
+              echo "Server is up!"
+              break
+            else
+              echo "Waiting for server..."
+              sleep 1
+            fi
+          done
+          if [[ $i -eq 60 ]]; then
+            echo "Server did not start after 60 seconds."
+            exit 1
+          fi
+
+      - name: Run Task ${{ matrix.task }}
+        shell: bash
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          if [[ "${{ matrix.task }}" == "test" ]]; then
+            pnpm playwright install --with-deps
+            pnpm playwright test
+          elif [[ "${{ matrix.task }}" == "lint" ]]; then
+            pnpm run lint
+          else
+            echo "Unknown task: ${{ matrix.task }}"
+            exit 1
+          fi
+
+      - name: Upload Playwright HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+
+      - name: Stop Development Server
+        if: always()
+        run: |
+          if pkill -f "pnpm run dev"; then # Adjust command if needed
+            echo "Server stopped."
+          else
+            echo "Server was not running or already stopped."
+          fi
