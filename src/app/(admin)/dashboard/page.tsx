@@ -6,6 +6,7 @@ import { getAllZines } from "@/services/zine-service";
 import Link from "next/link";
 import React from "react";
 import { logout } from "../login/actions";
+import Helpers from "@/components/dashboard/helpers";
 
 export default async function HomePage() {
   const uploads = await getFormUploads();
@@ -23,6 +24,10 @@ export default async function HomePage() {
       </header>
 
       <WelcomeInstructions uploads={uploads} />
+
+      {/* Helper functions */}
+
+      <Helpers />
 
       <FilteredUploads uploads={uploads} zines={zines} />
     </div>
