@@ -8,7 +8,6 @@ const STORAGE_KEY = "apply-zine-zines";
 export function useZineForm() {
   const [zines, setZines] = useState<Zine[]>([]);
 
-  // Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -23,7 +22,6 @@ export function useZineForm() {
     }
   }, []);
 
-  // Save to localStorage whenever zines change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(zines));
   }, [zines]);

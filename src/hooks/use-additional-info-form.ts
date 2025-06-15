@@ -8,7 +8,6 @@ export function useAdditionalInfoForm() {
   const [telegramInterest, setTelegramInterest] = useState("");
   const [contactEmail, setContactEmail] = useState("");
 
-  // Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -26,7 +25,6 @@ export function useAdditionalInfoForm() {
     }
   }, []);
 
-  // Save to localStorage whenever data changes
   useEffect(() => {
     const dataToSave = {
       telegramInterest,
@@ -36,8 +34,6 @@ export function useAdditionalInfoForm() {
   }, [telegramInterest, contactEmail]);
 
   const validateAdditionalInfo = (): string | null => {
-    // Additional info is optional, so no validation needed
-    // But we could add email format validation if needed
     if (contactEmail && !isValidEmail(contactEmail)) {
       return "Por favor, insira um email válido.";
     }
