@@ -12,6 +12,44 @@ body {
   color: rgb(var(--foreground-rgb));
 }
 
+@layer components {
+  .link {
+    @apply text-blue-600 hover:text-blue-800 underline;
+  }
+  
+  .link-subtle {
+    @apply text-blue-600 hover:underline;
+  }
+  
+  .form-input {
+    @apply w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-neutral-700;
+  }
+  
+  .form-helper-text {
+    @apply text-sm text-neutral-600;
+  }
+  
+  .form-error-text {
+    @apply text-sm text-red-600;
+  }
+  
+  .card {
+    @apply bg-white border border-neutral-200 p-6 rounded-lg;
+  }
+  
+  .card-nested {
+    @apply border border-neutral-200 p-4 rounded-lg bg-neutral-50;
+  }
+  
+  .btn-ghost {
+    @apply bg-transparent text-blue-600 hover:text-blue-800 border-2 border-dashed border-neutral-300 hover:border-neutral-400;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
