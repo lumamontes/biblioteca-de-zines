@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Author } from "@/types/apply-zine";
 
 const STORAGE_KEY = "apply-zine-authors";
@@ -69,10 +69,10 @@ export function useAuthorForm() {
     return null;
   };
 
-  const clearAuthors = () => {
+  const clearAuthors = useCallback(() => {
     setAuthors([{ name: "", socialLinks: [""] }]);
     localStorage.removeItem(STORAGE_KEY);
-  };
+  }, []);
 
   return {
     authors,

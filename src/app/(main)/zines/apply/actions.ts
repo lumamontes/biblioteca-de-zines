@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { TablesInsert } from "../../../../../database.types";
 import { redirect } from "next/navigation";
+import { sendTelegramNotification } from "@/utils/telegram";
 
 interface Author {
   name: string;
@@ -57,44 +58,63 @@ export async function submitZineApplication(formData: FormData) {
     author.socialLinks.filter(link => link.trim())
   );
 
-  const insertPromises = zines.map(async (zine) => {
-    const zineData: TablesInsert<"form_uploads"> = {
-      title: zine.title.trim(),
-      collection_title: zine.collectionTitle.trim() || null,
-      author_name: authorNames.join(", "),
-      author_url: allSocialLinks.length > 0 ? allSocialLinks.join(", ") : null,
-      pdf_url: zine.pdfUrl.trim(),
-      description: zine.description.trim() || null,
-      cover_image: zine.coverImageUrl.trim() || null,
-      tags: JSON.stringify({
-        publication_year: zine.publicationYear.trim(),
-        telegram_interest: telegramInterest,
-        contact_email: contactEmail,
-        authors_structured: authors,
-        submission_batch_id: Date.now().toString(),
-      }),
-      is_published: false,
-    };
+  const submissionBatchId = Date.now().toString();
 
-    const { data, error } = await supabase
-      .from("form_uploads")
-      .insert(zineData)
-      .select()
-      .single();
+  try {
+    const insertPromises = zines.map(async (zine) => {
+      const zineData: TablesInsert<"form_uploads"> = {
+        title: zine.title.trim(),
+        collection_title: zine.collectionTitle.trim() || null,
+        author_name: authorNames.join(", "),
+        author_url: allSocialLinks.length > 0 ? allSocialLinks.join(", ") : null,
+        pdf_url: zine.pdfUrl.trim(),
+        description: zine.description.trim() || null,
+        cover_image: zine.coverImageUrl.trim() || null,
+        tags: JSON.stringify({
+          publication_year: zine.publicationYear.trim(),
+          telegram_interest: telegramInterest,
+          contact_email: contactEmail,
+          authors_structured: authors,
+          submission_batch_id: submissionBatchId,
+        }),
+        is_published: false,
+      };
 
-    if (error) {
-      console.error('Error inserting zine:', error);
-      throw new Error(`Erro ao enviar zine "${zine.title}"`);
+      const { data, error } = await supabase
+        .from("form_uploads")
+        .insert(zineData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error inserting zine:', error);
+        throw new Error(`Erro ao enviar zine "${zine.title}"`);
+      }
+
+      return data;
+    });
+
+    const results = await Promise.all(insertPromises);
+
+    try {
+      await sendTelegramNotification({
+        authorNames,
+        zineCount: zines.length,
+        zineTitles: zines.map(z => z.title.trim()),
+        contactEmail: contactEmail || undefined,
+        telegramInterest,
+        submissionId: submissionBatchId,
+      });
+      console.log('Telegram notification sent successfully');
+    } catch (notificationError) {
+      console.error('Failed to send Telegram notification:', notificationError);
     }
 
-    return data;
-  });
-
-  const results = await Promise.all(insertPromises);
-
-  // Aqui depois podemos enviar notificação para o email do autor ou pro email da biblioteca
-
-  return { success: true, data: results };
+    return { success: true, data: results };
+  } catch (dbError) {
+    console.error('Database insertion failed:', dbError);
+    throw dbError;
+  }
 }
 
 export async function submitZineApplicationWithRedirect(formData: FormData) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Zine } from "@/types/apply-zine";
 
 const STORAGE_KEY = "apply-zine-zines";
@@ -55,18 +55,21 @@ export function useZineForm() {
     }
 
     for (const zine of zines) {
-      if (!zine.title.trim() || !zine.pdfUrl.trim()) {
-        return "Título e link do PDF são obrigatórios para todas as zines.";
+      if (!zine.title.trim()) {
+        return "Todas as zines devem ter um título.";
+      }
+      if (!zine.pdfUrl.trim()) {
+        return "Todas as zines devem ter um link do PDF.";
       }
     }
 
     return null;
   };
 
-  const clearZines = () => {
+  const clearZines = useCallback(() => {
     setZines([]);
     localStorage.removeItem(STORAGE_KEY);
-  };
+  }, []);
 
   return {
     zines,

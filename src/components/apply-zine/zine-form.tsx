@@ -8,6 +8,7 @@ interface ZineFormProps {
   zineIndex: number;
   onUpdateZine: (id: string, field: keyof Omit<Zine, 'id'>, value: string) => void;
   onRemoveZine: (id: string) => void;
+  disabled?: boolean;
 }
 
 export default function ZineForm({
@@ -15,6 +16,7 @@ export default function ZineForm({
   zineIndex,
   onUpdateZine,
   onRemoveZine,
+  disabled = false,
 }: ZineFormProps) {
   return (
     <div className="border border-neutral-200 p-4 rounded-lg bg-neutral-50">
@@ -27,6 +29,7 @@ export default function ZineForm({
           variant="danger"
           size="sm"
           onClick={() => onRemoveZine(zine.id)}
+          disabled={disabled}
         >
           Remover Zine
         </ActionButton>
@@ -40,6 +43,7 @@ export default function ZineForm({
           onChange={(e) => onUpdateZine(zine.id, 'title', e.target.value)}
           placeholder="Nome da sua zine"
           required
+          disabled={disabled}
         />
 
         <Input
@@ -48,6 +52,7 @@ export default function ZineForm({
           value={zine.collectionTitle}
           onChange={(e) => onUpdateZine(zine.id, 'collectionTitle', e.target.value)}
           placeholder="Se faz parte de uma série"
+          disabled={disabled}
         />
 
         <Input
@@ -56,6 +61,7 @@ export default function ZineForm({
           value={zine.publicationYear}
           onChange={(e) => onUpdateZine(zine.id, 'publicationYear', e.target.value)}
           placeholder="2024"
+          disabled={disabled}
         />
 
         <Input
@@ -65,6 +71,7 @@ export default function ZineForm({
           onChange={(e) => onUpdateZine(zine.id, 'pdfUrl', e.target.value)}
           placeholder="https://drive.google.com/..."
           required
+          disabled={disabled}
         />
 
         <div className="md:col-span-2">
@@ -74,6 +81,7 @@ export default function ZineForm({
             value={zine.coverImageUrl}
             onChange={(e) => onUpdateZine(zine.id, 'coverImageUrl', e.target.value)}
             placeholder="https://exemplo.com/capa.jpg"
+            disabled={disabled}
           />
         </div>
 
@@ -84,6 +92,7 @@ export default function ZineForm({
             onChange={(e) => onUpdateZine(zine.id, 'description', e.target.value)}
             rows={3}
             placeholder="Conte um pouco sobre sua zine..."
+            disabled={disabled}
           />
         </div>
       </div>

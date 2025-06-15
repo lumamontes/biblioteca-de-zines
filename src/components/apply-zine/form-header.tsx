@@ -6,7 +6,7 @@ export default function FormHeader() {
   return (
     <div className="text-center mb-8">
       <Title variant="h1" className="mb-4">
-        Envie sua zine!
+        Envie sua zine! (beta)
       </Title>
       <p className="text-lg text-neutral-600 mb-6">
         Queremos conhecer e divulgar sua zine! Preencha o formulário abaixo para enviar sua criação para nossa biblioteca digital.

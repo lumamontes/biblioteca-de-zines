@@ -6,6 +6,7 @@ interface AdditionalInfoFormProps {
   contactEmail: string;
   onTelegramInterestChange: (value: string) => void;
   onContactEmailChange: (value: string) => void;
+  disabled?: boolean;
 }
 
 const telegramOptions = [
@@ -19,6 +20,7 @@ export default function AdditionalInfoForm({
   contactEmail,
   onTelegramInterestChange,
   onContactEmailChange,
+  disabled = false,
 }: AdditionalInfoFormProps) {
   return (
     <FormSection title="Informações Adicionais">
@@ -37,6 +39,7 @@ export default function AdditionalInfoForm({
                   checked={telegramInterest === option.value}
                   onChange={(e) => onTelegramInterestChange(e.target.value)}
                   className="mr-2"
+                  disabled={disabled}
                 />
                 {option.label}
               </label>
@@ -51,6 +54,7 @@ export default function AdditionalInfoForm({
           onChange={(e) => onContactEmailChange(e.target.value)}
           placeholder="seu@email.com"
           helperText="Caso queiramos entrar em contato sobre sua zine"
+          disabled={disabled}
         />
       </div>
     </FormSection>

@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const STORAGE_KEY = "apply-zine-additional-info";
 
 export function useAdditionalInfoForm() {
-  const [telegramInterest, setTelegramInterest] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
+  const [telegramInterest, setTelegramInterest] = useState<string>("");
+  const [contactEmail, setContactEmail] = useState<string>("");
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -45,11 +45,11 @@ export function useAdditionalInfoForm() {
     return emailRegex.test(email);
   };
 
-  const clearAdditionalInfo = () => {
+  const clearAdditionalInfo = useCallback(() => {
     setTelegramInterest("");
     setContactEmail("");
     localStorage.removeItem(STORAGE_KEY);
-  };
+  }, []);
 
   return {
     telegramInterest,

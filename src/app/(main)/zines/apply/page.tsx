@@ -15,24 +15,32 @@ import { useAdditionalInfoForm } from "@/hooks/use-additional-info-form";
 import { useFormSubmission } from "@/hooks/use-form-submission";
 import { submitZineApplicationWithRedirect } from "./actions";
 import InfoBox from "@/components/ui/info-box";
-import { useEffect } from "react";
+import { useEffect, useCallback, useTransition, Suspense } from "react";
 
-export default function ApplyZine() {
+function ApplyZineForm() {
   const authorForm = useAuthorForm();
   const zineForm = useZineForm();
   const additionalInfoForm = useAdditionalInfoForm();
   const formSubmission = useFormSubmission();
+  const [isPending, startTransition] = useTransition();
 
-  // Clear form data after successful submission
+  const clearAllForms = useCallback(() => {
+    authorForm.clearAuthors();
+    zineForm.clearZines();
+    additionalInfoForm.clearAdditionalInfo();
+  }, [authorForm.clearAuthors, zineForm.clearZines, additionalInfoForm.clearAdditionalInfo]);
+
   useEffect(() => {
     if (formSubmission.submitMessage.includes("sucesso")) {
-      authorForm.clearAuthors();
-      zineForm.clearZines();
-      additionalInfoForm.clearAdditionalInfo();
+      clearAllForms();
     }
-  }, [formSubmission.submitMessage, authorForm, zineForm, additionalInfoForm]);
+  }, [formSubmission.submitMessage, clearAllForms]);
 
   const handleSubmit = async (formData: FormData) => {
+    if (isPending) {
+      return;
+    }
+
     const authorError = authorForm.validateAuthors();
     const zineError = zineForm.validateZines();
     const additionalInfoError = additionalInfoForm.validateAdditionalInfo();
@@ -43,7 +51,6 @@ export default function ApplyZine() {
       return;
     }
 
-    formSubmission.setIsSubmitting(true);
     formSubmission.setSubmitMessage("");
     
     formData.set('authors', JSON.stringify(authorForm.authors));
@@ -51,19 +58,14 @@ export default function ApplyZine() {
     formData.set('telegramInterest', additionalInfoForm.telegramInterest);
     formData.set('contactEmail', additionalInfoForm.contactEmail);
     
-    try {
-      await submitZineApplicationWithRedirect(formData);
-    } catch (error) {
-      formSubmission.setSubmitMessage("Erro ao enviar as zines. Tente novamente.");
-      formSubmission.setIsSubmitting(false);
-    }
+    startTransition(() => {
+      submitZineApplicationWithRedirect(formData);
+    });
   };
 
   const handleClearForm = () => {
     if (confirm("Tem certeza que deseja limpar todos os dados do formulário?")) {
-      authorForm.clearAuthors();
-      zineForm.clearZines();
-      additionalInfoForm.clearAdditionalInfo();
+      clearAllForms();
       formSubmission.setSubmitMessage("");
     }
   };
@@ -76,6 +78,8 @@ export default function ApplyZine() {
                      zineForm.zines.length > 0 || 
                      additionalInfoForm.telegramInterest || 
                      additionalInfoForm.contactEmail;
+
+  const isFormDisabled = isPending || zineForm.zines.length === 0;
 
   return (
     <main className="flex-1 px-4 py-8 md:py-12">
@@ -102,6 +106,7 @@ export default function ApplyZine() {
                   onRemoveSocialLink={authorForm.removeSocialLinkFromAuthor}
                   onUpdateSocialLink={authorForm.updateAuthorSocialLink}
                   onRemoveAuthor={authorForm.removeAuthor}
+                  disabled={isPending}
                 />
               ))}
               
@@ -110,6 +115,7 @@ export default function ApplyZine() {
                 variant="ghost"
                 onClick={authorForm.addAuthor}
                 className="w-full py-3"
+                disabled={isPending}
               >
                 + Adicionar outro autor
               </ActionButton>
@@ -123,6 +129,7 @@ export default function ApplyZine() {
                 type="button"
                 variant="primary"
                 onClick={zineForm.addZine}
+                disabled={isPending}
               >
                 + Adicionar Zine
               </ActionButton>
@@ -151,6 +158,7 @@ export default function ApplyZine() {
                     zineIndex={index}
                     onUpdateZine={zineForm.updateZine}
                     onRemoveZine={zineForm.removeZine}
+                    disabled={isPending}
                   />
                 ))}
                 
@@ -163,16 +171,17 @@ export default function ApplyZine() {
             contactEmail={additionalInfoForm.contactEmail}
             onTelegramInterestChange={additionalInfoForm.setTelegramInterest}
             onContactEmailChange={additionalInfoForm.setContactEmail}
+            disabled={isPending}
           />
 
           <div className="pt-4 space-y-4">
             <div className="flex flex-col md:flex-row gap-4">
               <Button
                 type="submit"
-                disabled={formSubmission.isSubmitting || zineForm.zines.length === 0}
+                disabled={isFormDisabled}
                 className="flex-1 md:flex-none"
               >
-                {formSubmission.isSubmitting ? "Enviando..." : `Enviar ${zineForm.zines.length} Zine${zineForm.zines.length !== 1 ? 's' : ''}`}
+                {isPending ? "Enviando..." : `Enviar ${zineForm.zines.length} Zine${zineForm.zines.length !== 1 ? 's' : ''}`}
               </Button>
               
               {hasFormData && (
@@ -180,7 +189,7 @@ export default function ApplyZine() {
                   type="button"
                   variant="secondary"
                   onClick={handleClearForm}
-                  disabled={formSubmission.isSubmitting}
+                  disabled={isPending}
                 >
                   Limpar Formulário
                 </ActionButton>
@@ -200,5 +209,31 @@ export default function ApplyZine() {
         </footer>
       </div>
     </main>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <main className="flex-1 px-4 py-8 md:py-12">
+      <div className="max-w-2xl mx-auto">
+        <div className="animate-pulse">
+          <div className="h-8 bg-neutral-200 rounded mb-4"></div>
+          <div className="h-4 bg-neutral-200 rounded mb-8"></div>
+          <div className="space-y-4">
+            <div className="h-12 bg-neutral-200 rounded"></div>
+            <div className="h-12 bg-neutral-200 rounded"></div>
+            <div className="h-12 bg-neutral-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export default function ApplyZine() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ApplyZineForm />
+    </Suspense>
   );
 }

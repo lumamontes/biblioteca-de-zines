@@ -11,6 +11,7 @@ interface AuthorFormProps {
   onRemoveSocialLink: (authorIndex: number, linkIndex: number) => void;
   onUpdateSocialLink: (authorIndex: number, linkIndex: number, link: string) => void;
   onRemoveAuthor: (index: number) => void;
+  disabled?: boolean;
 }
 
 export default function AuthorForm({
@@ -22,6 +23,7 @@ export default function AuthorForm({
   onRemoveSocialLink,
   onUpdateSocialLink,
   onRemoveAuthor,
+  disabled = false,
 }: AuthorFormProps) {
   return (
     <div className="border border-neutral-200 p-4 rounded-lg bg-neutral-50">
@@ -35,6 +37,7 @@ export default function AuthorForm({
             variant="danger"
             size="sm"
             onClick={() => onRemoveAuthor(authorIndex)}
+            disabled={disabled}
           >
             Remover Autor
           </ActionButton>
@@ -49,6 +52,7 @@ export default function AuthorForm({
           onChange={(e) => onUpdateName(authorIndex, e.target.value)}
           placeholder="Nome completo do autor"
           required
+          disabled={disabled}
         />
 
         <div>
@@ -64,6 +68,7 @@ export default function AuthorForm({
                   onChange={(e) => onUpdateSocialLink(authorIndex, linkIndex, e.target.value)}
                   placeholder="https://instagram.com/usuario"
                   className="flex-1"
+                  disabled={disabled}
                 />
                 {author.socialLinks.length > 1 && (
                   <ActionButton
@@ -71,6 +76,7 @@ export default function AuthorForm({
                     variant="danger"
                     size="sm"
                     onClick={() => onRemoveSocialLink(authorIndex, linkIndex)}
+                    disabled={disabled}
                   >
                     ×
                   </ActionButton>
@@ -82,6 +88,7 @@ export default function AuthorForm({
               variant="secondary"
               size="sm"
               onClick={() => onAddSocialLink(authorIndex)}
+              disabled={disabled}
             >
               + Adicionar Link Social
             </ActionButton>
