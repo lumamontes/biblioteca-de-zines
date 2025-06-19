@@ -16,7 +16,6 @@ import { useCallback, useTransition, Suspense } from "react";
 import { get } from "@/utils/local-storage";
 import { toast } from "sonner";
 import { pipe } from "composable-functions";
-import { cn } from "@/utils/lib";
 
 const hasFormDataInStorage = (): boolean => {
   const formData = get('apply-zine-form-data', { 
