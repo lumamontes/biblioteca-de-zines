@@ -1,61 +1,51 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { composable } from 'composable-functions';
+import { AdditionalInfo, AdditionalInfoSchema, FORM_STORAGE_KEY, defaultFormData } from "@/schemas/apply-zine";
+import { get, set } from "@/utils/local-storage";
 
-const STORAGE_KEY = "apply-zine-additional-info";
+const validateAdditionalInfo = composable((additionalInfo: AdditionalInfo) => {
+  const result = AdditionalInfoSchema.safeParse(additionalInfo);
+  if (result.success) {
+    return result.data;
+  }
+  throw new Error(result.error.errors[0]?.message || 'Erro de validação');
+});
 
 export function useAdditionalInfoForm() {
-  const [telegramInterest, setTelegramInterest] = useState<string>("");
   const [contactEmail, setContactEmail] = useState<string>("");
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsedData = JSON.parse(saved);
-        if (parsedData.telegramInterest) {
-          setTelegramInterest(parsedData.telegramInterest);
-        }
-        if (parsedData.contactEmail) {
-          setContactEmail(parsedData.contactEmail);
-        }
-      } catch (error) {
-        console.warn("Failed to parse saved additional info data:", error);
-      }
+    const formData = get(FORM_STORAGE_KEY, defaultFormData);
+    if (formData.additionalInfo.contactEmail) {
+      setContactEmail(formData.additionalInfo.contactEmail);
     }
   }, []);
 
-  useEffect(() => {
-    const dataToSave = {
-      telegramInterest,
-      contactEmail,
+  const handleContactEmailChange = (value: string) => {
+    setContactEmail(value);
+    
+    const formData = get(FORM_STORAGE_KEY, defaultFormData);
+    formData.additionalInfo = {
+      contactEmail: value,
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-  }, [telegramInterest, contactEmail]);
-
-  const validateAdditionalInfo = (): string | null => {
-    if (contactEmail && !isValidEmail(contactEmail)) {
-      return "Por favor, insira um email válido.";
-    }
-    return null;
+    set(FORM_STORAGE_KEY, formData);
   };
 
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
 
   const clearAdditionalInfo = useCallback(() => {
-    setTelegramInterest("");
     setContactEmail("");
-    localStorage.removeItem(STORAGE_KEY);
+    const formData = get(FORM_STORAGE_KEY, defaultFormData);
+    formData.additionalInfo = {
+      contactEmail: ''
+    };
+    set(FORM_STORAGE_KEY, formData);
   }, []);
 
   return {
-    telegramInterest,
     contactEmail,
-    setTelegramInterest,
-    setContactEmail,
+    setContactEmail: handleContactEmailChange,
     validateAdditionalInfo,
     clearAdditionalInfo,
   };

@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import Button from "../button";
 import Link from "next/link";
 import { getThumbnailUrl } from "@/utils/assets";
-import { Tables } from "../../../database.types";
+import { Tables } from "@/types/database.types";
 import {
   publishZine,
   unpublishZine,

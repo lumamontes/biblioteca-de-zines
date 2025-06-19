@@ -1,4 +1,4 @@
-import { Author } from "@/types/apply-zine";
+import { Author } from "@/schemas/apply-zine";
 import ActionButton from "@/components/ui/action-button";
 import Input from "@/components/ui/input";
 
@@ -60,29 +60,42 @@ export default function AuthorForm({
             Redes sociais (opcional)
           </label>
           <div className="space-y-2">
-            {author.socialLinks.map((link, linkIndex) => (
-              <div key={linkIndex} className="flex gap-2">
+            {author.socialLinks.length === 0 ? (
+              <div className="flex gap-2">
                 <Input
                   type="url"
-                  value={link}
-                  onChange={(e) => onUpdateSocialLink(authorIndex, linkIndex, e.target.value)}
+                  value=""
+                  onChange={(e) => onUpdateSocialLink(authorIndex, 0, e.target.value)}
                   placeholder="https://instagram.com/usuario"
                   className="flex-1"
                   disabled={disabled}
                 />
-                {author.socialLinks.length > 1 && (
-                  <ActionButton
-                    type="button"
-                    variant="danger"
-                    size="sm"
-                    onClick={() => onRemoveSocialLink(authorIndex, linkIndex)}
-                    disabled={disabled}
-                  >
-                    ×
-                  </ActionButton>
-                )}
               </div>
-            ))}
+            ) : (
+              author.socialLinks.map((link, linkIndex) => (
+                <div key={linkIndex} className="flex gap-2">
+                  <Input
+                    type="url"
+                    value={link}
+                    onChange={(e) => onUpdateSocialLink(authorIndex, linkIndex, e.target.value)}
+                    placeholder="https://instagram.com/usuario"
+                    className="flex-1"
+                    disabled={disabled}
+                  />
+                  {author.socialLinks.length > 1 && (
+                    <ActionButton
+                      type="button"
+                      variant="danger"
+                      size="sm"
+                      onClick={() => onRemoveSocialLink(authorIndex, linkIndex)}
+                      disabled={disabled}
+                    >
+                      ×
+                    </ActionButton>
+                  )}
+                </div>
+              ))
+            )}
             <ActionButton
               type="button"
               variant="secondary"

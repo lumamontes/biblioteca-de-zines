@@ -1,4 +1,4 @@
-import { Zine } from "@/types/apply-zine";
+import { Zine } from "@/schemas/apply-zine";
 import ActionButton from "@/components/ui/action-button";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
@@ -49,18 +49,19 @@ export default function ZineForm({
         <Input
           label="Título da Coleção (opcional)"
           type="text"
-          value={zine.collectionTitle}
+          value={zine.collectionTitle || ''}
           onChange={(e) => onUpdateZine(zine.id, 'collectionTitle', e.target.value)}
           placeholder="Se faz parte de uma série"
           disabled={disabled}
         />
 
         <Input
-          label="Ano de Publicação (opcional)"
+          label="Ano de Publicação *"
           type="text"
-          value={zine.publicationYear}
-          onChange={(e) => onUpdateZine(zine.id, 'publicationYear', e.target.value)}
+          value={zine.year}
+          onChange={(e) => onUpdateZine(zine.id, 'year', e.target.value)}
           placeholder="2024"
+          required
           disabled={disabled}
         />
 
@@ -78,7 +79,7 @@ export default function ZineForm({
           <Input
             label="Imagem da Capa (opcional)"
             type="url"
-            value={zine.coverImageUrl}
+            value={zine.coverImageUrl || ''}
             onChange={(e) => onUpdateZine(zine.id, 'coverImageUrl', e.target.value)}
             placeholder="https://exemplo.com/capa.jpg"
             disabled={disabled}
@@ -88,7 +89,7 @@ export default function ZineForm({
         <div className="md:col-span-2">
           <Textarea
             label="Descrição (opcional)"
-            value={zine.description}
+            value={zine.description || ''}
             onChange={(e) => onUpdateZine(zine.id, 'description', e.target.value)}
             rows={3}
             placeholder="Conte um pouco sobre sua zine..."
