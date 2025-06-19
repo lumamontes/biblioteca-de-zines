@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback } from "react";
+import { ZineSuggestion } from "./ui/links";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -30,14 +31,7 @@ export default function Header() {
             </Link>
           </li>
           <li>
-            <Link
-              href="https://forms.gle/ydedperb4c2WbiRW9"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-base underline transition duration-300"
-            >
-              Sugerir Zine
-            </Link>
+            <ZineSuggestion />
           </li>
         </ul>
       </nav>

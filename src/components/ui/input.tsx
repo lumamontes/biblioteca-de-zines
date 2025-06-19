@@ -1,5 +1,6 @@
 import { cn } from "@/utils/lib";
 import { forwardRef } from "react";
+import { Label } from "./label";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -12,9 +13,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <label className="block text-sm font-medium text-neutral-700">
+          <Label>
             {label}
-          </label>
+          </Label>
         )}
         <input
           className={cn(
