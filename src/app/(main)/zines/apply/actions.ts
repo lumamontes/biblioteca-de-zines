@@ -19,22 +19,18 @@ const parseFormData = composable(async (formData: globalThis.FormData) => {
     throw new Error('Dados do formulário não encontrados');
   }
 
-  try {
-    const authors = JSON.parse(authorsJson);
-    const zines = JSON.parse(zinesJson);
-    
-    const parsedData: ZineFormData = {
-      authors,
-      zines,
-      additionalInfo: {
-        contactEmail: contactEmail || ''
-      }
-    };
+  const authors = JSON.parse(authorsJson);
+  const zines = JSON.parse(zinesJson);
+  
+  const parsedData: ZineFormData = {
+    authors,
+    zines,
+    additionalInfo: {
+      contactEmail: contactEmail || ''
+    }
+  };
 
-    return parsedData;
-  } catch {
-    throw new Error('Erro ao processar dados do formulário');
-  }
+  return parsedData;
 });
 
 const validateFormData = composable((formData: ZineFormData) => {

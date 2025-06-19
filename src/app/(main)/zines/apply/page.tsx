@@ -6,7 +6,6 @@ import AuthorForm from "@/components/apply-zine/author-form";
 import ZineForm from "@/components/apply-zine/zine-form";
 import AdditionalInfoForm from "@/components/apply-zine/additional-info-form";
 import FormSection from "@/components/ui/form-section";
-import EmptyState from "@/components/ui/empty-state";
 import ActionButton from "@/components/ui/action-button";
 import { useAuthorForm } from "@/hooks/use-author-form";
 import { useZineForm } from "@/hooks/use-zine-form";
@@ -17,6 +16,7 @@ import { useCallback, useTransition, Suspense } from "react";
 import { get } from "@/utils/local-storage";
 import { toast } from "sonner";
 import { pipe } from "composable-functions";
+import { cn } from "@/utils/lib";
 
 const hasFormDataInStorage = (): boolean => {
   const formData = get('apply-zine-form-data', { 
@@ -136,13 +136,23 @@ function ApplyZineForm() {
             }
           >
             {zineForm.zines.length === 0 ? (
-              <EmptyState
-                icon="📚"
-                title="Nenhum zine adicionado ainda"
-                description="Comece adicionando seu primeiro zine para enviar sua aplicação."
-                actionLabel="Adicionar Zine"
-                onAction={zineForm.addZine}
-              />
+              <div className="text-center py-12 px-4">
+                <div className="text-6xl mb-4">
+                  📚
+                </div>
+                <h3 className="text-lg font-medium text-neutral-900 mb-2">
+                  Nenhum zine adicionado ainda
+                </h3>
+                <p className="text-neutral-600 mb-6 max-w-md mx-auto">
+                  Comece adicionando seu primeiro zine para enviar sua aplicação.
+                </p>
+                <ActionButton
+                  variant="primary"
+                  onClick={zineForm.addZine}
+                >
+                  Adicionar Zine
+                </ActionButton>
+              </div>
             ) : (
               <div className="space-y-6">
                 <InfoBox className="mt-4">

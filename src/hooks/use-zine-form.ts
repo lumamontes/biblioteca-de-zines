@@ -52,9 +52,9 @@ export function useZineForm() {
     saveToStorage(newZines);
   };
 
-  const updateZine = (id: string, field: keyof Omit<Zine, 'id'>, value: string) => {
+  const updateZine = (id: string, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
     const newZines = zines.map(zine => 
-      zine.id === id ? { ...zine, [field]: value } : zine
+      zine.id === id ? { ...zine, [e.target.dataset.title as keyof Zine]: e.target.value } : zine
     );
     setZines(newZines);
     saveToStorage(newZines);

@@ -6,7 +6,7 @@ import Textarea from "@/components/ui/textarea";
 interface ZineFormProps {
   zine: Zine;
   zineIndex: number;
-  onUpdateZine: (id: string, field: keyof Omit<Zine, 'id'>, value: string) => void;
+  onUpdateZine: (id: string, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
   onRemoveZine: (id: string) => void;
   disabled?: boolean;
 }
@@ -39,8 +39,9 @@ export default function ZineForm({
         <Input
           label="Título da Zine *"
           type="text"
+          data-title="title"
           value={zine.title}
-          onChange={(e) => onUpdateZine(zine.id, 'title', e.target.value)}
+          onChange={(e) => onUpdateZine(zine.id, e)}
           placeholder="Nome da sua zine"
           required
           disabled={disabled}
@@ -50,7 +51,8 @@ export default function ZineForm({
           label="Título da Coleção (opcional)"
           type="text"
           value={zine.collectionTitle || ''}
-          onChange={(e) => onUpdateZine(zine.id, 'collectionTitle', e.target.value)}
+          data-title="collectionTitle"
+          onChange={(e) => onUpdateZine(zine.id, e)}
           placeholder="Se faz parte de uma série"
           disabled={disabled}
         />
@@ -59,7 +61,8 @@ export default function ZineForm({
           label="Ano de Publicação *"
           type="text"
           value={zine.year}
-          onChange={(e) => onUpdateZine(zine.id, 'year', e.target.value)}
+          data-title="year"
+          onChange={(e) => onUpdateZine(zine.id, e)}
           placeholder="2024"
           required
           disabled={disabled}
@@ -69,7 +72,8 @@ export default function ZineForm({
           label="Link do PDF *"
           type="url"
           value={zine.pdfUrl}
-          onChange={(e) => onUpdateZine(zine.id, 'pdfUrl', e.target.value)}
+          data-title="pdfUrl"
+          onChange={(e) => onUpdateZine(zine.id, e)}
           placeholder="https://drive.google.com/..."
           required
           disabled={disabled}
@@ -79,8 +83,9 @@ export default function ZineForm({
           <Input
             label="Imagem da Capa (opcional)"
             type="url"
+            data-title="coverImageUrl"
             value={zine.coverImageUrl || ''}
-            onChange={(e) => onUpdateZine(zine.id, 'coverImageUrl', e.target.value)}
+            onChange={(e) => onUpdateZine(zine.id, e)}
             placeholder="https://exemplo.com/capa.jpg"
             disabled={disabled}
           />
@@ -89,8 +94,9 @@ export default function ZineForm({
         <div className="md:col-span-2">
           <Textarea
             label="Descrição (opcional)"
+            data-title="description"
             value={zine.description || ''}
-            onChange={(e) => onUpdateZine(zine.id, 'description', e.target.value)}
+            onChange={(e) => onUpdateZine(zine.id, e)}
             rows={3}
             placeholder="Conte um pouco sobre sua zine..."
             disabled={disabled}
