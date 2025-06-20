@@ -101,17 +101,19 @@ export const submitZine = composable(async (formData: FormData) => {
       throw new Error(result.errors[0]?.message || 'Erro desconhecido');
     }
 
+    const { authorNames, zineCount, zineTitles, contactEmail, submissionBatchId} = result.data
+
     await sendTelegramNotification({
-      authorNames: result.data.authorNames,
-      zineCount: result.data.zineCount,
-      zineTitles: result.data.zineTitles,
-      contactEmail: result.data.contactEmail || undefined,
-      submissionId: result.data.submissionBatchId,
+      authorNames: authorNames,
+      zineCount: zineCount,
+      zineTitles: zineTitles,
+      contactEmail: contactEmail || undefined,
+      submissionId: submissionBatchId,
     });
-    
+
     return { 
       success: true, 
-      message: `${result.data.zineCount} zine${result.data.zineCount !== 1 ? 's' : ''} enviada${result.data.zineCount !== 1 ? 's' : ''} com sucesso!!!`,
-      data: result.data.results 
+      message: `${zineCount} zine${zineCount !== 1 ? 's' : ''} enviada${zineCount !== 1 ? 's' : ''} com sucesso!!!`,
+      data: results 
     };
 }); 
