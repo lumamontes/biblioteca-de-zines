@@ -101,7 +101,7 @@ export const submitZine = composable(async (formData: FormData) => {
       throw new Error(result.errors[0]?.message || 'Erro desconhecido');
     }
 
-    const { authorNames, zineCount, zineTitles, contactEmail, submissionBatchId} = result.data
+    const { authorNames, zineCount, zineTitles, contactEmail, submissionBatchId, results} = result.data
 
     await sendTelegramNotification({
       authorNames: authorNames,
@@ -114,6 +114,6 @@ export const submitZine = composable(async (formData: FormData) => {
     return { 
       success: true, 
       message: `${zineCount} zine${zineCount !== 1 ? 's' : ''} enviada${zineCount !== 1 ? 's' : ''} com sucesso!!!`,
-      data: results 
+      data: results
     };
 }); 
