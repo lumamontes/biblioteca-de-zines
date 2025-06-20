@@ -2,6 +2,7 @@ import NavSocialLinks from "@/components/nav-social-links";
 import Image from "next/image";
 import Link from "next/link";
 import { siteExternalLinks } from "./config/site";
+import SuggestZineLink from "@/components/suggest-zine-link";
 
 export default async function HomePage() {
   return (
@@ -32,13 +33,14 @@ export default async function HomePage() {
           >
             Newsletter
           </Link>
-          <Link
+          {/* <Link
             href={siteExternalLinks.SUBMISSIONS_FORM}
             target="_blank"
             className="text-base underline transition duration-300 flex items-center justify-center"
           >
             Sugerir Zine
-          </Link>
+          </Link> */}
+          <SuggestZineLink />
         </div>
       </div>
       <div className="h-48 w-full  mt-10 md:mt-0 md:w-1/2 flex items-center justify-center">

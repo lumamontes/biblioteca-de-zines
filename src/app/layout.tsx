@@ -4,6 +4,7 @@ import { Azeret_Mono } from "next/font/google";
 import "./globals.css";
 import { PropsWithChildren } from "react";
 import { siteConfig } from "./config/site";
+import { Toaster } from "sonner";
 
 const azeret = Azeret_Mono({ subsets: ["latin"] });
 
@@ -43,6 +44,12 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html lang="en">
       <body className={azeret.className}>
         <div>{children}</div>
+        <Toaster 
+          richColors 
+          position="top-right" 
+          duration={Infinity}
+          closeButton
+        />
       </body>
     </html>
   );

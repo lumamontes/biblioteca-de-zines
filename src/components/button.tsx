@@ -7,14 +7,18 @@ interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ asChild, className, ...props }, ref) => {
+  ({ asChild, className, disabled, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
 
     return (
       <Comp
         ref={ref}
+        disabled={disabled}
         className={cn(
-          "text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center",
+          "text-base px-6 py-3 border border-black transition duration-300 flex items-center justify-center",
+          disabled 
+            ? "bg-neutral-200 text-neutral-500 border-neutral-300 cursor-not-allowed" 
+            : "hover:bg-neutral-100",
           className
         )}
         {...props}

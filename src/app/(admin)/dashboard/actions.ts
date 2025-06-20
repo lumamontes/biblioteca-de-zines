@@ -3,9 +3,8 @@ import { revalidatePath } from "next/cache";
 import { generateSlug } from "@/utils/slug";
 import { createClient } from "@/utils/supabase/server";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { Tables } from "../../../../database.types";
+import { Tables } from "@/types/database.types";
 
-/** 📌 Unpublish a Zine */
 export async function unpublishZine(zineId: number) {
   const supabase = await createClient();
   const { error } = await supabase

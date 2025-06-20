@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Tables } from "../../../database.types";
+import { Tables } from "@/types/database.types";
 import { siteExternalLinks } from "@/app/config/site";
 
 export const WelcomeInstructions = ({
