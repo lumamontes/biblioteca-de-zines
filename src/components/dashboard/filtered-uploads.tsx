@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { UploadPreview } from "./upload-preview";
 import Button from "../button";
-import { Tables } from "../../../database.types";
+import { Tables } from "@/types/database.types";
 import { Zine } from "@/@types/zine";
 
 export const FilteredUploads = ({

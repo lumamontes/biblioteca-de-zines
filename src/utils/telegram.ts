@@ -10,7 +10,6 @@ interface ZineSubmissionData {
   zineCount: number;
   zineTitles: string[];
   contactEmail?: string;
-  telegramInterest: string;
   submissionId: string;
 }
 

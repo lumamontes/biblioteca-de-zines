@@ -1,5 +1,5 @@
 import { PostgrestResponse } from "@supabase/supabase-js";
-import { Tables } from "../../database.types";
+import { Tables } from "@/types/database.types";
 import { createClient } from "@/utils/supabase/server";
 
 export const getFormUploads = async (): Promise<Tables<"form_uploads">[]> => {
