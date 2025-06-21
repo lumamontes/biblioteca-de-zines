@@ -15,6 +15,7 @@ export default function AdditionalInfoForm({ disabled = false }: { disabled?: bo
     <FormSection title="Informações Adicionais">
       <div className="space-y-4">
         <Input
+          id="contact-email"
           label="Email para Contato (opcional)"
           type="email"
           {...register("additionalInfo.contactEmail")}
