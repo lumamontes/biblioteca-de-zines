@@ -46,6 +46,7 @@ export default function AuthorForm({
 
       <div className="space-y-4">
         <Input
+          id={`author-${authorIndex}-name`}
           label="Nome do Autor *"
           type="text"
           value={author.name}
@@ -56,13 +57,14 @@ export default function AuthorForm({
         />
 
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-neutral-700 mb-1">
             Redes sociais (opcional)
           </label>
           <div className="space-y-2">
             {author.socialLinks.length === 0 ? (
               <div className="flex gap-2">
                 <Input
+                  id={`author-${authorIndex}-social-0`}
                   type="url"
                   value=""
                   onChange={(e) => onUpdateSocialLink(authorIndex, 0, e.target.value)}
@@ -75,6 +77,7 @@ export default function AuthorForm({
               author.socialLinks.map((link, linkIndex) => (
                 <div key={linkIndex} className="flex gap-2">
                   <Input
+                    id={`author-${authorIndex}-social-${linkIndex}`}
                     type="url"
                     value={link}
                     onChange={(e) => onUpdateSocialLink(authorIndex, linkIndex, e.target.value)}

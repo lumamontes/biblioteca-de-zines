@@ -37,6 +37,7 @@ export default function ZineForm({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
+          id={`zine-${zine.id}-title`}
           label="Título da Zine *"
           type="text"
           data-title="title"
@@ -48,6 +49,7 @@ export default function ZineForm({
         />
 
         <Input
+          id={`zine-${zine.id}-collection-title`}
           label="Título da Coleção (opcional)"
           type="text"
           value={zine.collectionTitle || ''}
@@ -58,6 +60,7 @@ export default function ZineForm({
         />
 
         <Input
+          id={`zine-${zine.id}-year`}
           label="Ano de Publicação *"
           type="text"
           value={zine.year}
@@ -69,6 +72,7 @@ export default function ZineForm({
         />
 
         <Input
+          id={`zine-${zine.id}-pdf-url`}
           label="Link do PDF *"
           type="url"
           value={zine.pdfUrl}
@@ -81,6 +85,7 @@ export default function ZineForm({
 
         <div className="md:col-span-2">
           <Input
+            id={`zine-${zine.id}-cover-image`}
             label="Imagem da Capa (opcional)"
             type="url"
             data-title="coverImageUrl"
@@ -93,6 +98,7 @@ export default function ZineForm({
 
         <div className="md:col-span-2">
           <Textarea
+            id={`zine-${zine.id}-description`}
             label="Descrição (opcional)"
             data-title="description"
             value={zine.description || ''}
