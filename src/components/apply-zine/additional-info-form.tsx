@@ -16,6 +16,7 @@ export default function AdditionalInfoForm({
     <FormSection title="Informações Adicionais">
       <div className="space-y-4">
         <Input
+          id="contact-email"
           label="Email para Contato (opcional)"
           type="email"
           value={contactEmail}
