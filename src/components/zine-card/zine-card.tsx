@@ -7,8 +7,10 @@ type ZineCardProps = {
   zine: Zine;
 };
 
+const DEFAULT_THUMBNAIL = "https://fdev.guioza.com/zines/zine-default-cover.jpg";
+
 const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
-  const thumbnailUrl = zine.cover_image ? getThumbnailUrl(zine.cover_image) : "";
+  const thumbnailUrl = zine.cover_image ? getThumbnailUrl(zine.cover_image) : null;
   return (
     <div
       className="flex flex-col justify-between bg-white rounded-lg overflow-hidden shadow-sm h-full"
@@ -16,7 +18,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
       <div className="flex flex-col items-center p-4flex-grow">
         <div className="relative w-full h-56 flex items-center justify-center">
           <img
-            src={thumbnailUrl}
+            src={thumbnailUrl ?? DEFAULT_THUMBNAIL}
             alt={zine.title}
             className="rounded-md object-contain w-full h-full"
             loading="lazy"

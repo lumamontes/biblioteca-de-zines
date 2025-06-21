@@ -33,13 +33,6 @@ export default async function HomePage() {
           >
             Newsletter
           </Link>
-          {/* <Link
-            href={siteExternalLinks.SUBMISSIONS_FORM}
-            target="_blank"
-            className="text-base underline transition duration-300 flex items-center justify-center"
-          >
-            Sugerir Zine
-          </Link> */}
           <SuggestZineLink />
         </div>
       </div>

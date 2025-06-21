@@ -1,17 +1,16 @@
+"use client";
+import { useFormContext } from "react-hook-form";
 import FormSection from "@/components/ui/form-section";
 import Input from "@/components/ui/input";
+import { z } from "zod";
+import { FormDataZineSchema } from "@/schemas/apply-zine";
 
-interface AdditionalInfoFormProps {
-  contactEmail: string;
-  onContactEmailChange: (value: string) => void;
-  disabled?: boolean;
-}
+export default function AdditionalInfoForm({ disabled = false }: { disabled?: boolean }) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<z.infer<typeof FormDataZineSchema>>();
 
-export default function AdditionalInfoForm({
-  contactEmail,
-  onContactEmailChange,
-  disabled = false,
-}: AdditionalInfoFormProps) {
   return (
     <FormSection title="Informações Adicionais">
       <div className="space-y-4">
@@ -19,13 +18,18 @@ export default function AdditionalInfoForm({
           id="contact-email"
           label="Email para Contato (opcional)"
           type="email"
-          value={contactEmail}
-          onChange={(e) => onContactEmailChange(e.target.value)}
+          {...register("additionalInfo.contactEmail")}
           placeholder="seu@email.com"
           helperText="Caso queiramos entrar em contato sobre sua zine"
           disabled={disabled}
         />
+        {errors.additionalInfo?.contactEmail && (
+          <p className="text-red-600 text-sm">
+            {errors.additionalInfo.contactEmail.message}
+          </p>
+        )}
       </div>
     </FormSection>
   );
-} 
+}
+
