@@ -1,108 +1,98 @@
-import { Zine } from "@/schemas/apply-zine";
-import ActionButton from "@/components/ui/action-button";
-import Input from "@/components/ui/input";
-import Textarea from "@/components/ui/textarea";
 
-interface ZineFormProps {
-  zine: Zine;
-  zineIndex: number;
-  onUpdateZine: (id: string, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onRemoveZine: (id: string) => void;
-  disabled?: boolean;
+import { Controller, useFormContext } from "react-hook-form"
+import Input from "../ui/input"
+import ActionButton from "../ui/action-button"
+import Textarea from "../ui/textarea"
+import { InputFile } from "../ui/input-file"
+import { Label } from "../ui/label"
+
+
+type ZineFormProps = {
+  index: number
+  onRemove: () => void
+  disabled?: boolean
 }
 
-export default function ZineForm({
-  zine,
-  zineIndex,
-  onUpdateZine,
-  onRemoveZine,
-  disabled = false,
-}: ZineFormProps) {
+export function ZineForm({ index, onRemove, disabled }: ZineFormProps) {
+  const { register, control } = useFormContext()
   return (
     <div className="border border-neutral-200 p-4 rounded-lg bg-neutral-50">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">
-          Zine {zineIndex + 1}
-        </h3>
-        <ActionButton
-          type="button"
-          variant="danger"
-          size="sm"
-          onClick={() => onRemoveZine(zine.id)}
-          disabled={disabled}
-        >
-          Remover Zine
-        </ActionButton>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="Título da Zine *"
-          type="text"
-          data-title="title"
-          value={zine.title}
-          onChange={(e) => onUpdateZine(zine.id, e)}
           placeholder="Nome da sua zine"
-          required
+          {...register(`zines.${index}.title`)}
           disabled={disabled}
         />
 
         <Input
           label="Título da Coleção (opcional)"
-          type="text"
-          value={zine.collectionTitle || ''}
-          data-title="collectionTitle"
-          onChange={(e) => onUpdateZine(zine.id, e)}
           placeholder="Se faz parte de uma série"
+          {...register(`zines.${index}.collectionTitle`)}
           disabled={disabled}
         />
 
         <Input
           label="Ano de Publicação *"
-          type="text"
-          value={zine.year}
-          data-title="year"
-          onChange={(e) => onUpdateZine(zine.id, e)}
           placeholder="2024"
-          required
+          {...register(`zines.${index}.year`)}
           disabled={disabled}
         />
-
-        <Input
-          label="Link do PDF *"
-          type="url"
-          value={zine.pdfUrl}
-          data-title="pdfUrl"
-          onChange={(e) => onUpdateZine(zine.id, e)}
-          placeholder="https://drive.google.com/..."
-          required
-          disabled={disabled}
-        />
-
+        <div></div>
         <div className="md:col-span-2">
-          <Input
-            label="Imagem da Capa (opcional)"
-            type="url"
-            data-title="coverImageUrl"
-            value={zine.coverImageUrl || ''}
-            onChange={(e) => onUpdateZine(zine.id, e)}
-            placeholder="https://exemplo.com/capa.jpg"
-            disabled={disabled}
+          <Label> PDF da Zine</Label>
+          <Controller
+            control={control}
+            name={`zines.${index}.pdfFile` as const}
+            render={({ field }) => (
+              <InputFile
+                onFileAccepted={field.onChange}
+                onFileRejected={console.error}
+                config={{
+                  accept: "application/pdf",
+                  helperText: "Envie seu arquivo PDF (até 30MB)",
+                  maxSize: 30 * 1024 * 1024,
+                  disabled,
+                }}
+              />
+            )}
+          />
+        </div>
+        <div className="md:col-span-2">
+          <Label> Imagem da Capa (opcional)</Label>
+          <Controller
+            control={control}
+            name={`zines.${index}.coverImageFile` as const}
+            render={({ field }) => (
+              <InputFile
+                onFileAccepted={field.onChange}
+                onFileRejected={console.error}
+                config={{
+                  accept: "image/*",
+                  helperText: "Envie a imagem da capa (até 30MB)",
+                  maxSize: 30 * 1024 * 1024,
+                  disabled,
+                }}
+              />
+            )}
           />
         </div>
 
         <div className="md:col-span-2">
           <Textarea
             label="Descrição (opcional)"
-            data-title="description"
-            value={zine.description || ''}
-            onChange={(e) => onUpdateZine(zine.id, e)}
-            rows={3}
             placeholder="Conte um pouco sobre sua zine..."
+            rows={3}
+            {...register(`zines.${index}.description`)}
             disabled={disabled}
           />
         </div>
       </div>
+
+      <ActionButton type="button" variant="danger" size="sm" onClick={onRemove} disabled={disabled}>
+        Remover Zine
+      </ActionButton>
     </div>
-  );
-} 
+  )
+}
+

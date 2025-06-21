@@ -1,51 +1,39 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const AuthorSchema = z.object({
-  name: z.string().min(1, 'Nome do autor é obrigatório'),
-  socialLinks: z.array(z.string().url('Link deve ser uma URL válida')).optional().default([])
+  name: z.string().min(1, "Ei! Me diga seu nome 💜"),
+  socialLinks: z.array(z.string().url("Link inválido")).optional().default([]),
 });
 
 export const ZineSchema = z.object({
   id: z.string(),
-  title: z.string().min(1, 'Título é obrigatório'),
-  collectionTitle: z.string().optional().default(''),
-  year: z.string().min(4, 'Ano deve ter pelo menos 4 dígitos').max(4, 'Ano deve ter no máximo 4 dígitos'),
-  pdfUrl: z.string().url('PDF deve ser uma URL válida'),
-  description: z.string().optional().default(''),
-  coverImageUrl: z.string().optional().default('').refine(
-    (val) => val === '' || z.string().url().safeParse(val).success,
-    'Imagem da capa deve ser uma URL válida ou estar vazia'
-  )
+  title: z.string().min(1, "Me conta o título do seu livrinho 💫"),
+  collectionTitle: z.string().optional().default(""),
+  year: z
+    .string()
+    .min(4, "Ano com 4 dígitos, por favor")
+    .max(4, "Ano com 4 dígitos, por favor"),
+  description: z.string().optional().default(""),
+  pdfFile: z
+    .custom<File>((v) => v instanceof File, "Envie o arquivo PDF da zine")
+    .optional(),
+  coverImageFile: z
+    .custom<File>((v) => v instanceof File, "Envie a capa em imagem")
+    .optional(),
 });
 
 export const AdditionalInfoSchema = z.object({
-  contactEmail: z.string().optional().default('').refine(
-    (val) => val === '' || z.string().email().safeParse(val).success,
-    'Email deve ser válido ou estar vazio'
-  )
+  contactEmail: z.string().email("Email inválido").or(z.literal("")),
+});
+export const FormDataZineSchema = z.object({
+  authors: z
+    .array(AuthorSchema)
+    .min(1, "Ei! Me diga quem escreveu essa maravilha 💜"),
+  zines: z
+    .array(ZineSchema)
+    .min(1, "Cadê seu livrinho em PDF? Adicione ao menos uma zine pra gente seguir 💫"),
+  additionalInfo: AdditionalInfoSchema,
 });
 
-export const FormDataSchema = z.object({
-  authors: z.array(AuthorSchema).min(1, 'Pelo menos um autor é obrigatório'),
-  zines: z.array(ZineSchema).min(1, 'Pelo menos uma zine é obrigatória'),
-  additionalInfo: AdditionalInfoSchema
-});
-
+export type FormZineData = z.infer<typeof FormDataZineSchema>;
 export type Author = z.infer<typeof AuthorSchema>;
-export type Zine = z.infer<typeof ZineSchema>;
-export type AdditionalInfo = z.infer<typeof AdditionalInfoSchema>;
-export type FormData = z.infer<typeof FormDataSchema>; 
-
-export const FORM_STORAGE_KEY = '@biblioteca-zines/apply-zine-form-data';
-
-interface FormDataStorage {
-  authors: Author[];
-  zines: Zine[];
-  additionalInfo: Partial<AdditionalInfo>;
-}
-
-export const defaultFormData: FormDataStorage = {
-  authors: [{ name: "", socialLinks: [] }],
-  zines: [],
-  additionalInfo: {}
-};

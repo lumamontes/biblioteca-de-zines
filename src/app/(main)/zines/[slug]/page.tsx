@@ -10,6 +10,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  if (!slug) {
+    return {
+      title: "Zine não encontrada!",
+      description: "A zine que você está procurando não foi encontrada.",
+    }
+  }
   const preview = await getZineBySlug(slug);
 
   if (!preview) {
@@ -59,7 +65,7 @@ export default async function ZinePreview({
 
   if (!preview) {
     return (
-      <h3 
+      <h3
         className="text-base px-6 py-3 border border-black hover:bg-neutral-100 transition duration-300 flex items-center justify-center">
         Zine não encontrada!
       </h3>
@@ -74,7 +80,7 @@ export default async function ZinePreview({
         <strong>{preview.title}</strong> por {joinAuthors(preview.library_zines_authors)}
       </p>
       <div className="flex gap-2 flex-wrap justify-center max-w-2xl mx-auto">
-      {preview.library_zines_authors.length > 0 && preview.library_zines_authors.map(({authors}) => (
+        {preview.library_zines_authors.length > 0 && preview.library_zines_authors.map(({ authors }) => (
           <Link
             key={authors.id}
             href={authors.url || "#"}
