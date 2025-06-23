@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "**",
       },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '30mb'
+    }
   }
 };
 

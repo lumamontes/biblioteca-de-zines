@@ -1,114 +1,162 @@
-import { Zine } from "@/schemas/apply-zine";
-import ActionButton from "@/components/ui/action-button";
-import Input from "@/components/ui/input";
-import Textarea from "@/components/ui/textarea";
+import { Controller, useFormContext } from "react-hook-form"
+import Input from "../ui/input"
+import ActionButton from "../ui/action-button"
+import Textarea from "../ui/textarea"
+import { InputFile } from "../ui/input-file"
+import { Label } from "../ui/label"
+import InputError from "../ui/input-error"
 
-interface ZineFormProps {
-  zine: Zine;
-  zineIndex: number;
-  onUpdateZine: (id: string, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onRemoveZine: (id: string) => void;
-  disabled?: boolean;
+type ZineFormProps = {
+  index: number
+  onRemove: () => void
+  disabled?: boolean
 }
 
-export default function ZineForm({
-  zine,
-  zineIndex,
-  onUpdateZine,
-  onRemoveZine,
-  disabled = false,
-}: ZineFormProps) {
+export function ZineForm({ index, onRemove, disabled }: ZineFormProps) {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext()
+  // @ts-expect-error
+  const zineErrors = (errors.zines?.[index] ?? {}) as any
+
   return (
     <div className="border border-neutral-200 p-4 rounded-lg bg-neutral-50">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">
-          Zine {zineIndex + 1}
-        </h3>
-        <ActionButton
-          type="button"
-          variant="danger"
-          size="sm"
-          onClick={() => onRemoveZine(zine.id)}
-          disabled={disabled}
-        >
-          Remover Zine
-        </ActionButton>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input
-          id={`zine-${zine.id}-title`}
-          label="Título da Zine *"
-          type="text"
-          data-title="title"
-          value={zine.title}
-          onChange={(e) => onUpdateZine(zine.id, e)}
-          placeholder="Nome da sua zine"
-          required
-          disabled={disabled}
-        />
-
-        <Input
-          id={`zine-${zine.id}-collection-title`}
-          label="Título da Coleção (opcional)"
-          type="text"
-          value={zine.collectionTitle || ''}
-          data-title="collectionTitle"
-          onChange={(e) => onUpdateZine(zine.id, e)}
-          placeholder="Se faz parte de uma série"
-          disabled={disabled}
-        />
-
-        <Input
-          id={`zine-${zine.id}-year`}
-          label="Ano de Publicação *"
-          type="text"
-          value={zine.year}
-          data-title="year"
-          onChange={(e) => onUpdateZine(zine.id, e)}
-          placeholder="2024"
-          required
-          disabled={disabled}
-        />
-
-        <Input
-          id={`zine-${zine.id}-pdf-url`}
-          label="Link do PDF *"
-          type="url"
-          value={zine.pdfUrl}
-          data-title="pdfUrl"
-          onChange={(e) => onUpdateZine(zine.id, e)}
-          placeholder="https://drive.google.com/..."
-          required
-          disabled={disabled}
-        />
-
         <div className="md:col-span-2">
           <Input
-            id={`zine-${zine.id}-cover-image`}
-            label="Imagem da Capa (opcional)"
-            type="url"
-            data-title="coverImageUrl"
-            value={zine.coverImageUrl || ''}
-            onChange={(e) => onUpdateZine(zine.id, e)}
-            placeholder="https://exemplo.com/capa.jpg"
+            label="Título da Zine *"
+            placeholder="Nome da sua zine"
+            {...register(`zines.${index}.title`)}
             disabled={disabled}
           />
+          <InputError message={zineErrors?.title?.message} />
+        </div>
+
+        <div>
+          <Input
+            label="Título da Coleção (opcional)"
+            placeholder="Se faz parte de uma série"
+            {...register(`zines.${index}.collectionTitle`)}
+            disabled={disabled}
+          />
+          <InputError message={zineErrors?.collectionTitle?.message} />
+        </div>
+
+        <div>
+          <Input
+            label="Ano de Publicação *"
+            placeholder="2024"
+            {...register(`zines.${index}.year`)}
+            disabled={disabled}
+          />
+          <InputError message={zineErrors?.year?.message} />
+        </div>
+
+        <div className="md:col-span-2">
+          <Label>PDF da Zine</Label>
+          <div className="border border-dashed border-neutral-300 rounded-md p-4 space-y-4 bg-white">
+            <Controller
+              control={control}
+              name={`zines.${index}.pdfFile` as const}
+              defaultValue={null}
+              render={({ field }) => (
+                <InputFile
+                  onFileAccepted={field.onChange}
+                  onFileRejected={console.error}
+                  config={{
+                    accept: "application/pdf",
+                    helperText: "Envie seu arquivo PDF (até 30MB)",
+                    maxSize: 30 * 1024 * 1024,
+                    disabled,
+                  }}
+                />
+              )}
+            />
+            <InputError message={zineErrors?.pdfFile?.message} />
+
+            <div className="flex items-center justify-center text-sm text-neutral-500 font-medium">
+              <span className="px-2">ou envie o link</span>
+            </div>
+
+            <Controller
+              control={control}
+              name={`zines.${index}.pdfUrl` as const}
+              defaultValue=""
+              render={({ field }) => (
+                <Input
+                  label="Link do PDF"
+                  placeholder="https://drive.google.com/..."
+                  disabled={disabled}
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              )}
+            />
+            <InputError message={zineErrors?.pdfUrl?.message} />
+          </div>
+        </div>
+
+        <div className="md:col-span-2">
+          <Label>Imagem da Capa (opcional)</Label>
+          <div className="border border-dashed border-neutral-300 rounded-md p-4 space-y-4 bg-white">
+            <Controller
+              control={control}
+              name={`zines.${index}.coverImageFile` as const}
+              defaultValue={null}
+              render={({ field }) => (
+                <InputFile
+                  onFileAccepted={field.onChange}
+                  onFileRejected={console.error}
+                  config={{
+                    accept: "image/*",
+                    helperText: "Envie a imagem da capa (até 30MB)",
+                    maxSize: 30 * 1024 * 1024,
+                    disabled,
+                  }}
+                />
+              )}
+            />
+            <InputError message={zineErrors?.coverImageFile?.message} />
+
+            <div className="flex items-center justify-center text-sm text-neutral-500 font-medium">
+              <span className="px-2">ou envie o link da imagem</span>
+            </div>
+
+            <Controller
+              control={control}
+              name={`zines.${index}.coverImageUrl` as const}
+              defaultValue=""
+              render={({ field }) => (
+                <Input
+                  label="Link da Imagem da Capa"
+                  placeholder="https://exemplo.com/capa.jpg"
+                  disabled={disabled}
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              )}
+            />
+            <InputError message={zineErrors?.coverImageUrl?.message} />
+          </div>
         </div>
 
         <div className="md:col-span-2">
           <Textarea
-            id={`zine-${zine.id}-description`}
             label="Descrição (opcional)"
-            data-title="description"
-            value={zine.description || ''}
-            onChange={(e) => onUpdateZine(zine.id, e)}
-            rows={3}
             placeholder="Conte um pouco sobre sua zine..."
+            rows={3}
+            {...register(`zines.${index}.description`)}
             disabled={disabled}
           />
+          <InputError message={zineErrors?.description?.message} />
         </div>
       </div>
+
+      <ActionButton type="button" variant="danger" size="sm" onClick={onRemove} disabled={disabled}>
+        Remover Zine
+      </ActionButton>
     </div>
-  );
-} 
+  )
+}

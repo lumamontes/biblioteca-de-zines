@@ -1,18 +1,23 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { composable } from 'composable-functions';
-import { z } from 'zod';
-import { Zine, ZineSchema, defaultFormData, FORM_STORAGE_KEY } from "@/schemas/apply-zine";
+import { composable } from "composable-functions";
+import { z } from "zod";
+import {
+  Zine,
+  ZineSchema,
+  defaultFormData,
+  FORM_STORAGE_KEY,
+} from "@/schemas/apply-zine";
 import { get, set } from "@/utils/local-storage";
 
 const validateZines = composable((zines: Zine[]) => {
-  const schema = z.array(ZineSchema).min(1, 'Pelo menos uma zine é obrigatória');
+  const schema = z.array(ZineSchema).min(1, "Adicione pelo menos uma zine 📚");
   const result = schema.safeParse(zines);
   if (result.success) {
     return result.data;
   }
-  throw new Error(result.error.errors[0]?.message || 'Erro de validação');
+  throw new Error(result.error.errors[0]?.message || "Erro de validação");
 });
 
 export function useZineForm() {
@@ -37,9 +42,11 @@ export function useZineForm() {
       title: "",
       collectionTitle: "",
       year: "",
-      pdfUrl: "",
       description: "",
+      pdfUrl: "",
       coverImageUrl: "",
+      pdfFile: undefined,
+      coverImageFile: undefined,
     };
     const newZines = [...zines, newZine];
     setZines(newZines);
@@ -47,15 +54,30 @@ export function useZineForm() {
   };
 
   const removeZine = (id: string) => {
-    const newZines = zines.filter(zine => zine.id !== id);
+    const newZines = zines.filter((zine) => zine.id !== id);
     setZines(newZines);
     saveToStorage(newZines);
   };
 
-  const updateZine = (id: string, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newZines = zines.map(zine => 
-      zine.id === id ? { ...zine, [e.target.dataset.title as keyof Zine]: e.target.value } : zine
-    );
+  const updateZine = (
+    id: string,
+    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | File,
+    name?: keyof Zine
+  ) => {
+    const newZines = zines.map((zine) => {
+      if (zine.id !== id) return zine;
+      if (e instanceof File) {
+        if (!name) {
+          throw new Error("Campo 'name' obrigatório ao atualizar um campo do tipo File");
+        }
+        return { ...zine, [name]: e };
+      }
+
+      const field = e.target.dataset.title as keyof Zine;
+      const value = e.target.value;
+      return { ...zine, [field]: value };
+    });
+
     setZines(newZines);
     saveToStorage(newZines);
   };
@@ -74,4 +96,5 @@ export function useZineForm() {
     validateZines,
     clearZines,
   };
-} 
+}
+

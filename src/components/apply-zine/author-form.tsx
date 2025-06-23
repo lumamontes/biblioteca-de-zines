@@ -1,116 +1,106 @@
-import { Author } from "@/schemas/apply-zine";
-import ActionButton from "@/components/ui/action-button";
+import { useFormContext, useFieldArray } from "react-hook-form";
+import { FormZineData } from "@/schemas/apply-zine";
 import Input from "@/components/ui/input";
+import ActionButton from "@/components/ui/action-button";
 
 interface AuthorFormProps {
-  author: Author;
-  authorIndex: number;
+  index: number;
   isRemovable: boolean;
-  onUpdateName: (index: number, name: string) => void;
-  onAddSocialLink: (authorIndex: number) => void;
-  onRemoveSocialLink: (authorIndex: number, linkIndex: number) => void;
-  onUpdateSocialLink: (authorIndex: number, linkIndex: number, link: string) => void;
-  onRemoveAuthor: (index: number) => void;
+  onRemove: () => void;
   disabled?: boolean;
 }
 
 export default function AuthorForm({
-  author,
-  authorIndex,
+  index,
   isRemovable,
-  onUpdateName,
-  onAddSocialLink,
-  onRemoveSocialLink,
-  onUpdateSocialLink,
-  onRemoveAuthor,
+  onRemove,
   disabled = false,
 }: AuthorFormProps) {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<FormZineData>();
+
+  const { fields: socials, append, remove } = useFieldArray({
+    control,
+    // @ts-expect-error 
+    name: `authors.${index}.socialLinks` as const,
+  });
+
   return (
     <div className="border border-neutral-200 p-4 rounded-lg bg-neutral-50">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-medium">
-          Autor {authorIndex + 1}
+          Autor {index + 1}
         </h3>
+
         {isRemovable && (
           <ActionButton
             type="button"
             variant="danger"
             size="sm"
-            onClick={() => onRemoveAuthor(authorIndex)}
+            onClick={onRemove}
             disabled={disabled}
           >
-            Remover Autor
+            Remover
           </ActionButton>
         )}
       </div>
 
       <div className="space-y-4">
         <Input
-          id={`author-${authorIndex}-name`}
           label="Nome do Autor *"
-          type="text"
-          value={author.name}
-          onChange={(e) => onUpdateName(authorIndex, e.target.value)}
-          placeholder="Nome completo do autor"
-          required
+          {...register(`authors.${index}.name`)}
           disabled={disabled}
+          placeholder="Nome completo do autor"
         />
+        {errors.authors?.[index]?.name && (
+          <p className="text-red-600 text-sm">
+            {errors.authors[index]!.name!.message}
+          </p>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-1">
             Redes sociais (opcional)
           </label>
           <div className="space-y-2">
-            {author.socialLinks.length === 0 ? (
-              <div className="flex gap-2">
+            {socials.map((field, i) => (
+              <div key={field.id} className="flex gap-2 mb-2">
                 <Input
-                  id={`author-${authorIndex}-social-0`}
                   type="url"
-                  value=""
-                  onChange={(e) => onUpdateSocialLink(authorIndex, 0, e.target.value)}
                   placeholder="https://instagram.com/usuario"
-                  className="flex-1"
+                  {...register(`authors.${index}.socialLinks.${i}`)}
                   disabled={disabled}
+                  className="flex-1"
                 />
-              </div>
-            ) : (
-              author.socialLinks.map((link, linkIndex) => (
-                <div key={linkIndex} className="flex gap-2">
-                  <Input
-                    id={`author-${authorIndex}-social-${linkIndex}`}
-                    type="url"
-                    value={link}
-                    onChange={(e) => onUpdateSocialLink(authorIndex, linkIndex, e.target.value)}
-                    placeholder="https://instagram.com/usuario"
-                    className="flex-1"
+                {socials.length > 1 && (
+                  <ActionButton
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    onClick={() => remove(i)}
                     disabled={disabled}
-                  />
-                  {author.socialLinks.length > 1 && (
-                    <ActionButton
-                      type="button"
-                      variant="danger"
-                      size="sm"
-                      onClick={() => onRemoveSocialLink(authorIndex, linkIndex)}
-                      disabled={disabled}
-                    >
-                      ×
-                    </ActionButton>
-                  )}
-                </div>
-              ))
-            )}
+                  >
+                    ×
+                  </ActionButton>
+                )}
+              </div>
+            ))}
             <ActionButton
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => onAddSocialLink(authorIndex)}
+              //@ts-expect-error
+              onClick={() => append("")}
               disabled={disabled}
             >
-              + Adicionar Link Social
+              + Adicionar link
             </ActionButton>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}
