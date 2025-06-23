@@ -20,7 +20,17 @@ export default function ApplyZineForm() {
     resolver: zodResolver(FormDataZineSchema),
     defaultValues: {
       authors: [{ name: "", socialLinks: [] }],
-      zines: [],
+      zines: [
+        {
+          id: crypto.randomUUID(),
+          title: "",
+          collectionTitle: "",
+          year: "",
+          description: "",
+          pdfFile: undefined,
+          coverImageFile: undefined,
+        },
+      ],
       additionalInfo: { contactEmail: "" },
     },
   });
@@ -62,8 +72,10 @@ export default function ApplyZineForm() {
       fd.append(`zines[${i}][collectionTitle]`, z.collectionTitle || "");
       fd.append(`zines[${i}][year]`, z.year);
       fd.append(`zines[${i}][description]`, z.description || "");
+      if (z.pdfUrl) fd.append(`zines[${i}][pdfUrl]`, z.pdfUrl);
       if (z.pdfFile) fd.append(`zines[${i}][pdfFile]`, z.pdfFile);
       if (z.coverImageFile) fd.append(`zines[${i}][coverImageFile]`, z.coverImageFile);
+      if (z.coverImageUrl) fd.append(`zines[${i}][coverImageUrl]`, z.coverImageUrl);
     });
 
     startTransition(async () => {

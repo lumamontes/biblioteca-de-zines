@@ -24,64 +24,56 @@ export const parseFormData = composable(async (formData: FormData) => {
     const authorsJson = formData.get("authors") as string
     const contactEmail = formData.get("contactEmail") as string
 
-    if (!authorsJson) {
-      throw new Error("Autores não encontrados")
-    }
-
+    if (!authorsJson) throw new Error("Autores não encontrados")
     const authors: Author[] = JSON.parse(authorsJson)
 
     const zineIndexes = new Set<number>()
     for (const key of formData.keys()) {
       const match = key.match(/^zines\[(\d+)\]\[/)
-      if (match) {
-        zineIndexes.add(Number(match[1]))
-      }
+      if (match) zineIndexes.add(Number(match[1]))
     }
 
-    if (zineIndexes.size === 0) {
-      throw new Error("Nenhuma zine encontrada")
-    }
+    if (zineIndexes.size === 0) throw new Error("Nenhuma zine encontrada")
 
     const zinesWithUrls = await Promise.all(
       Array.from(zineIndexes).map(async (idx) => {
-        const title = formData.get(`zines[${idx}][title]`) as string
-        const collectionTitle = (formData.get(`zines[${idx}][collectionTitle]`) as string) || ""
-        const year = formData.get(`zines[${idx}][year]`) as string
-        const description = (formData.get(`zines[${idx}][description]`) as string) || ""
+        const title = (formData.get(`zines[${idx}][title]`) as string)?.trim()
+        const collectionTitle = (formData.get(`zines[${idx}][collectionTitle]`) as string)?.trim() || ""
+        const year = (formData.get(`zines[${idx}][year]`) as string)?.trim()
+        const description = (formData.get(`zines[${idx}][description]`) as string)?.trim() || ""
 
         const pdfFile = formData.get(`zines[${idx}][pdfFile]`) as File
+        console.log("teste: ", formData.getAll('zines'));
+        const pdfUrlFromForm = (formData.get(`zines[${idx}][pdfUrl]`) as string | null)?.trim() || ""
+        if ((!pdfFile || pdfFile.size === 0) && pdfUrlFromForm.length === 0) {
+          throw new Error(`Zine ${idx + 1}: PDF é obrigatório (arquivo ou link)`)
+        }
+
         const coverFile = formData.get(`zines[${idx}][coverImageFile]`) as File | null
+        const coverUrlFromForm = (formData.get(`zines[${idx}][coverImageUrl]`) as string)?.trim() || ""
 
-        if (!pdfFile || pdfFile.size === 0) {
-          throw new Error(`Zine ${idx + 1}: PDF é obrigatório`)
-        }
-
-        if (pdfFile.size > MAX_FILE_SIZE) {
-          throw new Error(`Zine ${idx + 1}: PDF com tamanho mair que 30MB`)
-        }
-
-        if (!title?.trim()) {
-          throw new Error(`Zine ${idx + 1}: Título é obrigatório`)
-        }
-
-        if (!year?.trim()) {
-          throw new Error(`Zine ${idx + 1}: Ano é obrigatório`)
-        }
+        if (!title) throw new Error(`Zine ${idx + 1}: Título é obrigatório`)
+        if (!year) throw new Error(`Zine ${idx + 1}: Ano é obrigatório`)
+        if ((!pdfFile || pdfFile.size === 0) && !pdfUrlFromForm)
+          throw new Error(`Zine ${idx + 1}: PDF é obrigatório (arquivo ou link)`)
 
         const timestamp = Date.now()
         const sanitizedTitle = title.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase()
 
-        let pdfUrl = ""
-        let coverImageUrl = ""
+        let pdfUrl = pdfUrlFromForm
+        let coverImageUrl = coverUrlFromForm
 
         try {
-          const pdfPath = `${timestamp}_${sanitizedTitle}.pdf`
-          pdfUrl = await uploadToS3(pdfFile, pdfPath)
+          if (!pdfUrl && pdfFile && pdfFile.size > 0) {
+            if (pdfFile.size > MAX_FILE_SIZE)
+              throw new Error(`Zine ${idx + 1}: PDF com tamanho maior que 30MB`)
+            const pdfPath = `${timestamp}_${sanitizedTitle}.pdf`
+            pdfUrl = await uploadToS3(pdfFile, pdfPath)
+          }
 
-          if (coverFile && coverFile.size > 0) {
-            if (coverFile.size > MAX_FILE_SIZE) {
-              throw new Error(`Zine ${idx + 1}: Capa com tamanho mair que 30MB`)
-            }
+          if (!coverImageUrl && coverFile && coverFile.size > 0) {
+            if (coverFile.size > MAX_FILE_SIZE)
+              throw new Error(`Zine ${idx + 1}: Capa com tamanho maior que 30MB`)
             const coverExtension = coverFile.name.split(".").pop() || "jpg"
             const coverPath = `zines/covers/${timestamp}_${sanitizedTitle}.${coverExtension}`
             coverImageUrl = await uploadToS3(coverFile, coverPath)
@@ -93,10 +85,10 @@ export const parseFormData = composable(async (formData: FormData) => {
 
         const zine = {
           id: `${timestamp}-${idx}`,
-          title: title.trim(),
-          collectionTitle: collectionTitle.trim(),
-          year: year.trim(),
-          description: description.trim(),
+          title,
+          collectionTitle,
+          year,
+          description,
           pdfFile: undefined,
           coverImageFile: undefined,
         }
@@ -129,7 +121,11 @@ const validateFormData = composable((data: ProcessedZineData) => {
   try {
     const dataForValidation: FormZineData = {
       authors: data.authors,
-      zines: data.zines,
+      zines: data.zinesWithUrls.map(({ zine, pdfUrl, coverImageUrl }) => ({
+        ...zine,
+        pdfUrl,
+        coverImageUrl,
+      })),
       additionalInfo: data.additionalInfo,
     }
 
