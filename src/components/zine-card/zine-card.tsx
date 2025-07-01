@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { getThumbnailUrl } from "@/utils/assets";
-import { joinAuthors } from "@/utils/utils";
+import { joinAuthors, getZineCategories } from "@/utils/utils";
 import { Zine } from "@/@types/zine";
+import CategoryBadge from "./category-badge";
+import YearBadge from "./year-badge";
+import { PLACEHOLDER_COVER_IMAGE } from "@/app/config/site";
 
 type ZineCardProps = {
   zine: Zine;
 };
 
 const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
-  const thumbnailUrl = zine.cover_image ? getThumbnailUrl(zine.cover_image) : "";
+  const thumbnailUrl = zine.cover_image ? getThumbnailUrl(zine.cover_image) : getThumbnailUrl(PLACEHOLDER_COVER_IMAGE);
+  const categories = getZineCategories(zine.tags);
+  const publishedYear = zine.year;
+  
   return (
     <div
       className="flex flex-col justify-between bg-white rounded-lg overflow-hidden shadow-sm h-full"
@@ -27,7 +33,14 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
             {zine.title}{" "}
             <span className="text-gray-500 text-sm">por {joinAuthors(zine.library_zines_authors)}</span>
           </h1>
+          <div className="max-w-sm flex justify-center mt-2 mx-auto">
+            {publishedYear && <YearBadge year={publishedYear} />}
+          </div>
           <p className="mt-2 text-sm text-gray-600">{zine.description}</p>
+          
+          {categories.length > 0 && (
+           <CategoryBadge categories={categories} />
+          )}
         </div>
       </div>
 
