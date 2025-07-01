@@ -21,7 +21,11 @@ export function useZineForm() {
   useEffect(() => {
     const formData = get(FORM_STORAGE_KEY, defaultFormData);
     if (formData.zines && formData.zines.length > 0) {
-      setZines(formData.zines);
+      const zinesWithCategories = formData.zines.map((z: Zine) => ({
+        ...z,
+        categories: z.categories || [],
+      }));
+      setZines(zinesWithCategories);
     }
   }, []);
 
@@ -40,6 +44,7 @@ export function useZineForm() {
       pdfUrl: "",
       description: "",
       coverImageUrl: "",
+      categories: [],
     };
     const newZines = [...zines, newZine];
     setZines(newZines);
@@ -60,6 +65,14 @@ export function useZineForm() {
     saveToStorage(newZines);
   };
 
+  const updateZineCategories = (id: string, categories: string[]) => {
+    const newZines = zines.map((zine) =>
+      zine.id === id ? { ...zine, categories } : zine
+    );
+    setZines(newZines);
+    saveToStorage(newZines);
+  };
+
   const clearZines = useCallback(() => {
     const emptyZines: Zine[] = [];
     setZines(emptyZines);
@@ -71,6 +84,7 @@ export function useZineForm() {
     addZine,
     removeZine,
     updateZine,
+    updateZineCategories,
     validateZines,
     clearZines,
   };

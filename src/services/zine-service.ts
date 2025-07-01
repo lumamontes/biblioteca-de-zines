@@ -2,6 +2,7 @@ import { Zine } from "@/@types/zine";
 import { createClient } from "@/utils/supabase/server";
 import { createClient as createBrowser } from "@/utils/supabase/client";
 import { PostgrestResponse } from "@supabase/supabase-js";
+import { getZineCategories } from "@/utils/utils";
 
 export const getPublishedZines = async (): Promise<Zine[]> => {
   const supabase = await createClient();
@@ -63,11 +64,15 @@ type SearchZineProps = {
   search?: string | null;
   orderBy?: string;
   authorId?: number | null;
+  categories?: string[];
+  publishedYears?: number[];
 };
 
 export const searchZines = async ({
   search = null,
   orderBy = "all",
+  categories = [],
+  publishedYears = [],
 }: SearchZineProps): Promise<Zine[]> => {
   const supabase = await createBrowser();
 
@@ -83,6 +88,10 @@ export const searchZines = async ({
       config: "portuguese",
       type: "websearch",
     });
+  }
+
+  if (publishedYears.length > 0) {
+    query = query.in("year", publishedYears);
   }
 
   if (orderBy === "recent") {
@@ -118,7 +127,6 @@ export const searchZines = async ({
       .eq("is_published", true)
       .in("library_zines_authors.authors.id", authorIds);
 
-
     if (orderBy === "recent") {
       queryAuthorZines = queryAuthorZines.order("created_at", { ascending: false });
     }
@@ -135,8 +143,23 @@ export const searchZines = async ({
         index === self.findIndex((t) => t.id === value.id)
     );
 
+    if (categories.length > 0) {
+      return mergedZines.filter((zine) => {
+        const zineCategories = getZineCategories(zine.tags);
+        return categories.some(category => zineCategories.includes(category));
+      });
+    }
+    
     return mergedZines;
   }
 
-  return zines ?? [];
+  const allZines = zines ?? [];
+  if (categories.length > 0) {
+    return allZines.filter((zine) => {
+      const zineCategories = getZineCategories(zine.tags);
+      return categories.some(category => zineCategories.includes(category));
+    });
+  }
+  
+  return allZines;
 };
