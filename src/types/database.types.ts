@@ -36,6 +36,21 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          id: number
+          name: string
+        }
+        Insert: {
+          id?: number
+          name: string
+        }
+        Update: {
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
       form_uploads: {
         Row: {
           author_name: string | null
@@ -49,6 +64,7 @@ export type Database = {
           pdf_url: string | null
           tags: Json | null
           title: string
+          published_year: number | null
           uuid: string | null
         }
         Insert: {
@@ -93,6 +109,7 @@ export type Database = {
           slug: string | null
           tags: Json | null
           title: string
+          year: number | null
           updated_at: string | null
           uuid: string | null
         }
