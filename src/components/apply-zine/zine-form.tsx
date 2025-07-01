@@ -1,13 +1,18 @@
 import { Zine } from "@/schemas/apply-zine";
+import { useState, useEffect } from "react";
 import ActionButton from "@/components/ui/action-button";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
+import MultiSelect from "@/components/ui/multi-select";
+import { getCategories } from "@/services/categories-service";
+import { Tables } from "@/types/database.types";
 
 interface ZineFormProps {
   zine: Zine;
   zineIndex: number;
   onUpdateZine: (id: string, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
   onRemoveZine: (id: string) => void;
+  onUpdateCategories: (id: string, categories: string[]) => void;
   disabled?: boolean;
 }
 
@@ -16,8 +21,27 @@ export default function ZineForm({
   zineIndex,
   onUpdateZine,
   onRemoveZine,
+  onUpdateCategories,
   disabled = false,
 }: ZineFormProps) {
+  const [categories, setCategories] = useState<Tables<"categories">[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <div className="border border-neutral-200 p-4 rounded-lg bg-neutral-50">
       <div className="flex items-center justify-between mb-4">
@@ -107,6 +131,25 @@ export default function ZineForm({
             placeholder="Conte um pouco sobre sua zine..."
             disabled={disabled}
           />
+        </div>
+
+        <div className="md:col-span-2">
+          {loadingCategories ? (
+            <div className="animate-pulse">
+              <div className="h-4 bg-neutral-200 rounded w-24 mb-2"></div>
+              <div className="h-10 bg-neutral-200 rounded"></div>
+            </div>
+          ) : (
+            <MultiSelect
+              label="Categorias (máx 3)"
+              options={categories}
+              selectedValues={zine.categories || []}
+              onChange={(selectedCategories) => onUpdateCategories(zine.id, selectedCategories)}
+              placeholder="Selecione até 3 categorias..."
+              maxSelections={3}
+              disabled={disabled}
+            />
+          )}
         </div>
       </div>
     </div>
