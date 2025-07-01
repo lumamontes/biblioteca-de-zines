@@ -9,3 +9,9 @@ type LibraryZinesAuthors = {
 type Zine = Tables<'library_zines'> & {
   library_zines_authors: LibraryZinesAuthors;
 };
+
+interface ZineTags {
+  submission_batch_id?: string;
+  categories?: string[];
+  [key: string]: unknown;
+}
