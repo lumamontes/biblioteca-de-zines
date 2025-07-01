@@ -4,6 +4,8 @@ import { generateSlug } from "@/utils/slug";
 import { createClient } from "@/utils/supabase/server";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { Tables } from "@/types/database.types";
+import { parseTags } from "@/utils/utils";
+import { ZineTags } from "@/@types/zine";
 
 export async function unpublishZine(zineId: number) {
   const supabase = await createClient();
@@ -24,7 +26,7 @@ export async function updatePublishedZine(zineId: number) {
     .update({ is_published: true })
     .eq("id", zineId);
 
-  if (error) throw new Error(`Erro ao atualizar a zine: ${error.message}`);
+  if (error) throw new Error(`Erro ao republicar a zine: ${error.message}`);
 
   revalidatePath("/dashboard");
 }
@@ -51,7 +53,7 @@ export async function publishZine(uploadId: number) {
 
   const { data: existingZine } = await supabase
     .from("library_zines")
-    .select("id")
+    .select("id, tags")
     .eq("slug", slug)
     .single();
 
@@ -68,6 +70,7 @@ export async function publishZine(uploadId: number) {
           pdf_url: upload.pdf_url,
           tags: upload.tags,
           is_published: true,
+          year: upload.published_year,
           slug: slug,
         },
       ])
@@ -80,6 +83,25 @@ export async function publishZine(uploadId: number) {
     zineId = newZine.id;
   } else {
     zineId = existingZine.id;
+
+    const existingTags = parseTags(existingZine.tags);
+    const newTags = parseTags(upload.tags);
+
+    const mergedCategories = Array.from(new Set([
+      ...(existingTags.categories || []),
+      ...(newTags.categories || []),
+    ]));
+
+    const mergedTags: ZineTags = {
+      ...existingTags,
+      ...newTags,
+      categories: mergedCategories,
+    };
+
+    await supabase
+      .from("library_zines")
+      .update({ tags: mergedTags })
+      .eq("id", zineId);
   }
 
   if (upload.author_name) {

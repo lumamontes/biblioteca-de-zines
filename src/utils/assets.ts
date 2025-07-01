@@ -11,8 +11,7 @@ export function getThumbnailUrl(url: string) {
     const cleanId = idFromUrl.split('&')[0];
     return `https://drive.google.com/thumbnail?id=${cleanId}&sz=w1000`;
   }
-  
-  console.warn('Could not extract file ID from URL:', url);
+
   return url;
 }
 
