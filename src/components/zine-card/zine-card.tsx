@@ -11,7 +11,7 @@ type ZineCardProps = {
 };
 
 const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
-  const thumbnailUrl = zine.cover_image ? getThumbnailUrl(zine.cover_image) : getThumbnailUrl(PLACEHOLDER_COVER_IMAGE);
+  const thumbnailUrl = zine.cover_image ? getThumbnailUrl(zine.cover_image) : PLACEHOLDER_COVER_IMAGE;
   const categories = getZineCategories(zine.tags);
   const publishedYear = zine.year;
   

@@ -40,7 +40,6 @@ export function isValidTagsObject(value: unknown): value is ZineTags {
   return typeof value === 'object' && value !== null;
 }
 
-// Helper function to safely parse tags
 export function parseTags(tags: unknown): ZineTags {
   if (!tags) return {};
   
