@@ -15,7 +15,8 @@ export const ZineSchema = z.object({
   coverImageUrl: z.string().optional().default('').refine(
     (val) => val === '' || z.string().url().safeParse(val).success,
     'Imagem da capa deve ser uma URL válida ou estar vazia'
-  )
+  ),
+  categories: z.array(z.string()).max(3, 'Selecione no máximo 3 categorias').default([])
 });
 
 export const AdditionalInfoSchema = z.object({
