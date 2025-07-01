@@ -61,10 +61,11 @@ const createDatabaseEntries = composable(async (formData: ZineFormData) => {
     pdf_url: zine.pdfUrl.trim(),
     description: zine.description?.trim() || null,
     cover_image: zine.coverImageUrl?.trim() || null,
-    tags: JSON.stringify({
-      publication_year: zine.year.trim(),
+    published_year: zine.year.trim(),
+    tags: {
       submission_batch_id: submissionBatchId,
-    }),
+      categories: zine.categories || [],
+    },
     is_published: false,
   }));
 

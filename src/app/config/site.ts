@@ -24,3 +24,5 @@ export const siteExternalLinks = {
   NEWSLETTER: "https://bibliotecadezines.substack.com/",
   SUBMISSIONS_RESPONSES_SHEET: "https://docs.google.com/spreadsheets/d/1KxPa0oReM8I1YAqWiFKCB2aotDIZuf7d7OlpnrpDiDY/edit?gid=1274334694#gid=1274334694"
 };
+
+export const PLACEHOLDER_COVER_IMAGE = "https://drive.google.com/file/d/1Hcukza3bgmK9019RDKjp_tObVZe7nloW/view?usp=sharing"

@@ -1,4 +1,5 @@
-import { LibraryZinesAuthors } from "@/@types/zine";
+import { LibraryZinesAuthors, ZineTags } from "@/@types/zine";
+import { Json } from "@/types/database.types";
 import { redirect } from "next/navigation";
 
 /**
@@ -25,4 +26,32 @@ export function joinAuthors(
   library_zines_authors: LibraryZinesAuthors
 ): string {
   return library_zines_authors.map((a) => a.authors.name).join(", ");
+}
+
+export function getZineCategories(tags: Json): string[] {
+  if (!tags) return [];
+  
+  const parsedTags = parseTags(tags);
+  
+  return parsedTags?.categories || [];
+}
+
+export function isValidTagsObject(value: unknown): value is ZineTags {
+  return typeof value === 'object' && value !== null;
+}
+
+// Helper function to safely parse tags
+export function parseTags(tags: unknown): ZineTags {
+  if (!tags) return {};
+  
+  if (typeof tags === "string") {
+    try {
+      const parsed = JSON.parse(tags);
+      return isValidTagsObject(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  
+  return isValidTagsObject(tags) ? tags : {};
 }
