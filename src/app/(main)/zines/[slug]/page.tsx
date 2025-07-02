@@ -1,7 +1,9 @@
 import PDFViewer from "@/components/pdf-viewer";
+import CategoryBadge from "@/components/zine-card/category-badge";
 import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
-import { joinAuthors, limitText } from "@/utils/utils";
+import { getSlugZineMetadata } from "@/utils/metadata";
+import { joinAuthors, getZineCategories } from "@/utils/utils";
 import Link from "next/link";
 
 export async function generateMetadata({
@@ -21,31 +23,7 @@ export async function generateMetadata({
 
   const thumbnailUrl = preview.cover_image ? getThumbnailUrl(preview.cover_image) : "";
 
-  return {
-    title: `${preview.title} por ${joinAuthors(preview.library_zines_authors)}`,
-    description: preview.description
-      ? limitText(preview.description)
-      : preview.title,
-    openGraph: {
-      title: preview.title,
-      description: preview.description,
-      images: [
-        {
-          url: thumbnailUrl,
-          width: 1200,
-          height: 630,
-        },
-      ],
-      url: `https://biblioteca-de-zines.vercel.app/zine/${slug}`,
-      type: "article",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: preview.title,
-      description: preview.description,
-      images: [thumbnailUrl],
-    },
-  };
+  return getSlugZineMetadata(slug, preview, thumbnailUrl);
 }
 
 export default async function ZinePreview({
@@ -67,6 +45,7 @@ export default async function ZinePreview({
   }
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
+  const categories = getZineCategories(preview.tags);
 
   return (
     <div className="flex min-h-screen flex-col items-center w-full mx-auto p-4 md:p-0 gap-16">
@@ -85,6 +64,9 @@ export default async function ZinePreview({
           </Link>
         ))}
       </div>
+      {categories.length > 0 && (
+        <CategoryBadge categories={categories} />
+      )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
       <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
         <PDFViewer url={previewUrl} />

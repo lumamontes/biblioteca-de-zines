@@ -167,6 +167,7 @@ function ApplyZineForm() {
                     zineIndex={index}
                     onUpdateZine={zineForm.updateZine}
                     onRemoveZine={zineForm.removeZine}
+                    onUpdateCategories={zineForm.updateZineCategories}
                     disabled={isPending}
                   />
                 ))}
