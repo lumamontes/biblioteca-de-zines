@@ -170,7 +170,7 @@ export default function FilteredZines({
                   }))}
                 selectedValues={selectedPublishedYears}
                 onChange={setSelectedPublishedYears}
-                placeholder="Anos de publicação"
+                placeholder="Ano"
               />
             ) : (
               renderMultiSelectSkeleton()

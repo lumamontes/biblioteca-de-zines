@@ -146,7 +146,7 @@ export default function MultiSelect({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar categorias..."
+              placeholder="Buscar"
               className="w-full px-2 py-1 text-sm border border-neutral-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
@@ -184,7 +184,7 @@ export default function MultiSelect({
               })
             ) : (
               <div className="px-3 py-2 text-sm text-neutral-500">
-                Nenhuma categoria encontrada
+                Nenhum resultado encontrado.
               </div>
             )}
           </div>
