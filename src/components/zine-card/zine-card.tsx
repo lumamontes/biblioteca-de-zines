@@ -36,11 +36,12 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
           <div className="max-w-sm flex justify-center mt-2 mx-auto">
             {publishedYear && <YearBadge year={publishedYear} />}
           </div>
-          <p className="mt-2 text-sm text-gray-600">{zine.description}</p>
-          
-          {categories.length > 0 && (
+            {categories.length > 0 && (
            <CategoryBadge categories={categories} />
           )}
+          <p className="mt-2 text-sm text-gray-600">{zine.description}</p>
+          
+       
         </div>
       </div>
 

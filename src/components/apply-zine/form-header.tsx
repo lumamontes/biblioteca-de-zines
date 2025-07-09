@@ -13,14 +13,6 @@ export default function FormHeader() {
         Nossa equipe irá dar uma olhada e se tiver tudo certo, sua zine será adicionada à biblioteca.
       </p>
       
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-sm text-blue-800">
-          <strong>🚧 Funcionalidade em fase de teste!</strong><br/>
-          Este formulário está em validação. Se você encontrar algum problema ou tiver sugestões, 
-          por favor nos avise pelo email abaixo.
-        </p>
-      </div>
-      
       <InfoBox>
         <p className="text-sm">
           <strong>💬 Contato:</strong> Dúvidas? Entre em contato:{" "}
