@@ -1,5 +1,5 @@
 import PDFViewer from "@/components/pdf-viewer";
-import CategoryBadge from "@/components/zine-card/category-badge";
+import CategoryBadgeWithLink from "@/components/zine-card/category-badge-with-link";
 import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { getSlugZineMetadata } from "@/utils/metadata";
@@ -65,7 +65,7 @@ export default async function ZinePreview({
         ))}
       </div>
       {categories.length > 0 && (
-        <CategoryBadge categories={categories} />
+        <CategoryBadgeWithLink categories={categories} />
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
       <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">

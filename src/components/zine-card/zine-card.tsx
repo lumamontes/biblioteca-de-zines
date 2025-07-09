@@ -8,9 +8,10 @@ import { PLACEHOLDER_COVER_IMAGE } from "@/app/config/site";
 
 type ZineCardProps = {
   zine: Zine;
+  onCategoryClick?: (category: string) => void;
 };
 
-const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
+const ZineCard: React.FC<ZineCardProps> = ({ zine, onCategoryClick }) => {
   const thumbnailUrl = zine.cover_image ? getThumbnailUrl(zine.cover_image) : PLACEHOLDER_COVER_IMAGE;
   const categories = getZineCategories(zine.tags);
   const publishedYear = zine.year;
@@ -37,7 +38,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine }) => {
             {publishedYear && <YearBadge year={publishedYear} />}
           </div>
             {categories.length > 0 && (
-           <CategoryBadge categories={categories} />
+           <CategoryBadge categories={categories} onCategoryClick={onCategoryClick} />
           )}
           <p className="mt-2 text-sm text-gray-600">{zine.description}</p>
           
