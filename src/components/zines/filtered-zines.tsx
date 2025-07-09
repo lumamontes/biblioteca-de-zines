@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ZineCard from "@/components/zine-card/zine-card";
 import { searchZines } from "@/services/zine-service";
 import { debounce } from "lodash";
@@ -15,6 +16,7 @@ export default function FilteredZines({
 }: {
   initialZines: Zine[];
 }) {
+  const searchParams = useSearchParams();
   const [zines, setZines] = useState(initialZines);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("recent");
@@ -35,6 +37,18 @@ export default function FilteredZines({
   useEffect(() => {
     setPublishedYears(extractPublishedYears(initialZines));
   }, [initialZines]);
+
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setSelectedCategories(prev => {
+        if (!prev.includes(categoryParam)) {
+          return [categoryParam];
+        }
+        return prev;
+      });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -83,6 +97,12 @@ export default function FilteredZines({
     setSearchQuery(searchQuery);
   }, 600);
 
+  const handleCategoryClick = (category: string) => {
+    if (!selectedCategories.includes(category)) {
+      setSelectedCategories(prev => [...prev, category]);
+    }
+  };
+
   const clearAllFilters = () => {
     setSelectedCategories([]);
     setSelectedPublishedYears([]);
@@ -114,7 +134,7 @@ export default function FilteredZines({
       );
     }
     
-    return zines.map((zine) => <ZineCard zine={zine} key={zine.uuid} />);
+    return zines.map((zine) => <ZineCard zine={zine} key={zine.uuid} onCategoryClick={handleCategoryClick} />);
   };
 
   const renderMultiSelectSkeleton = () => (
