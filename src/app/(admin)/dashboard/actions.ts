@@ -6,6 +6,7 @@ import { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { Tables } from "@/types/database.types";
 import { parseTags } from "@/utils/utils";
 import { ZineTags } from "@/@types/zine";
+import { editUploadSchema, EditUploadFormData } from "@/schemas/edit-upload";
 
 export async function unpublishZine(zineId: number) {
   const supabase = await createClient();
@@ -153,4 +154,43 @@ export async function publishZine(uploadId: number) {
     .eq("id", uploadId);
 
   revalidatePath("/dashboard");
+}
+
+export async function updateUpload(uploadId: number, data: EditUploadFormData) {
+  try {
+    const validatedData = editUploadSchema.parse(data);
+    
+    const supabase = await createClient();
+    
+    const tags: ZineTags = {
+      categories: validatedData.categories || [],
+    };
+    
+    const { error } = await supabase
+      .from("form_uploads")
+      .update({
+        title: validatedData.title,
+        description: validatedData.description || null,
+        collection_title: validatedData.collection_title || null,
+        author_name: validatedData.author_name,
+        author_url: validatedData.author_url || null,
+        pdf_url: validatedData.pdf_url || null,
+        cover_image: validatedData.cover_image || null,
+        published_year: validatedData.published_year || null,
+        tags: tags,
+      })
+      .eq("id", uploadId);
+
+    if (error) {
+      throw new Error(`Erro ao atualizar upload: ${error.message}`);
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true, message: "Upload atualizado com sucesso!" };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    }
+    return { success: false, message: "Erro desconhecido ao atualizar upload" };
+  }
 }

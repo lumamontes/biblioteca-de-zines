@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { UploadPreview } from "./upload-preview";
+import { EditableUploadPreview } from "./editable-upload-preview";
 import Button from "../button";
 import { Tables } from "@/types/database.types";
 import { Zine } from "@/@types/zine";
@@ -66,7 +66,7 @@ export const FilteredUploads = ({
           {filteredUploads.map((upload) => {
             const findZine = zines.find((zine) => zine.title === upload.title);
             return (
-              <UploadPreview key={upload.id} upload={upload} zine={findZine} />
+              <EditableUploadPreview key={upload.id} upload={upload} zine={findZine} />
             );
           })}
         </div>

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "3.3.4",
     "@mailchimp/mailchimp_marketing": "^3.0.80",
     "@notion-render/bookmark-plugin": "^0.0.2",
     "@notion-render/client": "^0.0.2",
@@ -24,6 +25,7 @@
     "next": "15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.60.0",
     "slugify": "^1.6.6",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.0.1",
