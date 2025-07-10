@@ -86,6 +86,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
         toast.error(result.message);
       }
     } catch (error) {
+      console.error(error)
       toast.error("Erro ao salvar alterações");
     } finally {
       setIsLoading(false);
