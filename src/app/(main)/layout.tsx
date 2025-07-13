@@ -1,4 +1,3 @@
-// layout.tsx
 import Header from "@/components/header";
 import NavSocialLinks from "@/components/nav-social-links";
 

@@ -159,7 +159,6 @@ export async function publishZine(uploadId: number) {
 export async function updateUpload(uploadId: number, data: EditUploadFormData) {
   try {
     const validatedData = editUploadSchema.parse(data);
-    
     const supabase = await createClient();
     
     const tags: ZineTags = {
@@ -180,6 +179,26 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
         tags: tags,
       })
       .eq("id", uploadId);
+
+
+      if(validatedData.slug){
+        const { error } = await supabase
+        .from("library_zines")
+        .update({
+          title: validatedData.title,
+          description: validatedData.description || null,
+          collection_title: validatedData.collection_title || null,
+          pdf_url: validatedData.pdf_url || null,
+          cover_image: validatedData.cover_image || null,
+          year: validatedData.published_year || null,
+          tags: tags,
+        })
+        .eq("slug", validatedData.slug);
+
+        if (error) {
+          throw new Error(`Erro ao atualizar upload: ${error.message}`);
+        }
+      }
 
     if (error) {
       throw new Error(`Erro ao atualizar upload: ${error.message}`);
