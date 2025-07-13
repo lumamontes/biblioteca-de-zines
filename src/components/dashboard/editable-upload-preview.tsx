@@ -44,7 +44,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
     handleSubmit,
     control,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm<EditUploadFormData>({
     resolver: zodResolver(editUploadSchema),
     defaultValues: {
