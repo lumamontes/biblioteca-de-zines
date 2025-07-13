@@ -48,11 +48,13 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
   } = useForm<EditUploadFormData>({
     resolver: zodResolver(editUploadSchema),
     defaultValues: {
+      slug: zine?.slug || "",
       title: upload.title,
       description: upload.description || "",
       collection_title: upload.collection_title || "",
       author_name: upload.author_name || "",
       author_url: upload.author_url || "",
+      author_email: upload.author_email || "",
       pdf_url: upload.pdf_url || "",
       cover_image: upload.cover_image || "",
       published_year: upload.published_year || undefined,
@@ -76,21 +78,15 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
 
   const onSubmit = async (data: EditUploadFormData) => {
     setIsLoading(true);
-    try {
-      const result = await updateUpload(upload.id, data);
-      if (result.success) {
-        toast.success(result.message);
-        setIsEditing(false);
-        reset(data);
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      console.error(error)
-      toast.error("Erro ao salvar alterações");
-    } finally {
-      setIsLoading(false);
+    const result = await updateUpload(upload.id, data);
+    if (result.success) {
+      toast.success(result.message);
+      setIsEditing(false);
+      reset(data);
+    } else {
+      toast.error(result.message);
     }
+    setIsLoading(false)
   };
 
   const handleCancel = () => {
@@ -119,6 +115,11 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Título *
             </label>
+            <input
+              type="hidden"
+              {...register("slug")}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
             <input
               {...register("title")}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -243,7 +244,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
         <div className="flex flex-col justify-center gap-2 mt-4 sm:mt-0 sm:ml-4 min-w-[200px]">
           <Button
             type="submit"
-            disabled={isLoading || !isDirty}
+            disabled={isLoading}
             className="w-full bg-green-500 text-white disabled:bg-gray-400"
           >
             {isLoading ? "Salvando..." : "Salvar"}
@@ -316,6 +317,8 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
               </Link>
             </>
           )}
+          <br></br>
+          {upload.author_email}
         </p>
 
         {upload.pdf_url && (
