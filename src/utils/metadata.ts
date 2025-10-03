@@ -17,7 +17,7 @@ export function getSlugZineMetadata(slug: string, preview: Zine, thumbnailUrl: s
           height: 630,
         },
       ],
-      url: `https://biblioteca-de-zines.vercel.app/zine/${slug}`,
+      url: `https://biblioteca-de-zines.com.br/zine/${slug}`,
       type: "article",
     },
     twitter: {

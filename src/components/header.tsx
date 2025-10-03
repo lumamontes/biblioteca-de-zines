@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback } from "react";
 import SuggestZineLink from "./suggest-zine-link";
-
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
@@ -25,6 +24,15 @@ export default function Header() {
 
       <nav className="hidden md:flex gap-4">
         <ul className="flex gap-4">
+           <li>
+              <Link
+                href="/zines"
+                className="hover:underline"
+                onClick={toggleMenu}
+              >
+                Zines
+              </Link>
+            </li>
           <li>
             <Link href="/about" className="hover:underline">
               Sobre
@@ -42,12 +50,24 @@ export default function Header() {
           <ul className="flex flex-col items-center gap-4">
             <li>
               <Link
+                href="/zines"
+                className="hover:underline"
+                onClick={toggleMenu}
+              >
+                Zines
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/about"
                 className="hover:underline"
                 onClick={toggleMenu}
               >
                 Sobre
               </Link>
+            </li>
+           
+            <li>
             </li>
             <li>
               <SuggestZineLink />

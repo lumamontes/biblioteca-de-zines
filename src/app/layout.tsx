@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://biblioteca-de-zines.vercel.app",
+    url: "https://biblioteca-de-zines.com.br",
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,

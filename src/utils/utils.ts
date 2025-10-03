@@ -25,6 +25,9 @@ export function limitText(text: string, maxLength: number = 150): string {
 export function joinAuthors(
   library_zines_authors: LibraryZinesAuthors
 ): string {
+  if(!library_zines_authors || library_zines_authors.length === 0) {
+    return "";
+  }
   return library_zines_authors.map((a) => a.authors.name).join(", ");
 }
 

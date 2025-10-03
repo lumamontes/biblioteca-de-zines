@@ -2,6 +2,7 @@ import Image from "next/image";
 import TelegramIcon from "@public/social/telegram.svg";
 import GithubIcon from "@public/social/github.svg";
 import EmailIcon from "@public/social/envelope.svg";
+import InstagramIcon from "@public/social/instagram.svg";
 import Link from "next/link";
 
 type SocialLink = {
@@ -21,10 +22,15 @@ const links: SocialLink[] = [
     href: "https://github.com/lumamontes/biblioteca-de-zines",
   },
   {
-    alt: "Email",
+    alt: "Newsletter",
     src: EmailIcon,
-    href: "mailto:bibliotecadezines@gmail.com",
+    href: "https://bibliotecadezines.substack.com/",
   },
+  {
+    alt: "Instagram",
+    src: InstagramIcon,
+    href: "https://www.instagram.com/bibliotecadezines/",
+  }
 ];
 
 export default function NavSocialLinks() {
