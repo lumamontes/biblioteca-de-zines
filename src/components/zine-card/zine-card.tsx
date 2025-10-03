@@ -5,6 +5,7 @@ import { Zine } from "@/@types/zine";
 import CategoryBadge from "./category-badge";
 import YearBadge from "./year-badge";
 import { PLACEHOLDER_COVER_IMAGE } from "@/app/config/site";
+import { limitText } from "@/utils/string";
 
 type ZineCardProps = {
   zine: Zine;
@@ -29,7 +30,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine, onCategoryClick }) => {
             loading="lazy"
           />
         </div>
-        <div className="flex flex-col mt-3 text-center">
+        <div className="flex flex-col mt-3 text-justify ">
           <h1 className="text-lg font-medium">
             {zine.title}{" "}
             <span className="text-gray-500 text-sm">por {joinAuthors(zine.library_zines_authors)}</span>
@@ -40,9 +41,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine, onCategoryClick }) => {
             {categories.length > 0 && (
            <CategoryBadge categories={categories} onCategoryClick={onCategoryClick} />
           )}
-          <p className="mt-2 text-sm text-gray-600">{zine.description}</p>
-          
-       
+          <p className="mt-2 text-sm text-gray-600">{limitText(zine.description ?? '')}</p>
         </div>
       </div>
 

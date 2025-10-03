@@ -1,10 +1,8 @@
 import { Zine } from "@/schemas/apply-zine";
-import { useState, useEffect } from "react";
 import ActionButton from "@/components/ui/action-button";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import MultiSelect from "@/components/ui/multi-select";
-import { getCategories } from "@/services/categories-service";
 import { Tables } from "@/types/database.types";
 
 interface ZineFormProps {
@@ -14,6 +12,7 @@ interface ZineFormProps {
   onRemoveZine: (id: string) => void;
   onUpdateCategories: (id: string, categories: string[]) => void;
   disabled?: boolean;
+  categories: Tables<"categories">[];
 }
 
 export default function ZineForm({
@@ -23,24 +22,8 @@ export default function ZineForm({
   onRemoveZine,
   onUpdateCategories,
   disabled = false,
+  categories,
 }: ZineFormProps) {
-  const [categories, setCategories] = useState<Tables<"categories">[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Error loading categories:", error);
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
 
   return (
     <div className="border border-neutral-200 p-4 rounded-lg bg-neutral-50">
@@ -134,7 +117,7 @@ export default function ZineForm({
         </div>
 
         <div className="md:col-span-2">
-          {loadingCategories ? (
+          {!categories ? (
             <div className="animate-pulse">
               <div className="h-4 bg-neutral-200 rounded w-24 mb-2"></div>
               <div className="h-10 bg-neutral-200 rounded"></div>

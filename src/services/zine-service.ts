@@ -22,6 +22,58 @@ export const getPublishedZines = async (): Promise<Zine[]> => {
   return data ?? [];
 };
 
+export const getRandomZine = async (): Promise<Zine | null> => {
+  const supabase = await createClient();
+
+  const { count, error: countError } = await supabase
+    .from("library_zines")
+    .select('*', { count: 'exact', head: true })
+    .not('cover_image', 'is', null)
+    .eq("is_published", true);
+
+  if (countError) {
+    console.error("Error fetching zine count:", countError.message);
+    throw new Error(countError.message);
+  }
+
+  if (!count || count === 0) {
+    return null;
+  }
+
+  const randomOffset = Math.floor(Math.random() * count);
+
+  const { data, error }: PostgrestResponse<Zine> = await supabase
+    .from("library_zines")
+    .select(
+      '*, library_zines_authors (authors (id, name, url))'
+    )
+    .eq("is_published", true)
+    .not('cover_image', 'is', null)
+    .range(randomOffset, randomOffset)
+    .limit(1);
+
+  if (error) {
+    console.error("Error fetching random zine:", error.message);
+    throw new Error(error.message);
+  }
+
+  return data && data.length > 0 ? data[0] : null;
+}
+
+export const getZinesWithSpecificTag = async (tag: string): Promise<Zine[]> => {
+  const supabase = await createClient();
+
+  const { data, error }: PostgrestResponse<Zine> = await supabase.rpc('fetch_zines_by_category', { cat: tag });
+  if (error) {
+    console.error("Error fetching zines with specific tag:", error.message);
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+};
+    
+    
+
 export const getAllZines = async (): Promise<Zine[]> => {
   const supabase = await createClient();
 

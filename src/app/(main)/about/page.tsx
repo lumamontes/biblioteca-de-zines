@@ -29,7 +29,7 @@ export default function About() {
   return (
     <div className="flex flex-col items-center min-h-screen w-full mx-auto p-6 md:p-8 gap-12 max-w-screen-md">
       
-      <Image src="/logo.png" alt="Logo da Biblioteca de Zines" width={500} height={500} priority sizes="(max-width: 768px) 100vw, 500px" />
+      <Image src="/02.gif" alt="Logo da Biblioteca de Zines" width={500} height={500} priority sizes="(max-width: 768px) 100vw, 500px" />
 
       <Section title="Sobre a Biblioteca de Zines">
         O projeto Biblioteca de Zines é uma iniciativa gratuita e código-aberto que surgiu para oferecer um espaço para zines independentes do Brasil.
