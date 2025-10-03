@@ -12,10 +12,10 @@ const PLACEHOLDER_COVER_IMAGE = "/home-gif.gif";
 
 const PUBLICATION_LINKS = [
   "https://www.instagram.com/p/DGG5aOIRRVI/?igsh=cmt4d2xhbWl6MWN6&img_index=2",
-  "https://www.youtube.com/live/woWFBtIE_Gs",
+  // "https://www.youtube.com/live/woWFBtIE_Gs",
   "https://dropsdejogos.uai.com.br/noticias/indie/biblioteca-de-zines-reune-obras-indie-do-br-para-ler-de-graca/",
   "https://hqpop.com.br/descubra-a-biblioteca-brasileira-de-zines-a-nova-casa-da-arte-independente/",
-  "https://www.youtube.com/watch?v=ytK3c0utVE8"
+  // "https://www.youtube.com/watch?v=ytK3c0utVE8"
 ];
 
 function getMediaType(url: string): 'instagram' | 'youtube' | 'article' {
