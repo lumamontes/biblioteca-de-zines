@@ -3,7 +3,6 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { debounce } from 'lodash';
 import { searchZines } from '@/services/zine-service';
 import { Zine } from '@/@types/zine';
-import { Tables } from '@/types/database.types';
 
 export interface ZineFilters {
   search: string;
@@ -18,7 +17,7 @@ export interface UseZineFiltersReturn {
   loading: boolean;
   hasActiveFilters: boolean;
   availableYears: number[];
-  updateFilter: (key: keyof ZineFilters, value: any) => void;
+  updateFilter: (key: keyof ZineFilters, value: string | string[]) => void;
   clearAllFilters: () => void;
 }
 
@@ -26,7 +25,6 @@ const SEARCH_DEBOUNCE_MS = 600;
 
 export function useZineFilters(
   initialZines: Zine[],
-  categories: Tables<'categories'>[]
 ): UseZineFiltersReturn {
   const router = useRouter();
   const pathname = usePathname();
@@ -82,7 +80,6 @@ export function useZineFilters(
           categories: newFilters.categories,
         });
         
-        // Apply year filter client-side for better UX
         const finalZines = newFilters.publishedYears.length > 0
           ? filteredZines.filter(zine => 
               zine.year && newFilters.publishedYears.includes(zine.year.toString())
@@ -112,7 +109,7 @@ export function useZineFilters(
     updateURL(filters);
   }, [filters, updateURL]);
 
-  const updateFilter = useCallback((key: keyof ZineFilters, value: any) => {
+  const updateFilter = useCallback((key: keyof ZineFilters, value: string | string[]) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   }, []);
 

@@ -117,7 +117,7 @@ export default function ZineForm({
         </div>
 
         <div className="md:col-span-2">
-          {loadingCategories ? (
+          {!categories ? (
             <div className="animate-pulse">
               <div className="h-4 bg-neutral-200 rounded w-24 mb-2"></div>
               <div className="h-10 bg-neutral-200 rounded"></div>

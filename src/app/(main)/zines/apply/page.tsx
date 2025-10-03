@@ -12,10 +12,12 @@ import { useZineForm } from "@/hooks/use-zine-form";
 import { useAdditionalInfoForm } from "@/hooks/use-additional-info-form";
 import { submitZine } from "./actions";
 import InfoBox from "@/components/ui/info-box";
-import { useCallback, useTransition, Suspense } from "react";
+import { useCallback, useTransition, Suspense, useState, useEffect } from "react";
 import { get } from "@/utils/local-storage";
 import { toast } from "sonner";
 import { pipe } from "composable-functions";
+import { Tables } from "@/types/database.types";
+import { getCategories } from "@/services/categories-service";
 
 const hasFormDataInStorage = (): boolean => {
   const formData = get('apply-zine-form-data', { 
@@ -35,6 +37,13 @@ function ApplyZineForm() {
   const zineForm = useZineForm();
   const additionalInfoForm = useAdditionalInfoForm();
   const [isPending, startTransition] = useTransition();
+  const [categories, setCategories] = useState<Tables<"categories">[]>([]);
+
+  useEffect(() => {
+    getCategories().then(setCategories).catch(() => {
+      toast.error('Erro ao carregar categorias');
+    });
+  }, []);
 
   const clearAllForms = useCallback(() => {
     authorForm.clearAuthors();
@@ -169,6 +178,7 @@ function ApplyZineForm() {
                     onRemoveZine={zineForm.removeZine}
                     onUpdateCategories={zineForm.updateZineCategories}
                     disabled={isPending}
+                    categories={categories}
                   />
                 ))}
                 
