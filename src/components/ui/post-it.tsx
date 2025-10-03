@@ -1,7 +1,7 @@
 "use client";
 import { ReactNode } from 'react';
 import { cn } from '@/utils/lib';
-
+import { ArrowRight } from 'lucide-react'
 interface PostItProps {
   children: ReactNode;
   color?: 'yellow' | 'pink' | 'blue' | 'green' | 'orange' | 'zine-yellow' | 'zine-blue' | 'zine-green';
@@ -48,7 +48,6 @@ export function PostIt({
         className
       )}
       style={{
-        transform: `rotate(${rotation}deg)`,
         background: color.startsWith('zine-') ? undefined : 
           `linear-gradient(135deg, ${color === 'yellow' ? '#fef3c7' : 
                      color === 'pink' ? '#fce7f3' : 
@@ -58,12 +57,6 @@ export function PostIt({
                      color === 'pink' ? '#f9a8d4' : 
                      color === 'blue' ? '#93c5fd' :
                      color === 'green' ? '#6ee7b7' : '#fdba74'} 100%)`
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = `rotate(${hoverRotation}deg) scale(1.05)`;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = `rotate(${rotation}deg) scale(1)`;
       }}
     >
       {/* Paper texture overlay */}
@@ -113,7 +106,8 @@ export function PostItZineInfo({
           href={`/zines/${slug}`} 
           className="text-xs underline text-zine-darkblue hover:opacity-80 transition-colors duration-200"
         >
-          → ver zine
+           ver zine
+          <ArrowRight className="inline w-3 h-3 mb-0.5" />
         </a>
       </div>
     </PostIt>
