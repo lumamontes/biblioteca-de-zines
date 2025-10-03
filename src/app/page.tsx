@@ -75,7 +75,7 @@ export default async function HomePage() {
         <div className="w-full md:w-1/2 flex items-center justify-end mt-10 md:mt-0 p-8 ">
           {randomZine ? (
             <div className="relative group perspective-1000">
-              <div className="relative transform hover:scale-105 hover:rotate-3d hover:-translate-y-2 transition-all duration-300 cursor-pointer group-hover:shadow-2xl">
+              <div className="relative transform hover:scale-105  transition-all duration-300 cursor-pointer group-hover:shadow-2xl">
                 <div className="bg-white p-3 shadow-xl border border-gray-200 transform rotate-1 hover:rotate-2 transition-transform duration-300">
                   <Image
                     src={thumbnailUrl}
