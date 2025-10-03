@@ -31,8 +31,6 @@ const sizeClasses = {
 export function PostIt({ 
   children, 
   color = 'yellow', 
-  rotation = -3, 
-  hoverRotation = 6,
   size = 'sm',
   className = '' 
 }: PostItProps) {
