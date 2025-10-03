@@ -23,7 +23,7 @@ export default function FilteredZines({ initialZines, categories }: FilteredZine
     availableYears,
     updateFilter,
     clearAllFilters,
-  } = useZineFilters(initialZines, categories);
+  } = useZineFilters(initialZines);
 
   const handleCategoryClick = useCallback((category: string) => {
     if (!filters.categories.includes(category)) {
