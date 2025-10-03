@@ -170,12 +170,6 @@ export async function MediaMention({ url, type }: MediaMentionProps) {
               <div className="text-4xl">{typeIcon}</div>
             </div>
           )}
-          {/* Domain badge */}
-          <div className="absolute top-2 right-2">
-            <span className="bg-zine-darkblue text-white text-xs font-bold px-2 py-1 rounded">
-              {metadata.siteName}
-            </span>
-          </div>
         </div>
 
         {/* Content */}
@@ -188,10 +182,6 @@ export async function MediaMention({ url, type }: MediaMentionProps) {
               {metadata.description}
             </p>
           )}
-          <div className="mt-2 flex items-center text-xs text-black/60">
-            <span>{typeIcon}</span>
-            <span className="ml-1 truncate">{metadata.siteName}</span>
-          </div>
         </div>
       </div>
     </Link>
