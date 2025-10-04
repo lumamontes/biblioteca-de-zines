@@ -158,7 +158,6 @@ export default async function HomePage() {
         <div className="text-center">
           <Link
             href="/zines-club"
-            target="_blank"
             className="bg-black inline-block text-base font-bold px-8 py-4 border-2 border-black text-white transform hover:rotate-1 hover:scale-105 transition-all duration-200  ]"
           >
             PARTICIPAR DO CLUBE :)
