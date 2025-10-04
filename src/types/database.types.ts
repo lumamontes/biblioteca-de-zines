@@ -55,6 +55,7 @@ export type Database = {
         Row: {
           author_name: string | null
           author_url: string | null
+          author_email: string | null
           collection_title: string | null
           cover_image: string | null
           created_at: string | null

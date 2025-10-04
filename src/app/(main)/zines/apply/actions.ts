@@ -58,6 +58,7 @@ const createDatabaseEntries = composable(async (formData: ZineFormData) => {
     collection_title: zine.collectionTitle?.trim() || null,
     author_name: authorNames.join(", "),
     author_url: allSocialLinks.length > 0 ? allSocialLinks.join(", ") : null,
+    author_email: formData.additionalInfo.contactEmail,
     pdf_url: zine.pdfUrl.trim(),
     description: zine.description?.trim() || null,
     cover_image: zine.coverImageUrl?.trim() || null,
