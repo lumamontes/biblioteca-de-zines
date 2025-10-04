@@ -4,8 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 const monthlyThemes = [
-  { month: "Agosto", theme: "Cacarecos", status: "passado" },
-  { month: "Setembro", theme: "Lista", status: "atual" },
+  { month: "Agosto", 
+    theme: "Cacarecos", 
+    status: "passado", 
+   },
+  { month: "Setembro", theme: "Lista", status: "passado" },
+  { month: "Outubro", theme: "Zinetober", status: "atual" },
 ];
 
 export default async function ZinesClub() {
@@ -17,10 +21,10 @@ export default async function ZinesClub() {
       <section className="px-4 py-12 max-w-4xl mx-auto">
 
         <Image 
-          src="/clubedezines.png"
+          src="/clubedezine_header_asset.png"
           alt="Clube de Zines"
-          width={300}
-          height={200}
+          width={600}
+          height={400}
           className="mx-auto mb-6"
         />
 
@@ -28,11 +32,8 @@ export default async function ZinesClub() {
           Clube de Zines
         </h1>
         <div className="prose max-w-none text-center">
-          <p className="text-lg mb-4 font-mono">
-            Um clube online para temas mensais e criação de zines.
-          </p>
-          <p className="text-sm text-gray-600 font-mono">
-            Interprete os temas como quiser. Compartilhe com #ClubeDeZines
+          <p className="text-sm mb-4 text-gray-600 font-mono">
+            Um clube online para criar zines e estimular a criatividade. Faça zines, compartilhe com #ClubeDeZines e mande sua criação para o acervo da Biblioteca!
           </p>
         </div>
       </section>
