@@ -28,6 +28,10 @@ export function joinAuthors(
   if(!library_zines_authors || library_zines_authors.length === 0) {
     return "";
   }
+  if(library_zines_authors.length > 3) {
+    const firstThree = library_zines_authors.slice(0, 2).map((a) => a.authors.name);
+    return `${firstThree.join(", ")} e mais ${library_zines_authors.length - 2}`;
+  }
   return library_zines_authors.map((a) => a.authors.name).join(", ");
 }
 
