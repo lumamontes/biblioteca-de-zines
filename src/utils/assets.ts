@@ -1,4 +1,8 @@
 export function getThumbnailUrl(url: string) {
+  if (url.startsWith('file://')) {
+    return null;
+  }
+
   const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
   
   if (fileIdMatch) {

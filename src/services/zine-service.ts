@@ -4,22 +4,35 @@ import { createClient as createBrowser } from "@/utils/supabase/client";
 import { PostgrestResponse } from "@supabase/supabase-js";
 import { getZineCategories } from "@/utils/utils";
 
-export const getPublishedZines = async (): Promise<Zine[]> => {
+export const getPublishedZines = async (
+  page: number = 1,
+  limit: number = 20
+): Promise<{ zines: Zine[]; totalCount: number }> => {
   const supabase = await createClient();
 
-  const { data, error }: PostgrestResponse<Zine> = await supabase
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { data, error, count }: PostgrestResponse<Zine> = await supabase
     .from("library_zines")
     .select(
-      '*, library_zines_authors (authors (id, name, url))'
+      '*, library_zines_authors (authors (id, name, url, slug))',
+      { count: 'exact' }
     )
-    .eq("is_published", true);
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .range(from, to)
+    .limit(limit);
 
   if (error) {
     console.error("Error fetching published zines:", error.message);
     throw new Error(error.message);
   }
 
-  return data ?? [];
+  return {
+    zines: data ?? [],
+    totalCount: count ?? 0
+  };
 };
 
 export const getRandomZine = async (): Promise<Zine | null> => {
@@ -45,7 +58,7 @@ export const getRandomZine = async (): Promise<Zine | null> => {
   const { data, error }: PostgrestResponse<Zine> = await supabase
     .from("library_zines")
     .select(
-      '*, library_zines_authors (authors (id, name, url))'
+      '*, library_zines_authors (authors (id, name, url, slug))'
     )
     .eq("is_published", true)
     .not('cover_image', 'is', null)
@@ -80,7 +93,7 @@ export const getAllZines = async (): Promise<Zine[]> => {
   const { data, error }: PostgrestResponse<Zine> = await supabase
     .from("library_zines")
     .select(
-      '*, library_zines_authors (authors (id, name, url))'
+      '*, library_zines_authors (authors (id, name, url, slug))'
     );
 
   if (error) {
@@ -97,7 +110,7 @@ export const getZineBySlug = async (slug: string): Promise<Zine | null> => {
   const { data, error } = await supabase
     .from("library_zines")
     .select(
-      '*, library_zines_authors (authors (id, name, url))'
+      '*, library_zines_authors (authors (id, name, url, slug))'
     )
     .eq("slug", slug)
     .eq("is_published", true)
@@ -131,7 +144,7 @@ export const searchZines = async ({
   let query = supabase
     .from("library_zines")
     .select(
-      "*, library_zines_authors!inner(authors!inner(id, name, url))"
+      "*, library_zines_authors!inner(authors!inner(id, name, url, slug))"
     ).
     eq("is_published", true);
 
@@ -175,7 +188,7 @@ export const searchZines = async ({
   if (authorIds.length > 0) {
     let queryAuthorZines = supabase
       .from("library_zines")
-      .select("*, library_zines_authors!inner(authors!inner(id, name, url))")
+      .select("*, library_zines_authors!inner(authors!inner(id, name, url, slug))")
       .eq("is_published", true)
       .in("library_zines_authors.authors.id", authorIds);
 

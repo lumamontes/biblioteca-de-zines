@@ -2,17 +2,16 @@ import Link from "next/link";
 import { getThumbnailUrl } from "@/utils/assets";
 import { joinAuthors, getZineCategories } from "@/utils/utils";
 import { Zine } from "@/@types/zine";
-import CategoryBadge from "./category-badge";
+import CategoryBadgeServer from "./category-badge-server";
 import YearBadge from "./year-badge";
 import { PLACEHOLDER_COVER_IMAGE } from "@/app/config/site";
 import { limitText } from "@/utils/string";
 
-type ZineCardProps = {
+type ZineCardServerProps = {
   zine: Zine;
-  onCategoryClick?: (category: string) => void;
 };
 
-const ZineCard: React.FC<ZineCardProps> = ({ zine, onCategoryClick }) => {
+export default function ZineCardServer({ zine }: ZineCardServerProps) {
   const thumbnailUrl = zine.cover_image 
     ? (getThumbnailUrl(zine.cover_image) || PLACEHOLDER_COVER_IMAGE)
     : PLACEHOLDER_COVER_IMAGE;
@@ -40,8 +39,8 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine, onCategoryClick }) => {
           <div className="max-w-sm flex justify-center mt-2 mx-auto">
             {publishedYear && <YearBadge year={publishedYear} />}
           </div>
-            {categories.length > 0 && (
-           <CategoryBadge categories={categories} onCategoryClick={onCategoryClick} />
+          {categories.length > 0 && (
+            <CategoryBadgeServer categories={categories} />
           )}
           <p className="mt-2 text-sm text-gray-600">{limitText(zine.description ?? '')}</p>
         </div>
@@ -57,6 +56,5 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine, onCategoryClick }) => {
       </div>
     </div>
   );
-};
+}
 
-export default ZineCard;

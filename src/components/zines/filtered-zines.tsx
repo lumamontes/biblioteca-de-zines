@@ -8,22 +8,26 @@ import { FilterButton } from "./filter-button";
 import { SearchInput } from "./search-input";
 import { FiltersGrid } from "./filters-grid";
 import { ZineGrid } from "./zine-grid";
+import { Pagination } from "./pagination";
+import { QuantitySelector } from "./quantity-selector";
 
 interface FilteredZinesProps {
   initialZines: Zine[];
+  initialTotalCount: number;
   categories: Tables<"categories">[];
 }
 
-export default function FilteredZines({ initialZines, categories }: FilteredZinesProps) {
+export default function FilteredZines({ initialZines, initialTotalCount, categories }: FilteredZinesProps) {
   const {
-    zines,
+    paginatedZines,
     filters,
     loading,
     hasActiveFilters,
     availableYears,
+    totalPages,
     updateFilter,
     clearAllFilters,
-  } = useZineFilters(initialZines);
+  } = useZineFilters(initialZines, initialTotalCount);
 
   const handleCategoryClick = useCallback((category: string) => {
     if (!filters.categories.includes(category)) {
@@ -93,13 +97,30 @@ export default function FilteredZines({ initialZines, categories }: FilteredZine
         <h2 id="results-heading" className="sr-only">
           Resultados da busca
         </h2>
+        
+       
         <ZineGrid
-          zines={zines}
+          zines={paginatedZines}
           loading={loading}
           hasActiveFilters={hasActiveFilters}
           onClearFilters={clearAllFilters}
           onCategoryClick={handleCategoryClick}
         />
+        <div className="flex flex-row justify-between items-start sm:items-center gap-4 mb-4">
+         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+          <QuantitySelector
+            value={filters.limit}
+            onChange={(limit) => updateFilter('limit', limit)}
+          />
+        </div>
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={filters.page}
+            totalPages={totalPages}
+            onPageChange={(page) => updateFilter('page', page)}
+          />
+        )}
+        </div>
       </section>
     </div>
   );

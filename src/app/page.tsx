@@ -27,7 +27,9 @@ function getMediaType(url: string): 'instagram' | 'youtube' | 'article' {
 export default async function HomePage() {
   const randomZine = await getRandomZine();
 
-  const thumbnailUrl = randomZine && randomZine.cover_image ? getThumbnailUrl(randomZine.cover_image) : PLACEHOLDER_COVER_IMAGE;
+  const thumbnailUrl = randomZine && randomZine.cover_image 
+    ? (getThumbnailUrl(randomZine.cover_image) || PLACEHOLDER_COVER_IMAGE)
+    : PLACEHOLDER_COVER_IMAGE;
   
   return (
     <>

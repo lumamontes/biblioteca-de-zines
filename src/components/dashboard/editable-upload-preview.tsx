@@ -33,7 +33,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
   const [isLoading, setIsLoading] = useState(false);
 
   const thumbnailUrl = upload.cover_image
-    ? getThumbnailUrl(upload.cover_image)
+    ? (getThumbnailUrl(upload.cover_image) || "/placeholder.png")
     : "/placeholder.png";
 
   const existingTags = parseTags(upload.tags);
@@ -77,13 +77,17 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
   }, []);
 
   const onSubmit = async (data: EditUploadFormData) => {
+    console.log('Submitting data:', data);
     setIsLoading(true);
     const result = await updateUpload(upload.id, data);
+    console.log('Update result:', result);
     if (result.success) {
+      console.log('Update successful:', result.message);
       toast.success(result.message);
       setIsEditing(false);
       reset(data);
     } else {
+      console.log('Update failed:', result.message);
       toast.error(result.message);
     }
     setIsLoading(false)
@@ -101,13 +105,15 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
         className="flex flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
       >
         <div className="flex-shrink-0">
-          <Image
-            src={thumbnailUrl}
-            alt={`Capa da zine ${upload.title}`}
-            width={120}
-            height={120}
-            className="rounded-md object-cover"
-          />
+          {thumbnailUrl && thumbnailUrl  !== '' && (
+            <Image
+              src={thumbnailUrl}
+              alt={`Capa da zine ${upload.title}`}
+              width={120}
+              height={120}
+              className="rounded-md object-cover"
+            />
+          )}
         </div>
 
         <div className="flex flex-col flex-grow space-y-4">

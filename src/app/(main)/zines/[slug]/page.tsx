@@ -4,6 +4,7 @@ import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { getSlugZineMetadata } from "@/utils/metadata";
 import { joinAuthors, getZineCategories } from "@/utils/utils";
+import { siteConfig } from "@/app/config/site";
 import Link from "next/link";
 
 export async function generateMetadata({
@@ -21,7 +22,9 @@ export async function generateMetadata({
     };
   }
 
-  const thumbnailUrl = preview.cover_image ? getThumbnailUrl(preview.cover_image) : "";
+  const thumbnailUrl = preview.cover_image 
+    ? (getThumbnailUrl(preview.cover_image) || siteConfig.ogImage)
+    : siteConfig.ogImage;
 
   return getSlugZineMetadata(slug, preview, thumbnailUrl);
 }
@@ -56,8 +59,8 @@ export default async function ZinePreview({
       {preview.library_zines_authors.length > 0 && preview.library_zines_authors.map(({authors}) => (
           <Link
             key={authors.id}
-            href={authors.url || "#"}
-            target="_blank"
+            href={authors.slug ? `/authors/${authors.slug}` : authors.url || "#"}
+            {...(authors.slug ? {} : { target: "_blank" })}
             className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-black border border-black rounded-md hover:bg-neutral-100 transition"
           >
             Conhecer autor: {authors.name}
