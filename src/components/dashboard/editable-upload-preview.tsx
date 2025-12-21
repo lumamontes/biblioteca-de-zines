@@ -33,7 +33,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
   const [isLoading, setIsLoading] = useState(false);
 
   const thumbnailUrl = upload.cover_image
-    ? getThumbnailUrl(upload.cover_image)
+    ? (getThumbnailUrl(upload.cover_image) || "/placeholder.png")
     : "/placeholder.png";
 
   const existingTags = parseTags(upload.tags);

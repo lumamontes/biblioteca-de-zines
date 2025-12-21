@@ -1,5 +1,4 @@
 import { createClient } from "@/utils/supabase/server";
-import { createClient as createBrowser } from "@/utils/supabase/client";
 import { PostgrestResponse } from "@supabase/supabase-js";
 import { Zine } from "@/@types/zine";
 import { Tables } from "@/types/database.types";
