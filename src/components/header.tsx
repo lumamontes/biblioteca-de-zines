@@ -44,6 +44,11 @@ export default function Header() {
             </Link>
           </li>
           <li>
+            <Link href="/blog" className="hover:underline">
+              Blog
+            </Link>
+          </li>
+          <li>
             <SuggestZineLink />
           </li>
         </ul>
@@ -80,8 +85,14 @@ export default function Header() {
                 Clube de Zines
               </Link>
             </li>
-           
             <li>
+              <Link
+                href="/blog"
+                className="hover:underline"
+                onClick={toggleMenu}
+              >
+                Blog
+              </Link>
             </li>
             <li>
               <SuggestZineLink />
