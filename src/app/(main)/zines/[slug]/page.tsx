@@ -56,8 +56,8 @@ export default async function ZinePreview({
       {preview.library_zines_authors.length > 0 && preview.library_zines_authors.map(({authors}) => (
           <Link
             key={authors.id}
-            href={authors.url || "#"}
-            target="_blank"
+            href={authors.slug ? `/authors/${authors.slug}` : authors.url || "#"}
+            {...(authors.slug ? {} : { target: "_blank" })}
             className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-black border border-black rounded-md hover:bg-neutral-100 transition"
           >
             Conhecer autor: {authors.name}
