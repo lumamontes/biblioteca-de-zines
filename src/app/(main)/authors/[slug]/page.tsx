@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAuthorMetadata } from "@/utils/metadata";
 import { getThumbnailUrl } from "@/utils/assets";
+import { AuthorStructuredData, BreadcrumbStructuredData } from "@/components/seo/structured-data";
+import { siteConfig } from "@/app/config/site";
+import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
 
 export async function generateMetadata({
   params,
@@ -43,10 +46,20 @@ export default async function AuthorPage({
 
   const zines = await getAuthorZines(author.id);
 
+  const breadcrumbItems = [
+    { name: "Início", url: siteConfig.url },
+    { name: "Autores", url: `${siteConfig.url}/authors` },
+    { name: author.name, url: `${siteConfig.url}/authors/${slug}`, current: true }
+  ];
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <section className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">{author.name}</h1>
+    <>
+      <AuthorStructuredData author={author} zines={zines} />
+      <BreadcrumbStructuredData items={breadcrumbItems} />
+      <BreadcrumbWrapper items={breadcrumbItems}>
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <section className="mb-8">
+          <h1 className="text-3xl font-bold mb-4">{author.name}</h1>
         
         {author.bio && (
           <p className="text-lg mb-4 max-w-3xl">{author.bio}</p>
@@ -80,8 +93,10 @@ export default async function AuthorPage({
         ) : (
           <ZineGridServer zines={zines} />
         )}
-      </section>
-    </div>
+          </section>
+        </div>
+      </BreadcrumbWrapper>
+    </>
   );
 }
 
