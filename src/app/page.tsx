@@ -6,6 +6,20 @@ import { getThumbnailUrl } from "@/utils/assets";
 import Header from "@/components/header";
 import { PostItZineInfo } from "@/components/ui/post-it";
 import { MediaMention } from "@/components/media-mention";
+import { WebsiteStructuredData } from "@/components/seo/structured-data";
+import { siteConfig } from "./config/site";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: `${siteConfig.name} - Arquivo Digital de Zines Brasileiros e Latino-Americanos`,
+  description: siteConfig.description,
+  alternates: {
+    canonical: siteConfig.url,
+  },
+  openGraph: {
+    url: siteConfig.url,
+  },
+}
 
 const PLACEHOLDER_COVER_IMAGE = "/home-gif.gif";
 
@@ -33,6 +47,7 @@ export default async function HomePage() {
   
   return (
     <>
+      <WebsiteStructuredData />
       <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 md:px-12">
           <Header />
@@ -131,8 +146,8 @@ export default async function HomePage() {
         </div>
           
           <div className="max-w-6xl mx-auto px-4 md:px-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {PUBLICATION_LINKS.map((link, index) => (
-              <MediaMention key={index} url={link} type={getMediaType(link)} />
+            {PUBLICATION_LINKS.map((link) => (
+              <MediaMention key={link} url={link} type={getMediaType(link)} />
             ))}
           </div>
       </div>
