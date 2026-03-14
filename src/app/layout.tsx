@@ -1,4 +1,3 @@
-// layout.tsx
 import type { Metadata } from "next";
 import { Azeret_Mono } from "next/font/google";
 import "./globals.css";
@@ -7,7 +6,11 @@ import { siteConfig } from "./config/site";
 import { Toaster } from "sonner";
 import { OrganizationStructuredData } from "@/components/seo/structured-data";
 
-const azeret = Azeret_Mono({ subsets: ["latin"] });
+const azeret = Azeret_Mono({ 
+  subsets: ["latin"],
+  variable: "--font-azeret",
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -27,11 +30,7 @@ export const metadata: Metadata = {
     "zine culture",
     "DIY publishing"
   ],
-  authors: [
-    {
-      name: "Luma Montes",
-    },
-  ],
+  authors: [{ name: "Luma Montes" }],
   openGraph: {
     type: "website",
     locale: "pt_BR",
@@ -64,10 +63,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="pt-BR">
-      <body className={azeret.className}>
+    <html lang="pt-BR" className={azeret.variable}>
+      <body suppressHydrationWarning>
         <OrganizationStructuredData />
-        <div>{children}</div>
+        <div className={azeret.className}>{children}</div>
         <Toaster 
           richColors 
           position="top-right" 
