@@ -1,6 +1,22 @@
 import { ExternalLink } from "@/components/about/external-link";
 import { Section } from "@/components/about/section";
 import Image from "next/image";
+import { siteConfig } from "@/app/config/site";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: `Sobre - ${siteConfig.name}`,
+  description: "Conheça a Biblioteca de Zines, iniciativa gratuita e código aberto para arquivar e compartilhar zines independentes brasileiros e latino-americanos. Descubra o que são zines e nossa missão.",
+  alternates: {
+    canonical: `${siteConfig.url}/about`,
+  },
+  openGraph: {
+    title: `Sobre - ${siteConfig.name}`,
+    description: "Projeto gratuito e código aberto para zines independentes do Brasil e América Latina",
+    url: `${siteConfig.url}/about`,
+    type: "website",
+  },
+};
 
 const RELATED_LINKS = [
   {
@@ -52,8 +68,8 @@ export default function About() {
       <nav className="w-full max-w-xl mx-auto">
         <p className="text-lg font-bold text-center mb-4">Links legais relacionados</p>
         <ul className="list-disc list-inside space-y-3 text-sm">
-          {RELATED_LINKS.map((link, index) => (
-            <ExternalLink key={index} {...link} />
+          {RELATED_LINKS.map((link) => (
+            <ExternalLink key={link.url} {...link} />
           ))}
         </ul>
       </nav>
