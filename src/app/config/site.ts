@@ -11,7 +11,7 @@ export type SiteConfig = {
 export const siteConfig: SiteConfig = {
   name: "Biblioteca de Zines",
   description:
-    "Website para arquivar e compartilhar zines de artistas independentes",
+    "Arquivo digital de zines brasileiros e latino-americanos. Descubra e explore publicações independentes, arte underground e cultura DIY de artistas emergentes do Brasil e América Latina.",
   url: "https://biblioteca-de-zines.com.br",
   ogImage: "https://biblioteca-de-zines.com.br/manifest/og.jpg",
   links: {

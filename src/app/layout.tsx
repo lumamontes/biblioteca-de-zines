@@ -5,13 +5,28 @@ import "./globals.css";
 import { PropsWithChildren } from "react";
 import { siteConfig } from "./config/site";
 import { Toaster } from "sonner";
+import { OrganizationStructuredData } from "@/components/seo/structured-data";
 
 const azeret = Azeret_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
-  keywords: ["Graphic novel", "Illustration", "Comics"],
+  keywords: [
+    "zines",
+    "zines brasileiros", 
+    "arte independente",
+    "publicações independentes",
+    "artistas brasileiros",
+    "cultura underground",
+    "fanzines",
+    "quadrinhos independentes",
+    "ilustração brasileira",
+    "arte latina",
+    "biblioteca digital",
+    "zine culture",
+    "DIY publishing"
+  ],
   authors: [
     {
       name: "Luma Montes",
@@ -19,11 +34,19 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "pt_BR",
     url: "https://biblioteca-de-zines.com.br",
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Biblioteca de Zines - Arquivo digital de zines brasileiros e latino-americanos",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -41,8 +64,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body className={azeret.className}>
+        <OrganizationStructuredData />
         <div>{children}</div>
         <Toaster 
           richColors 
