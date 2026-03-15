@@ -49,15 +49,18 @@ const createDatabaseEntries = composable(async (formData: ZineFormData) => {
     .map((author: Author) => author.name.trim())
     .filter((name: string) => name);
     
-  const allSocialLinks = formData.authors.flatMap((author: Author) => 
-    author.socialLinks?.filter((link: string) => link.trim()) || []
-  );
+  const authorUrls = formData.authors
+    .map((author: Author) => {
+      const links = author.socialLinks?.filter((link: string) => link.trim()) || [];
+      return links.length > 0 ? links.join(", ") : "";
+    })
+    .filter((urls: string) => urls);
 
   const zinesData: TablesInsert<"form_uploads">[] = formData.zines.map((zine) => ({
     title: zine.title.trim(),
     collection_title: zine.collectionTitle?.trim() || null,
     author_name: authorNames.join(", "),
-    author_url: allSocialLinks.length > 0 ? allSocialLinks.join(", ") : null,
+    author_url: authorUrls.length > 0 ? authorUrls.join(" | ") : null,
     author_email: formData.additionalInfo.contactEmail,
     pdf_url: zine.pdfUrl.trim(),
     description: zine.description?.trim() || null,
