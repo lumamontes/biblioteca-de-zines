@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getRetrospectiveStatistics } from "@/services/statistics-service";
 import { StatCard } from "@/components/retrospectiva/stat-card";
 import { MonthlyBreakdown } from "@/components/retrospectiva/monthly-breakdown";
@@ -9,6 +10,10 @@ import Button from "@/components/button";
 import { logout } from "../login/actions";
 
 export default async function RetrospectivaPage() {
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
+
   const stats = await getRetrospectiveStatistics();
 
   const formatDate = (dateString: string | null) => {
@@ -186,5 +191,4 @@ export default async function RetrospectivaPage() {
     </div>
   );
 }
-
 

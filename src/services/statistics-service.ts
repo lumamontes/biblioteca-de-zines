@@ -49,6 +49,13 @@ export interface RetrospectiveStatistics {
   cumulativeZines: MonthlyData[];
 }
 
+type ZineAuthorRelation = {
+  authors: {
+    id: number;
+    name: string;
+  } | null;
+};
+
 function formatMonthName(date: Date): string {
   return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 }
@@ -199,7 +206,9 @@ export async function getRetrospectiveStatistics(): Promise<RetrospectiveStatist
   const authorZineCountMap = new Map<number, { name: string; count: number }>();
   publishedZines.forEach((zine) => {
     if (zine.library_zines_authors) {
-      zine.library_zines_authors.forEach((authorRel: any) => {
+      zine.library_zines_authors.forEach((authorRel: ZineAuthorRelation) => {
+        if (!authorRel.authors) return;
+
         const authorId = authorRel.authors.id;
         const authorName = authorRel.authors.name;
         const current = authorZineCountMap.get(authorId) || {
@@ -279,5 +288,3 @@ export async function getRetrospectiveStatistics(): Promise<RetrospectiveStatist
     cumulativeZines,
   };
 }
-
-
