@@ -1,0 +1,53 @@
+name: Monitor published resources
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: git clone --depth 1 https://github.com/lumamontes/external-resources-monitoring-cli.git monitor
+      - run: npm ci
+        working-directory: monitor
+      - run: npm run build
+        working-directory: monitor
+      - name: Export published resources from Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: node scripts/export-monitor-resources.mjs monitor-resources.json
+      - name: Check published resources
+        id: check
+        continue-on-error: true
+        run: |
+          node monitor/dist/cli.js \
+            --input monitor-resources.json \
+            --config monitor/config.yml \
+            --output resource-report.json \
+            --markdown-output resource-report.md
+      - name: Upload monitor reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-resource-monitor-report
+          path: |
+            resource-report.json
+            resource-report.md
+          if-no-files-found: error
+      - name: Apply monitor exit status
+        if: steps.check.outcome == 'failure'
+        run: exit 1

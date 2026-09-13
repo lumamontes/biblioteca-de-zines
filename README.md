@@ -23,6 +23,21 @@ Nossa stack é:
 - [Next.js](https://nextjs.org)
 - [Tailwind](https://tailwindcss.com/)
 
+### Monitoramento dos PDFs
+
+O workflow `.github/workflows/resource-monitor.yml` consulta os zines publicados
+no Supabase e verifica anonimamente os PDFs. O workflow usa os secrets existentes
+`NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`. A chave anon só funciona se
+as políticas RLS permitirem a leitura dos campos públicos de `library_zines` e
+`form_uploads`; o exportador não grava credenciais nem a coleção no repositório.
+
+O workflow pode ser executado semanalmente ou manualmente em **Actions**. Cada
+execução publica os relatórios JSON e Markdown como artefatos, mesmo quando o
+monitor encontra recursos que precisam de atenção. Para reproduzir localmente,
+execute `node scripts/export-monitor-resources.mjs resources.json` com as duas
+variáveis de ambiente e depois rode o CLI conforme documentado no repositório do
+monitor.
+
 ### Para contribuir com o projeto
 
 - Entenda nosso [Código de Conduta](CODE_OF_CONDUCT.md)
@@ -45,4 +60,3 @@ Abra [http://localhost:3000](http://localhost:3000) com seu browser para ver o s
 
 [![Avatar de lumamontes](https://github.com/lumamontes.png?size=50)](https://github.com/angelod1as)
 [![Avatar de angelod1as](https://github.com/angelod1as.png?size=50)](https://github.com/angelod1as)
-
