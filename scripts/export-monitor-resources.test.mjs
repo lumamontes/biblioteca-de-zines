@@ -26,9 +26,7 @@ test('exports published PDF URLs with stable table-prefixed IDs', async () => {
             { id: 4, title: 'A Zine', pdf_url: 'https://drive.google.com/file/d/a/view' },
             { id: 5, title: null, pdf_url: null },
           ])
-        : JSON.stringify([
-            { id: 8, title: 'An Upload', pdf_url: 'https://example.test/upload.pdf' },
-          ]),
+          : JSON.stringify([]),
     );
   });
   servers.push(server);
@@ -43,11 +41,6 @@ test('exports published PDF URLs with stable table-prefixed IDs', async () => {
         id: 'library_zines:4',
         url: 'https://drive.google.com/file/d/a/view',
         title: 'A Zine',
-      },
-      {
-        id: 'form_uploads:8',
-        url: 'https://example.test/upload.pdf',
-        title: 'An Upload',
       },
     ]);
   });

@@ -3,7 +3,7 @@
 import { writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
-const tables = ['library_zines', 'form_uploads'];
+const tables = ['library_zines'];
 
 export async function fetchMonitorResources({
   baseUrl,
