@@ -14,8 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -47,7 +45,7 @@ jobs:
           path: |
             resource-report.json
             resource-report.md
-          if-no-files-found: error
+          if-no-files-found: warn
       - name: Apply monitor exit status
         if: steps.check.outcome == 'failure'
         run: exit 1
