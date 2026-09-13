@@ -18,11 +18,11 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: git clone --depth 1 https://github.com/lumamontes/external-resources-monitoring-cli.git monitor
+      - run: git clone --depth 1 https://github.com/lumamontes/external-resources-monitoring-cli.git .monitor-cli
       - run: npm ci
-        working-directory: monitor
+        working-directory: .monitor-cli
       - run: npm run build
-        working-directory: monitor
+        working-directory: .monitor-cli
       - name: Export published resources from Supabase
         env:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -32,7 +32,7 @@ jobs:
         id: check
         continue-on-error: true
         run: |
-          node monitor/dist/cli.js \
+          node .monitor-cli/dist/cli.js \
             --input monitor-resources.json \
             --config monitor/config.yml \
             --output resource-report.json \
