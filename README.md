@@ -26,8 +26,8 @@ Nossa stack é:
 ### Monitoramento dos PDFs
 
 O workflow `.github/workflows/resource-monitor.yml` consulta os zines publicados
-no Supabase e verifica anonimamente os PDFs. Configure `SUPABASE_URL` e
-`SUPABASE_ANON_KEY` como secrets do GitHub Actions. A chave anon só funciona se
+no Supabase e verifica anonimamente os PDFs. O workflow usa os secrets existentes
+`NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`. A chave anon só funciona se
 as políticas RLS permitirem a leitura dos campos públicos de `library_zines` e
 `form_uploads`; o exportador não grava credenciais nem a coleção no repositório.
 
