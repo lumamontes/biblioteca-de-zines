@@ -2,11 +2,65 @@
 import { revalidatePath } from "next/cache";
 import { generateSlug } from "@/utils/slug";
 import { createClient } from "@/utils/supabase/server";
-import { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { Tables } from "@/types/database.types";
+import { PostgrestSingleResponse, SupabaseClient } from "@supabase/supabase-js";
+import { Database, Tables } from "@/types/database.types";
 import { parseTags } from "@/utils/utils";
 import { ZineTags } from "@/@types/zine";
 import { editUploadSchema, EditUploadFormData } from "@/schemas/edit-upload";
+import { parseUploadAuthors, flattenAuthors } from "@/utils/authors";
+import { Author } from "@/schemas/apply-zine";
+
+/** Creates/finds each author and links them to the zine (does not remove stale links). */
+async function syncZineAuthors(
+  supabase: SupabaseClient<Database>,
+  zineId: number,
+  authors: Author[],
+) {
+  for (const author of authors) {
+    const name = author.name.trim();
+    if (!name) continue;
+    const url =
+      (author.socialLinks || [])
+        .map((link) => link.trim())
+        .filter(Boolean)
+        .join(", ") || null;
+
+    const { data: existingAuthor } = await supabase
+      .from("authors")
+      .select("id")
+      .eq("name", name)
+      .single();
+
+    let authorId;
+    if (!existingAuthor) {
+      const { data: newAuthor, error: authorError } = await supabase
+        .from("authors")
+        .insert([{ name, url }])
+        .select("id")
+        .single();
+
+      if (authorError)
+        throw new Error(`Erro ao criar autor: ${authorError.message}`);
+
+      authorId = newAuthor.id;
+    } else {
+      authorId = existingAuthor.id;
+    }
+
+    const { data: existingRelation } = await supabase
+      .from("library_zines_authors")
+      .select("id")
+      .eq("zine_id", zineId)
+      .eq("author_id", authorId)
+      .single();
+
+    if (!existingRelation) {
+      await supabase
+        .from("library_zines_authors")
+        .insert([{ zine_id: zineId, author_id: authorId }]);
+    }
+  }
+}
 
 export async function unpublishZine(zineId: number) {
   const supabase = await createClient();
@@ -48,9 +102,10 @@ export async function publishZine(uploadId: number) {
   if (fetchError || !upload)
     throw new Error(`Erro ao buscar zine: ${fetchError?.message}`);
 
-  if (!upload.author_name) throw new Error("O nome do autor é obrigatório");
+  const authors = parseUploadAuthors(upload);
+  if (authors.length === 0) throw new Error("O nome do autor é obrigatório");
 
-  const slug = generateSlug(upload.author_name, upload.title);
+  const slug = generateSlug(authors[0].name, upload.title);
 
   const { data: existingZine } = await supabase
     .from("library_zines")
@@ -105,48 +160,7 @@ export async function publishZine(uploadId: number) {
       .eq("id", zineId);
   }
 
-  if (upload.author_name) {
-    const authorNames = upload.author_name
-      .split(/[,;]| e /)
-      .map((name) => name.trim());
-
-    for (const name of authorNames) {
-      const { data: existingAuthor } = await supabase
-        .from("authors")
-        .select("id")
-        .eq("name", name)
-        .single();
-
-      let authorId;
-      if (!existingAuthor) {
-        const { data: newAuthor, error: authorError } = await supabase
-          .from("authors")
-          .insert([{ name, url: upload.author_url }])
-          .select("id")
-          .single();
-
-        if (authorError)
-          throw new Error(`Erro ao criar autor: ${authorError.message}`);
-
-        authorId = newAuthor.id;
-      } else {
-        authorId = existingAuthor.id;
-      }
-
-      const { data: existingRelation } = await supabase
-        .from("library_zines_authors")
-        .select("id")
-        .eq("zine_id", zineId)
-        .eq("author_id", authorId)
-        .single();
-
-      if (!existingRelation) {
-        await supabase
-          .from("library_zines_authors")
-          .insert([{ zine_id: zineId, author_id: authorId }]);
-      }
-    }
-  }
+  await syncZineAuthors(supabase, zineId, authors);
 
   await supabase
     .from("form_uploads")
@@ -164,15 +178,16 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
     const tags: ZineTags = {
       categories: validatedData.categories || [],
     };
-    
+    const { author_name, author_url } = flattenAuthors(validatedData.authors);
+
     const { error } = await supabase
       .from("form_uploads")
       .update({
         title: validatedData.title,
         description: validatedData.description || null,
         collection_title: validatedData.collection_title || null,
-        author_name: validatedData.author_name,
-        author_url: validatedData.author_url || null,
+        author_name,
+        author_url,
         pdf_url: validatedData.pdf_url || null,
         cover_image: validatedData.cover_image || null,
         published_year: validatedData.published_year || null,
