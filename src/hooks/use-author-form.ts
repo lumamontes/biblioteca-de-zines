@@ -5,6 +5,7 @@ import { composable } from 'composable-functions';
 import { z } from 'zod';
 import { Author, AuthorSchema, FORM_STORAGE_KEY, defaultFormData } from "@/schemas/apply-zine";
 import { get, set } from "@/utils/local-storage";
+import { useAuthorsListEditor } from "./use-authors-list-editor";
 
 const validateAuthors = composable((authors: Author[]) => {
   const schema = z.array(AuthorSchema).min(1, 'Pelo menos um autor é obrigatório');
@@ -16,88 +17,32 @@ const validateAuthors = composable((authors: Author[]) => {
 });
 
 export function useAuthorForm() {
-  const [authors, setAuthors] = useState<Author[]>([{ name: "", socialLinks: [] }]);
+  const [authors, setAuthorsState] = useState<Author[]>([{ name: "", socialLinks: [] }]);
 
   useEffect(() => {
     const formData = get(FORM_STORAGE_KEY, defaultFormData);
     if (formData.authors && formData.authors.length > 0) {
-      setAuthors(formData.authors);
+      setAuthorsState(formData.authors);
     }
   }, []);
 
-  const saveToStorage = (newAuthors: Author[]) => {
+  const setAuthors = (newAuthors: Author[]) => {
+    setAuthorsState(newAuthors);
     const formData = get(FORM_STORAGE_KEY, defaultFormData);
     formData.authors = newAuthors;
     set(FORM_STORAGE_KEY, formData);
   };
 
-  const addAuthor = () => {
-    const newAuthors = [...authors, { name: "", socialLinks: [] }];
-    setAuthors(newAuthors);
-    saveToStorage(newAuthors);
-  };
-
-  const removeAuthor = (index: number) => {
-    if (authors.length > 1) {
-      const newAuthors = authors.filter((_, i) => i !== index);
-      setAuthors(newAuthors);
-      saveToStorage(newAuthors);
-    }
-  };
-
-  const updateAuthorName = (index: number, name: string) => {
-    const newAuthors = [...authors];
-    newAuthors[index].name = name;
-    setAuthors(newAuthors);
-    saveToStorage(newAuthors);
-  };
-
-  const addSocialLinkToAuthor = (authorIndex: number) => {
-    const newAuthors = [...authors];
-    if (newAuthors[authorIndex].socialLinks.length === 0) {
-      newAuthors[authorIndex].socialLinks = [''];
-    } else {
-      newAuthors[authorIndex].socialLinks.push('');
-    }
-    setAuthors(newAuthors);
-    saveToStorage(newAuthors);
-  };
-
-  const removeSocialLinkFromAuthor = (authorIndex: number, linkIndex: number) => {
-    const newAuthors = [...authors];
-    if (newAuthors[authorIndex].socialLinks.length > 0) {
-      newAuthors[authorIndex].socialLinks = newAuthors[authorIndex].socialLinks.filter((_, i) => i !== linkIndex);
-      setAuthors(newAuthors);
-      saveToStorage(newAuthors);
-    }
-  };
-
-  const updateAuthorSocialLink = (authorIndex: number, linkIndex: number, link: string) => {
-    const newAuthors = [...authors];
-    if (newAuthors[authorIndex].socialLinks.length === 0) {
-      newAuthors[authorIndex].socialLinks = [link];
-    } else {
-      newAuthors[authorIndex].socialLinks[linkIndex] = link;
-    }
-    setAuthors(newAuthors);
-    saveToStorage(newAuthors);
-  };
+  const editor = useAuthorsListEditor(authors, setAuthors);
 
   const clearAuthors = useCallback(() => {
-    const defaultAuthors = [{ name: "", socialLinks: [] }];
-    setAuthors(defaultAuthors);
-    saveToStorage(defaultAuthors);
+    setAuthors([{ name: "", socialLinks: [] }]);
   }, []);
 
   return {
     authors,
-    addAuthor,
-    removeAuthor,
-    updateAuthorName,
-    addSocialLinkToAuthor,
-    removeSocialLinkFromAuthor,
-    updateAuthorSocialLink,
+    ...editor,
     validateAuthors,
     clearAuthors,
   };
-} 
+}

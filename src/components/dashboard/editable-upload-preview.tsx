@@ -20,6 +20,8 @@ import { getCategories } from "@/services/categories-service";
 import MultiSelect from "../ui/multi-select";
 import { parseTags } from "@/utils/utils";
 import { toast } from "sonner";
+import { parseUploadAuthors, getLegacyAuthorLinksNotice } from "@/utils/authors";
+import AuthorsField from "./authors-field";
 
 interface EditableUploadPreviewProps {
   upload: Tables<"form_uploads">;
@@ -38,6 +40,8 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
 
   const existingTags = parseTags(upload.tags);
   const existingCategories = existingTags.categories || [];
+  const uploadAuthors = parseUploadAuthors(upload);
+  const legacyAuthorLinksNotice = getLegacyAuthorLinksNotice(upload);
 
   const {
     register,
@@ -52,8 +56,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
       title: upload.title,
       description: upload.description || "",
       collection_title: upload.collection_title || "",
-      author_name: upload.author_name || "",
-      author_url: upload.author_url || "",
+      authors: uploadAuthors.length > 0 ? uploadAuthors : [{ name: "", socialLinks: [] }],
       author_email: upload.author_email || "",
       pdf_url: upload.pdf_url || "",
       cover_image: upload.cover_image || "",
@@ -189,30 +192,11 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nome do autor *
-            </label>
-            <input
-              {...register("author_name")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <AuthorsField
+              control={control}
+              disabled={isLoading}
+              legacyLinksNotice={legacyAuthorLinksNotice}
             />
-            {errors.author_name && (
-              <p className="text-red-500 text-sm mt-1">{errors.author_name.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              URL do autor
-            </label>
-            <input
-              {...register("author_url")}
-              type="url"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.author_url && (
-              <p className="text-red-500 text-sm mt-1">{errors.author_url.message}</p>
-            )}
           </div>
 
           <div>
@@ -308,24 +292,33 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
           <p className="mt-2 text-sm text-gray-700">{upload.description}</p>
         )}
 
-        <p className="text-sm mt-2">
-          Autor: {upload.author_name}
-          {upload.author_url && (
-            <>
-              {" - "}
-              <Link
-                href={upload.author_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                {upload.author_url}
-              </Link>
-            </>
+        <div className="text-sm mt-2 space-y-1">
+          {uploadAuthors.map((author, index) => (
+            <p key={index}>
+              {author.name}
+              {author.socialLinks?.map((link, linkIndex) => (
+                <span key={linkIndex}>
+                  {" - "}
+                  <Link
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {link}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          ))}
+          <p>{upload.author_email}</p>
+          {legacyAuthorLinksNotice && (
+            <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+              ⚠️ Envio antigo: não é possível saber de qual autor é cada link abaixo.
+              Revise em &quot;Editar&quot; antes de publicar. Links originais: {legacyAuthorLinksNotice}
+            </p>
           )}
-          <br></br>
-          {upload.author_email}
-        </p>
+        </div>
 
         {upload.pdf_url && (
           <p className="text-sm mt-2">

@@ -3,6 +3,7 @@
 import { pipe, composable } from 'composable-functions';
 import { createClient } from '@/utils/supabase/server';
 import { sendTelegramNotification } from '@/utils/telegram';
+import { flattenAuthors } from '@/utils/authors';
 import { TablesInsert } from '@/types/database.types';
 import { 
   Author, 
@@ -45,22 +46,18 @@ const createDatabaseEntries = composable(async (formData: ZineFormData) => {
   const supabase = await createClient();
   const submissionBatchId = Date.now().toString();
   
-  const authorNames = formData.authors
-    .map((author: Author) => author.name.trim())
-    .filter((name: string) => name);
-    
-  const authorUrls = formData.authors
-    .map((author: Author) => {
-      const links = author.socialLinks?.filter((link: string) => link.trim()) || [];
-      return links.length > 0 ? links.join(", ") : "";
-    })
-    .filter((urls: string) => urls);
+  const structuredAuthors = formData.authors.map((author: Author) => ({
+    name: author.name.trim(),
+    socialLinks: (author.socialLinks || []).map((link) => link.trim()).filter(Boolean),
+  }));
+  const { author_name, author_url } = flattenAuthors(structuredAuthors);
+  const authorNames = structuredAuthors.map((author) => author.name);
 
   const zinesData: TablesInsert<"form_uploads">[] = formData.zines.map((zine) => ({
     title: zine.title.trim(),
     collection_title: zine.collectionTitle?.trim() || null,
-    author_name: authorNames.join(", "),
-    author_url: authorUrls.length > 0 ? authorUrls.join(" | ") : null,
+    author_name,
+    author_url,
     author_email: formData.additionalInfo.contactEmail,
     pdf_url: zine.pdfUrl.trim(),
     description: zine.description?.trim() || null,
