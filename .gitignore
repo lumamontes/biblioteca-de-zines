@@ -46,3 +46,7 @@ node_modules/
 /playwright/.cache/
 
 .auth
+
+# archived zine PDFs (scripts/archive-zine-pdfs.mjs) — never commit downloaded content
+/archive/
+*.pdf
