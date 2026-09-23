@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { promisify } from 'node:util';
 import {
   mkdir,
@@ -19,12 +20,40 @@ import slugify from 'slugify';
 const execFileAsync = promisify(execFile);
 
 export const INVENTORY_SCHEMA_VERSION = 1;
+export const INVENTORY_TOOL_VERSION = '0.1.0';
+export const KNOWN_FAILURE_CAUSES = [
+  'drive-restricted',
+  'drive-folder',
+  'external-not-found',
+  'external-uncertain',
+];
 export const INVENTORY_TABLES = [
   'library_zines',
   'authors',
   'library_zines_authors',
   'form_uploads',
 ];
+
+export function normalizeKnownFailures(input = []) {
+  const source = Array.isArray(input) ? { version: 1, failures: input } : input;
+  if (!source || !Array.isArray(source.failures)) {
+    throw new Error('Known failures must be an array or an object with a failures array');
+  }
+
+  for (const failure of source.failures) {
+    if (!failure || !KNOWN_FAILURE_CAUSES.includes(failure.cause)) {
+      throw new Error(`Unknown known-failure cause: ${failure?.cause ?? 'missing'}`);
+    }
+    if (!failure.slug && !failure.url && failure.id == null) {
+      throw new Error('Known failures require a slug, URL, or catalogue ID');
+    }
+  }
+
+  return {
+    version: source.version ?? 1,
+    failures: source.failures,
+  };
+}
 
 const DEFAULT_PAGE_SIZE = 1000;
 
@@ -193,13 +222,32 @@ async function classifyFile({ absolutePath, buffer }) {
 export async function scanArchive({
   archiveDirectory,
   classifyFile: classify = classifyFile,
+  readFileImpl = readFile,
+  statImpl = stat,
 } = {}) {
   if (!archiveDirectory) throw new Error('Archive directory is required');
   const files = [];
 
   for (const entry of await walkFiles(archiveDirectory)) {
-    const buffer = await readFile(entry.absolutePath);
-    const fileStat = await stat(entry.absolutePath);
+    let buffer;
+    let fileStat;
+    try {
+      buffer = await readFileImpl(entry.absolutePath);
+      fileStat = await statImpl(entry.absolutePath);
+    } catch (error) {
+      files.push({
+        relativePath: entry.relativePath,
+        size: null,
+        sha256: null,
+        mimeType: null,
+        status: 'invalid',
+        pdf: {
+          status: 'invalid',
+          error: error instanceof Error ? error.message : String(error),
+        },
+      });
+      continue;
+    }
     let classification;
     try {
       classification = await classify({
@@ -259,6 +307,17 @@ function secondaryCandidates(file, records) {
   });
 }
 
+function secondaryEvidence(file, record) {
+  const stem = fileStem(file.relativePath);
+  const evidence = [];
+  if (typeof record.title === 'string' && slugify(record.title, { lower: true, strict: true }) === stem) {
+    evidence.push('title');
+  }
+  if (urlStem(record.pdf_url) === stem) evidence.push('url');
+  if (record.id != null && String(record.id) === stem) evidence.push('id');
+  return evidence;
+}
+
 function knownFailureFor(record, knownFailures) {
   return knownFailures.find((failure) => (
     (failure.slug && failure.slug === record.slug)
@@ -269,6 +328,8 @@ function knownFailureFor(record, knownFailures) {
 
 export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
   const records = tableRows(snapshot, 'library_zines');
+  const knownFailureInput = normalizeKnownFailures(knownFailures);
+  const failureRows = knownFailureInput.failures;
   const filesByRecord = new Map();
   const fileResults = files.map((file) => {
     const stem = fileStem(file.relativePath);
@@ -285,6 +346,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
         confidence: method === 'slug' ? 'exact' : 'secondary',
         recordId: record.id,
         slug: record.slug ?? null,
+        ...(method === 'secondary' ? { evidence: secondaryEvidence(file, record) } : {}),
       };
       const matches = filesByRecord.get(record.id) ?? [];
       matches.push(file.relativePath);
@@ -298,12 +360,16 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
       match = { status: 'unmatched-file' };
     }
 
-    return { ...file, match };
+    return {
+      ...file,
+      status: file.status ?? (file.pdf?.status === 'invalid' ? 'invalid' : match.status),
+      match,
+    };
   });
 
   const recordResults = records.map((record) => {
     const matchedFiles = filesByRecord.get(record.id) ?? [];
-    const knownFailure = knownFailureFor(record, knownFailures);
+    const knownFailure = knownFailureFor(record, failureRows);
     if (matchedFiles.length > 0) {
       return {
         id: record.id,
@@ -321,15 +387,18 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
         knownFailure,
       };
     }
-    return { id: record.id, slug: record.slug ?? null, status: 'unmatched-record', files: [] };
+    return { id: record.id, slug: record.slug ?? null, status: 'missing', relation: 'unmatched-record', files: [] };
   });
 
   const manifest = {
     schemaVersion: INVENTORY_SCHEMA_VERSION,
-    provenance: snapshot?.provenance ?? {},
     files: fileResults,
     records: recordResults,
-    knownFailures,
+    knownFailures: failureRows,
+    provenance: {
+      ...(snapshot?.provenance ?? {}),
+      knownFailuresVersion: knownFailureInput.version,
+    },
   };
 
   return { ...manifest, sample: selectDeterministicSample(manifest) };
@@ -338,7 +407,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
 export function selectDeterministicSample(manifest, { limitPerCategory = 5 } = {}) {
   const fileCategories = {};
   for (const file of manifest.files ?? []) {
-    const categories = [file.match?.status];
+    const categories = [file.status ?? file.match?.status];
     if (file.pdf?.status === 'invalid') categories.push('invalid-pdf');
     for (const category of categories) {
       if (!category || category === 'matched') continue;
@@ -362,7 +431,10 @@ export function selectDeterministicSample(manifest, { limitPerCategory = 5 } = {
       .map(([category, values]) => [category, values.sort().slice(0, limitPerCategory)])),
     records: Object.fromEntries(Object.entries(recordCategories)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([category, values]) => [category, values.sort((a, b) => String(a).localeCompare(String(b))).slice(0, limitPerCategory)])),
+      .map(([category, values]) => [category, values.sort((a, b) => {
+        if (typeof a === 'number' && typeof b === 'number') return a - b;
+        return String(a).localeCompare(String(b));
+      }).slice(0, limitPerCategory)])),
   };
 }
 
@@ -381,7 +453,12 @@ export function compareManifests(before, after) {
     const newFile = afterFiles.get(key);
     if (!oldFile) files.added.push(key);
     else if (!newFile) files.removed.push(key);
-    else if (oldFile.sha256 !== newFile.sha256 || oldFile.size !== newFile.size) files.changed.push(key);
+    else if (
+      oldFile.sha256 !== newFile.sha256
+      || oldFile.size !== newFile.size
+      || oldFile.status !== newFile.status
+      || oldFile.match?.status !== newFile.match?.status
+    ) files.changed.push(key);
     else files.unchanged.push(key);
   }
 
@@ -439,6 +516,8 @@ export function renderReport({ snapshot, manifest, comparison = null, archiveDir
     `- Collected at: ${manifest.provenance.collectedAt ?? 'unknown'}`,
     `- Archive directory: ${archiveDirectory}`,
     `- Schema version: ${manifest.schemaVersion}`,
+    `- Tool version: ${manifest.provenance.toolVersion ?? 'unknown'}`,
+    `- Known-failure input version: ${manifest.provenance.knownFailuresVersion ?? 'unknown'}`,
     '',
     '## Coverage',
     '',
@@ -451,8 +530,20 @@ export function renderReport({ snapshot, manifest, comparison = null, archiveDir
     '## File statuses',
     '',
     '```json',
-    JSON.stringify(countBy(manifest.files.map((file) => ({ status: file.match?.status })), 'status'), null, 2),
+    JSON.stringify(countBy(manifest.files, 'status'), null, 2),
     '```',
+    '',
+    '## Domain distinctions',
+    '',
+    '- A catalogue record describes a zine; a local archive file is evidence of observed bytes.',
+    '- Original, reading copy, preview, and derivative status are not inferred from a filename or PDF validity.',
+    '- A known failure is historical evidence and is not a current recheck result.',
+    '',
+    '## Unknowns and risks',
+    '',
+    '- Authorization, consent, correction, restriction, and removal status require maintainer review.',
+    '- A matched and readable local archive file does not establish that it is an authorised original.',
+    '- Missing or ambiguous relationships require manual investigation before storage or migration decisions.',
     '',
     '## Deterministic review sample',
     '',
@@ -521,6 +612,13 @@ export async function runInventory({
     runId,
     collectedAt,
   });
+  snapshot.provenance = {
+    ...snapshot.provenance,
+    toolVersion: INVENTORY_TOOL_VERSION,
+    archiveRootDescription: 'local-archive-directory',
+    validators: ['file-mime-type', 'pdfjs-structural-parse'],
+    knownFailuresVersion: normalizeKnownFailures(knownFailures).version,
+  };
   const archive = await scanArchive({ archiveDirectory, classifyFile });
   const manifest = buildManifest({ snapshot, files: archive.files, knownFailures });
   const comparison = previousManifest ? compareManifests(previousManifest, manifest) : null;
@@ -545,7 +643,7 @@ function defaultOutputDirectory(runId) {
 function parseArguments(argv) {
   const options = {
     archiveDirectory: 'archive',
-    knownFailuresPath: null,
+    knownFailuresPath: 'monitor/known-failures.json',
     previousManifestPath: null,
     outputDirectory: null,
     allowRepositoryOutput: false,
@@ -569,7 +667,7 @@ function parseArguments(argv) {
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   const runId = isoRunId();
-  const knownFailures = options.knownFailuresPath
+  const knownFailures = options.knownFailuresPath && existsSync(options.knownFailuresPath)
     ? await readJsonFile(options.knownFailuresPath)
     : [];
   const previousManifest = options.previousManifestPath

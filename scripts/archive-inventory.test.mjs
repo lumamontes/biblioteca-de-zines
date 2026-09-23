@@ -126,7 +126,7 @@ test('matches by persisted slug before recording secondary evidence', () => {
   assert.equal(result.files[0].match.status, 'matched');
   assert.equal(result.files[0].match.method, 'slug');
   assert.equal(result.files[1].match.status, 'ambiguous');
-  assert.equal(result.records.find((record) => record.id === 2).status, 'unmatched-record');
+  assert.equal(result.records.find((record) => record.id === 2).status, 'missing');
 });
 
 test('keeps known failures without making network requests', () => {
@@ -148,13 +148,19 @@ test('compares stable manifest content while ignoring run provenance', () => {
   const before = {
     schemaVersion: 1,
     provenance: { runId: 'old', collectedAt: 'old' },
-    files: [{ relativePath: 'same.pdf', sha256: 'same' }, { relativePath: 'removed.pdf', sha256: 'old' }],
+    files: [
+      { relativePath: 'same.pdf', sha256: 'same', match: { status: 'matched' } },
+      { relativePath: 'removed.pdf', sha256: 'old', match: { status: 'matched' } },
+    ],
     records: [{ id: 1, status: 'matched' }],
   };
   const after = {
     schemaVersion: 1,
     provenance: { runId: 'new', collectedAt: 'new' },
-    files: [{ relativePath: 'same.pdf', sha256: 'changed' }, { relativePath: 'added.pdf', sha256: 'new' }],
+    files: [
+      { relativePath: 'same.pdf', sha256: 'changed', match: { status: 'ambiguous' } },
+      { relativePath: 'added.pdf', sha256: 'new', match: { status: 'matched' } },
+    ],
     records: [{ id: 1, status: 'ambiguous' }],
   };
 
@@ -162,6 +168,25 @@ test('compares stable manifest content while ignoring run provenance', () => {
     files: { added: ['added.pdf'], removed: ['removed.pdf'], changed: ['same.pdf'], unchanged: [] },
     records: { changed: [{ id: 1, from: 'matched', to: 'ambiguous' }], unchanged: [] },
   });
+});
+
+test('keeps an unreadable file as an invalid observation and continues', async () => {
+  const archiveDirectory = await makeTempDir();
+  await writeFile(path.join(archiveDirectory, 'good.pdf'), 'good');
+  await writeFile(path.join(archiveDirectory, 'unreadable.pdf'), 'secret');
+
+  const manifest = await scanArchive({
+    archiveDirectory,
+    readFileImpl: async (filePath) => {
+      if (filePath.endsWith('unreadable.pdf')) throw new Error('permission denied');
+      return Buffer.from('good');
+    },
+    classifyFile: async () => ({ mimeType: 'application/pdf', pdf: { status: 'valid', pageCount: 1 } }),
+  });
+
+  assert.equal(manifest.files.length, 2);
+  assert.equal(manifest.files.find((file) => file.relativePath === 'unreadable.pdf').status, 'invalid');
+  assert.equal(manifest.files.find((file) => file.relativePath === 'good.pdf').pdf.status, 'valid');
 });
 
 test('rejects comparisons across unsupported manifest schemas', () => {

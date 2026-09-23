@@ -51,7 +51,8 @@ pnpm archive:inventory --archive /caminho/para/archive \
   --output /caminho/fora-do-repositorio/inventory-run
 ```
 
-O arquivo de falhas conhecidas deve ser um array JSON local. Os resultados são
+O arquivo de falhas conhecidas deve ser um JSON local com `version` e uma lista
+`failures`, cada uma com `cause` estruturada. Os resultados são
 `supabase-snapshot.json`, `manifest.json` e `report.md`; uma comparação adicional
 é gravada quando `--previous` aponta para um manifesto anterior.
 
