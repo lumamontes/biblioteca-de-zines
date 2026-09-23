@@ -26,6 +26,26 @@ async function makeTempDir() {
   return directory;
 }
 
+function minimalPdf() {
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 10 10] /Contents 4 0 R /Resources << >> >>',
+    '<< /Length 0 >>\nstream\n\nendstream',
+  ];
+  let content = '%PDF-1.4\n';
+  const offsets = [0];
+  objects.forEach((object, index) => {
+    offsets.push(Buffer.byteLength(content));
+    content += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+  const xrefOffset = Buffer.byteLength(content);
+  content += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  content += offsets.slice(1).map((offset) => `${String(offset).padStart(10, '0')} 00000 n \n`).join('');
+  content += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
+  return content;
+}
+
 test('captures every configured Supabase table through read-only GET pages', async () => {
   const requests = [];
   const fetchImpl = async (url, init) => {
@@ -104,6 +124,18 @@ test('scans files without modifying them and records checksums and validation', 
   assert.equal(manifest.files[0].sha256, '326f08384935076431efafc84c9ee42b1a4b7b706671956f780d39ceb83e0116');
   assert.equal(manifest.files[0].pdf.status, 'valid');
   assert.equal(manifest.files[1].relativePath, 'nested/notes.txt');
+});
+
+test('validates real PDF fixtures and classifies malformed PDFs', async () => {
+  const archiveDirectory = await makeTempDir();
+  await writeFile(path.join(archiveDirectory, 'valid.pdf'), minimalPdf());
+  await writeFile(path.join(archiveDirectory, 'invalid.pdf'), '%PDF-1.4 malformed');
+
+  const manifest = await scanArchive({ archiveDirectory });
+
+  assert.equal(manifest.files.find((file) => file.relativePath === 'valid.pdf').pdf.status, 'valid');
+  assert.equal(manifest.files.find((file) => file.relativePath === 'valid.pdf').pdf.pageCount, 1);
+  assert.equal(manifest.files.find((file) => file.relativePath === 'invalid.pdf').pdf.status, 'invalid');
 });
 
 test('matches by persisted slug before recording secondary evidence', () => {
@@ -245,6 +277,7 @@ test('runs the complete inventory seam and writes private derived outputs', asyn
 
   assert.equal(result.manifest.records[0].status, 'matched');
   assert.equal(result.manifest.provenance.runId, 'run-seam');
+  assert.equal(result.manifest.provenance.runPurpose, 'calibration');
   assert.equal(result.comparison, null);
   assert.equal((await readdir(outputDirectory)).sort().join(','), 'manifest.json,report.md,supabase-snapshot.json');
 });

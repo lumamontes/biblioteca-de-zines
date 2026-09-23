@@ -248,6 +248,7 @@ export async function scanArchive({
     } catch (error) {
       files.push({
         relativePath: entry.relativePath,
+        extension: path.extname(entry.relativePath).toLowerCase(),
         size: null,
         sha256: null,
         runId,
@@ -280,6 +281,7 @@ export async function scanArchive({
 
     files.push({
       relativePath: entry.relativePath,
+      extension: path.extname(entry.relativePath).toLowerCase(),
       size: fileStat.size,
       sha256: createHash('sha256').update(buffer).digest('hex'),
       runId,
@@ -547,6 +549,8 @@ export function renderReport({ snapshot, manifest, comparison = null, archiveDir
     `- Schema version: ${manifest.schemaVersion}`,
     `- Tool version: ${manifest.provenance.toolVersion ?? 'unknown'}`,
     `- Known-failure input version: ${manifest.provenance.knownFailuresVersion ?? 'unknown'}`,
+    `- Run purpose: ${manifest.provenance.runPurpose ?? 'unknown'}`,
+    `- Review status: ${manifest.provenance.reviewStatus ?? 'unknown'}`,
     '',
     '## Coverage',
     '',
@@ -627,6 +631,7 @@ export async function runInventory({
   classifyFile = undefined,
   runId = isoRunId(),
   collectedAt = new Date().toISOString(),
+  calibration = true,
   repositoryRoot = process.cwd(),
   allowRepositoryOutput = false,
 } = {}) {
@@ -647,6 +652,8 @@ export async function runInventory({
     archiveRootDescription: 'local-archive-directory',
     validators: ['file-mime-type', 'pdfjs-structural-parse'],
     knownFailuresVersion: normalizeKnownFailures(knownFailures).version,
+    runPurpose: calibration ? 'calibration' : 'repeatable-run',
+    reviewStatus: calibration ? 'needs-review' : 'not-requested',
   };
   const archive = await scanArchive({ archiveDirectory, classifyFile, runId, collectedAt });
   const manifest = buildManifest({ snapshot, files: archive.files, knownFailures });
@@ -676,6 +683,7 @@ function parseArguments(argv) {
     previousManifestPath: null,
     outputDirectory: null,
     allowRepositoryOutput: false,
+    calibration: true,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -686,8 +694,9 @@ function parseArguments(argv) {
     else if (argument === '--known-failures') options.knownFailuresPath = next;
     else if (argument === '--previous') options.previousManifestPath = next;
     else if (argument === '--allow-repository-output') options.allowRepositoryOutput = true;
+    else if (argument === '--no-calibration') options.calibration = false;
     else throw new Error(`Unknown argument: ${argument}`);
-    if (argument !== '--allow-repository-output') index += 1;
+    if (argument !== '--allow-repository-output' && argument !== '--no-calibration') index += 1;
   }
 
   return options;
