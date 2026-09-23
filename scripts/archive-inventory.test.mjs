@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, readdir, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readdir, symlink, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -165,6 +165,35 @@ test('matches by persisted slug before recording secondary evidence', () => {
   assert.equal(result.records.find((record) => record.id === 2).status, 'ambiguous');
 });
 
+test('records malformed catalogue rows without aborting valid matches', () => {
+  const result = buildManifest({
+    snapshot: { tables: { library_zines: [null, { id: 1, slug: 'valid-zine', title: 'Valid Zine' }] } },
+    files: [{ relativePath: 'valid-zine.pdf', sha256: 'a', size: 10, pdf: { status: 'valid' } }],
+  });
+
+  assert.equal(result.records[0].status, 'matched');
+  assert.deepEqual(result.recordErrors, [{ index: 0, error: 'Catalogue row is not a valid object with an ID' }]);
+});
+
+test('uses the Drive file ID as secondary URL evidence', () => {
+  const result = buildManifest({
+    snapshot: {
+      tables: {
+        library_zines: [{
+          id: 1,
+          slug: 'different-slug',
+          title: 'Different Title',
+          pdf_url: 'https://drive.google.com/file/d/drive-file-id/view',
+        }],
+      },
+    },
+    files: [{ relativePath: 'drive-file-id.pdf', sha256: 'a', size: 10, pdf: { status: 'valid' } }],
+  });
+
+  assert.equal(result.files[0].match.method, 'secondary');
+  assert.deepEqual(result.files[0].match.evidence, ['filename', 'url']);
+});
+
 test('keeps known failures without making network requests', () => {
   const result = buildManifest({
     snapshot: { tables: { library_zines: [{ id: 1, slug: 'broken-zine', title: 'Broken Zine', pdf_url: 'https://drive.test/broken' }] } },
@@ -198,7 +227,7 @@ test('compares stable manifest content while ignoring run provenance', () => {
     files: [
       { relativePath: 'same.pdf', sha256: 'changed', match: { status: 'ambiguous' } },
       { relativePath: 'added.pdf', sha256: 'new', match: { status: 'matched' } },
-      { relativePath: 'status-only.pdf', sha256: 'same', match: { status: 'ambiguous' } },
+      { relativePath: 'status-only.pdf', sha256: 'same', match: { status: 'matched', method: 'secondary', evidence: ['filename', 'title'] } },
     ],
     records: [{ id: 1, status: 'ambiguous' }],
   };
@@ -250,6 +279,20 @@ test('rejects repository output unless explicitly allowed', () => {
     repositoryRoot: '/workspace/repo',
     allowRepositoryOutput: true,
   }));
+});
+
+test('rejects output through a symlink into the repository', async () => {
+  const root = await makeTempDir();
+  const repositoryRoot = path.join(root, 'repo');
+  const outsideRoot = path.join(root, 'outside');
+  await mkdir(repositoryRoot);
+  await mkdir(outsideRoot);
+  await symlink(repositoryRoot, path.join(outsideRoot, 'repo-link'));
+
+  assert.throws(
+    () => assertSafeOutputDirectory(path.join(outsideRoot, 'repo-link', 'inventory'), { repositoryRoot }),
+    /must be outside the repository/,
+  );
 });
 
 test('runs the complete inventory seam and writes private derived outputs', async () => {

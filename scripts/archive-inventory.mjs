@@ -3,7 +3,7 @@
 import 'dotenv/config';
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import { promisify } from 'node:util';
 import {
   mkdir,
@@ -79,11 +79,21 @@ function isInside(parent, candidate) {
   return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
 }
 
+function canonicalPath(target) {
+  const missing = [];
+  let current = path.resolve(target);
+  while (!existsSync(current)) {
+    missing.push(path.basename(current));
+    current = path.dirname(current);
+  }
+  return path.join(realpathSync(current), ...missing.reverse());
+}
+
 export function assertSafeOutputDirectory(outputDirectory, {
   repositoryRoot = process.cwd(),
   allowRepositoryOutput = false,
 } = {}) {
-  if (!allowRepositoryOutput && isInside(repositoryRoot, outputDirectory)) {
+  if (!allowRepositoryOutput && isInside(canonicalPath(repositoryRoot), canonicalPath(outputDirectory))) {
     throw new Error(
       `Inventory output must be outside the repository: ${path.resolve(outputDirectory)}`,
     );
@@ -308,6 +318,9 @@ function urlStem(value) {
   if (typeof value !== 'string' || !value) return null;
   try {
     const url = new URL(value);
+    const driveFile = url.pathname.match(/^\/file\/d\/([^/]+)/);
+    if (driveFile) return driveFile[1];
+    if (url.pathname === '/uc' && url.searchParams.get('id')) return url.searchParams.get('id');
     return path.basename(url.pathname).replace(/\.[^.]+$/, '') || null;
   } catch {
     return null;
@@ -343,7 +356,15 @@ function knownFailureFor(record, knownFailures) {
 }
 
 export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
-  const records = tableRows(snapshot, 'library_zines');
+  const rawRecords = tableRows(snapshot, 'library_zines');
+  const recordErrors = rawRecords.flatMap((record, index) => (
+    record && typeof record === 'object' && !Array.isArray(record) && record.id != null
+      ? []
+      : [{ index, error: 'Catalogue row is not a valid object with an ID' }]
+  ));
+  const records = rawRecords.filter((record) => (
+    record && typeof record === 'object' && !Array.isArray(record) && record.id != null
+  ));
   const knownFailureInput = normalizeKnownFailures(knownFailures);
   const failureRows = knownFailureInput.failures;
   const filesByRecord = new Map();
@@ -426,6 +447,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
     files: fileResults,
     records: recordResults,
     knownFailures: failureRows,
+    ...(recordErrors.length > 0 ? { recordErrors } : {}),
     provenance: {
       ...(snapshot?.provenance ?? {}),
       knownFailuresVersion: knownFailureInput.version,
@@ -489,6 +511,8 @@ export function compareManifests(before, after) {
       || oldFile.size !== newFile.size
       || oldFile.status !== newFile.status
       || oldFile.match?.status !== newFile.match?.status
+      || oldFile.match?.method !== newFile.match?.method
+      || JSON.stringify(oldFile.match?.evidence ?? []) !== JSON.stringify(newFile.match?.evidence ?? [])
     ) files.changed.push(key);
     else files.unchanged.push(key);
   }
