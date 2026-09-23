@@ -38,6 +38,28 @@ execute `node scripts/export-monitor-resources.mjs resources.json` com as duas
 variáveis de ambiente e depois rode o CLI conforme documentado no repositório do
 monitor.
 
+### Inventário local do acervo
+
+O inventário é uma observação local e não modifica o acervo, o Supabase ou as
+fontes externas. Ele consulta somente leitura as tabelas centrais, calcula
+evidências dos arquivos locais e grava snapshots e relatórios fora do repositório
+por padrão.
+
+```bash
+pnpm archive:inventory --archive /caminho/para/archive \
+  --known-failures /caminho/para/known-failures.json \
+  --output /caminho/fora-do-repositorio/inventory-run
+```
+
+O arquivo de falhas conhecidas deve ser um JSON local com `version` e uma lista
+`failures`, cada uma com `cause` estruturada. Os resultados são
+`supabase-snapshot.json`, `manifest.json` e `report.md`; uma comparação adicional
+é gravada quando `--previous` aponta para um manifesto anterior.
+
+Não use `--allow-repository-output` para dados reais do acervo. A lista de
+falhas conhecidas é histórica: o inventário não repete downloads ou verificações
+de rede para esses registros.
+
 ### Para contribuir com o projeto
 
 - Entenda nosso [Código de Conduta](CODE_OF_CONDUCT.md)
