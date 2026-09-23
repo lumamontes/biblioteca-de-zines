@@ -27,6 +27,12 @@ export const KNOWN_FAILURE_CAUSES = [
   'external-not-found',
   'external-uncertain',
 ];
+const KNOWN_FAILURE_DETAILS = {
+  'drive-restricted': 'Historical monitor result: the Drive file was broken or unavailable from the public source link.',
+  'drive-folder': 'Historical monitor result: the source was a Drive folder link, not a supported file link.',
+  'external-not-found': 'Historical monitor result: the external source returned a not-found response.',
+  'external-uncertain': 'Historical monitor result: the external source could not be conclusively classified.',
+};
 export const INVENTORY_TABLES = [
   'library_zines',
   'authors',
@@ -51,7 +57,10 @@ export function normalizeKnownFailures(input = []) {
 
   return {
     version: source.version ?? 1,
-    failures: source.failures,
+    failures: source.failures.map((failure) => ({
+      ...failure,
+      details: failure.details ?? KNOWN_FAILURE_DETAILS[failure.cause],
+    })),
   };
 }
 
@@ -224,6 +233,8 @@ export async function scanArchive({
   classifyFile: classify = classifyFile,
   readFileImpl = readFile,
   statImpl = stat,
+  runId = null,
+  collectedAt = null,
 } = {}) {
   if (!archiveDirectory) throw new Error('Archive directory is required');
   const files = [];
@@ -239,6 +250,8 @@ export async function scanArchive({
         relativePath: entry.relativePath,
         size: null,
         sha256: null,
+        runId,
+        collectedAt,
         mimeType: null,
         status: 'invalid',
         pdf: {
@@ -269,6 +282,8 @@ export async function scanArchive({
       relativePath: entry.relativePath,
       size: fileStat.size,
       sha256: createHash('sha256').update(buffer).digest('hex'),
+      runId,
+      collectedAt,
       ...classification,
     });
   }
@@ -298,23 +313,22 @@ function urlStem(value) {
 }
 
 function secondaryCandidates(file, records) {
-  const stem = fileStem(file.relativePath);
-  return records.filter((record) => {
-    const titleStem = typeof record.title === 'string'
-      ? slugify(record.title, { lower: true, strict: true })
-      : null;
-    return titleStem === stem || urlStem(record.pdf_url) === stem || String(record.id) === stem;
-  });
+  return records.filter((record) => secondaryEvidence(file, record).length > 0);
 }
 
 function secondaryEvidence(file, record) {
   const stem = fileStem(file.relativePath);
   const evidence = [];
-  if (typeof record.title === 'string' && slugify(record.title, { lower: true, strict: true }) === stem) {
-    evidence.push('title');
+  const titleMatches = typeof record.title === 'string'
+    && slugify(record.title, { lower: true, strict: true }) === stem;
+  const urlMatches = urlStem(record.pdf_url) === stem;
+  const idMatches = record.id != null && String(record.id) === stem;
+  if (titleMatches || urlMatches || idMatches) {
+    evidence.push('filename');
+    if (titleMatches) evidence.push('title');
+    if (urlMatches) evidence.push('url');
+    if (idMatches) evidence.push('id');
   }
-  if (urlStem(record.pdf_url) === stem) evidence.push('url');
-  if (record.id != null && String(record.id) === stem) evidence.push('id');
   return evidence;
 }
 
@@ -331,6 +345,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
   const knownFailureInput = normalizeKnownFailures(knownFailures);
   const failureRows = knownFailureInput.failures;
   const filesByRecord = new Map();
+  const ambiguousFilesByRecord = new Map();
   const fileResults = files.map((file) => {
     const stem = fileStem(file.relativePath);
     const exact = records.filter((record) => record.slug === stem);
@@ -356,6 +371,11 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
         status: 'ambiguous',
         candidates: candidates.map((record) => ({ id: record.id, slug: record.slug ?? null })),
       };
+      for (const record of candidates) {
+        const files = ambiguousFilesByRecord.get(record.id) ?? [];
+        files.push(file.relativePath);
+        ambiguousFilesByRecord.set(record.id, files);
+      }
     } else {
       match = { status: 'unmatched-file' };
     }
@@ -369,6 +389,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
 
   const recordResults = records.map((record) => {
     const matchedFiles = filesByRecord.get(record.id) ?? [];
+    const ambiguousFiles = ambiguousFilesByRecord.get(record.id) ?? [];
     const knownFailure = knownFailureFor(record, failureRows);
     if (matchedFiles.length > 0) {
       return {
@@ -385,6 +406,14 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
         slug: record.slug ?? null,
         status: 'known-failure',
         knownFailure,
+      };
+    }
+    if (ambiguousFiles.length > 0) {
+      return {
+        id: record.id,
+        slug: record.slug ?? null,
+        status: 'ambiguous',
+        files: ambiguousFiles,
       };
     }
     return { id: record.id, slug: record.slug ?? null, status: 'missing', relation: 'unmatched-record', files: [] };
@@ -619,7 +648,7 @@ export async function runInventory({
     validators: ['file-mime-type', 'pdfjs-structural-parse'],
     knownFailuresVersion: normalizeKnownFailures(knownFailures).version,
   };
-  const archive = await scanArchive({ archiveDirectory, classifyFile });
+  const archive = await scanArchive({ archiveDirectory, classifyFile, runId, collectedAt });
   const manifest = buildManifest({ snapshot, files: archive.files, knownFailures });
   const comparison = previousManifest ? compareManifests(previousManifest, manifest) : null;
 

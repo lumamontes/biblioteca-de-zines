@@ -114,19 +114,23 @@ test('matches by persisted slug before recording secondary evidence', () => {
           { id: 1, slug: 'first-zine', title: 'First Zine', pdf_url: 'https://example.test/first.pdf' },
           { id: 2, slug: 'missing-zine', title: 'Possible First', pdf_url: null },
           { id: 3, slug: 'another-missing-zine', title: 'Possible First', pdf_url: null },
+          { id: 4, slug: 'unique-zine', title: 'Unique Secondary', pdf_url: null },
         ],
       },
     },
     files: [
       { relativePath: 'first-zine.pdf', sha256: 'a', size: 10, pdf: { status: 'valid' } },
       { relativePath: 'possible-first.pdf', sha256: 'b', size: 12, pdf: { status: 'valid' } },
+      { relativePath: 'unique-secondary.pdf', sha256: 'c', size: 14, pdf: { status: 'valid' } },
     ],
   });
 
   assert.equal(result.files[0].match.status, 'matched');
   assert.equal(result.files[0].match.method, 'slug');
   assert.equal(result.files[1].match.status, 'ambiguous');
-  assert.equal(result.records.find((record) => record.id === 2).status, 'missing');
+  assert.equal(result.files[2].match.method, 'secondary');
+  assert.deepEqual(result.files[2].match.evidence, ['filename', 'title']);
+  assert.equal(result.records.find((record) => record.id === 2).status, 'ambiguous');
 });
 
 test('keeps known failures without making network requests', () => {
@@ -140,6 +144,7 @@ test('keeps known failures without making network requests', () => {
     slug: 'broken-zine',
     cause: 'drive-restricted',
     observedAt: '2026-09-22',
+    details: 'Historical monitor result: the Drive file was broken or unavailable from the public source link.',
   }]);
   assert.equal(result.records[0].status, 'known-failure');
 });
@@ -151,6 +156,7 @@ test('compares stable manifest content while ignoring run provenance', () => {
     files: [
       { relativePath: 'same.pdf', sha256: 'same', match: { status: 'matched' } },
       { relativePath: 'removed.pdf', sha256: 'old', match: { status: 'matched' } },
+      { relativePath: 'status-only.pdf', sha256: 'same', match: { status: 'matched' } },
     ],
     records: [{ id: 1, status: 'matched' }],
   };
@@ -160,12 +166,18 @@ test('compares stable manifest content while ignoring run provenance', () => {
     files: [
       { relativePath: 'same.pdf', sha256: 'changed', match: { status: 'ambiguous' } },
       { relativePath: 'added.pdf', sha256: 'new', match: { status: 'matched' } },
+      { relativePath: 'status-only.pdf', sha256: 'same', match: { status: 'ambiguous' } },
     ],
     records: [{ id: 1, status: 'ambiguous' }],
   };
 
   assert.deepEqual(compareManifests(before, after), {
-    files: { added: ['added.pdf'], removed: ['removed.pdf'], changed: ['same.pdf'], unchanged: [] },
+    files: {
+      added: ['added.pdf'],
+      removed: ['removed.pdf'],
+      changed: ['same.pdf', 'status-only.pdf'],
+      unchanged: [],
+    },
     records: { changed: [{ id: 1, from: 'matched', to: 'ambiguous' }], unchanged: [] },
   });
 });
