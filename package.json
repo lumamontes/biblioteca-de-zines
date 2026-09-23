@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node --test scripts/*.test.mjs",
+    "test:inventory": "node --test scripts/archive-inventory.test.mjs",
+    "archive:inventory": "node scripts/archive-inventory.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1130.0",
