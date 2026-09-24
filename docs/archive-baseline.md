@@ -206,29 +206,38 @@ in private snapshots only.
 4. A Telegram notification is sent to the configured Biblioteca de Zines
    submissions channel when the bot credentials are configured; an optional
    topic ID routes the notification within that channel.
-5. The submission stores external URLs; this flow does not create a local PDF
-   custody copy.
+5. The submission stores Google Drive URLs for PDF sources; this flow does not
+   create a local PDF custody copy.
 
 ### Review and Catalogue Publication
 
-1. An authenticated Supabase user can access `/dashboard`; no separate
-   maintainer role is enforced by the observed application code.
-2. The dashboard loads all `form_uploads` rows and all `library_zines` rows.
-3. An authenticated dashboard user can edit submission metadata, authors, URLs,
-   descriptions, and categories.
-4. Publishing a new upload copies its metadata into `library_zines`, generates
+1. The dashboard is operationally restricted to maintainers using one shared Supabase Auth account to keep administration simple and low-cost. The application checks authentication but does not enforce a separate role.
+2. The dashboard loads all `form_uploads` rows and all `library_zines` rows. This
+   includes the submission queue and history; publication is represented by the
+   related catalogue row and publication flags rather than removing the
+   original submission row.
+3. An authenticated dashboard user can edit submission metadata, authors,
+   Google Drive URLs, descriptions, and categories.
+4. Maintainers manually review submissions one at a time, including checking
+   that the submitted Google Drive PDF link is valid, before publishing.
+5. Publishing a new upload copies its metadata into `library_zines`, generates
    a slug from the first author and title, links authors, merges categories,
    and sets the new catalogue row as published.
-5. When a catalogue row already exists, the publish action merges categories
+6. When a catalogue row already exists, the publish action merges categories
    and author links; the dashboard's separate republish action sets
    `library_zines.is_published = true`.
-6. An existing catalogue record can be unpublished by changing
+7. An existing catalogue record can be unpublished by changing
    `library_zines.is_published`.
 
 Unpublishing changes the catalogue publication flag only. The observed code
 does not delete the `form_uploads` row, delete an external source, delete R2
 page derivatives, or create a removal/audit record. Editing a submission can
 also update a related catalogue row by slug, but no version history is stored.
+
+After publication, maintainers manually email the author to let them know that
+the zine is available. This is an operational practice; the application
+automates the Telegram submission notification but does not automate the
+publication email.
 
 The implementation performs these publication steps as separate database
 operations rather than one transaction. A failure between operations can leave
@@ -241,6 +250,8 @@ review.
   `is_published = true`.
 - Public detail pages render the catalogue description, author links, metadata,
   and an iframe pointing at the stored `pdf_url`.
+- Public author detail pages at `/authors/[slug]` show an author's catalogue
+  entries and profile information from the author relationships.
 - Unpublished records are therefore excluded from normal public catalogue and
   detail-page queries.
 
@@ -264,8 +275,9 @@ the authoritative reading derivative.
 
 ### Accounts and Dependencies
 
-- Supabase Auth email/password accounts protect the dashboard; the current
-  code checks for an authenticated user but does not show a separate role or
+- Supabase Auth email/password accounts protect the dashboard. Operationally,
+  access is reserved for maintainers through a shared account; the current
+  code checks for authentication but does not show a separate role or
   permission model.
 - Supabase stores catalogue, author, submission, publication, and page metadata.
 - Google Drive and other external URLs provide submitted or catalogue file
