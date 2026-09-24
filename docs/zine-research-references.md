@@ -4,7 +4,12 @@ This index gathers the external resources used in the Biblioteca catalogue and
 metadata research. It is organized by source type so future decisions can return
 to the original source instead of relying on a secondary summary.
 
-## ZineCore and Metadata Specifications
+## Zine-Specific References
+
+These sources focus on zines, fanzines, DIY publications, or zine-specific
+cataloguing.
+
+### ZineCore and Metadata Specifications
 
 - [ZineCore2 home](https://zinecore.org/)
 - [ZineCore2 specification](https://zinecore.org/docs/specification)
@@ -17,7 +22,7 @@ to the original source instead of relying on a secondary summary.
 - [ZineCore2 reference server](https://github.com/ZineCore2/server)
 - [ZineCore2 JSON Schema](https://raw.githubusercontent.com/ZineCore2/spec/develop/schemas/zinecore2.schema.json)
 
-## Brazilian Collections And Projects
+### Brazilian Zine Collections And Projects
 
 - [Biblioteca de Zines](https://www.biblioteca-de-zines.com.br/)
 - [Biblioteca de Zines catalogue](https://www.biblioteca-de-zines.com.br/zines)
@@ -31,7 +36,7 @@ to the original source instead of relying on a secondary summary.
 - [Marca de Fantasia](https://marcadefantasia.com/)
 - [UnB thesis catalogue record](https://bdm.unb.br/handle/10483/22374)
 
-## Academic Books And Long-Form Works
+### Books And Long-Form Zine Studies
 
 - [Kate Eichhorn, *The Archival Turn in Feminism*](https://archive.org/details/archivalturninfe0000eich)
 - [Alison Piepmeier, *Girl Zines*](https://archive.org/details/girlzinesmakingm0000piep)
@@ -41,7 +46,7 @@ to the original source instead of relying on a secondary summary.
 - [Roger Sabin and Teal Triggs, *Below Critical Radar*](https://archive.org/details/belowcriticalrad00sabi)
 - [V. Vale, *Zines! Volume One*](https://archive.org/details/zinesvolumeone00vval)
 
-## Academic Research
+### Zine And Brazilian Academic Research
 
 - [Zavam, “FANZINE: A PLURIVALENCIA PARATOPICA”](https://doi.org/10.1590/1982-4017-06-01-01)
 - [Zavam full text at SciELO](https://www.scielo.br/scielo.php?script=sci_arttext&pid=S1518-76322006000100009&tlng=pt)
@@ -55,7 +60,7 @@ to the original source instead of relying on a secondary summary.
 - [O'Dell, “RDA and the Description of Zines”](https://doi.org/10.1080/19386389.2014.978235)
 - [Berthoud, “My Life as a ‘Like-Minded Misfit’”](https://doi.org/10.1080/00987913.2018.1434857)
 
-## Professional And Community Practice
+### Zine Librarian And Community Practice
 
 - [Zine Librarians Code of Ethics](https://www.zinelibraries.info/code-of-ethics-1115-web-version/)
 - [Zine cataloguing resource](https://www.zinelibraries.info/running-a-zine-library/zine-cataloging/)
@@ -71,6 +76,27 @@ to the original source instead of relying on a secondary summary.
 - [Barnard access and circulation](https://zines.barnard.edu/collection-access-circulation)
 - [Barnard zines with online links](https://zines.barnard.edu/barnard-zines-online-links)
 - [Franklin & Marshall zine cataloguing procedures](https://www.zinelibraries.info/wp-content/uploads/2022/10/Cataloging-Zines_-FM-Zine-Library-Procedures.pdf)
+
+## General Archive And Digital-Collection References
+
+These sources are not exclusively zine-specific, but support broader concerns
+about digital collections, community archives, rights, access, privacy,
+provenance, and description.
+
+### Community Archives, Ethics, And Description
+
+- [Baker and Cantillon, "Zines as community archive"](https://doi.org/10.1007/s10502-022-09388-1) (zine case study with general community-archive principles)
+- [Caswell and Cifor, "From Human Rights to Feminist Ethics"](https://archivaria.ca/index.php/archivaria/article/view/13557)
+- [Gordon, Hanna, Hoyer, and Ordaz, "Archives, Education, and Access"](https://doi.org/10.5195/rt.2016.273)
+- [Drabinski, "Queering the Catalog"](https://doi.org/10.1086/669547)
+- [Barnard access and circulation](https://zines.barnard.edu/collection-access-circulation) (zine collection, general access/rights distinctions)
+
+### Cross-Collection And Interoperability Practice
+
+- [ZineCat project history](https://www.zinelibraries.info/zine-union-catalog/) (zine-specific project addressing general heterogeneous schemas)
+- [ZineCat advanced object search](https://zinecat.org/index.php/Search/advanced/objects)
+- [ABC No Rio Zine Library](https://exile.abcnorio.org/facilities/zine-library/) (community archive scope and stewardship)
+- [Zine Librarians Unconference archive](https://www.zinelibraries.info/events/zine-librarian-unconferences/) (professional/community process)
 
 ## Biblioteca Research Notes
 

@@ -205,6 +205,74 @@ The most important additions for the next Biblioteca iteration are
 withdrawal records. `table_of_contents`, authority identifiers, and richer
 circulation modeling can remain deferred until the workflow justifies them.
 
+## Zine-Specific Versus Archive-General Concerns
+
+Not every requirement in this profile comes from zines. Separating the sources
+prevents Biblioteca from treating a general archive responsibility as a special
+property of zine culture, while still preserving what makes zines materially and
+socially distinctive.
+
+### Specific To Zines And DIY Publications
+
+These fields describe the publication's form, history, or language as a zine or
+related DIY publication:
+
+- issue, series, release, reprint, and optional edition statements;
+- zine form/genre such as perzine, fanzine, comic zine, art zine, newsletter, or
+  single-sheet publication;
+- reproduction method such as photocopy, risograph, offset, handwritten,
+  collage, screen print, or digital print;
+- physical assembly such as folds, stapling, sewing, loose inserts, unusual
+  pagination, altered material, or decorated envelopes;
+- creator language, self-description, local terms, anti-copyright or “please
+  copy” statements;
+- circulation through distros, exchanges, scenes, fairs, workshops, events, and
+  informal networks;
+- collective, pseudonymous, anonymous, and contributor roles as they appear in
+  the publication's own context.
+
+These are not automatically required for every zine. They should remain
+optional, source-qualified, and capable of recording `unknown`.
+
+### General Digital-Collection And Community-Archive Concerns
+
+These fields apply to many digital collections and community archives, whether
+the object is a zine, photograph, oral-history recording, poster, or book:
+
+- stable identifiers, provenance, confidence, versioned vocabularies, and
+  unresolved questions;
+- publication description separated from physical holdings, digital assets,
+  derivatives, repository custody, and inventory observations;
+- creator, submitter, cataloguer, rights-holder, maintainer, and repository
+  roles with field- and relationship-level visibility;
+- discovery, reading, download, preservation, replication, lending, and reuse
+  as separate access decisions;
+- consent, correction, suppression, withdrawal, takedown, and review history;
+- original rights statements separated from creator copying requests, legal
+  claims, and the archive's operational permissions;
+- place assertions with role and precision rather than one unqualified origin
+  field;
+- public metadata separated from private contact, identity evidence, rights
+  notes, and operational restrictions.
+
+### Shared Intersection
+
+Zines make these general archive concerns especially visible, but they are not
+unique to zines:
+
+- creator-supplied language versus cataloguer summary;
+- community context and multiple accounts of significance;
+- physical publication extent versus digital asset extent;
+- local vocabulary alongside normalized subject terms;
+- privacy and autonomy for living, pseudonymous, anonymous, or collective
+  creators;
+- a public catalogue record that does not imply permission to reproduce or
+  preserve the underlying object.
+
+The implementation should reuse general archive primitives where they are sound,
+while adding zine-specific form, production, circulation, and community fields
+as optional extensions rather than hard-coding every zine into one template.
+
 ### Proposed Synthetic Record Shape
 
 This shape is illustrative metadata, not a TypeScript or Supabase contract. It
