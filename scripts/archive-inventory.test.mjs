@@ -255,7 +255,7 @@ test('keeps known failures without making network requests', () => {
 
 test('compares stable manifest content while ignoring run provenance', () => {
   const before = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     provenance: { runId: 'old', collectedAt: 'old' },
     files: [
       { relativePath: 'same.pdf', sha256: 'same', match: { status: 'matched' } },
@@ -265,7 +265,7 @@ test('compares stable manifest content while ignoring run provenance', () => {
     records: [{ id: 1, status: 'matched', publicationStatus: 'published' }],
   };
   const after = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     provenance: { runId: 'new', collectedAt: 'new' },
     files: [
       { relativePath: 'same.pdf', sha256: 'changed', match: { status: 'ambiguous' } },
@@ -295,8 +295,8 @@ test('compares stable manifest content while ignoring run provenance', () => {
   });
 
   const publicationChange = compareManifests(
-    { schemaVersion: 1, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'unpublished' }] },
-    { schemaVersion: 1, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'published' }] },
+    { schemaVersion: 2, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'unpublished' }] },
+    { schemaVersion: 2, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'published' }] },
   );
   assert.deepEqual(publicationChange.records, {
     changed: [{
@@ -331,7 +331,7 @@ test('keeps an unreadable file as an invalid observation and continues', async (
 
 test('rejects comparisons across unsupported manifest schemas', () => {
   assert.throws(
-    () => compareManifests({ schemaVersion: 1, files: [], records: [] }, { schemaVersion: 2, files: [], records: [] }),
+    () => compareManifests({ schemaVersion: 2, files: [], records: [] }, { schemaVersion: 3, files: [], records: [] }),
     /Unsupported manifest schema comparison/,
   );
 });
