@@ -25,15 +25,16 @@ It does not:
 
 | Concept | Provisional meaning | Current Biblioteca mapping |
 | --- | --- | --- |
-| Publication | A distinct published zine or edition that readers can discover. | `library_zines` row. |
-| Edition | A particular release/version of a publication, including a date or revision when that distinction is known. | Not represented separately. `year` and timestamps are insufficient. |
+| Publication | A distinct zine publication/title that readers can discover. It may have an issue number or release distinction, but not every zine needs a separate edition record. | `library_zines` row. |
+| Edition/release | An optional distinction for genuinely separate issues, releases, or revisions of the same publication. `year` is a date claim, not an edition by itself. | Not represented separately; no current requirement to add it. |
 | Collection/series | A group of related publications presented as belonging together. | `collection_title`; relationship and ordering are not explicit. |
 | Contributor/creator | A person, collective, publisher, or other entity credited with making the publication. | `authors` plus `library_zines_authors`; roles are not separated. |
+| Maintainer/steward | A person or collective responsible for operating, reviewing, describing, or caring for the Biblioteca collection; this is not a creator credit. | Shared maintainer authentication and dashboard actions; actor history is not modeled. |
 | Private contact | A non-public channel used to communicate with a submitter or rights holder. | `form_uploads.author_email`; privacy and retention policy are not modeled. |
 | Submission | An intake record and context provided to the Biblioteca for review. | `form_uploads`; no formal link to the resulting catalogue row. |
 | File asset/version | A specific source or delivery file with its own bytes, URL, format, checksum, or version history. | `pdf_url`, local archive observations, and external URLs; no asset/version entity. |
 | Derivative | A representation produced from another file, such as a preview, reading copy, or page image. | Not currently represented in the public reading flow. Planned `zine_pages` data is unused. |
-| Processing event | An action such as review, publication, import, validation, correction, or removal. | Timestamps and `import_status` provide partial signals; no event history. |
+| Processing event | Optional evidence of an action such as review, publication, import, validation, correction, or removal. It does not imply event sourcing or a required audit log. | Timestamps and `import_status` provide partial signals; current profile needs state snapshots, not event history. |
 | Access policy | Separate decisions about discovery, reading, downloading, preservation, replication, and reuse. | Mostly collapsed into `is_published` and external URL reachability. |
 
 ## Expressiveness Requirements
@@ -42,11 +43,12 @@ The provisional profile must support these cases without silently rewriting
 them into a simpler model:
 
 - multiple creators, collective authorship, and distinct creator/publisher/
-  submitter roles;
+  submitter/maintainer roles;
 - pseudonyms and creator-supplied display names without requiring a legal name;
-- anonymous or unknown authorship;
+- anonymous authorship, unknown authorship, and the difference between them;
 - unknown, approximate, or partial publication dates;
-- multiple languages and language-specific titles or descriptions;
+- multiple languages and language-specific titles or descriptions when they
+  occur, without making multilingual interface support a current requirement;
 - uncertainty and provenance attached to a value, such as an inferred date or
   a curator correction;
 - creator-supplied context that remains distinguishable from editorial notes;
@@ -61,14 +63,14 @@ schema changes:
 
 | Requirement | Provisional representation | Current mapping/gap |
 | --- | --- | --- |
-| Collective, creator, publisher, and submitter roles | Separate participant records with a role and display name; a publication may have many participants. | `authors` links creators only; publisher and submitter roles are not modeled. |
+| Collective, creator, publisher, submitter, and maintainer roles | Separate participant or stewardship records with a role and display name; a publication may have many participants. Maintainers are archive actors, not publication creators. | `authors` links creators only; publisher, submitter, and maintainer roles are not modeled. |
 | Private contact | A private contact value linked to the submission/rights conversation, with access separate from public creator data. | `form_uploads.author_email`; no access, retention, or rights-case relation is modeled. |
 | Pseudonym or anonymity | Display name plus optional private identity evidence, or an explicit anonymous participant. | Current author name is a single public text value. |
 | Unknown or approximate date | Date value plus precision (`day`, `month`, `year`, `circa`, or `unknown`) and provenance. | `year` stores only a numeric year. |
 | Multiple languages | Language-tagged title, description, and creator context values. | No language field exists. |
 | Uncertainty | Value-level certainty and provenance note, separate from the value itself. | No value annotation exists. |
 | Creator-supplied context | Context value with source `creator`, separate from editorial notes. | `description` is a shared text field and does not establish authorship of the text. |
-| Edition and file version | Explicit relations from publication to edition and from edition to file asset/version. | No edition, asset, or version entities exist. |
+| Optional issue/release and file version | Add an issue/release relation only when representative records show that it clarifies identity; keep file versions tied to assets. | No issue/release, asset, or version entities exist; `year` alone does not require an edition entity. |
 
 ## Separate State Dimensions
 
@@ -124,6 +126,7 @@ This is a capability comparison, not a migration recommendation.
 | Option | Native strengths relevant here | Costs or gaps | Decision |
 | --- | --- | --- | --- |
 | Current Next.js + Supabase | Existing submission, shared maintainer authentication, catalogue queries, RLS-compatible data layer, and low operational disruption. | Metadata roles, value provenance, file versions, rights, and derivatives require application/schema work. | **Keep as the current system of record while the profile is validated.** |
+| ZineCore2 | Zine-specific metadata profiles for zines, agents, holdings, and repositories; repeatable creators/contributors/publishers, dates, languages, rights, identifiers, issue/edition statements, and explicit public/private agent distinctions. | A metadata specification and reference implementation, not evidence of a maintained hosted service or a fit for Biblioteca's workflow. Its public repositories showed development branches and no releases when checked. | **Use as a reference and crosswalk input; do not adopt wholesale.** |
 | Tainacan | WordPress repository plugin with configurable metadata, taxonomies, filters, REST API, JSON/HTML/CSV output, and Dublin Core mapping. | WordPress roles and configuration would need to be tested for private submission data and review. Official materials inspected do not establish a native equivalent to the Biblioteca review flow or a preservation file/version model. Adds a second stack. | **Evaluate as a lighter catalogue/discovery integration; no adoption yet.** |
 | Omeka S | Items, media, vocabularies, resource templates, linked resources, value annotations, per-field visibility, users/roles, REST API, JSON-LD/RDF/CSV exports, derivatives, IIIF, and a Collecting workflow with moderation states. | Requires a PHP/application deployment and could duplicate the existing Next.js/Supabase submission workflow. Configuration and resource templates must be tested with synthetic records. | **Best candidate for a synthetic catalogue/access proof of concept; no migration yet.** |
 | CollectiveAccess Providence + Pawtucket2 | Configurable entities, metadata standards, media processing, change tracking, large exports, BagIt/replication capabilities, GraphQL/REST/IIIF/OAI-PMH, and separate public presentation. | Highest operational burden: multiple applications, PHP/MySQL infrastructure, media tooling, and a larger integration surface. Submission/review ownership would need explicit design. | **Defer unless the profile proves that archival complexity justifies it.** |
@@ -149,7 +152,7 @@ vendor behavior was inferred from the current Biblioteca code.
 | Collection/series | Keep `collection_title` for current discovery; defer explicit relationships and ordering. |
 | Multilingual metadata | Require language-tagged values in the future profile; do not infer language from text. |
 | Creator-supplied context | Keep it distinct from editorial notes; defer the exact field shape until the profile proof of concept. |
-| Processing history | Keep current status fields as state snapshots; defer an event-history model until workflow requirements are validated. |
+| Processing history | Keep current status fields as the required representation. Add maintainer/action history only if a concrete workflow, accountability, or rights requirement demonstrates its value. |
 | Review workflow | Keep Next.js/Supabase as the workflow authority for now; compare Omeka Collecting only through a synthetic proof of concept. |
 | Public access | Keep publication, reading, download, preservation, replication, and reuse as separate policy dimensions. |
 | File custody and derivatives | Do not migrate or call external URLs originals. Define asset/version/derivative relationships before selecting storage. |
@@ -183,3 +186,10 @@ vendor behavior was inferred from the current Biblioteca code.
 - [Supabase Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
 - [Supabase Storage](https://supabase.com/docs/guides/storage)
 - [Next.js mutation and Server Function security](https://nextjs.org/docs/app/getting-started/mutating-data)
+- [ZineCore2 documentation](https://zinecore.org/)
+- [ZineCore2 specification repository](https://github.com/ZineCore2/spec)
+- [QZAP / Queer Zine Archive Project](https://qzap.org/)
+- [ZineCat / Zine Union Catalog](https://zinecat.org/)
+- [ZineCat project history](https://www.zinelibraries.info/zine-union-catalog/)
+- [Barnard Zine Library](https://zines.barnard.edu/)
+- [Zine archive reference research note](./zine-archive-references.md)

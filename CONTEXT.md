@@ -69,7 +69,7 @@ A catalogue publication concept that may have one or more editions and can be di
 _Avoid_: Item, resource
 
 **Edition**:
-A particular release or version of a publication, including a date or revision when that distinction is known.
+A release, issue, or revision distinction used only when it clarifies that two catalogue records belong to the same publication. A year alone is not an edition.
 _Avoid_: Duplicate, update
 
 **Collection/series**:
@@ -80,13 +80,17 @@ _Avoid_: A title copied into each record without a relationship
 An intake record and context provided to the Biblioteca for review.
 _Avoid_: Publication, original
 
+**Maintainer/steward**:
+A person or collective responsible for operating, reviewing, describing, or caring for the Biblioteca collection; not a creator credit.
+_Avoid_: Creator, publisher
+
 **File asset/version**:
 A specific source or delivery file with its own bytes, reference, checksum, or version history.
 _Avoid_: Any URL, duplicate
 
 **Processing event**:
-An action such as review, publication, import, validation, correction, or removal.
-_Avoid_: A current status field treated as history
+Optional evidence of an action such as review, publication, import, validation, correction, or removal; current status snapshots are sufficient unless a concrete accountability or workflow need requires history.
+_Avoid_: Event sourcing by default
 
 **Access policy**:
 Separate decisions about discovery, reading, downloading, preservation, replication, and reuse.
