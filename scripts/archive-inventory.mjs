@@ -606,6 +606,8 @@ export function compareManifests(before, after) {
         id: newRecord?.id ?? oldRecord.id,
         from: oldRecord?.status ?? null,
         to: newRecord?.status ?? null,
+        fromPublicationStatus: oldRecord?.publicationStatus ?? null,
+        toPublicationStatus: newRecord?.publicationStatus ?? null,
       });
     } else {
       records.unchanged.push({ id: newRecord.id, status: newRecord.status });

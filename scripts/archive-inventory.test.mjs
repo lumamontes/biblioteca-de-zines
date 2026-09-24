@@ -282,7 +282,16 @@ test('compares stable manifest content while ignoring run provenance', () => {
       changed: ['same.pdf', 'status-only.pdf'],
       unchanged: [],
     },
-    records: { changed: [{ id: 1, from: 'matched', to: 'ambiguous' }], unchanged: [] },
+    records: {
+      changed: [{
+        id: 1,
+        from: 'matched',
+        to: 'ambiguous',
+        fromPublicationStatus: 'published',
+        toPublicationStatus: 'unpublished',
+      }],
+      unchanged: [],
+    },
   });
 
   const publicationChange = compareManifests(
@@ -290,7 +299,13 @@ test('compares stable manifest content while ignoring run provenance', () => {
     { schemaVersion: 1, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'published' }] },
   );
   assert.deepEqual(publicationChange.records, {
-    changed: [{ id: 2, from: 'matched', to: 'matched' }],
+    changed: [{
+      id: 2,
+      from: 'matched',
+      to: 'matched',
+      fromPublicationStatus: 'unpublished',
+      toPublicationStatus: 'published',
+    }],
     unchanged: [],
   });
 });

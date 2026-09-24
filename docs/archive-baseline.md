@@ -162,8 +162,9 @@ only the reviewed, public-safe conclusions from those artifacts.
 
 ## Current Application Flows
 
-The following flow descriptions are derived from the current application code
-and database migrations. The code evidence is in
+The following flow descriptions are implementation evidence derived from the
+current application code and database migrations, not direct production
+observation. The code evidence is in
 `src/app/(main)/zines/apply/actions.ts`,
 `src/app/(admin)/dashboard/actions.ts`,
 `src/services/zine-import-service.ts`, and
@@ -208,10 +209,11 @@ in private snapshots only.
 
 ### Review and Catalogue Publication
 
-1. An authenticated Supabase user can access `/dashboard`.
+1. An authenticated Supabase user can access `/dashboard`; no separate
+   maintainer role is enforced by the observed application code.
 2. The dashboard loads all `form_uploads` rows and all `library_zines` rows.
-3. Maintainers can edit submission metadata, authors, URLs, descriptions, and
-   categories.
+3. An authenticated dashboard user can edit submission metadata, authors, URLs,
+   descriptions, and categories.
 4. Publishing an upload copies its metadata into `library_zines`, generates a
    slug from the first author and title, links authors, merges categories, and
    sets both publication records to published.
