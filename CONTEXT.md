@@ -69,8 +69,8 @@ A catalogue publication concept that may have one or more editions and can be di
 _Avoid_: Item, resource
 
 **Edition**:
-A release, issue, or revision distinction used only when it clarifies that two catalogue records belong to the same publication. A year alone is not an edition.
-_Avoid_: Duplicate, update
+Not a current Biblioteca concept. A new issue, release, or revision is currently represented as a new publication entry; a year alone is a date, not an edition.
+_Avoid_: Adding an edition entity before repeated real cases justify it
 
 **Collection/series**:
 A group of related publications presented as belonging together.
