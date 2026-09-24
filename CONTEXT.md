@@ -135,3 +135,15 @@ _Avoid_: Treating a processing snapshot as an event history
 **Provenance**:
 The source, transformation, review, visibility, and unresolved question attached to a value or observation.
 _Avoid_: A value without evidence context
+
+**Rights/access evidence**:
+A claim, permission, restriction, or unresolved question about how a publication or file may be discovered, read, downloaded, preserved, replicated, or reused.
+_Avoid_: Treating public visibility as permission for every use
+
+**Asset kind**:
+The role of a file or file reference, such as source, reading copy, preview, or derivative.
+_Avoid_: Calling every PDF an original
+
+**Access state**:
+The current condition of one access dimension, such as public, restricted, unknown, or not established.
+_Avoid_: Treating one access state as the answer for every use

@@ -50,8 +50,9 @@ File/access evidence
 
 ### Publication Unit
 
-One current `library_zines` row is one public publication entry. A later issue,
-release, or `v2` is another entry for now. `edition/release` remains a
+One current `library_zines` row is one catalogue publication record; only rows
+with an approved public editorial state are public publication entries. A later
+issue, release, or `v2` is another entry for now. `edition/release` remains a
 qualifier that may be recorded in a title, description, or future relation if
 repeated cases justify one; it is not a required entity or field.
 
@@ -77,6 +78,108 @@ unresolved.
 An archive steward is an operational actor for Biblioteca review and care. It
 is not automatically a publication credit. A private contact is a communication
 value and is not automatically a public agent identity.
+
+## Proposed Metadata Structure
+
+This is the concrete proposal for Biblioteca, informed by ZineCore2's
+`zineShape` and AgentCore2 profiles, ZineCat's searchable object/collection/
+creator structure, and Barnard's distinction between catalogue description and
+physical/access context. It is a selective crosswalk, not an adoption of any
+external schema.
+
+| Profile area | Proposed values | Biblioteca decision | Current status |
+| --- | --- | --- | --- |
+| Publication identity | `title`, optional alternative title, stable local identifier | Make title the required public value; preserve alternative titles only when they matter for discovery | `title`, `slug`; no alternative title |
+| Series context | `series_title`, optional issue/release label | Keep `collection_title` as a label; do not create a series entity or require issue numbering | `collection_title` |
+| Edition/version | Optional `edition_statement` or release qualifier | Do not create an edition entity now; a `v2` is a new publication record | Not stored separately |
+| Description | `abstract`/description plus source | Keep description optional and record whether it came from creator, submitter, or maintainer | `description` without source |
+| Agents | `display_name`, `agent_kind`, alternative names, public/privacy status | Public display name is primary; legal identity is not required; collective, pseudonymous, anonymous, and unknown cases remain valid | `authors.name`, `url`, `bio` |
+| Publication roles | Repeatable contextual assertions: `creator`, `contributor`, `publisher` | One agent may hold multiple roles; do not make submitter or archive steward publication credits by default | Author link has no role |
+| Subjects | Controlled subject terms | Use Biblioteca's categories as discovery subjects; coordinate labels and aliases with #116 | `tags.categories`, `categories` table |
+| Genre/form | Optional terms such as perzine, fanzine, photo zine, academic item | Defer a separate genre vocabulary until the category/thesaurus work demonstrates a need | Not currently represented |
+| Date | Repeatable date claim with precision and provenance | Support exact year, circa/partial, and unknown without forcing a numeric year | `year` / `published_year` only |
+| Language | Repeatable language-tagged values | Add language to values when multilingual records require it; do not infer from text | Not currently represented |
+| Place | Optional place of publication/creation when supplied | Defer as a field until Brazilian catalogue use cases show a clear discovery need | Not currently represented |
+| Rights/access | Rights statement plus independent discovery/reading/download/preservation/replication/reuse states | Require evidence before making non-default access claims; keep private rights evidence separate | `is_published` and URL reachability only |
+| Identifier | Local slug/id/uuid plus namespaced external identifiers | Preserve source namespace; do not treat external URLs as identifiers of custody or authorization | `slug`, `id`, `uuid`, URLs |
+| Asset/holding | Source, reading copy, preview, derivative, repository/observation, checksum, format, pages, access status | Keep asset and custody facts separate from publication metadata; implement only in the authorized pilot | URLs and private inventory evidence |
+| Submission | Proposed publication values, submitter assertion, contact, intake provenance, review state | One submission may contain multiple proposed publications; contact remains private and submission values are not automatically public | `form_uploads` |
+
+### Why These Fields
+
+ZineCore2 gives the proposal a useful zine-specific baseline: `title`,
+`series_title`, issue/edition qualifiers, repeatable creators/contributors/
+publishers, subject, genre, description, date, language, rights, relation, and
+identifier. Biblioteca deliberately differs in four places:
+
+1. `year` is not made mandatory because unknown or approximate dates are valid.
+2. `edition_statement` remains a qualifier, not a current entity, because
+   Biblioteca currently treats each zine entry independently.
+3. `genre`, place, and richer physical-description fields are deferred rather
+   than added just because another profile contains them.
+4. Submitter, private contact, review state, asset custody, and access evidence
+   remain outside the public bibliographic description.
+
+AgentCore2 supports the proposed public display name, agent kind, alternative
+names, roles, pseudonyms, anonymity/privacy, and optional private contact
+boundary. Biblioteca adopts those as profile requirements without requiring a
+separate authority-control system now.
+
+ZineCat supports the proposal's distinction between object description,
+collection membership, local identifiers, creators, date, type, and place. Its
+search interface is evidence for useful discovery dimensions, not a mandate
+that Biblioteca implement every field. Barnard's public documentation supports
+keeping catalogue description, local holdings/access, and rights guidance
+distinct.
+
+### Proposed Synthetic Record Shape
+
+This shape is illustrative metadata, not a TypeScript or Supabase contract:
+
+```json
+{
+  "publication": {
+    "id": "P-001",
+    "title": "Caderno Azul",
+    "series_label": "Série Exemplo",
+    "date": { "value": "circa 2019", "precision": "circa-year" },
+    "languages": ["pt-BR"],
+    "subjects": ["Experimental", "Poético"],
+    "description": {
+      "value": "Contexto fornecido pela pessoa autora.",
+      "source": "creator"
+    },
+    "agents": [
+      {
+        "display_name": "Coletivo Exemplo",
+        "agent_kind": "collective",
+        "authorship_status": "identified",
+        "roles": ["creator", "publisher"]
+      }
+    ],
+    "assets": [
+      {
+        "kind": "reading-copy",
+        "reference": "https://example.invalid/reading-copy.pdf",
+        "access": "public-reading"
+      }
+    ],
+    "rights_access": {
+      "discovery": "public",
+      "reading": "public",
+      "download": "unknown",
+      "preservation": "not-established",
+      "reuse": "unknown"
+    }
+  },
+  "submission": {
+    "id": "S-001",
+    "submitter_role": "creator",
+    "contact": "contact@example.invalid",
+    "editorial_state": "in-review"
+  }
+}
+```
 
 ## Metadata Inventory
 
@@ -138,6 +241,40 @@ following requiredness and value-shape rules:
 | Private contact | Optional per submission; never public by default | Private contact value with submission scope, access boundary, and retention decision |
 | File/access evidence | Optional per record, but each published reading link must have a reviewed access interpretation | Asset/reference facts with source kind, observation, access state, and provenance; URL alone is insufficient |
 | Provenance | Required for staged values and reviewed transformations | Source, transformation/review note, visibility, and unresolved question accompany the value |
+
+### Per-Field Migration Annotations
+
+The table above describes current fields. This table makes the migration
+annotation explicit for every field: requiredness, provenance to retain, and
+the unresolved question to answer before staging or publishing it.
+
+| Field | Requiredness | Provenance to retain | Unresolved question |
+| --- | --- | --- | --- |
+| `slug` | Required for published `library_zines` rows | Generation rule and any reviewed correction | Can a changed slug receive a redirect without breaking existing links? |
+| `title` | Required | Submitted value, reviewed value, and editor/source | Which value is the public display title? |
+| `id` | Required for persisted rows | Database source and row identity | None for identity; never treat it as public identifier |
+| `uuid` | Optional | System/import source and first observation | Is it stable enough for any external exchange? |
+| `description` | Optional | Submitter, creator, maintainer, or unknown source | Was it edited, and is it public context or editorial description? |
+| `year` / `published_year` | Optional; unknown valid | Submitted claim, review, precision, and evidence note | Is it exact, approximate, partial, conflicting, or unknown? |
+| `language` | Optional; repeatable | Language tag source and value-level review | Which submitted values need tags in the current Brazilian-focused catalogue? |
+| `collection_title` | Optional | Submitted label or maintainer correction | Is it a series label or only descriptive text? |
+| `tags.categories` | Optional; current UI max three | Submitted suggestion, vocabulary mapping, and review | Is the term current, an alias, or unresolved? |
+| `author_name` / `authors.name` | Required by current workflow; unknown/anonymous states valid in future | Submitted display name and agent reconciliation | Does the value identify a person, collective, pseudonym, anonymous credit, or unknown? |
+| agent kind/authorship status | Optional current; required when needed to explain authorship | Submitter/reviewer assertion and confidence | Which controlled status best represents the evidence? |
+| `author_url` / `authors.url` | Optional, repeatable | Submitter source and link review | Is it a public agent reference or another kind of source? |
+| `authors.bio` | Optional | Author/maintainer source | Is it public agent context or creator-supplied publication context? |
+| role assertion | Optional, repeatable | Agent, role, source, and review | Is the role creator, publisher, submitter, archive steward, or unresolved? |
+| `archive_steward` assertion | Optional operationally | Maintainer action and workflow source | Does the workflow require retaining this actor at all? |
+| `author_email` / `contactEmail` | Optional per submission; private | Submission, purpose, access, and retention decision | What rights or correction conversation does it support? |
+| creator-supplied context | Optional | Creator/submitter source and language | How is it kept distinct from editorial description? |
+| `pdf_url` | Optional reference | Submitted/current field, URL observation, and access review | Is it source, reading copy, preview, derivative, or unknown? |
+| `cover_image` | Optional reference | Submitted/current field and asset observation | Is it a managed asset, source image, or external reference? |
+| local observation | Optional evidence | Inventory run, path, checksum, and validator | Does it correspond to a catalogue asset, and with what confidence? |
+| derivative relation | Optional future relation | Source asset, transformation, run, and result | Which derivatives are authorized and publicly deliverable? |
+| `is_published` | Required current state snapshot | Maintainer decision and review context | What separate discovery/reading/download policy accompanies it? |
+| `import_status`, `total_pages` | Optional legacy state | Processing action and result | Are these fields retired, or does an approved workflow still need them? |
+| `created_at`, `updated_at` | System-generated when available | System timestamp and table source | None for meaning; do not use as publication date |
+| rights/access evidence | Optional but required before non-default access claims | Rights source, permission/restriction, scope, reviewer, and unresolved question | What may be public, readable, downloadable, preserved, replicated, or reused? |
 
 ### Current Representation Mismatches
 
