@@ -247,6 +247,8 @@ The current catalogue is organized around a published `library_zines` record:
   title, and publication year. The slug is generated as the first submitted
   author name followed by the normalized zine title, using lowercase strict
   `slugify` normalization: `<first-author>-<normalized-title>`.
+- **Collection:** `collection_title` groups related zines that belong to the
+  same collection or series.
 - **Discovery:** category values in the `tags` JSON field, title full-text
   search, year filters, author relationships, and recent-publication ordering.
 - **Available categories:** the current read-only Supabase `categories` query
@@ -261,10 +263,13 @@ The current catalogue is organized around a published `library_zines` record:
   list.
 - **Public access:** `is_published` controls whether a catalogue record is
   returned by public catalogue, search, author, and detail queries.
-- **File references:** `pdf_url` and `cover_image` are URL fields, normally
-  pointing to external sources rather than managed source assets.
-- **Processing:** `import_status` and `total_pages` describe the optional page
-  import path; page images are represented separately in `zine_pages`.
+- **File references:** `pdf_url` and `cover_image` always point to external
+  sources in the current system, normally Google Drive links supplied by the
+  author. The project does not currently use its own storage for these source
+  assets.
+- **Planned/dead data:** `zine_pages`, `total_pages`, and `import_status` belong
+  to an unused planned flipbook/page-import experience. The current public
+  reader uses the external PDF preview and does not use `zine_pages`.
 - **History:** `created_at` and `updated_at` exist, but there is no record
   version history or publication-event history.
 
@@ -276,13 +281,11 @@ catalogue rows by title when displaying them; the publication action itself
 uses the submission ID and generated slug but does not create an explicit
 foreign-key relationship between the two records.
 
-The following concepts are therefore present but not cleanly separated in the
-current organization: publication versus edition, collection versus series,
-submitted file versus authorised original, reading copy versus preview,
-processing event versus file version, and public access versus preservation or
-reuse permission. Defining those distinctions and mapping the existing fields
-to a provisional metadata/access profile is the scope of issue #108, not a
-decision made by this baseline.
+The fuller metadata and access profile, including distinctions between
+publication, edition, collection/series, submitted file, authorised original,
+reading copy, preview, processing event, file version, and reuse permission is
+the scope of issue #108. This baseline records the current fields without
+prejudging that future profile.
 
 The implementation performs these publication steps as separate database
 operations rather than one transaction. A failure between operations can leave
@@ -305,13 +308,13 @@ review.
 | Domain object | Current evidence | Boundary |
 | --- | --- | --- |
 | Catalogue record | `library_zines` row | Describes a zine and its public metadata. |
-| Submitted file reference | `form_uploads.pdf_url` | External URL supplied by the submitter; not a custody copy. |
+| Submitted file reference | `form_uploads.pdf_url` | Author-provided Google Drive URL; not a custody copy. |
 | Catalogue PDF reference | `library_zines.pdf_url` | External URL used by the public PDF viewer. |
 | Local preservation observation | Local archive manifest | Observed bytes and fixity evidence; not proof of authorisation or originality. |
-| Reading derivative | `zine_pages` rows and R2 page objects | Created by the optional Google Drive import flow as PNG/JPEG page images. |
+| Planned flipbook data | `zine_pages` rows and R2 page objects | Unused planned table; not part of the current public reading flow. |
 | Original, preview, or other derivative | No explicit relation in the current schema | Must not be inferred from filename, URL, or PDF validity. |
 
-The Google Drive import path downloads a file, converts PDFs into page images,
+The unused Google Drive import path downloads a file, converts PDFs into page images,
 uploads pages to R2, stores `zine_pages`, and updates `import_status`. It also
 deletes existing page records and R2 objects before re-importing. The public
 detail page currently reads `pdf_url`, so the relationship between R2 pages and
@@ -346,5 +349,9 @@ The code exposes no explicit workflow for recording or enforcing:
 
 The current observable maintenance mechanisms are dashboard edits,
 publish/unpublish actions, optional Drive import/re-import, the external
-resource monitor, and the private local inventory. These mechanisms should not
-be treated as a complete rights or preservation process.
+
+The weekly published-resource monitor adds a limited availability safeguard: it
+checks published external PDF links and fails when a monitored link is
+unavailable. It can surface broken links, but it does not create a local copy,
+provide redundancy, verify authorisation, or make the archive resilient to
+source-account loss.
