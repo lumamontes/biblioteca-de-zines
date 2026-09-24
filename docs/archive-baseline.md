@@ -214,10 +214,13 @@ in private snapshots only.
 2. The dashboard loads all `form_uploads` rows and all `library_zines` rows.
 3. An authenticated dashboard user can edit submission metadata, authors, URLs,
    descriptions, and categories.
-4. Publishing an upload copies its metadata into `library_zines`, generates a
-   slug from the first author and title, links authors, merges categories, and
-   sets both publication records to published.
-5. An existing catalogue record can be republished or unpublished by changing
+4. Publishing a new upload copies its metadata into `library_zines`, generates
+   a slug from the first author and title, links authors, merges categories,
+   and sets the new catalogue row as published.
+5. When a catalogue row already exists, the publish action merges categories
+   and author links; the dashboard's separate republish action sets
+   `library_zines.is_published = true`.
+6. An existing catalogue record can be unpublished by changing
    `library_zines.is_published`.
 
 Unpublishing changes the catalogue publication flag only. The observed code
