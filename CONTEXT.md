@@ -20,6 +20,18 @@ _Avoid_: A value copied between forms without meaning
 A person, collective, or organization associated with a publication or archive context; an agent may have multiple contextual roles.
 _Avoid_: Assuming every role is a separate person
 
+**Agent kind**:
+A broad classification of an agent, such as person, collective, organization, anonymous, or unknown; it does not assert a legal identity.
+_Avoid_: Treating a kind as proof of authorship
+
+**Authorship status**:
+The state of what is known about authorship, such as identified, pseudonymous, anonymous, unknown, or unresolved.
+_Avoid_: Collapsing unknown and anonymous
+
+**Language-tagged value**:
+A title, description, or context value paired with the language in which it is expressed and its source.
+_Avoid_: Inferring language from text alone
+
 **Role assertion**:
 A contextual statement about why an agent is associated with a publication or submission, such as creator, publisher, or submitter.
 _Avoid_: Treating a role as a permanent identity category

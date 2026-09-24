@@ -100,6 +100,7 @@ The status values mean:
 | Series | `collection_title` | Current free-text collection/series label | 0..1 | Submission or maintainer edit; public when published | Clarify label semantics; defer collection entity and ordering |
 | Taxonomy | `categories` | Controlled discovery terms | 0..3 current UI; future cardinality to review | Submitter suggestion plus maintainer review; public | Keep controlled vocabulary; retain source of suggestion |
 | Agent | `author_name` / `authors.name` | Public display name for a person or collective | 1..many | Submission or maintainer review; public when published | Extend with contextual role, alternative name, pseudonym, anonymity, and ordering |
+| Agent | agent kind and authorship status | Distinguishes person, collective, organization, anonymous, pseudonymous, unknown, and unresolved cases | 0..1 per agent assertion | Submission/review; public status may be limited | Extend as controlled values; these are descriptive states, not identity proof |
 | Agent | `author_url` / `authors.url` | Public external profile or reference | 0..many | Submitter/creator input; public if approved | Keep as optional external reference; do not treat as identity proof |
 | Agent | `authors.bio` | Public contextual text about an agent | 0..1 | Maintainer/editorial value; public if approved | Keep available; distinguish from creator-supplied publication context |
 | Role | role assertion | Why an agent is associated with this publication | 0..many | Submission/review context; public role only when approved | Extend relationship semantics; roles may overlap or remain unknown |
@@ -113,6 +114,25 @@ The status values mean:
 | Processing state | `import_status`, `total_pages` | Existing page-import snapshot fields | 0..1 | Internal/legacy | Defer or retire; not current editorial review |
 | Submission | `created_at` | Intake timestamp | 0..1 | System; private/operational | Keep as provenance, not publication date |
 | Record history | `updated_at` | Last row update timestamp | 0..1 | System; operational | Keep as a snapshot timestamp; no event history required |
+
+### Requiredness And Future Value Shapes
+
+The cardinality column describes current storage. The migration profile adds the
+following requiredness and value-shape rules:
+
+| Field group | Requiredness | Future value shape and review rule |
+| --- | --- | --- |
+| Publication title | Required for a publication entry | One reviewed display value plus submitted source value when they differ |
+| Public identifier | Required for a published `library_zines` row; not a submission requirement | Existing slug rule remains stable; changes require explicit redirect handling |
+| Agent/authorship | At least one authorship assertion is required for current publication workflow, but its status may be `identified`, `pseudonymous`, `anonymous`, `unknown`, or `unresolved` | `agent_kind` plus `authorship_status` and display name when one exists; no legal name required |
+| Description/context | Optional | Separate value source as `creator`, `submitter`, `maintainer`, or `unknown`; do not infer source |
+| Date/year | Optional; unknown is valid | Date claim with precision `year`, `circa-year`, `partial`, or `unknown`, plus source and provenance; do not coerce `circa 2019` to exact `2019` |
+| Language | Optional; multiple values allowed | Each title, description, or context value may be a language-tagged value such as `{ value: "Caderno Azul", language: "pt-BR" }` |
+| Categories | Optional; current form permits up to three | Controlled term identifier plus submitted/reviewed provenance; empty is valid |
+| Collection label | Optional | Free-text display label until a collection relationship is justified |
+| Private contact | Optional per submission; never public by default | Private contact value with submission scope, access boundary, and retention decision |
+| File/access evidence | Optional per record, but each published reading link must have a reviewed access interpretation | Asset/reference facts with source kind, observation, access state, and provenance; URL alone is insufficient |
+| Provenance | Required for staged values and reviewed transformations | Source, transformation/review note, visibility, and unresolved question accompany the value |
 
 ### Current Representation Mismatches
 
@@ -208,10 +228,10 @@ values:
 | Case | Synthetic record values | Expected representation |
 | --- | --- | --- |
 | Single creator | Title `Caderno Azul`; agent `Lia Exemplo` | One public agent assertion with role `creator`; one publication record |
-| Collective | Title `Mapa de Ruídos`; agent `Coletivo Exemplo` | One agent with kind `collective`; no invented individual members |
+| Collective | Title `Mapa de Ruídos`; agent `Coletivo Exemplo` | One agent with `agent_kind: collective`; no invented individual members |
 | Pseudonym | Agent display name `Nuvem Baixa`; no legal name | Public display name retained; private identity not required |
-| Anonymous | Agent value `anonymous`; no display name | Explicit anonymous authorship; no fabricated agent name |
-| Unknown author | Agent value `unknown`; source note `submitter did not know` | Authorship unresolved; distinct from an intentional anonymous credit |
+| Anonymous | `authorship_status: anonymous`; no display name | Explicit anonymous authorship; no fabricated agent name |
+| Unknown author | `authorship_status: unknown`; source note `submitter did not know` | Authorship unresolved; distinct from an intentional anonymous credit |
 | Overlapping roles | `Coletivo Exemplo`: `creator`, `publisher`; `Lia Exemplo`: `submitter` | One agent may have several roles; submitter may be another agent |
 | Multilingual | Titles `Caderno Azul` (`pt-BR`) and `Blue Notebook` (`en`) | Language-tagged values when supported; no inferred language |
 | Approximate date | Year claim `circa 2019` | Approximate claim retained rather than forced into exact `2019` |
