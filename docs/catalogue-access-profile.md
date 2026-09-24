@@ -33,7 +33,7 @@ It does not:
 | File asset/version | A specific source or delivery file with its own bytes, URL, format, checksum, or version history. | `pdf_url`, local archive observations, and external URLs; no asset/version entity. |
 | Derivative | A representation produced from another file, such as a preview, reading copy, or page image. | Not currently represented in the public reading flow. Planned `zine_pages` data is unused. |
 | Processing event | An action such as review, publication, import, validation, correction, or removal. | Timestamps and `import_status` provide partial signals; no event history. |
-| Access information | Separate decisions about discovery, reading, downloading, preservation, replication, and reuse. | Mostly collapsed into `is_published` and external URL reachability. |
+| Access policy | Separate decisions about discovery, reading, downloading, preservation, replication, and reuse. | Mostly collapsed into `is_published` and external URL reachability. |
 
 ## Expressiveness Requirements
 
@@ -52,6 +52,21 @@ them into a simpler model:
 - several editions or files associated with one publication;
 - an unpublished submission that is retained privately without becoming public;
 - a public reading copy whose access policy differs from the retained source.
+
+### Provisional Representation Rules
+
+These rules describe what the profile must be able to represent. They are not
+schema changes:
+
+| Requirement | Provisional representation | Current mapping/gap |
+| --- | --- | --- |
+| Collective, creator, publisher, and submitter roles | Separate participant records with a role and display name; a publication may have many participants. | `authors` links creators only; publisher and submitter roles are not modeled. |
+| Pseudonym or anonymity | Display name plus optional private identity evidence, or an explicit anonymous participant. | Current author name is a single public text value. |
+| Unknown or approximate date | Date value plus precision (`day`, `month`, `year`, `circa`, or `unknown`) and provenance. | `year` stores only a numeric year. |
+| Multiple languages | Language-tagged title, description, and creator context values. | No language field exists. |
+| Uncertainty | Value-level certainty and provenance note, separate from the value itself. | No value annotation exists. |
+| Creator-supplied context | Context value with source `creator`, separate from editorial notes. | `description` does not distinguish authorship of the text. |
+| Edition and file version | Explicit relations from publication to edition and from edition to file asset/version. | No edition, asset, or version entities exist. |
 
 ## Separate State Dimensions
 
@@ -102,9 +117,9 @@ This is a capability comparison, not a migration recommendation.
 | Option | Native strengths relevant here | Costs or gaps | Decision |
 | --- | --- | --- | --- |
 | Current Next.js + Supabase | Existing submission, shared maintainer authentication, catalogue queries, RLS-compatible data layer, and low operational disruption. | Metadata roles, value provenance, file versions, rights, and derivatives require application/schema work. | **Keep as the current system of record while the profile is validated.** |
-| Tainacan | WordPress repository plugin with configurable metadata, taxonomies, filters, REST API, and exports. | Adds WordPress as a second stack; submission/review and preservation file/version behavior need separate validation. | **Evaluate as a lighter catalogue/discovery integration; no adoption yet.** |
-| Omeka S | Items, media, vocabularies, resource templates, linked resources, value annotations, per-field visibility, APIs, exports, derivatives, and a Collecting review workflow. | Adds PHP/application operations and risks duplicating the existing Next.js/Supabase submission workflow. | **Best candidate for a synthetic catalogue/access proof of concept; no migration yet.** |
-| CollectiveAccess Providence + Pawtucket2 | Deep configurable entities, media processing, change tracking, exports, replication/BagIt, APIs, IIIF, and separate public presentation. | Highest operational and integration burden; normally requires two applications and a larger support surface. | **Defer unless the profile proves that archival complexity justifies it.** |
+| Tainacan | WordPress repository plugin with configurable metadata, taxonomies, filters, REST API, JSON/HTML/CSV output, and Dublin Core mapping. | WordPress roles and configuration would need to be tested for private submission data and review. Official materials inspected do not establish a native equivalent to the Biblioteca review flow or a preservation file/version model. Adds a second stack. | **Evaluate as a lighter catalogue/discovery integration; no adoption yet.** |
+| Omeka S | Items, media, vocabularies, resource templates, linked resources, value annotations, per-field visibility, users/roles, REST API, JSON-LD/RDF/CSV exports, derivatives, IIIF, and a Collecting workflow with moderation states. | Requires a PHP/application deployment and could duplicate the existing Next.js/Supabase submission workflow. Configuration and resource templates must be tested with synthetic records. | **Best candidate for a synthetic catalogue/access proof of concept; no migration yet.** |
+| CollectiveAccess Providence + Pawtucket2 | Configurable entities, metadata standards, media processing, change tracking, large exports, BagIt/replication capabilities, GraphQL/REST/IIIF/OAI-PMH, and separate public presentation. | Highest operational burden: multiple applications, PHP/MySQL infrastructure, media tooling, and a larger integration surface. Submission/review ownership would need explicit design. | **Defer unless the profile proves that archival complexity justifies it.** |
 
 ### Priority Capability Decisions
 
@@ -112,6 +127,11 @@ This is a capability comparison, not a migration recommendation.
 | --- | --- |
 | Roles and authorship | Preserve roles explicitly; do not collapse creator, publisher, collective, submitter, and private contact. Validate with synthetic examples before schema work. |
 | Uncertainty and provenance | Require value-level notes or provenance in the future profile; do not encode uncertainty in title/description text. |
+| Editions and versions | Defer explicit edition/file-version entities until representative multi-edition records are reviewed. |
+| Collection/series | Keep `collection_title` for current discovery; defer explicit relationships and ordering. |
+| Multilingual metadata | Require language-tagged values in the future profile; do not infer language from text. |
+| Creator-supplied context | Keep it distinct from editorial notes; defer the exact field shape until the profile proof of concept. |
+| Processing history | Keep current status fields as state snapshots; defer an event-history model until workflow requirements are validated. |
 | Review workflow | Keep Next.js/Supabase as the workflow authority for now; compare Omeka Collecting only through a synthetic proof of concept. |
 | Public access | Keep publication, reading, download, preservation, replication, and reuse as separate policy dimensions. |
 | File custody and derivatives | Do not migrate or call external URLs originals. Define asset/version/derivative relationships before selecting storage. |
