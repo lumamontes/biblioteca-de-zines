@@ -7,6 +7,9 @@ Aqui estão reunidas todas as nossas decisões em formato de Architecture Decisi
 Nossa documentação também inclui o [baseline do arquivo](./archive-baseline.md),
 que registra as conclusões públicas da primeira calibração do inventário.
 
+O [perfil provisório de catálogo e acesso](./catalogue-access-profile.md)
+separa o modelo atual das decisões futuras de metadados, direitos e plataforma.
+
 ## Como criar uma ADR
 
 São dois passos:

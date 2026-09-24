@@ -61,3 +61,33 @@ _Avoid_: Missing file
 **Ambiguous match**:
 A possible relationship between a catalogue record and a local file that lacks enough evidence to be treated as confirmed.
 _Avoid_: Best guess
+
+## Catalogue profile
+
+**Publication**:
+A distinct published zine or edition that readers can discover.
+_Avoid_: Item, resource
+
+**Edition**:
+A particular release or version of a publication, including a date or revision when that distinction is known.
+_Avoid_: Duplicate, update
+
+**Collection/series**:
+A group of related publications presented as belonging together.
+_Avoid_: A title copied into each record without a relationship
+
+**Submission**:
+An intake record and context provided to the Biblioteca for review.
+_Avoid_: Publication, original
+
+**File asset/version**:
+A specific source or delivery file with its own bytes, reference, checksum, or version history.
+_Avoid_: Any URL, duplicate
+
+**Processing event**:
+An action such as review, publication, import, validation, correction, or removal.
+_Avoid_: A current status field treated as history
+
+**Access policy**:
+Separate decisions about discovery, reading, downloading, preservation, replication, and reuse.
+_Avoid_: Published means permitted for everything
