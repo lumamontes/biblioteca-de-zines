@@ -221,7 +221,7 @@ The status values mean:
 | Area | Field | Meaning | Cardinality | Source and visibility | Decision |
 | --- | --- | --- | --- | --- | --- |
 | Identity | `slug` | Stable public URL identifier | 1 on `library_zines`; absent from `form_uploads` | Generated from current author/title rule; public | Keep; never silently regenerate during migration |
-| Identity | `title` | Public title supplied or reviewed for the zine | 1 | Submitter/creator input, then editorial review; public when published | Keep; preserve original and reviewed values if they differ |
+| Identity | `title` | Public title supplied or reviewed for the zine | 1 | Submitter/creator input, then editorial review; public when published | Keep; preserve submitted and reviewed values if they differ |
 | Identity | `alternative_title` | Subtitle, translation, alias, or variant title | 0..many future | Submitter/creator input; public only after review | Extend only when discovery cases justify it |
 | Identity | `id` | Database row identifier | 1 per persisted row | System-generated; operational | Keep as technical reference, not public identity claim |
 | Identity | `uuid` | Optional external/technical identifier | 0..1 in current tables | System-generated or imported; operational | Keep if present; do not use as publication identity without evidence |
@@ -231,6 +231,7 @@ The status values mean:
 | Series | `collection_title` | Current free-text collection/series label | 0..1 | Submission or maintainer edit; public when published | Clarify label semantics; defer collection entity and ordering |
 | Series | `issue_designation`, `edition_statement` | Optional issue/release qualifiers | 0..many future | Submitter/creator claim; public after review | Keep as future qualifiers, not current entities or required fields |
 | Taxonomy | `categories` | Controlled discovery terms | 0..3 current UI; future cardinality to review | Submitter suggestion plus maintainer review; public | Keep controlled vocabulary; retain source of suggestion |
+| Taxonomy/process | `tags` | Legacy JSON container for categories and submission metadata | 0..1 | Application/database value; visibility varies by member | Keep as legacy evidence; do not treat the container as a stable metadata model |
 | Agent | `author_name` / `authors.name` | Public display name for a person or collective | 1..many | Submission or maintainer review; public when published | Extend with contextual role, alternative name, pseudonym, anonymity, and ordering |
 | Agent | agent kind and authorship status | `agent_kind` distinguishes person, collective, or organization; `authorship_status` handles identified, pseudonymous, anonymous, unknown, and unresolved cases | 0..1 per agent assertion | Submission/review; public status may be limited | Extend as controlled values; these are descriptive states, not identity proof |
 | Agent | `author_url` / `authors.url` | Public external profile or reference | 0..many | Submitter/creator input; public if approved | Keep as optional external reference; do not treat as identity proof |
@@ -248,7 +249,9 @@ The status values mean:
 | Editorial state | `is_published` | Public editorial visibility snapshot | 1 current | Maintainer decision; public query boundary | Keep for compatibility; do not overload with other states |
 | Processing state | `import_status`, `total_pages` | Existing page-import snapshot fields | 0..1 | Internal/legacy | Defer or retire; not current editorial review |
 | Submission | `created_at` | Intake timestamp | 0..1 | System; private/operational | Keep as provenance, not publication date |
+| Submission | `submission_batch_id` | Intake grouping/process reference | 0..1 | Submission tags; private/operational | Keep as process provenance; do not treat it as a collection/series |
 | Record history | `created_at`, `updated_at` | Intake or row-update timestamps | 0..1 | System; operational | Keep as snapshot/provenance timestamps; no event history required |
+| Derivative legacy | `zine_pages`, `import_status`, `total_pages` | Planned page derivative/import fields | 0..many / 0..1 | Internal/legacy; not public by default | Defer or retire until an authorized derivative workflow exists |
 
 ### Requiredness And Future Value Shapes
 
@@ -295,6 +298,7 @@ column; together they form the complete field-level contract.
 | `issue_designation` | Optional future qualifier | Submitted label and review decision | Does the publication actually belong to a numbered series? |
 | `edition_statement` | Optional future qualifier | Submitted release/revision claim and review decision | Does this need a relation to another publication entry, or is a new entry sufficient? |
 | `tags.categories` | Optional; current UI max three | Submitted suggestion, vocabulary mapping, and review | Is the term current, an alias, or unresolved? |
+| `tags` | Optional legacy container | Raw application value and parser version | Which values can be separated into stable fields without loss? |
 | `subject` / category term | Optional, repeatable | Controlled vocabulary identifier, label version, alias mapping, and reviewer | Is this a subject term, genre/form term, or only a submitter suggestion? |
 | `genre` / form | Optional future field | Vocabulary source and review | Is a separate genre/form vocabulary useful enough to justify adding it? |
 | `author_name` / `authors.name` | Required by current workflow; unknown/anonymous states valid in future | Submitted display name and agent reconciliation | Does the value identify a person, collective, pseudonym, anonymous credit, or unknown? |
@@ -304,6 +308,7 @@ column; together they form the complete field-level contract.
 | role assertion | Optional, repeatable | Agent, role, source, and review | Is the role creator, publisher, submitter, archive steward, or unresolved? |
 | `archive_steward` assertion | Optional operationally | Maintainer action and workflow source | Does the workflow require retaining this actor at all? |
 | `author_email` / `contactEmail` | Optional per submission; private | Submission, purpose, access, and retention decision | What rights or correction conversation does it support? |
+| `submission_batch_id` | Optional; private operational value | Submission source and intake run | Is this needed after submission review, or only during intake? |
 | creator-supplied context | Optional | Creator/submitter source and language | How is it kept distinct from editorial description? |
 | `pdf_url` | Optional reference | Submitted/current field, URL observation, and access review | Is it source, reading copy, preview, derivative, or unknown? |
 | `cover_image` | Optional reference | Submitted/current field and asset observation | Is it a managed asset, source image, or external reference? |
@@ -313,6 +318,7 @@ column; together they form the complete field-level contract.
 | derivative relation | Optional future relation | Source asset, transformation, run, and result | Which derivatives are authorized and publicly deliverable? |
 | `is_published` | Required current state snapshot | Maintainer decision and review context | What separate discovery/reading/download policy accompanies it? |
 | `import_status`, `total_pages` | Optional legacy state | Processing action and result | Are these fields retired, or does an approved workflow still need them? |
+| `zine_pages` | Optional future derivative relation | Source asset, generation run, and result | Is page-level delivery authorized and operationally needed? |
 | `created_at`, `updated_at` | System-generated when available | System timestamp and table source | None for meaning; do not use as publication date |
 | rights/access evidence | Optional but required before non-default access claims | Rights source, permission/restriction, scope, reviewer, and unresolved question | What may be public, readable, downloadable, preserved, replicated, or reused? |
 
