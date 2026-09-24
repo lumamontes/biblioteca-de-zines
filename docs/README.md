@@ -4,6 +4,9 @@ Bem-vinde à documentação da Biblioteca de Zines.
 
 Aqui estão reunidas todas as nossas decisões em formato de Architecture Decision Records (ADRs).
 
+O [baseline do arquivo](./archive-baseline.md) registra as conclusoes publicas
+da primeira calibracao do inventario.
+
 ## Como criar uma ADR
 
 São dois passos:
