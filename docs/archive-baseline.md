@@ -239,6 +239,43 @@ the zine is available. This is an operational practice; the application
 automates the Telegram submission notification but does not automate the
 publication email.
 
+### Current Catalogue Organization
+
+The current catalogue is organized around a published `library_zines` record:
+
+- **Identity:** numeric ID, UUID, unique slug, title, description, collection
+  title, and publication year.
+- **Discovery:** category values in the `tags` JSON field, title full-text
+  search, year filters, author relationships, and recent-publication ordering.
+- **People:** `authors` records connected through the many-to-many
+  `library_zines_authors` table. The current publication flow starts from the
+  first submitted author when generating a slug, then links the parsed author
+  list.
+- **Public access:** `is_published` controls whether a catalogue record is
+  returned by public catalogue, search, author, and detail queries.
+- **File references:** `pdf_url` and `cover_image` are URL fields, normally
+  pointing to external sources rather than managed source assets.
+- **Processing:** `import_status` and `total_pages` describe the optional page
+  import path; page images are represented separately in `zine_pages`.
+- **History:** `created_at` and `updated_at` exist, but there is no record
+  version history or publication-event history.
+
+The submission table is a parallel, denormalized intake record rather than a
+formal version of the catalogue record. It retains author/contact fields,
+description, Google Drive PDF URL, cover URL, categories, publication flag,
+and submission-batch metadata. The current dashboard relates submission and
+catalogue rows by title when displaying them; the publication action itself
+uses the submission ID and generated slug but does not create an explicit
+foreign-key relationship between the two records.
+
+The following concepts are therefore present but not cleanly separated in the
+current organization: publication versus edition, collection versus series,
+submitted file versus authorised original, reading copy versus preview,
+processing event versus file version, and public access versus preservation or
+reuse permission. Defining those distinctions and mapping the existing fields
+to a provisional metadata/access profile is the scope of issue #108, not a
+decision made by this baseline.
+
 The implementation performs these publication steps as separate database
 operations rather than one transaction. A failure between operations can leave
 submission and catalogue state temporarily inconsistent and requires maintainer
