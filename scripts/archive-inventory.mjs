@@ -19,7 +19,7 @@ import slugify from 'slugify';
 
 const execFileAsync = promisify(execFile);
 
-export const INVENTORY_SCHEMA_VERSION = 1;
+export const INVENTORY_SCHEMA_VERSION = 2;
 export const INVENTORY_TOOL_VERSION = '0.1.0';
 export const KNOWN_FAILURE_CAUSES = [
   'drive-restricted',
@@ -523,11 +523,17 @@ export function selectDeterministicSample(manifest, { snapshot = null, limitPerC
   }
 
   for (const row of tableRows(snapshot, 'form_uploads')) {
+    const states = [];
+    if (typeof row?.is_published === 'boolean') {
+      states.push(`publication:${row.is_published ? 'published' : 'unpublished'}`);
+    }
     const state = workflowState(row);
-    if (!state) continue;
-    const values = workflowCategories[state] ?? [];
-    if (row.id != null) values.push(row.id);
-    workflowCategories[state] = values;
+    if (state) states.push(state);
+    for (const currentState of states) {
+      const values = workflowCategories[currentState] ?? [];
+      if (row.id != null) values.push(row.id);
+      workflowCategories[currentState] = values;
+    }
   }
 
   const sampleValues = (values) => values.sort((a, b) => {
@@ -591,11 +597,13 @@ export function compareManifests(before, after) {
     const newRecord = afterRecords.get(key);
     const oldFingerprint = oldRecord && JSON.stringify({
       status: oldRecord.status,
+      publicationStatus: oldRecord.publicationStatus ?? null,
       files: oldRecord.files ?? [],
       knownFailure: oldRecord.knownFailure ?? null,
     });
     const newFingerprint = newRecord && JSON.stringify({
       status: newRecord.status,
+      publicationStatus: newRecord.publicationStatus ?? null,
       files: newRecord.files ?? [],
       knownFailure: newRecord.knownFailure ?? null,
     });
@@ -604,6 +612,8 @@ export function compareManifests(before, after) {
         id: newRecord?.id ?? oldRecord.id,
         from: oldRecord?.status ?? null,
         to: newRecord?.status ?? null,
+        fromPublicationStatus: oldRecord?.publicationStatus ?? null,
+        toPublicationStatus: newRecord?.publicationStatus ?? null,
       });
     } else {
       records.unchanged.push({ id: newRecord.id, status: newRecord.status });

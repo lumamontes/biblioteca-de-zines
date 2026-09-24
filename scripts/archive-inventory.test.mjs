@@ -203,6 +203,7 @@ test('preserves publication status and samples workflow states', () => {
         ],
         form_uploads: [
           { id: 9, review_status: 'pending' },
+          { id: 10, is_published: false },
         ],
       },
     },
@@ -213,7 +214,7 @@ test('preserves publication status and samples workflow states', () => {
   assert.equal(result.records[1].publicationStatus, 'unpublished');
   assert.deepEqual(result.sample.workflow, {
     'publication:published': [1],
-    'publication:unpublished': [2],
+    'publication:unpublished': [2, 10],
     'review_status:pending': [9],
   });
 });
@@ -255,24 +256,24 @@ test('keeps known failures without making network requests', () => {
 
 test('compares stable manifest content while ignoring run provenance', () => {
   const before = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     provenance: { runId: 'old', collectedAt: 'old' },
     files: [
       { relativePath: 'same.pdf', sha256: 'same', match: { status: 'matched' } },
       { relativePath: 'removed.pdf', sha256: 'old', match: { status: 'matched' } },
       { relativePath: 'status-only.pdf', sha256: 'same', match: { status: 'matched' } },
     ],
-    records: [{ id: 1, status: 'matched' }],
+    records: [{ id: 1, status: 'matched', publicationStatus: 'published' }],
   };
   const after = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     provenance: { runId: 'new', collectedAt: 'new' },
     files: [
       { relativePath: 'same.pdf', sha256: 'changed', match: { status: 'ambiguous' } },
       { relativePath: 'added.pdf', sha256: 'new', match: { status: 'matched' } },
       { relativePath: 'status-only.pdf', sha256: 'same', match: { status: 'matched', method: 'secondary', evidence: ['filename', 'title'] } },
     ],
-    records: [{ id: 1, status: 'ambiguous' }],
+    records: [{ id: 1, status: 'ambiguous', publicationStatus: 'unpublished' }],
   };
 
   assert.deepEqual(compareManifests(before, after), {
@@ -282,7 +283,31 @@ test('compares stable manifest content while ignoring run provenance', () => {
       changed: ['same.pdf', 'status-only.pdf'],
       unchanged: [],
     },
-    records: { changed: [{ id: 1, from: 'matched', to: 'ambiguous' }], unchanged: [] },
+    records: {
+      changed: [{
+        id: 1,
+        from: 'matched',
+        to: 'ambiguous',
+        fromPublicationStatus: 'published',
+        toPublicationStatus: 'unpublished',
+      }],
+      unchanged: [],
+    },
+  });
+
+  const publicationChange = compareManifests(
+    { schemaVersion: 2, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'unpublished' }] },
+    { schemaVersion: 2, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'published' }] },
+  );
+  assert.deepEqual(publicationChange.records, {
+    changed: [{
+      id: 2,
+      from: 'matched',
+      to: 'matched',
+      fromPublicationStatus: 'unpublished',
+      toPublicationStatus: 'published',
+    }],
+    unchanged: [],
   });
 });
 
@@ -307,7 +332,7 @@ test('keeps an unreadable file as an invalid observation and continues', async (
 
 test('rejects comparisons across unsupported manifest schemas', () => {
   assert.throws(
-    () => compareManifests({ schemaVersion: 1, files: [], records: [] }, { schemaVersion: 2, files: [], records: [] }),
+    () => compareManifests({ schemaVersion: 2, files: [], records: [] }, { schemaVersion: 3, files: [], records: [] }),
     /Unsupported manifest schema comparison/,
   );
 });

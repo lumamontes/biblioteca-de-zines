@@ -159,3 +159,199 @@ they do not authorize changes to contributor records, permissions, or storage.
 The detailed raw snapshot, normalized manifest, and machine-generated report
 were produced outside the repository. This document intentionally contains
 only the reviewed, public-safe conclusions from those artifacts.
+
+## Current Application Flows
+
+The following flow descriptions are implementation evidence derived from the
+current application code and database migrations, not direct production
+observation. The code evidence is in
+`src/app/(main)/zines/apply/actions.ts`,
+`src/app/(admin)/dashboard/actions.ts`,
+`src/services/zine-import-service.ts`, and
+`src/services/zine-service.ts`. The schema evidence is in
+`supabase/migrations/20250123215138_addFormUploadsTable.sql`,
+`supabase/migrations/20250123215146_addAuthorsTable.sql`, and
+`supabase/migrations/20251226002136_addZinePagesAndImportFields.sql`. They
+describe observed behavior, not a policy that the project has formally
+approved.
+
+### Sanitized Representative Shapes
+
+The baseline uses these representative shapes without publishing real
+contributor values, contact details, or private URLs:
+
+- A submission record contains a title, author metadata, optional description,
+  external PDF/cover URLs, publication flag, and a batch identifier.
+- A catalogue record contains a stable slug, public metadata, publication flag,
+  external PDF reference, import status, and author links.
+- A local archive record contains a relative path, size, checksum, PDF
+  validation result, and match evidence.
+- A page derivative contains a zine ID, page number, R2 image URL, and import
+  status; it is not treated as an original without further evidence.
+- The account dependency is an authenticated Supabase user for the dashboard;
+  the current code does not expose a separate maintainer role in this flow.
+
+External source classes observed in the inventory are direct Drive file links,
+Drive folder links, and non-Drive PDF URLs. Raw URLs and record values remain
+in private snapshots only.
+
+### Submission
+
+1. A contributor submits one or more zine records through the public
+   `/zines/apply` flow.
+2. The form validates author, title, description, year, category, contact, and
+   external file/image URL fields.
+3. The server inserts each submission into `form_uploads` with
+   `is_published = false` and a shared submission-batch identifier in `tags`.
+4. A Telegram notification is sent to the configured Biblioteca de Zines
+   submissions channel when the bot credentials are configured; an optional
+   topic ID routes the notification within that channel.
+5. The submission stores Google Drive URLs for PDF sources; this flow does not
+   create a local PDF custody copy.
+
+### Review and Catalogue Publication
+
+1. The dashboard is operationally restricted to maintainers using one shared Supabase Auth account to keep administration simple and low-cost. The application checks authentication but does not enforce a separate role.
+2. The dashboard loads all `form_uploads` rows and all `library_zines` rows. This
+   includes the submission queue and history; publication is represented by the
+   related catalogue row and publication flags rather than removing the
+   original submission row.
+3. An authenticated dashboard user can edit submission metadata, authors,
+   Google Drive URLs, descriptions, and categories.
+4. Maintainers manually review submissions one at a time, including checking
+   that the submitted Google Drive PDF link is valid, before publishing.
+5. Publishing a new upload copies its metadata into `library_zines`, generates
+   a slug from the first author and title, links authors, merges categories,
+   and sets the new catalogue row as published.
+6. When a catalogue row already exists, the publish action merges categories
+   and author links; the dashboard's separate republish action sets
+   `library_zines.is_published = true`.
+7. An existing catalogue record can be unpublished by changing
+   `library_zines.is_published`.
+
+Unpublishing changes the catalogue publication flag only. The observed code
+does not delete the `form_uploads` row, delete an external source, delete R2
+page derivatives, or create a removal/audit record. Editing a submission can
+also update a related catalogue row by slug, but no version history is stored.
+
+After publication, maintainers manually email the author to let them know that
+the zine is available. This is an operational practice; the application
+automates the Telegram submission notification but does not automate the
+publication email.
+
+### Current Catalogue Organization
+
+The current catalogue is organized around a published `library_zines` record:
+
+- **Identity:** numeric ID, UUID, unique slug, title, description, collection
+  title, and publication year. The slug is generated as the first submitted
+  author name followed by the normalized zine title, using lowercase strict
+  `slugify` normalization: `<first-author>-<normalized-title>`.
+- **Collection:** `collection_title` groups related zines that belong to the
+  same collection or series.
+- **Discovery:** category values in the `tags` JSON field, title full-text
+  search, year filters, author relationships, and recent-publication ordering.
+- **Available categories:** the current read-only Supabase `categories` query
+  returned `Arte digital`, `Autobiográfico`, `Clube de Zines`, `Colagem`,
+  `Crítica social`, `Educação`, `Espiritual`, `Experimental`, `Fantasia`,
+  `Ficção científica`, `Filosofia`, `Fotografia`, `Humor`, `Ilustração`,
+  `Infantil`, `Infantojuvenil`, `LGBTQIA+`, `Música`, `Poesia`, `Politico`,
+  `Quadrinhos`, `Saúde Mental`, and `Terror`.
+- **People:** `authors` records connected through the many-to-many
+  `library_zines_authors` table. The current publication flow starts from the
+  first submitted author when generating a slug, then links the parsed author
+  list.
+- **Public access:** `is_published` controls whether a catalogue record is
+  returned by public catalogue, search, author, and detail queries.
+- **File references:** `pdf_url` and `cover_image` always point to external
+  sources in the current system, normally Google Drive links supplied by the
+  author. The project does not currently use its own storage for these source
+  assets.
+- **Planned/dead data:** `zine_pages`, `total_pages`, and `import_status` belong
+  to an unused planned flipbook/page-import experience. The current public
+  reader uses the external PDF preview and does not use `zine_pages`.
+- **History:** `created_at` and `updated_at` exist, but there is no record
+  version history or publication-event history.
+
+The submission table is a parallel, denormalized intake record rather than a
+formal version of the catalogue record. It retains author/contact fields,
+description, Google Drive PDF URL, cover URL, categories, publication flag,
+and submission-batch metadata. The current dashboard relates submission and
+catalogue rows by title when displaying them; the publication action itself
+uses the submission ID and generated slug but does not create an explicit
+foreign-key relationship between the two records.
+
+The fuller metadata and access profile, including distinctions between
+publication, edition, collection/series, submitted file, authorised original,
+reading copy, preview, processing event, file version, and reuse permission is
+the scope of issue #108. This baseline records the current fields without
+prejudging that future profile.
+
+The implementation performs these publication steps as separate database
+operations rather than one transaction. A failure between operations can leave
+submission and catalogue state temporarily inconsistent and requires maintainer
+review.
+
+### Public Reading
+
+- Catalogue, search, author, and detail queries filter `library_zines` by
+  `is_published = true`.
+- Public detail pages render the catalogue description, author links, metadata,
+  and an iframe pointing at the stored `pdf_url`.
+- Public author detail pages at `/authors/[slug]` show an author's catalogue
+  entries and profile information from the author relationships.
+- Unpublished records are therefore excluded from normal public catalogue and
+  detail-page queries.
+
+### Storage and Derivatives
+
+| Domain object | Current evidence | Boundary |
+| --- | --- | --- |
+| Catalogue record | `library_zines` row | Describes a zine and its public metadata. |
+| Submitted file reference | `form_uploads.pdf_url` | Author-provided Google Drive URL; not a custody copy. |
+| Catalogue PDF reference | `library_zines.pdf_url` | External URL used by the public PDF viewer. |
+| Local preservation observation | Local archive manifest | Observed bytes and fixity evidence; not proof of authorisation or originality. |
+| Planned flipbook data | `zine_pages` rows and R2 page objects | Unused planned table; not part of the current public reading flow. |
+| Original, preview, or other derivative | No explicit relation in the current schema | Must not be inferred from filename, URL, or PDF validity. |
+
+The unused Google Drive import path downloads a file, converts PDFs into page images,
+uploads pages to R2, stores `zine_pages`, and updates `import_status`. It also
+deletes existing page records and R2 objects before re-importing. The public
+detail page currently reads `pdf_url`, so the relationship between R2 pages and
+the public reading path requires confirmation before treating those pages as
+the authoritative reading derivative.
+
+### Accounts and Dependencies
+
+- Supabase Auth email/password accounts protect the dashboard. Operationally,
+  access is reserved for maintainers through a shared account; the current
+  code checks for authentication but does not show a separate role or
+  permission model.
+- Supabase stores catalogue, author, submission, publication, and page metadata.
+- Google Drive and other external URLs provide submitted or catalogue file
+  sources.
+- Cloudflare R2 is used by the optional page-derivative import path.
+- Telegram is used for new-submission notifications when configured.
+- Vercel/Next.js runs the public site and server actions using environment
+  configuration.
+
+### Rights and Maintenance Unknowns
+
+The code exposes no explicit workflow for recording or enforcing:
+
+- contributor consent or authorisation for local retention;
+- correction requests and version history;
+- restriction or removal requests and their propagation to derivatives;
+- retention periods for unpublished submissions;
+- deletion of external source files or R2 derivatives;
+- independent backups, redundancy, restoration tests, or custody transfer;
+- which authenticated maintainers may approve publication or perform removal.
+
+The current observable maintenance mechanisms are dashboard edits,
+publish/unpublish actions, optional Drive import/re-import, the external
+
+The weekly published-resource monitor adds a limited availability safeguard: it
+checks published external PDF links and fails when a monitored link is
+unavailable. It can surface broken links, but it does not create a local copy,
+provide redundancy, verify authorisation, or make the archive resilient to
+source-account loss.
