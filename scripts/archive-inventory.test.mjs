@@ -126,6 +126,24 @@ test('scans files without modifying them and records checksums and validation', 
   assert.equal(manifest.files[1].relativePath, 'nested/notes.txt');
 });
 
+test('records symlinked archive entries without following them', async () => {
+  const archiveDirectory = await makeTempDir();
+  const source = path.join(archiveDirectory, 'source.pdf');
+  await writeFile(source, '%PDF fixture');
+  await symlink(source, path.join(archiveDirectory, 'linked.pdf'));
+
+  const manifest = await scanArchive({
+    archiveDirectory,
+    classifyFile: async () => ({ mimeType: 'application/pdf', pdf: { status: 'valid', pageCount: 1 } }),
+  });
+
+  assert.deepEqual(manifest.skippedEntries, [{
+    relativePath: 'linked.pdf',
+    reason: 'symbolic-link-not-followed',
+  }]);
+  assert.equal(manifest.files.length, 1);
+});
+
 test('validates real PDF fixtures and classifies malformed PDFs', async () => {
   const archiveDirectory = await makeTempDir();
   await writeFile(path.join(archiveDirectory, 'valid.pdf'), minimalPdf());

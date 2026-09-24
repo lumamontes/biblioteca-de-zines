@@ -177,20 +177,31 @@ export async function createSupabaseSnapshot({
 async function walkFiles(directory, root = directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
+  const skipped = [];
 
   for (const entry of entries) {
     const absolutePath = path.join(directory, entry.name);
     if (entry.isDirectory()) {
-      files.push(...await walkFiles(absolutePath, root));
+      const nested = await walkFiles(absolutePath, root);
+      files.push(...nested.files);
+      skipped.push(...nested.skipped);
     } else if (entry.isFile()) {
       files.push({
         absolutePath,
         relativePath: path.relative(root, absolutePath).split(path.sep).join('/'),
       });
+    } else if (entry.isSymbolicLink()) {
+      skipped.push({
+        relativePath: path.relative(root, absolutePath).split(path.sep).join('/'),
+        reason: 'symbolic-link-not-followed',
+      });
     }
   }
 
-  return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+  return {
+    files: files.sort((a, b) => a.relativePath.localeCompare(b.relativePath)),
+    skipped: skipped.sort((a, b) => a.relativePath.localeCompare(b.relativePath)),
+  };
 }
 
 async function identifyMimeType(absolutePath) {
@@ -249,7 +260,8 @@ export async function scanArchive({
   if (!archiveDirectory) throw new Error('Archive directory is required');
   const files = [];
 
-  for (const entry of await walkFiles(archiveDirectory)) {
+  const walked = await walkFiles(archiveDirectory);
+  for (const entry of walked.files) {
     let buffer;
     let fileStat;
     try {
@@ -303,6 +315,7 @@ export async function scanArchive({
   return {
     schemaVersion: INVENTORY_SCHEMA_VERSION,
     files,
+    skippedEntries: walked.skipped,
   };
 }
 
@@ -360,7 +373,7 @@ function publicationStatus(record) {
   return record.is_published ? 'published' : 'unpublished';
 }
 
-export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
+export function buildManifest({ snapshot, files, knownFailures = [], skippedEntries = [] } = {}) {
   const rawRecords = tableRows(snapshot, 'library_zines');
   const recordErrors = rawRecords.flatMap((record, index) => (
     record && typeof record === 'object' && !Array.isArray(record) && record.id != null
@@ -464,6 +477,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
     records: recordResults,
     knownFailures: failureRows,
     ...(recordErrors.length > 0 ? { recordErrors } : {}),
+    ...(skippedEntries.length > 0 ? { skippedEntries } : {}),
     provenance: {
       ...(snapshot?.provenance ?? {}),
       knownFailuresVersion: knownFailureInput.version,
@@ -735,7 +749,12 @@ export async function runInventory({
     reviewStatus: calibration ? 'needs-review' : 'not-requested',
   };
   const archive = await scanArchive({ archiveDirectory, classifyFile, runId, collectedAt });
-  const manifest = buildManifest({ snapshot, files: archive.files, knownFailures });
+  const manifest = buildManifest({
+    snapshot,
+    files: archive.files,
+    knownFailures,
+    skippedEntries: archive.skippedEntries,
+  });
   const comparison = previousManifest ? compareManifests(previousManifest, manifest) : null;
 
   await writeFile(path.join(outputDirectory, 'supabase-snapshot.json'), json(snapshot));

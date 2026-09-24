@@ -62,6 +62,8 @@ reading catalogue.
   reading copy, preview, or another derivative.
 - The run does not establish correction, restriction, removal, or access
   decisions for contributors.
+- The `form_uploads` snapshot exposes workflow-state evidence, but no confirmed
+  relationship from a submission row to a retained file was inferred.
 
 ## Calibration Changes
 
@@ -128,6 +130,17 @@ should be based on the inventory alone.
 
 These priorities provide evidence for validating or revising issues #107-#114;
 they do not authorize changes to contributor records, permissions, or storage.
+
+| Issue | Evidence to validate or revise |
+| --- | --- |
+| #107 Contributor communication and pilot handling | Access, consent, correction, restriction, and removal remain unresolved. |
+| #108 Catalogue and access profile | Publication status is available, but archive and reader-access policy needs an explicit profile. |
+| #109 Catalogue record migration | The 34 records without local files require a reviewed disposition before migration. |
+| #110 Authorised originals | Fixity exists for observed bytes, but authorisation and independent redundancy do not. |
+| #111 Submission and review workflow | `form_uploads` states are sampled, but submission-to-file relationships are not established. |
+| #112 Reading derivatives | Original, reading copy, preview, and derivative roles are not currently evidenced. |
+| #113 Pilot export and recovery | Historical failures and source-unavailable records need an authorised recovery path. |
+| #114 Pilot evaluation and public-safe report | This document is the private-safe evidence summary; raw snapshots remain private. |
 
 ## Next Decisions
 
