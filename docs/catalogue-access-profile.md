@@ -29,6 +29,7 @@ It does not:
 | Edition | A particular release/version of a publication, including a date or revision when that distinction is known. | Not represented separately. `year` and timestamps are insufficient. |
 | Collection/series | A group of related publications presented as belonging together. | `collection_title`; relationship and ordering are not explicit. |
 | Contributor/creator | A person, collective, publisher, or other entity credited with making the publication. | `authors` plus `library_zines_authors`; roles are not separated. |
+| Private contact | A non-public channel used to communicate with a submitter or rights holder. | `form_uploads.author_email`; privacy and retention policy are not modeled. |
 | Submission | An intake record and context provided to the Biblioteca for review. | `form_uploads`; no formal link to the resulting catalogue row. |
 | File asset/version | A specific source or delivery file with its own bytes, URL, format, checksum, or version history. | `pdf_url`, local archive observations, and external URLs; no asset/version entity. |
 | Derivative | A representation produced from another file, such as a preview, reading copy, or page image. | Not currently represented in the public reading flow. Planned `zine_pages` data is unused. |
@@ -61,11 +62,12 @@ schema changes:
 | Requirement | Provisional representation | Current mapping/gap |
 | --- | --- | --- |
 | Collective, creator, publisher, and submitter roles | Separate participant records with a role and display name; a publication may have many participants. | `authors` links creators only; publisher and submitter roles are not modeled. |
+| Private contact | A private contact value linked to the submission/rights conversation, with access separate from public creator data. | `form_uploads.author_email`; no access, retention, or rights-case relation is modeled. |
 | Pseudonym or anonymity | Display name plus optional private identity evidence, or an explicit anonymous participant. | Current author name is a single public text value. |
 | Unknown or approximate date | Date value plus precision (`day`, `month`, `year`, `circa`, or `unknown`) and provenance. | `year` stores only a numeric year. |
 | Multiple languages | Language-tagged title, description, and creator context values. | No language field exists. |
 | Uncertainty | Value-level certainty and provenance note, separate from the value itself. | No value annotation exists. |
-| Creator-supplied context | Context value with source `creator`, separate from editorial notes. | `description` does not distinguish authorship of the text. |
+| Creator-supplied context | Context value with source `creator`, separate from editorial notes. | `description` is a shared text field and does not establish authorship of the text. |
 | Edition and file version | Explicit relations from publication to edition and from edition to file asset/version. | No edition, asset, or version entities exist. |
 
 ## Separate State Dimensions
@@ -87,11 +89,16 @@ These dimensions must not be collapsed into one `published` boolean:
 | Current field/table | Profile role | Keep/configure/extend/defer |
 | --- | --- | --- |
 | `library_zines.slug` | Stable public identifier | Keep; preserve the rule `<first-author>-<normalized-title>` and treat future changes as migrations. |
-| `library_zines.title`, `description` | Public title and creator-supplied context | Keep; add language and provenance only when the profile requires it. |
+| `library_zines.title`, `description` | Public title and context candidate | Keep; do not treat `description` as creator-supplied context until provenance is captured. |
 | `library_zines.collection_title` | Collection/series label | Keep as a display field; defer explicit collection entities and ordering to a future schema decision. |
 | `library_zines.tags.categories` | Controlled discovery vocabulary | Keep the current category vocabulary; model taxonomy governance separately. |
 | `authors` and `library_zines_authors` | Creator links | Keep the relationship; extend with role, display name, pseudonym, anonymity, and ordering when needed. |
 | `form_uploads` | Submission and private intake context | Keep as workflow input; do not treat it as the publication or as a file-asset registry. |
+| `form_uploads.author_email` | Private contact role | Keep private; define retention, access, and rights-case linkage before migration. |
+| `form_uploads.published_year` | Submission date/year claim | Preserve as supplied context; map to a qualified date only after precision/provenance rules are chosen. |
+| `form_uploads.tags.submission_batch_id` | Submission grouping/process reference | Keep as process evidence; do not treat it as a publication collection. |
+| `form_uploads.tags.categories` | Submission discovery suggestion | Map to the controlled category vocabulary during review; retain creator input separately if needed. |
+| `form_uploads.cover_image`, `author_name`, `author_url` | Submission-side asset and creator context | Preserve as intake values; map to catalogue fields only through the publication review step. |
 | `pdf_url`, `cover_image` | External source references | Keep for current operation; do not label them originals or managed storage. |
 | `is_published` | Public editorial visibility | Keep for compatibility; do not use it for processing, file availability, or rights. |
 | `import_status`, `total_pages`, `zine_pages` | Planned page derivative processing | Defer or retire after an explicit decision; these are not used by the current reader. |
@@ -121,11 +128,22 @@ This is a capability comparison, not a migration recommendation.
 | Omeka S | Items, media, vocabularies, resource templates, linked resources, value annotations, per-field visibility, users/roles, REST API, JSON-LD/RDF/CSV exports, derivatives, IIIF, and a Collecting workflow with moderation states. | Requires a PHP/application deployment and could duplicate the existing Next.js/Supabase submission workflow. Configuration and resource templates must be tested with synthetic records. | **Best candidate for a synthetic catalogue/access proof of concept; no migration yet.** |
 | CollectiveAccess Providence + Pawtucket2 | Configurable entities, metadata standards, media processing, change tracking, large exports, BagIt/replication capabilities, GraphQL/REST/IIIF/OAI-PMH, and separate public presentation. | Highest operational burden: multiple applications, PHP/MySQL infrastructure, media tooling, and a larger integration surface. Submission/review ownership would need explicit design. | **Defer unless the profile proves that archival complexity justifies it.** |
 
+The evaluation dimensions are explicit: Tainacan configuration is through
+WordPress metadata/taxonomy settings and extensions; its REST/JSON/HTML/CSV
+and Dublin Core output are the relevant export paths; WordPress roles provide
+the baseline access mechanism, but item/field-level private-contact behavior
+and a staged submission/review workflow require a proof of concept. Omeka S
+and CollectiveAccess expose more documented controls for field visibility,
+relationships, exports, media, and review, at the cost of separate PHP-based
+operations. The official sources below are the basis for these claims; no
+vendor behavior was inferred from the current Biblioteca code.
+
 ### Priority Capability Decisions
 
 | Capability | Decision or deferral |
 | --- | --- |
 | Roles and authorship | Preserve roles explicitly; do not collapse creator, publisher, collective, submitter, and private contact. Validate with synthetic examples before schema work. |
+| Private contact | Keep private contact separate from public creator data; defer retention, access, and rights-case policy. |
 | Uncertainty and provenance | Require value-level notes or provenance in the future profile; do not encode uncertainty in title/description text. |
 | Editions and versions | Defer explicit edition/file-version entities until representative multi-edition records are reviewed. |
 | Collection/series | Keep `collection_title` for current discovery; defer explicit relationships and ordering. |

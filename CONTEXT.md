@@ -65,7 +65,7 @@ _Avoid_: Best guess
 ## Catalogue profile
 
 **Publication**:
-A distinct published zine or edition that readers can discover.
+A catalogue publication concept that may have one or more editions and can be discovered when access permits.
 _Avoid_: Item, resource
 
 **Edition**:
