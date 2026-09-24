@@ -26,7 +26,7 @@ It does not:
 | Concept | Provisional meaning | Current Biblioteca mapping |
 | --- | --- | --- |
 | Publication | A distinct zine entry that readers can discover. A new issue, release, or `v2` is currently another publication entry. | `library_zines` row. |
-| Edition/release | Not a current Biblioteca concept. If a later `v2` needs to be represented, create a new publication entry and make the distinction clear in its title or description. Add a relationship only if repeated cases justify it. | No separate entity; `year` is a date claim, not an edition. |
+| Edition/release | A possible qualifier for a publication when a later issue, release, or `v2` needs to be distinguished. It is a concept in the profile, not a current entity or required field. | No separate entity; represent the new case as another publication entry and make the distinction clear in its title or description. `year` is a date claim, not an edition. |
 | Collection/series | A group of related publications presented as belonging together. | `collection_title`; relationship and ordering are not explicit. |
 | Agent/role assertion | A person, collective, publisher, submitter, or other entity associated with a record in a particular context. One agent may have several roles, and a role may be unknown or unresolved. | `authors` plus `library_zines_authors` currently expose only an author-like relationship. |
 | Archive steward | A person or collective responsible for operating, reviewing, describing, or caring for the Biblioteca collection. This is operational context, not automatically a publication credit. | Shared maintainer authentication and dashboard actions; actor history is not modeled. |
@@ -71,7 +71,7 @@ schema changes:
 | Multiple languages | Language-tagged title, description, and creator context values. | No language field exists. |
 | Uncertainty | Value-level certainty and provenance note, separate from the value itself. | No value annotation exists. |
 | Creator-supplied context | Context value with source `creator`, separate from editorial notes. | `description` is a shared text field and does not establish authorship of the text. |
-| New release and file version | Treat a new issue, release, or `v2` as a new publication entry for now; keep file versions tied to assets. | No issue/release, asset, or version entities exist; revisit a relationship only if repeated cases make it useful. |
+| New release and file version | Treat a new issue, release, or `v2` as a new publication entry for now; keep file versions tied to assets. | No issue/release, asset, or version entities exist; the profile retains the distinction as a possible qualifier and revisits a relationship only if repeated cases make it useful. |
 
 ## Separate State Dimensions
 
@@ -149,7 +149,7 @@ vendor behavior was inferred from the current Biblioteca code.
 | Roles and authorship | Preserve role context without assuming role separation: one person or collective may be creator, publisher, and submitter. Keep private contact separate from public role assertions. Validate with synthetic examples before schema work. |
 | Private contact | Keep private contact separate from public creator data; defer retention, access, and rights-case policy. |
 | Uncertainty and provenance | Require value-level notes or provenance in the future profile; do not encode uncertainty in title/description text. |
-| Editions and versions | Do not add an edition entity now. Represent a new issue/release/`v2` as a new publication entry; revisit a relationship only after repeated real cases. |
+| Editions and versions | Keep edition/release as a conceptual qualifier, not a current entity or required field. Represent a new issue/release/`v2` as a new publication entry; revisit a relationship only after repeated real cases. |
 | Collection/series | Keep `collection_title` for current discovery; defer explicit relationships and ordering. |
 | Multilingual metadata | Require language-tagged values in the future profile; do not infer language from text. |
 | Creator-supplied context | Keep it distinct from editorial notes; defer the exact field shape until the profile proof of concept. |
