@@ -17,6 +17,10 @@ A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research
 compara fontes brasileiras e internacionais para validar campos físicos, digitais,
 geográficos e de classificação.
 
+O [relatório ampliado sobre metadados de zines e biblioteconomia](../reports/Zine%20metadata%20and%20library%20research.md)
+registra a pesquisa sobre ZineCore2, práticas de bibliotecas, coleções brasileiras,
+privacidade, direitos e contexto comunitário.
+
 ## Como criar uma ADR
 
 São dois passos:

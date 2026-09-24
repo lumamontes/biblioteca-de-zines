@@ -539,3 +539,4 @@ backfill strategy, review tooling, and production rollout.
 - Current publish mapping: `src/app/(admin)/dashboard/actions.ts`
 - [Current category seed](../supabase/migrations/20250701000000_addCategoriesTable.sql)
 - [Zine format and archive research](./zine-format-archive-research.md)
+- [Extended zine metadata and library research](../reports/Zine%20metadata%20and%20library%20research.md)
