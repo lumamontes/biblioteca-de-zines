@@ -13,6 +13,10 @@ separa o modelo atual das decisões futuras de metadados, direitos e plataforma.
 O [modelo de organização e metadados do catálogo](./catalogue-information-architecture.md)
 transforma esse perfil em uma estrutura concreta para revisão antes da migração.
 
+A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
+compara fontes brasileiras e internacionais para validar campos físicos, digitais,
+geográficos e de classificação.
+
 ## Como criar uma ADR
 
 São dois passos:

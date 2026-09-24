@@ -538,3 +538,4 @@ backfill strategy, review tooling, and production rollout.
 - [Current edit/upload schema](../src/schemas/edit-upload.ts)
 - Current publish mapping: `src/app/(admin)/dashboard/actions.ts`
 - [Current category seed](../supabase/migrations/20250701000000_addCategoriesTable.sql)
+- [Zine format and archive research](./zine-format-archive-research.md)
