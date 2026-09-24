@@ -16,6 +16,18 @@ _Avoid_: File, archive item
 A named value describing a publication, agent, submission, asset, access decision, or provenance claim, with its source and visibility understood.
 _Avoid_: A value copied between forms without meaning
 
+**Agent**:
+A person, collective, or organization associated with a publication or archive context; an agent may have multiple contextual roles.
+_Avoid_: Assuming every role is a separate person
+
+**Role assertion**:
+A contextual statement about why an agent is associated with a publication or submission, such as creator, publisher, or submitter.
+_Avoid_: Treating a role as a permanent identity category
+
+**File/access evidence**:
+Facts about a file reference, local observation, derivative, or access condition that are kept distinct from the publication record.
+_Avoid_: Treating a URL as proof of custody or authorization
+
 **Archive**:
 The collection of files and evidence retained for the continuity of the Biblioteca's catalogue and publications.
 _Avoid_: Backup, storage bucket

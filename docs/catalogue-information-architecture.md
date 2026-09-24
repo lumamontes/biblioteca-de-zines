@@ -90,9 +90,10 @@ The status values mean:
 
 | Area | Field | Meaning | Cardinality | Source and visibility | Decision |
 | --- | --- | --- | --- | --- | --- |
-| Identity | `slug` | Stable public URL identifier | 0..1 current; required for published record | Generated from current author/title rule; public | Keep; never silently regenerate during migration |
+| Identity | `slug` | Stable public URL identifier | 1 on `library_zines`; absent from `form_uploads` | Generated from current author/title rule; public | Keep; never silently regenerate during migration |
 | Identity | `title` | Public title supplied or reviewed for the zine | 1 | Submitter/creator input, then editorial review; public when published | Keep; preserve original and reviewed values if they differ |
-| Identity | `uuid`, `id` | Technical record identifiers | 1 current row | System-generated; operational | Keep as technical references, not public identity claims |
+| Identity | `id` | Database row identifier | 1 per persisted row | System-generated; operational | Keep as technical reference, not public identity claim |
+| Identity | `uuid` | Optional external/technical identifier | 0..1 in current tables | System-generated or imported; operational | Keep if present; do not use as publication identity without evidence |
 | Description | `description` | Public descriptive text with unresolved provenance | 0..1 | Submission or maintainer edit; public when published | Clarify source; do not call it creator-supplied context automatically |
 | Date | `year` / `published_year` | Publication year claim | 0..1 | Submission claim or reviewed value; public when published | Keep as year only; preserve unknown/approximate cases outside the current numeric field |
 | Language | `language` | Language of a title, description, or creator context | 0..many future | Not currently collected; public metadata when published | Extend later; do not infer language from text |
@@ -135,6 +136,29 @@ silently conflated:
   matches merge categories rather than creating a new publication. This is a
   workflow rule that must be reviewed before migration, not a neutral data
   import.
+
+### Provenance And Unresolved Questions
+
+Every field in the inventory must retain four pieces of context when it is
+staged for migration:
+
+| Context | Required meaning |
+| --- | --- |
+| Source | Where the value came from: submitter, creator, maintainer, current catalogue, external reference, or inventory observation |
+| Provenance | How the value was obtained or changed, including the source field, import rule, review note, or correction |
+| Visibility | Whether the value is public, private, maintainer-only, or not yet decided |
+| Unresolved question | What must be answered before the value can be migrated or published, or `none` when reviewed |
+
+Open questions for the next review are:
+
+| Field group | Unresolved question |
+| --- | --- |
+| `title`, `description` | Which values are creator-supplied, and which were edited by Biblioteca? |
+| `year` / `published_year` | How should approximate, partial, conflicting, or unknown dates be retained without inventing precision? |
+| `authors` and flattened author values | Which display names refer to the same agent, and which role assertions are supported by evidence? |
+| `tags.categories` | Which submitted terms are accepted vocabulary values, aliases, or suggestions requiring review? |
+| `pdf_url`, `cover_image`, local files | Is each reference a source, reading copy, preview, derivative, or only an observed external link? |
+| `author_email` | What retention period, access boundary, and rights conversation does this contact support? |
 
 ## Submission-To-Catalogue Mapping
 
@@ -181,20 +205,20 @@ identity. Initial governance rules:
 The structure must be tested with records like these, using only synthetic
 values:
 
-| Case | Expected representation |
-| --- | --- |
-| Single creator | One public agent assertion with role `creator`; one publication record |
-| Collective | One agent with kind `collective`; no invented individual members |
-| Pseudonym | Public display name retained; private identity not required |
-| Anonymous | Explicit anonymous authorship; no fabricated agent name |
-| Unknown author | Authorship unresolved; distinct from an intentional anonymous credit |
-| Overlapping roles | One collective asserted as creator and publisher; submitter may be another agent |
-| Multilingual | Portuguese title plus a second language title/context, each tagged when supported |
-| Approximate date | `circa` or unknown claim retained rather than forced into an exact year |
-| Unpublished submission | Private submission with contact and files; no public publication record |
-| `v2` | New publication entry with `v2` in reviewed title/context; no edition entity required |
-| Same title, different files | Separate publication entries until evidence establishes a relationship |
-| Collection label | Multiple publications share a label; no ordering inferred |
+| Case | Synthetic record values | Expected representation |
+| --- | --- | --- |
+| Single creator | Title `Caderno Azul`; agent `Lia Exemplo` | One public agent assertion with role `creator`; one publication record |
+| Collective | Title `Mapa de Ruídos`; agent `Coletivo Exemplo` | One agent with kind `collective`; no invented individual members |
+| Pseudonym | Agent display name `Nuvem Baixa`; no legal name | Public display name retained; private identity not required |
+| Anonymous | Agent value `anonymous`; no display name | Explicit anonymous authorship; no fabricated agent name |
+| Unknown author | Agent value `unknown`; source note `submitter did not know` | Authorship unresolved; distinct from an intentional anonymous credit |
+| Overlapping roles | `Coletivo Exemplo`: `creator`, `publisher`; `Lia Exemplo`: `submitter` | One agent may have several roles; submitter may be another agent |
+| Multilingual | Titles `Caderno Azul` (`pt-BR`) and `Blue Notebook` (`en`) | Language-tagged values when supported; no inferred language |
+| Approximate date | Year claim `circa 2019` | Approximate claim retained rather than forced into exact `2019` |
+| Unpublished submission | Title `Zine em análise`; private contact `contact@example.invalid`; editorial state `in review` | Private submission with contact and files; no public publication record |
+| `v2` | Title `Mapa de Ruídos v2`; new PDF reference | New publication entry with release label; no edition entity required |
+| Same title, different files | Two entries titled `Caderno Azul`; distinct submitted PDFs | Separate publication entries until evidence establishes a relationship |
+| Collection label | `Série Exemplo` on `Caderno Azul` and `Mapa de Ruídos` | Shared display label; no ordering or collection entity inferred |
 
 ## Migration Handoff
 
