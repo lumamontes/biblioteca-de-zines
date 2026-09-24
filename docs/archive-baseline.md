@@ -159,3 +159,95 @@ they do not authorize changes to contributor records, permissions, or storage.
 The detailed raw snapshot, normalized manifest, and machine-generated report
 were produced outside the repository. This document intentionally contains
 only the reviewed, public-safe conclusions from those artifacts.
+
+## Current Application Flows
+
+The following flow descriptions are derived from the current application code
+and database migrations. They describe observed behavior, not a policy that
+the project has formally approved.
+
+### Submission
+
+1. A contributor submits one or more zine records through the public
+   `/zines/apply` flow.
+2. The form validates author, title, description, year, category, contact, and
+   external file/image URL fields.
+3. The server inserts each submission into `form_uploads` with
+   `is_published = false` and a shared submission-batch identifier in `tags`.
+4. A Telegram notification is sent when the bot credentials are configured.
+5. The submission stores external URLs; this flow does not create a local PDF
+   custody copy.
+
+### Review and Catalogue Publication
+
+1. An authenticated Supabase user can access `/dashboard`.
+2. The dashboard loads all `form_uploads` rows and all `library_zines` rows.
+3. Maintainers can edit submission metadata, authors, URLs, descriptions, and
+   categories.
+4. Publishing an upload copies its metadata into `library_zines`, generates a
+   slug from the first author and title, links authors, merges categories, and
+   sets both publication records to published.
+5. An existing catalogue record can be republished or unpublished by changing
+   `library_zines.is_published`.
+
+The implementation performs these publication steps as separate database
+operations rather than one transaction. A failure between operations can leave
+submission and catalogue state temporarily inconsistent and requires maintainer
+review.
+
+### Public Reading
+
+- Catalogue, search, author, and detail queries filter `library_zines` by
+  `is_published = true`.
+- Public detail pages render the catalogue description, author links, metadata,
+  and an iframe pointing at the stored `pdf_url`.
+- Unpublished records are therefore excluded from normal public catalogue and
+  detail-page queries.
+
+### Storage and Derivatives
+
+| Domain object | Current evidence | Boundary |
+| --- | --- | --- |
+| Catalogue record | `library_zines` row | Describes a zine and its public metadata. |
+| Submitted file reference | `form_uploads.pdf_url` | External URL supplied by the submitter; not a custody copy. |
+| Catalogue PDF reference | `library_zines.pdf_url` | External URL used by the public PDF viewer. |
+| Local preservation observation | Local archive manifest | Observed bytes and fixity evidence; not proof of authorisation or originality. |
+| Reading derivative | `zine_pages` rows and R2 page objects | Created by the optional Google Drive import flow as PNG/JPEG page images. |
+| Original, preview, or other derivative | No explicit relation in the current schema | Must not be inferred from filename, URL, or PDF validity. |
+
+The Google Drive import path downloads a file, converts PDFs into page images,
+uploads pages to R2, stores `zine_pages`, and updates `import_status`. It also
+deletes existing page records and R2 objects before re-importing. The public
+detail page currently reads `pdf_url`, so the relationship between R2 pages and
+the public reading path requires confirmation before treating those pages as
+the authoritative reading derivative.
+
+### Accounts and Dependencies
+
+- Supabase Auth email/password accounts protect the dashboard; the current
+  code checks for an authenticated user but does not show a separate role or
+  permission model.
+- Supabase stores catalogue, author, submission, publication, and page metadata.
+- Google Drive and other external URLs provide submitted or catalogue file
+  sources.
+- Cloudflare R2 is used by the optional page-derivative import path.
+- Telegram is used for new-submission notifications when configured.
+- Vercel/Next.js runs the public site and server actions using environment
+  configuration.
+
+### Rights and Maintenance Unknowns
+
+The code exposes no explicit workflow for recording or enforcing:
+
+- contributor consent or authorisation for local retention;
+- correction requests and version history;
+- restriction or removal requests and their propagation to derivatives;
+- retention periods for unpublished submissions;
+- deletion of external source files or R2 derivatives;
+- independent backups, redundancy, restoration tests, or custody transfer;
+- which authenticated maintainers may approve publication or perform removal.
+
+The current observable maintenance mechanisms are dashboard edits,
+publish/unpublish actions, optional Drive import/re-import, the external
+resource monitor, and the private local inventory. These mechanisms should not
+be treated as a complete rights or preservation process.
