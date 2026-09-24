@@ -203,7 +203,9 @@ in private snapshots only.
    external file/image URL fields.
 3. The server inserts each submission into `form_uploads` with
    `is_published = false` and a shared submission-batch identifier in `tags`.
-4. A Telegram notification is sent when the bot credentials are configured.
+4. A Telegram notification is sent to the configured Biblioteca de Zines
+   submissions channel when the bot credentials are configured; an optional
+   topic ID routes the notification within that channel.
 5. The submission stores external URLs; this flow does not create a local PDF
    custody copy.
 
