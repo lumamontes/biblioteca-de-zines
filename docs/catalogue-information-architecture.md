@@ -176,6 +176,35 @@ that Biblioteca implement every field. Barnard's public documentation supports
 keeping catalogue description, local holdings/access, and rights guidance
 distinct.
 
+### Additional Fields From The Deeper Research
+
+The books, academic studies, and practitioner procedures suggest these further
+fields. They are not all candidates for the first public form; their status is
+explicit so the profile does not become an unbounded intake questionnaire.
+
+| Field | Status | Why it matters | Synthetic example |
+| --- | --- | --- | --- |
+| `record_status` | Include in internal workflow | Separates draft, in review, accepted, unprocessed, withdrawn, suppressed, and unresolved identity | `unprocessed` |
+| `description_creator` | Optional, strongly preferred when supplied | Preserves the creator's own words rather than replacing them with cataloguer language | `"Uma publicação feita durante a oficina..."` |
+| `description_cataloguer` | Optional | Allows a public/search summary without pretending it is creator-authored | `"Livreto experimental com colagens e poemas."` |
+| `community_context` | Optional | Records workshop, event, scene, venue, educational program, or circulation network when it is part of the zine's history | `{ "kind": "workshop", "name": "Oficina Exemplo" }` |
+| `circulation_context` | Optional | Describes exchange, distro, event, local network, or intended audience without turning it into publisher or place | `{ "kind": "event", "name": "Feira Exemplo" }` |
+| `date_statement` | Include as source value | Preserves `circa`, season, range, undated, or creator wording before normalization | `"inverno de 2018"` |
+| `date_role` and `date_precision` | Optional | Distinguishes publication, creation, revision, event, acquisition, scan, and deposit dates | `{ "role": "creation", "precision": "circa-year" }` |
+| `material_features` | Optional | Records collage, handwriting, inserts, stickers, unusual pagination, paper, color, or altered material | `["collage", "loose-insert"]` |
+| `creator_copying_request` | Optional | Preserves `please copy`, anti-copyright, copyleft, or similar creator language separately from legal permission | `{ "value": "please copy", "source": "publication" }` |
+| `consent_correction_withdrawal` | Internal operational record | Makes correction, suppression, removal, and visibility decisions traceable without requiring legal identity | `{ "action": "withdraw-description", "scope": "public" }` |
+| `confidence` | Required for inferred/imported claims | Shows whether a value is creator-supplied, observed, imported, inferred, or unresolved | `"creator-supplied"` |
+| `vocabulary_version` | Required for controlled terms | Makes category/thesaurus changes reversible and preserves historic mappings | `{ "vocabulary": "biblioteca-subjects", "version": "1" }` |
+| `external_identifier` | Optional | Distinguishes local, union-catalogue, repository, holding, agent, and asset identifiers | `{ "system": "zinecat", "value": "ZC-001" }` |
+| `table_of_contents` | Defer | Useful for some text-heavy zines, but requires transcription and access policy; should not be mandatory | `null` |
+
+The most important additions for the next Biblioteca iteration are
+`record_status`, creator/cataloguer descriptions, source-qualified dates,
+`community_context`, material features, confidence/provenance, and correction or
+withdrawal records. `table_of_contents`, authority identifiers, and richer
+circulation modeling can remain deferred until the workflow justifies them.
+
 ### Proposed Synthetic Record Shape
 
 This shape is illustrative metadata, not a TypeScript or Supabase contract. It

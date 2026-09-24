@@ -25,6 +25,9 @@ O [relatório sobre pesquisa acadêmica e prática profissional em zines](../rep
 separa livros, estudos acadêmicos, orientação de bibliotecários e práticas de
 coleções especializadas.
 
+O [índice de referências sobre zines e metadados](./zine-research-references.md)
+reúne os links externos e os documentos de pesquisa usados nas decisões.
+
 ## Como criar uma ADR
 
 São dois passos:
