@@ -36,6 +36,22 @@ _Avoid_: Inferring language from text alone
 A controlled vocabulary term used to support discovery of publications; its label, identifier, aliases, and governance are separate from the publication's free-text description.
 _Avoid_: Treating a user-entered label as a governed term automatically
 
+**Controlled vocabulary**:
+A maintained set of terms with stable identifiers, preferred labels, aliases, and rules for adding or changing terms.
+_Avoid_: A free-text list presented as governed taxonomy
+
+**Thesaurus**:
+A controlled vocabulary that may also record relationships such as broader, narrower, or related terms.
+_Avoid_: Assuming categories have relationships before they are reviewed
+
+**Holding**:
+A repository-specific custody or access record for a publication or file, distinct from the publication description and from the file itself.
+_Avoid_: Treating a holding as the original or as unrestricted access
+
+**Rights-holder**:
+A person or organization associated with permission or restriction over a work or file; the association may be unknown or unresolved.
+_Avoid_: Assuming the submitter is the rights-holder
+
 **Role assertion**:
 A contextual statement about why an agent is associated with a publication or submission, such as creator, publisher, or submitter.
 _Avoid_: Treating a role as a permanent identity category

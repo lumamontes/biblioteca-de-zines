@@ -102,7 +102,7 @@ external schema.
 | Place | Optional place of publication/creation when supplied | Defer as a field until Brazilian catalogue use cases show a clear discovery need | Not currently represented |
 | Rights/access | Rights statement plus independent discovery/reading/download/preservation/replication/reuse states | Require evidence before making non-default access claims; keep private rights evidence separate | `is_published` and URL reachability only |
 | Identifier | Local slug/id/uuid plus namespaced external identifiers | Preserve source namespace; do not treat external URLs as identifiers of custody or authorization | `slug`, `id`, `uuid`, URLs |
-| Asset/holding | Source, reading copy, preview, derivative, repository/observation, checksum, format, pages, access status | Keep asset and custody facts separate from publication metadata; implement only in the authorized pilot | URLs and private inventory evidence |
+| Asset and custody evidence | Source, reading copy, preview, derivative, repository/holding observation, checksum, format, pages, access status | Keep file identity and repository custody facts separate from publication metadata; implement only in the authorized pilot | URLs and private inventory evidence |
 | Submission | Proposed publication values, submitter assertion, contact, intake provenance, review state | One submission may contain multiple proposed publications; contact remains private and submission values are not automatically public | `form_uploads` |
 
 ### Why These Fields
@@ -134,7 +134,9 @@ distinct.
 
 ### Proposed Synthetic Record Shape
 
-This shape is illustrative metadata, not a TypeScript or Supabase contract:
+This shape is illustrative metadata, not a TypeScript or Supabase contract. It
+is intentionally abbreviated; the metadata contract is the combination of the
+main inventory table and the per-field annotation table below.
 
 ```json
 {
@@ -177,6 +179,14 @@ This shape is illustrative metadata, not a TypeScript or Supabase contract:
         "reference": "https://example.invalid/reading-copy.pdf",
         "access": "public-reading",
         "provenance": "submitter-reference; not independently verified"
+      }
+    ],
+    "custody": [
+      {
+        "repository_id": "R-001",
+        "holding_id": "H-001",
+        "observation": "not-established",
+        "source": "inventory"
       }
     ],
     "rights_access": {
@@ -263,6 +273,8 @@ following requiredness and value-shape rules:
 The table above describes current fields. This table makes the migration
 annotation explicit for every field: requiredness, provenance to retain, and
 the unresolved question to answer before staging or publishing it.
+The `Field` key joins this table to the main inventory's source/visibility
+column; together they form the complete field-level contract.
 
 | Field | Requiredness | Provenance to retain | Unresolved question |
 | --- | --- | --- | --- |
@@ -312,7 +324,8 @@ silently conflated:
   the reviewed profile must represent unknown, anonymous, and approximate
   authorship/date cases. The future form may need to make those states explicit.
 - `form_uploads.author_name` and `author_url` are flattened values, while the
-  application also parses multiple author values from `tags`. A migration must
+  application parses the current author representation from those fields. The
+  `tags` object carries categories and submission metadata. A migration must
   preserve the source and avoid duplicate or cross-attributed agents.
 - `tags` is JSON used for categories and submission metadata. Categories are
   controlled through the `categories` table, but the stored values remain
