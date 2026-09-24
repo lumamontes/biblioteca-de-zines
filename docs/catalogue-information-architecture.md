@@ -126,6 +126,22 @@ book format or that every Brazilian zine has one single place of origin.
 | Brazilian geography | `country: BR`, `state_uf`, `municipality` | `state_uf` is optional and only applies when the place is in Brazil; preserve municipality and source rather than inferring UF |
 | Place uncertainty | `place_precision`, `place_source`, `place_visibility` | Support unknown, approximate, public, private, and unresolved place values |
 
+Examples of the proposed extent fields:
+
+| Field | Synthetic examples | Interpretation rule |
+| --- | --- | --- |
+| `page_count` | `{ "value": 24, "extent": "physical", "includes_cover": false }`; `{ "value": 28, "extent": "digital-pdf" }` | Keep physical and digital counts separate when they differ; do not assume a PDF count equals the physical pagination |
+| `dimensions` | `{ "width": 14.8, "height": 21, "unit": "cm", "state": "closed" }`; `{ "width": 21, "height": 29.7, "unit": "cm", "state": "open" }` | Record measured or supplied dimensions with units and whether the measurement is folded/closed or open |
+| `binding_features` | `["stapled"]`; `["folded", "loose-sheets"]`; `["hand-bound"]`; `["unknown"]` | Repeat when more than one feature applies; preserve `unknown` instead of guessing from images |
+
+Format examples should also remain separate from content classification:
+
+| Example | Format/form | Reproduction method | Subject/genre |
+| --- | --- | --- | --- |
+| Synthetic photocopied minizine | `printed`, `minizine`, `booklet` | `photocopy` | `Experimental`; optional `perzine` |
+| Synthetic digital publication | `digital` | `digital-print` or `unknown` | `Ficção científica` |
+| Synthetic artist publication | `hybrid`, `single-sheet`, `poster` | `risograph` | `Arte digital` or another reviewed subject |
+
 The Brazilian focus changes prioritization, not the domain model's ability to
 represent other places. The initial discovery experience can prioritize
 Brazilian municipality and UF filters once enough reviewed values exist, while

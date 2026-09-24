@@ -176,6 +176,14 @@ _Avoid_: Treating format, genre, and subject as the same field
 The production process used for a zine, such as photocopy, risograph, offset, screen print, handwritten, or unknown.
 _Avoid_: Inferring production method from a PDF or cover image
 
+**Physical extent**:
+The measurable scope of a physical zine, including page count, dimensions, and binding or assembly features.
+_Avoid_: Mixing physical extent with PDF page count
+
+**Binding feature**:
+A recorded way that physical pages are assembled or left unbound, such as stapled, folded, loose sheets, or unknown.
+_Avoid_: Inferring binding from a digital file
+
 **Asset kind**:
 The role of a file or file reference, such as source, reading copy, preview, or derivative.
 _Avoid_: Calling every PDF an original
