@@ -80,9 +80,9 @@ _Avoid_: A title copied into each record without a relationship
 An intake record and context provided to the Biblioteca for review.
 _Avoid_: Publication, original
 
-**Maintainer/steward**:
-A person or collective responsible for operating, reviewing, describing, or caring for the Biblioteca collection; not a creator credit.
-_Avoid_: Creator, publisher
+**Archive steward**:
+A person or collective responsible for operating, reviewing, describing, or caring for the Biblioteca collection. This is operational context and may overlap with publication roles; it is not automatically a creator credit.
+_Avoid_: Assuming archive stewardship and publication roles are separate people
 
 **File asset/version**:
 A specific source or delivery file with its own bytes, reference, checksum, or version history.

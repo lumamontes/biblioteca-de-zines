@@ -28,8 +28,8 @@ It does not:
 | Publication | A distinct zine publication/title that readers can discover. It may have an issue number or release distinction, but not every zine needs a separate edition record. | `library_zines` row. |
 | Edition/release | An optional distinction for genuinely separate issues, releases, or revisions of the same publication. `year` is a date claim, not an edition by itself. | Not represented separately; no current requirement to add it. |
 | Collection/series | A group of related publications presented as belonging together. | `collection_title`; relationship and ordering are not explicit. |
-| Contributor/creator | A person, collective, publisher, or other entity credited with making the publication. | `authors` plus `library_zines_authors`; roles are not separated. |
-| Maintainer/steward | A person or collective responsible for operating, reviewing, describing, or caring for the Biblioteca collection; this is not a creator credit. | Shared maintainer authentication and dashboard actions; actor history is not modeled. |
+| Agent/role assertion | A person, collective, publisher, submitter, or other entity associated with a record in a particular context. One agent may have several roles, and a role may be unknown or unresolved. | `authors` plus `library_zines_authors` currently expose only an author-like relationship. |
+| Archive steward | A person or collective responsible for operating, reviewing, describing, or caring for the Biblioteca collection. This is operational context, not automatically a publication credit. | Shared maintainer authentication and dashboard actions; actor history is not modeled. |
 | Private contact | A non-public channel used to communicate with a submitter or rights holder. | `form_uploads.author_email`; privacy and retention policy are not modeled. |
 | Submission | An intake record and context provided to the Biblioteca for review. | `form_uploads`; no formal link to the resulting catalogue row. |
 | File asset/version | A specific source or delivery file with its own bytes, URL, format, checksum, or version history. | `pdf_url`, local archive observations, and external URLs; no asset/version entity. |
@@ -42,8 +42,9 @@ It does not:
 The provisional profile must support these cases without silently rewriting
 them into a simpler model:
 
-- multiple creators, collective authorship, and distinct creator/publisher/
-  submitter/maintainer roles;
+- multiple creators, collective authorship, and contextual creator, publisher,
+  submitter, and archive-steward roles without assuming that they are distinct
+  people or collectives;
 - pseudonyms and creator-supplied display names without requiring a legal name;
 - anonymous authorship, unknown authorship, and the difference between them;
 - unknown, approximate, or partial publication dates;
@@ -63,7 +64,7 @@ schema changes:
 
 | Requirement | Provisional representation | Current mapping/gap |
 | --- | --- | --- |
-| Collective, creator, publisher, submitter, and maintainer roles | Separate participant or stewardship records with a role and display name; a publication may have many participants. Maintainers are archive actors, not publication creators. | `authors` links creators only; publisher, submitter, and maintainer roles are not modeled. |
+| Contextual agent roles | Record an agent with one or more contextual role assertions; do not force creator, publisher, submitter, and archive steward into separate people or entities. | `authors` links creators only; role context and archive actors are not modeled. |
 | Private contact | A private contact value linked to the submission/rights conversation, with access separate from public creator data. | `form_uploads.author_email`; no access, retention, or rights-case relation is modeled. |
 | Pseudonym or anonymity | Display name plus optional private identity evidence, or an explicit anonymous participant. | Current author name is a single public text value. |
 | Unknown or approximate date | Date value plus precision (`day`, `month`, `year`, `circa`, or `unknown`) and provenance. | `year` stores only a numeric year. |
@@ -145,7 +146,7 @@ vendor behavior was inferred from the current Biblioteca code.
 
 | Capability | Decision or deferral |
 | --- | --- |
-| Roles and authorship | Preserve roles explicitly; do not collapse creator, publisher, collective, submitter, and private contact. Validate with synthetic examples before schema work. |
+| Roles and authorship | Preserve role context without assuming role separation: one person or collective may be creator, publisher, and submitter. Keep private contact separate from public role assertions. Validate with synthetic examples before schema work. |
 | Private contact | Keep private contact separate from public creator data; defer retention, access, and rights-case policy. |
 | Uncertainty and provenance | Require value-level notes or provenance in the future profile; do not encode uncertainty in title/description text. |
 | Editions and versions | Defer explicit edition/file-version entities until representative multi-edition records are reviewed. |
