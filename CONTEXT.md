@@ -123,3 +123,15 @@ _Avoid_: Event sourcing by default
 **Access policy**:
 Separate decisions about discovery, reading, downloading, preservation, replication, and reuse.
 _Avoid_: Published means permitted for everything
+
+**Editorial state**:
+The current review/publication condition of a submission or publication, such as in review, published, unpublished, or withdrawn.
+_Avoid_: Treating editorial state as file availability or access permission
+
+**Processing state**:
+The current condition of an operational action, such as pending, processing, completed, or failed.
+_Avoid_: Treating a processing snapshot as an event history
+
+**Provenance**:
+The source, transformation, review, visibility, and unresolved question attached to a value or observation.
+_Avoid_: A value without evidence context

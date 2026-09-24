@@ -95,7 +95,7 @@ The status values mean:
 | Identity | `id` | Database row identifier | 1 per persisted row | System-generated; operational | Keep as technical reference, not public identity claim |
 | Identity | `uuid` | Optional external/technical identifier | 0..1 in current tables | System-generated or imported; operational | Keep if present; do not use as publication identity without evidence |
 | Description | `description` | Public descriptive text with unresolved provenance | 0..1 | Submission or maintainer edit; public when published | Clarify source; do not call it creator-supplied context automatically |
-| Date | `year` / `published_year` | Publication year claim | 0..1 | Submission claim or reviewed value; public when published | Keep as year only; preserve unknown/approximate cases outside the current numeric field |
+| Date | `year` / `published_year` | Publication year claim | 0..1 | Submission claim or reviewed value; `published_year` is present in generated types/application code but absent from the checked-in creation migration; public when published | Keep as year only; preserve unknown/approximate cases outside the current numeric field |
 | Language | `language` | Language of a title, description, or creator context | 0..many future | Not currently collected; public metadata when published | Extend later; do not infer language from text |
 | Series | `collection_title` | Current free-text collection/series label | 0..1 | Submission or maintainer edit; public when published | Clarify label semantics; defer collection entity and ordering |
 | Taxonomy | `categories` | Controlled discovery terms | 0..3 current UI; future cardinality to review | Submitter suggestion plus maintainer review; public | Keep controlled vocabulary; retain source of suggestion |
@@ -104,7 +104,8 @@ The status values mean:
 | Agent | `author_url` / `authors.url` | Public external profile or reference | 0..many | Submitter/creator input; public if approved | Keep as optional external reference; do not treat as identity proof |
 | Agent | `authors.bio` | Public contextual text about an agent | 0..1 | Maintainer/editorial value; public if approved | Keep available; distinguish from creator-supplied publication context |
 | Role | role assertion | Why an agent is associated with this publication | 0..many | Submission/review context; public role only when approved | Extend relationship semantics; roles may overlap or remain unknown |
-| Contact | `author_email` / `contactEmail` | Private communication channel | 0..1 per submission | Submitter; private | Keep private; define retention and access policy before migration |
+| Role | `archive_steward` assertion | Operational responsibility for reviewing, describing, or caring for the archive | 0..many operational | Maintainer action/context; maintainer-only | Keep separate from publication credits; preserve actor/provenance only when workflow requires it |
+| Contact | `author_email` / `contactEmail` | Private communication channel | 0..1 per submission | `author_email` is present in generated types/application code but absent from the checked-in creation migration; submitter; private | Keep private; define retention and access policy before migration |
 | Context | creator-supplied context | Text supplied as the creator's own context | 0..1 or many future | Creator/submitter; visibility reviewed | Extend separately from editorial description |
 | Asset | `pdf_url` | External source or delivery reference | 0..many future | Submission/current catalogue; public only if allowed | Clarify reference type; never label it an original automatically |
 | Asset | `cover_image` | Cover image reference | 0..1 current | Submission/current catalogue; public when published | Clarify whether source, preview, or managed asset |
@@ -113,7 +114,7 @@ The status values mean:
 | Editorial state | `is_published` | Public editorial visibility snapshot | 1 current | Maintainer decision; public query boundary | Keep for compatibility; do not overload with other states |
 | Processing state | `import_status`, `total_pages` | Existing page-import snapshot fields | 0..1 | Internal/legacy | Defer or retire; not current editorial review |
 | Submission | `created_at` | Intake timestamp | 0..1 | System; private/operational | Keep as provenance, not publication date |
-| Record history | `updated_at` | Last row update timestamp | 0..1 | System; operational | Keep as a snapshot timestamp; no event history required |
+| Record history | `created_at`, `updated_at` | Intake or row-update timestamps | 0..1 | System; operational | Keep as snapshot/provenance timestamps; no event history required |
 
 ### Requiredness And Future Value Shapes
 
@@ -125,9 +126,13 @@ following requiredness and value-shape rules:
 | Publication title | Required for a publication entry | One reviewed display value plus submitted source value when they differ |
 | Public identifier | Required for a published `library_zines` row; not a submission requirement | Existing slug rule remains stable; changes require explicit redirect handling |
 | Agent/authorship | At least one authorship assertion is required for current publication workflow, but its status may be `identified`, `pseudonymous`, `anonymous`, `unknown`, or `unresolved` | `agent_kind` plus `authorship_status` and display name when one exists; no legal name required |
+| Technical identifiers | Required for persisted rows where supplied by the system; not public metadata requirements | Keep `id` and optional `uuid` as separate technical values with system provenance |
 | Description/context | Optional | Separate value source as `creator`, `submitter`, `maintainer`, or `unknown`; do not infer source |
 | Date/year | Optional; unknown is valid | Date claim with precision `year`, `circa-year`, `partial`, or `unknown`, plus source and provenance; do not coerce `circa 2019` to exact `2019` |
 | Language | Optional; multiple values allowed | Each title, description, or context value may be a language-tagged value such as `{ value: "Caderno Azul", language: "pt-BR" }` |
+| Agent references | Optional | `author_url`, social links, and external profiles remain optional references with source and review status |
+| Agent context | Optional | `authors.bio` and archive-steward assertions remain distinct from publication creator context |
+| Role assertions | Optional; may repeat | Contextual values such as `creator`, `publisher`, `submitter`, or `archive_steward`; roles may overlap |
 | Categories | Optional; current form permits up to three | Controlled term identifier plus submitted/reviewed provenance; empty is valid |
 | Collection label | Optional | Free-text display label until a collection relationship is justified |
 | Private contact | Optional per submission; never public by default | Private contact value with submission scope, access boundary, and retention decision |
@@ -179,6 +184,8 @@ Open questions for the next review are:
 | `tags.categories` | Which submitted terms are accepted vocabulary values, aliases, or suggestions requiring review? |
 | `pdf_url`, `cover_image`, local files | Is each reference a source, reading copy, preview, derivative, or only an observed external link? |
 | `author_email` | What retention period, access boundary, and rights conversation does this contact support? |
+| `language` | Which submitted values need language tags, and which languages should the current Brazilian-focused catalogue expose? |
+| `archive_steward` | Which maintainer action or operational workflow actually requires retaining an actor assertion? |
 
 ## Submission-To-Catalogue Mapping
 
@@ -186,6 +193,7 @@ Open questions for the next review are:
 | --- | --- | --- |
 | `title` | Is this the public title, a working title, or a title containing a release label? | Preserve submitted value; create reviewed public title only with provenance |
 | `author_name` and parsed author values | Is the display name a person, collective, pseudonym, anonymous label, or unknown? | Create one or more contextual agent assertions; do not require a legal identity |
+| archive steward context | Was a maintainer acting as reviewer, describer, or archive caretaker? | Retain as operational role only when the workflow requires it; never convert it into publication authorship |
 | `author_url` and social links | Is the URL a public profile, source, or unrelated link? | Keep as optional external reference with source context |
 | `author_email` | Is it a submitter, rights-holder, or general contact? | Keep private and attach to submission/rights conversation, not public agent data |
 | `published_year` | Is the value exact, approximate, unknown, or supplied without evidence? | Preserve claim and provenance; map to `year` only when precision is not lost |
@@ -193,6 +201,7 @@ Open questions for the next review are:
 | `collection_title` | Is this a series, a one-off label, or a title copied from another field? | Keep as a label; defer collection relationship |
 | `tags.categories` | Is each term in the controlled vocabulary and appropriate for discovery? | Retain creator suggestion and reviewed category values separately when needed |
 | `pdf_url` and `cover_image` | Is this a source, reading copy, preview, or external reference? | Create reviewed asset/reference facts; do not assert custody or authorization |
+| language values | Which language applies to each submitted title, description, or creator context? | Preserve language-tagged values when collected; otherwise record language as unresolved |
 | `submission_batch_id` | Does this identify intake processing rather than a publication collection? | Keep as private process provenance |
 | `is_published` | Has a maintainer approved public discovery, and under which access conditions? | Map to editorial/discovery state only |
 
