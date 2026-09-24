@@ -126,6 +126,24 @@ test('scans files without modifying them and records checksums and validation', 
   assert.equal(manifest.files[1].relativePath, 'nested/notes.txt');
 });
 
+test('records symlinked archive entries without following them', async () => {
+  const archiveDirectory = await makeTempDir();
+  const source = path.join(archiveDirectory, 'source.pdf');
+  await writeFile(source, '%PDF fixture');
+  await symlink(source, path.join(archiveDirectory, 'linked.pdf'));
+
+  const manifest = await scanArchive({
+    archiveDirectory,
+    classifyFile: async () => ({ mimeType: 'application/pdf', pdf: { status: 'valid', pageCount: 1 } }),
+  });
+
+  assert.deepEqual(manifest.skippedEntries, [{
+    relativePath: 'linked.pdf',
+    reason: 'symbolic-link-not-followed',
+  }]);
+  assert.equal(manifest.files.length, 1);
+});
+
 test('validates real PDF fixtures and classifies malformed PDFs', async () => {
   const archiveDirectory = await makeTempDir();
   await writeFile(path.join(archiveDirectory, 'valid.pdf'), minimalPdf());
@@ -173,6 +191,31 @@ test('records malformed catalogue rows without aborting valid matches', () => {
 
   assert.equal(result.records[0].status, 'matched');
   assert.deepEqual(result.recordErrors, [{ index: 0, error: 'Catalogue row is not a valid object with an ID' }]);
+});
+
+test('preserves publication status and samples workflow states', () => {
+  const result = buildManifest({
+    snapshot: {
+      tables: {
+        library_zines: [
+          { id: 1, slug: 'published-zine', is_published: true },
+          { id: 2, slug: 'unpublished-zine', is_published: false },
+        ],
+        form_uploads: [
+          { id: 9, review_status: 'pending' },
+        ],
+      },
+    },
+    files: [{ relativePath: 'published-zine.pdf', sha256: 'a', size: 10, pdf: { status: 'valid' } }],
+  });
+
+  assert.equal(result.records[0].publicationStatus, 'published');
+  assert.equal(result.records[1].publicationStatus, 'unpublished');
+  assert.deepEqual(result.sample.workflow, {
+    'publication:published': [1],
+    'publication:unpublished': [2],
+    'review_status:pending': [9],
+  });
 });
 
 test('uses the Drive file ID as secondary URL evidence', () => {
@@ -323,6 +366,23 @@ test('runs the complete inventory seam and writes private derived outputs', asyn
   assert.equal(result.manifest.provenance.runPurpose, 'calibration');
   assert.equal(result.comparison, null);
   assert.equal((await readdir(outputDirectory)).sort().join(','), 'manifest.json,report.md,supabase-snapshot.json');
+});
+
+test('fails the inventory when the required catalogue snapshot is unavailable', async () => {
+  const archiveDirectory = await makeTempDir();
+  const outputDirectory = await makeTempDir();
+  await assert.rejects(
+    () => runInventory({
+      archiveDirectory,
+      outputDirectory,
+      baseUrl: 'https://supabase.example.test',
+      apiKey: 'test-key',
+      tableNames: ['library_zines'],
+      fetchImpl: async () => new Response('denied', { status: 403 }),
+      repositoryRoot: '/workspace/repo',
+    }),
+    /Required Supabase table library_zines is unavailable: .*HTTP 403/,
+  );
 });
 
 test('selects a stable sample from risk categories', () => {

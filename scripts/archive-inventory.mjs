@@ -177,20 +177,31 @@ export async function createSupabaseSnapshot({
 async function walkFiles(directory, root = directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
+  const skipped = [];
 
   for (const entry of entries) {
     const absolutePath = path.join(directory, entry.name);
     if (entry.isDirectory()) {
-      files.push(...await walkFiles(absolutePath, root));
+      const nested = await walkFiles(absolutePath, root);
+      files.push(...nested.files);
+      skipped.push(...nested.skipped);
     } else if (entry.isFile()) {
       files.push({
         absolutePath,
         relativePath: path.relative(root, absolutePath).split(path.sep).join('/'),
       });
+    } else if (entry.isSymbolicLink()) {
+      skipped.push({
+        relativePath: path.relative(root, absolutePath).split(path.sep).join('/'),
+        reason: 'symbolic-link-not-followed',
+      });
     }
   }
 
-  return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+  return {
+    files: files.sort((a, b) => a.relativePath.localeCompare(b.relativePath)),
+    skipped: skipped.sort((a, b) => a.relativePath.localeCompare(b.relativePath)),
+  };
 }
 
 async function identifyMimeType(absolutePath) {
@@ -249,7 +260,8 @@ export async function scanArchive({
   if (!archiveDirectory) throw new Error('Archive directory is required');
   const files = [];
 
-  for (const entry of await walkFiles(archiveDirectory)) {
+  const walked = await walkFiles(archiveDirectory);
+  for (const entry of walked.files) {
     let buffer;
     let fileStat;
     try {
@@ -303,6 +315,7 @@ export async function scanArchive({
   return {
     schemaVersion: INVENTORY_SCHEMA_VERSION,
     files,
+    skippedEntries: walked.skipped,
   };
 }
 
@@ -355,7 +368,12 @@ function knownFailureFor(record, knownFailures) {
   ));
 }
 
-export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
+function publicationStatus(record) {
+  if (typeof record.is_published !== 'boolean') return 'unknown';
+  return record.is_published ? 'published' : 'unpublished';
+}
+
+export function buildManifest({ snapshot, files, knownFailures = [], skippedEntries = [] } = {}) {
   const rawRecords = tableRows(snapshot, 'library_zines');
   const recordErrors = rawRecords.flatMap((record, index) => (
     record && typeof record === 'object' && !Array.isArray(record) && record.id != null
@@ -384,6 +402,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
         confidence: method === 'slug' ? 'exact' : 'secondary',
         recordId: record.id,
         slug: record.slug ?? null,
+        publicationStatus: publicationStatus(record),
         ...(method === 'secondary' ? { evidence: secondaryEvidence(file, record) } : {}),
       };
       const matches = filesByRecord.get(record.id) ?? [];
@@ -418,6 +437,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
       return {
         id: record.id,
         slug: record.slug ?? null,
+        publicationStatus: publicationStatus(record),
         status: 'matched',
         files: matchedFiles,
         ...(knownFailure ? { knownFailure } : {}),
@@ -427,6 +447,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
       return {
         id: record.id,
         slug: record.slug ?? null,
+        publicationStatus: publicationStatus(record),
         status: 'known-failure',
         knownFailure,
       };
@@ -435,11 +456,19 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
       return {
         id: record.id,
         slug: record.slug ?? null,
+        publicationStatus: publicationStatus(record),
         status: 'ambiguous',
         files: ambiguousFiles,
       };
     }
-    return { id: record.id, slug: record.slug ?? null, status: 'missing', relation: 'unmatched-record', files: [] };
+    return {
+      id: record.id,
+      slug: record.slug ?? null,
+      publicationStatus: publicationStatus(record),
+      status: 'missing',
+      relation: 'unmatched-record',
+      files: [],
+    };
   });
 
   const manifest = {
@@ -448,16 +477,24 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
     records: recordResults,
     knownFailures: failureRows,
     ...(recordErrors.length > 0 ? { recordErrors } : {}),
+    ...(skippedEntries.length > 0 ? { skippedEntries } : {}),
     provenance: {
       ...(snapshot?.provenance ?? {}),
       knownFailuresVersion: knownFailureInput.version,
     },
   };
 
-  return { ...manifest, sample: selectDeterministicSample(manifest) };
+  return { ...manifest, sample: selectDeterministicSample(manifest, { snapshot }) };
 }
 
-export function selectDeterministicSample(manifest, { limitPerCategory = 5 } = {}) {
+function workflowState(row) {
+  for (const field of ['status', 'state', 'review_status', 'import_status']) {
+    if (typeof row?.[field] === 'string' && row[field]) return `${field}:${row[field]}`;
+  }
+  return null;
+}
+
+export function selectDeterministicSample(manifest, { snapshot = null, limitPerCategory = 5 } = {}) {
   const fileCategories = {};
   for (const file of manifest.files ?? []) {
     const categories = [file.status ?? file.match?.status];
@@ -471,12 +508,32 @@ export function selectDeterministicSample(manifest, { limitPerCategory = 5 } = {
   }
 
   const recordCategories = {};
+  const workflowCategories = {};
   for (const record of manifest.records ?? []) {
+    if (snapshot) {
+      const publication = `publication:${record.publicationStatus ?? 'unknown'}`;
+      const publicationValues = workflowCategories[publication] ?? [];
+      publicationValues.push(record.id);
+      workflowCategories[publication] = publicationValues;
+    }
     if (record.status === 'matched') continue;
     const values = recordCategories[record.status] ?? [];
     values.push(record.id);
     recordCategories[record.status] = values;
   }
+
+  for (const row of tableRows(snapshot, 'form_uploads')) {
+    const state = workflowState(row);
+    if (!state) continue;
+    const values = workflowCategories[state] ?? [];
+    if (row.id != null) values.push(row.id);
+    workflowCategories[state] = values;
+  }
+
+  const sampleValues = (values) => values.sort((a, b) => {
+    if (typeof a === 'number' && typeof b === 'number') return a - b;
+    return String(a).localeCompare(String(b));
+  }).slice(0, limitPerCategory);
 
   return {
     files: Object.fromEntries(Object.entries(fileCategories)
@@ -488,6 +545,13 @@ export function selectDeterministicSample(manifest, { limitPerCategory = 5 } = {
         if (typeof a === 'number' && typeof b === 'number') return a - b;
         return String(a).localeCompare(String(b));
       }).slice(0, limitPerCategory)])),
+    ...(Object.keys(workflowCategories).length > 0
+      ? {
+        workflow: Object.fromEntries(Object.entries(workflowCategories)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([category, values]) => [category, sampleValues(values)])),
+      }
+      : {}),
   };
 }
 
@@ -670,6 +734,11 @@ export async function runInventory({
     runId,
     collectedAt,
   });
+  if (!Array.isArray(snapshot.tables?.library_zines)) {
+    throw new Error(
+      `Required Supabase table library_zines is unavailable: ${snapshot.tableErrors?.library_zines?.error ?? 'no rows returned'}`,
+    );
+  }
   snapshot.provenance = {
     ...snapshot.provenance,
     toolVersion: INVENTORY_TOOL_VERSION,
@@ -680,7 +749,12 @@ export async function runInventory({
     reviewStatus: calibration ? 'needs-review' : 'not-requested',
   };
   const archive = await scanArchive({ archiveDirectory, classifyFile, runId, collectedAt });
-  const manifest = buildManifest({ snapshot, files: archive.files, knownFailures });
+  const manifest = buildManifest({
+    snapshot,
+    files: archive.files,
+    knownFailures,
+    skippedEntries: archive.skippedEntries,
+  });
   const comparison = previousManifest ? compareManifests(previousManifest, manifest) : null;
 
   await writeFile(path.join(outputDirectory, 'supabase-snapshot.json'), json(snapshot));
