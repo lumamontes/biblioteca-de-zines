@@ -21,6 +21,10 @@ O [relatório ampliado sobre metadados de zines e biblioteconomia](../reports/Zi
 registra a pesquisa sobre ZineCore2, práticas de bibliotecas, coleções brasileiras,
 privacidade, direitos e contexto comunitário.
 
+O [relatório sobre pesquisa acadêmica e prática profissional em zines](../reports/Zine%20scholarship%20and%20professional%20practice.md)
+separa livros, estudos acadêmicos, orientação de bibliotecários e práticas de
+coleções especializadas.
+
 ## Como criar uma ADR
 
 São dois passos:
