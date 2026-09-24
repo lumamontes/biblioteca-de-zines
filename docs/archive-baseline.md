@@ -21,7 +21,7 @@ downloading, or modifying source files.
 | Catalogue records observed | 347 |
 | Files matched to catalogue records | 310 |
 | Catalogue records without a local file | 34 |
-| Catalogue records represented by historical known failures | 3 |
+| Catalogue records with explicit `known-failure` status | 3 |
 | Historical known failures retained as input | 33 |
 
 Every observed local PDF received a relative path, byte size, SHA-256
@@ -90,8 +90,10 @@ to review, not automatic preservation decisions.
 ## Review Queue
 
 The 34 catalogue records without local archive matches require manual review.
-Thirty are already explained by the retained historical failure classifications.
-Four are unpublished records classified as `source-unavailable`.
+Thirty of those missing records are linked to retained historical restricted or
+folder-link failures; the other four are unpublished records classified as
+`source-unavailable`. Three additional catalogue records carry an explicit
+`known-failure` status for historical external-source failures.
 The review must distinguish at least:
 
 - records that intentionally have no retained local file;
