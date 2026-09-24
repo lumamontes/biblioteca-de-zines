@@ -50,9 +50,10 @@ File/access evidence
 
 ### Publication Unit
 
-One current `library_zines` row is one catalogue publication record; only rows
-with an approved public editorial state are public publication entries. A later
-issue, release, or `v2` is another entry for now. `edition/release` remains a
+One current `library_zines` row is one catalogue publication record; currently,
+only rows with `is_published=true` appear as public publication entries. The
+future profile should not call that an approval state without review evidence.
+A later issue, release, or `v2` is another entry for now. `edition/release` remains a
 qualifier that may be recorded in a title, description, or future relation if
 repeated cases justify one; it is not a required entity or field.
 
@@ -177,7 +178,7 @@ main inventory table and the per-field annotation table below.
       {
         "kind": "reading-copy",
         "reference": "https://example.invalid/reading-copy.pdf",
-        "access": "public-reading",
+        "access": "unknown",
         "provenance": "submitter-reference; not independently verified"
       }
     ],
@@ -190,12 +191,12 @@ main inventory table and the per-field annotation table below.
       }
     ],
     "rights_access": {
-      "discovery": "public",
-      "reading": "public",
+      "discovery": "public-query-state",
+      "reading": "unknown",
       "download": "unknown",
       "preservation": "not-established",
       "reuse": "unknown",
-      "provenance": "no rights evidence recorded"
+      "provenance": "discovery reflects is_published=true only; no rights evidence recorded"
     }
   },
   "submission": {
@@ -221,12 +222,14 @@ The status values mean:
 | --- | --- | --- | --- | --- | --- |
 | Identity | `slug` | Stable public URL identifier | 1 on `library_zines`; absent from `form_uploads` | Generated from current author/title rule; public | Keep; never silently regenerate during migration |
 | Identity | `title` | Public title supplied or reviewed for the zine | 1 | Submitter/creator input, then editorial review; public when published | Keep; preserve original and reviewed values if they differ |
+| Identity | `alternative_title` | Subtitle, translation, alias, or variant title | 0..many future | Submitter/creator input; public only after review | Extend only when discovery cases justify it |
 | Identity | `id` | Database row identifier | 1 per persisted row | System-generated; operational | Keep as technical reference, not public identity claim |
 | Identity | `uuid` | Optional external/technical identifier | 0..1 in current tables | System-generated or imported; operational | Keep if present; do not use as publication identity without evidence |
 | Description | `description` | Public descriptive text with unresolved provenance | 0..1 | Submission or maintainer edit; public when published | Clarify source; do not call it creator-supplied context automatically |
 | Date | `year` / `published_year` | Publication year claim | 0..1 | Submission claim or reviewed value; `published_year` is present in generated types/application code but absent from the checked-in creation migration; public when published | Keep as year only; preserve unknown/approximate cases outside the current numeric field |
 | Language | `language` | Language of a title, description, or creator context | 0..many future | Not currently collected; public metadata when published | Extend later; do not infer language from text |
 | Series | `collection_title` | Current free-text collection/series label | 0..1 | Submission or maintainer edit; public when published | Clarify label semantics; defer collection entity and ordering |
+| Series | `issue_designation`, `edition_statement` | Optional issue/release qualifiers | 0..many future | Submitter/creator claim; public after review | Keep as future qualifiers, not current entities or required fields |
 | Taxonomy | `categories` | Controlled discovery terms | 0..3 current UI; future cardinality to review | Submitter suggestion plus maintainer review; public | Keep controlled vocabulary; retain source of suggestion |
 | Agent | `author_name` / `authors.name` | Public display name for a person or collective | 1..many | Submission or maintainer review; public when published | Extend with contextual role, alternative name, pseudonym, anonymity, and ordering |
 | Agent | agent kind and authorship status | `agent_kind` distinguishes person, collective, or organization; `authorship_status` handles identified, pseudonymous, anonymous, unknown, and unresolved cases | 0..1 per agent assertion | Submission/review; public status may be limited | Extend as controlled values; these are descriptive states, not identity proof |
@@ -238,6 +241,8 @@ The status values mean:
 | Context | creator-supplied context | Text supplied as the creator's own context | 0..1 or many future | Creator/submitter; visibility reviewed | Extend separately from editorial description |
 | Asset | `pdf_url` | External source or delivery reference | 0..many future | Submission/current catalogue; public only if allowed | Clarify reference type; never label it an original automatically |
 | Asset | `cover_image` | Cover image reference | 0..1 current | Submission/current catalogue; public when published | Clarify whether source, preview, or managed asset |
+| Rights | `rights`, rights/access evidence | Permission, restriction, or unresolved access claim | 0..many future | Creator/rights-holder/maintainer evidence; private or public by scope | Require evidence before non-default access claims |
+| Identifier | namespaced `identifier` | Local, external, or union-catalogue identifier | 0..many future | System or external catalogue source; visibility by identifier | Preserve namespace and source; do not equate with custody |
 | Asset | local observation | Local file evidence, checksum, validation, and path | 0..many | Inventory; private by default | Keep separate from catalogue identity |
 | Asset | derivative relation | Link between source, reading copy, preview, or page image | 0..many future | Processing evidence; visibility by access policy | Defer production modeling until authorized pilot |
 | Editorial state | `is_published` | Public editorial visibility snapshot | 1 current | Maintainer decision; public query boundary | Keep for compatibility; do not overload with other states |
