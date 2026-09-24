@@ -10,6 +10,24 @@ que registra as conclusões públicas da primeira calibração do inventário.
 O [perfil provisório de catálogo e acesso](./catalogue-access-profile.md)
 separa o modelo atual das decisões futuras de metadados, direitos e plataforma.
 
+O [modelo de organização e metadados do catálogo](./catalogue-information-architecture.md)
+transforma esse perfil em uma estrutura concreta para revisão antes da migração.
+
+A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
+compara fontes brasileiras e internacionais para validar campos físicos, digitais,
+geográficos e de classificação.
+
+O [relatório ampliado sobre metadados de zines e biblioteconomia](../reports/Zine%20metadata%20and%20library%20research.md)
+registra a pesquisa sobre ZineCore2, práticas de bibliotecas, coleções brasileiras,
+privacidade, direitos e contexto comunitário.
+
+O [relatório sobre pesquisa acadêmica e prática profissional em zines](../reports/Zine%20scholarship%20and%20professional%20practice.md)
+separa livros, estudos acadêmicos, orientação de bibliotecários e práticas de
+coleções especializadas.
+
+O [índice de referências sobre zines e metadados](./zine-research-references.md)
+reúne os links externos e os documentos de pesquisa usados nas decisões.
+
 ## Como criar uma ADR
 
 São dois passos:

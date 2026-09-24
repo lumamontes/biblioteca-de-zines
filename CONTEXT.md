@@ -12,6 +12,54 @@ _Avoid_: Item, resource
 The structured Biblioteca record that describes a zine, its publication state, authorship, links, and related metadata.
 _Avoid_: File, archive item
 
+**Metadata field**:
+A named value describing a publication, agent, submission, asset, access decision, or provenance claim, with its source and visibility understood.
+_Avoid_: A value copied between forms without meaning
+
+**Agent**:
+A person, collective, or organization associated with a publication or archive context; an agent may have multiple contextual roles.
+_Avoid_: Assuming every role is a separate person
+
+**Agent kind**:
+A broad classification of an agent, such as person, collective, organization, anonymous, or unknown; it does not assert a legal identity.
+_Avoid_: Treating a kind as proof of authorship
+
+**Authorship status**:
+The state of what is known about authorship, such as identified, pseudonymous, anonymous, unknown, or unresolved.
+_Avoid_: Collapsing unknown and anonymous
+
+**Language-tagged value**:
+A title, description, or context value paired with the language in which it is expressed and its source.
+_Avoid_: Inferring language from text alone
+
+**Category/subject term**:
+A controlled vocabulary term used to support discovery of publications; its label, identifier, aliases, and governance are separate from the publication's free-text description.
+_Avoid_: Treating a user-entered label as a governed term automatically
+
+**Controlled vocabulary**:
+A maintained set of terms with stable identifiers, preferred labels, aliases, and rules for adding or changing terms.
+_Avoid_: A free-text list presented as governed taxonomy
+
+**Thesaurus**:
+A controlled vocabulary that may also record relationships such as broader, narrower, or related terms.
+_Avoid_: Assuming categories have relationships before they are reviewed
+
+**Holding**:
+A repository-specific custody or access record for a publication or file, distinct from the publication description and from the file itself.
+_Avoid_: Treating a holding as the original or as unrestricted access
+
+**Rights-holder**:
+A person or organization associated with permission or restriction over a work or file; the association may be unknown or unresolved.
+_Avoid_: Assuming the submitter is the rights-holder
+
+**Role assertion**:
+A contextual statement about why an agent is associated with a publication or submission, such as creator, publisher, or submitter.
+_Avoid_: Treating a role as a permanent identity category
+
+**File/access evidence**:
+Facts about a file reference, local observation, derivative, or access condition that are kept distinct from the publication record.
+_Avoid_: Treating a URL as proof of custody or authorization
+
 **Archive**:
 The collection of files and evidence retained for the continuity of the Biblioteca's catalogue and publications.
 _Avoid_: Backup, storage bucket
@@ -95,3 +143,51 @@ _Avoid_: Event sourcing by default
 **Access policy**:
 Separate decisions about discovery, reading, downloading, preservation, replication, and reuse.
 _Avoid_: Published means permitted for everything
+
+**Editorial state**:
+The current review/publication condition of a submission or publication, such as in review, published, unpublished, or withdrawn.
+_Avoid_: Treating editorial state as file availability or access permission
+
+**Processing state**:
+The current condition of an operational action, such as pending, processing, completed, or failed.
+_Avoid_: Treating a processing snapshot as an event history
+
+**Provenance**:
+The source, transformation, review, visibility, and unresolved question attached to a value or observation.
+_Avoid_: A value without evidence context
+
+**Rights/access evidence**:
+A claim, permission, restriction, or unresolved question about how a publication or file may be discovered, read, downloaded, preserved, replicated, or reused.
+_Avoid_: Treating public visibility as permission for every use
+
+**Publication place**:
+A place associated with a zine in a stated role, such as place of creation, publication, circulation, or an agent's location; the role and evidence must be retained.
+_Avoid_: Treating one place value as the answer for every geographic question
+
+**Brazilian state/UF**:
+The Brazilian federative unit associated with a place value when that place is in Brazil. It is optional metadata, not a required assumption for every record.
+_Avoid_: Inferring a state from a city name or from the archive's focus
+
+**Zine format/form**:
+The material or delivery form of a zine, such as printed, digital, hybrid, single-sheet, booklet, newspaper, poster, or minizine, distinct from subject or theme.
+_Avoid_: Treating format, genre, and subject as the same field
+
+**Reproduction method**:
+The production process used for a zine, such as photocopy, risograph, offset, screen print, handwritten, or unknown.
+_Avoid_: Inferring production method from a PDF or cover image
+
+**Physical extent**:
+The measurable scope of a physical zine, including page count, dimensions, and binding or assembly features.
+_Avoid_: Mixing physical extent with PDF page count
+
+**Binding feature**:
+A recorded way that physical pages are assembled or left unbound, such as stapled, folded, loose sheets, or unknown.
+_Avoid_: Inferring binding from a digital file
+
+**Asset kind**:
+The role of a file or file reference, such as source, reading copy, preview, or derivative.
+_Avoid_: Calling every PDF an original
+
+**Access state**:
+The current condition of one access dimension, such as public, restricted, unknown, or not established.
+_Avoid_: Treating one access state as the answer for every use
