@@ -355,6 +355,11 @@ function knownFailureFor(record, knownFailures) {
   ));
 }
 
+function publicationStatus(record) {
+  if (typeof record.is_published !== 'boolean') return 'unknown';
+  return record.is_published ? 'published' : 'unpublished';
+}
+
 export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
   const rawRecords = tableRows(snapshot, 'library_zines');
   const recordErrors = rawRecords.flatMap((record, index) => (
@@ -384,6 +389,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
         confidence: method === 'slug' ? 'exact' : 'secondary',
         recordId: record.id,
         slug: record.slug ?? null,
+        publicationStatus: publicationStatus(record),
         ...(method === 'secondary' ? { evidence: secondaryEvidence(file, record) } : {}),
       };
       const matches = filesByRecord.get(record.id) ?? [];
@@ -418,6 +424,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
       return {
         id: record.id,
         slug: record.slug ?? null,
+        publicationStatus: publicationStatus(record),
         status: 'matched',
         files: matchedFiles,
         ...(knownFailure ? { knownFailure } : {}),
@@ -427,6 +434,7 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
       return {
         id: record.id,
         slug: record.slug ?? null,
+        publicationStatus: publicationStatus(record),
         status: 'known-failure',
         knownFailure,
       };
@@ -435,11 +443,19 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
       return {
         id: record.id,
         slug: record.slug ?? null,
+        publicationStatus: publicationStatus(record),
         status: 'ambiguous',
         files: ambiguousFiles,
       };
     }
-    return { id: record.id, slug: record.slug ?? null, status: 'missing', relation: 'unmatched-record', files: [] };
+    return {
+      id: record.id,
+      slug: record.slug ?? null,
+      publicationStatus: publicationStatus(record),
+      status: 'missing',
+      relation: 'unmatched-record',
+      files: [],
+    };
   });
 
   const manifest = {
@@ -454,10 +470,17 @@ export function buildManifest({ snapshot, files, knownFailures = [] } = {}) {
     },
   };
 
-  return { ...manifest, sample: selectDeterministicSample(manifest) };
+  return { ...manifest, sample: selectDeterministicSample(manifest, { snapshot }) };
 }
 
-export function selectDeterministicSample(manifest, { limitPerCategory = 5 } = {}) {
+function workflowState(row) {
+  for (const field of ['status', 'state', 'review_status', 'import_status']) {
+    if (typeof row?.[field] === 'string' && row[field]) return `${field}:${row[field]}`;
+  }
+  return null;
+}
+
+export function selectDeterministicSample(manifest, { snapshot = null, limitPerCategory = 5 } = {}) {
   const fileCategories = {};
   for (const file of manifest.files ?? []) {
     const categories = [file.status ?? file.match?.status];
@@ -471,12 +494,32 @@ export function selectDeterministicSample(manifest, { limitPerCategory = 5 } = {
   }
 
   const recordCategories = {};
+  const workflowCategories = {};
   for (const record of manifest.records ?? []) {
+    if (snapshot) {
+      const publication = `publication:${record.publicationStatus ?? 'unknown'}`;
+      const publicationValues = workflowCategories[publication] ?? [];
+      publicationValues.push(record.id);
+      workflowCategories[publication] = publicationValues;
+    }
     if (record.status === 'matched') continue;
     const values = recordCategories[record.status] ?? [];
     values.push(record.id);
     recordCategories[record.status] = values;
   }
+
+  for (const row of tableRows(snapshot, 'form_uploads')) {
+    const state = workflowState(row);
+    if (!state) continue;
+    const values = workflowCategories[state] ?? [];
+    if (row.id != null) values.push(row.id);
+    workflowCategories[state] = values;
+  }
+
+  const sampleValues = (values) => values.sort((a, b) => {
+    if (typeof a === 'number' && typeof b === 'number') return a - b;
+    return String(a).localeCompare(String(b));
+  }).slice(0, limitPerCategory);
 
   return {
     files: Object.fromEntries(Object.entries(fileCategories)
@@ -488,6 +531,13 @@ export function selectDeterministicSample(manifest, { limitPerCategory = 5 } = {
         if (typeof a === 'number' && typeof b === 'number') return a - b;
         return String(a).localeCompare(String(b));
       }).slice(0, limitPerCategory)])),
+    ...(Object.keys(workflowCategories).length > 0
+      ? {
+        workflow: Object.fromEntries(Object.entries(workflowCategories)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([category, values]) => [category, sampleValues(values)])),
+      }
+      : {}),
   };
 }
 
@@ -670,6 +720,11 @@ export async function runInventory({
     runId,
     collectedAt,
   });
+  if (!Array.isArray(snapshot.tables?.library_zines)) {
+    throw new Error(
+      `Required Supabase table library_zines is unavailable: ${snapshot.tableErrors?.library_zines?.error ?? 'no rows returned'}`,
+    );
+  }
   snapshot.provenance = {
     ...snapshot.provenance,
     toolVersion: INVENTORY_TOOL_VERSION,
