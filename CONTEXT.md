@@ -32,6 +32,10 @@ _Avoid_: Collapsing unknown and anonymous
 A title, description, or context value paired with the language in which it is expressed and its source.
 _Avoid_: Inferring language from text alone
 
+**Category/subject term**:
+A controlled vocabulary term used to support discovery of publications; its label, identifier, aliases, and governance are separate from the publication's free-text description.
+_Avoid_: Treating a user-entered label as a governed term automatically
+
 **Role assertion**:
 A contextual statement about why an agent is associated with a publication or submission, such as creator, publisher, or submitter.
 _Avoid_: Treating a role as a permanent identity category

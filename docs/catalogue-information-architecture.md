@@ -96,7 +96,7 @@ external schema.
 | Agents | `display_name`, `agent_kind`, alternative names, public/privacy status | Public display name is primary; legal identity is not required; collective, pseudonymous, anonymous, and unknown cases remain valid | `authors.name`, `url`, `bio` |
 | Publication roles | Repeatable contextual assertions: `creator`, `contributor`, `publisher` | One agent may hold multiple roles; do not make submitter or archive steward publication credits by default | Author link has no role |
 | Subjects | Controlled subject terms | Use Biblioteca's categories as discovery subjects; coordinate labels and aliases with #116 | `tags.categories`, `categories` table |
-| Genre/form | Optional terms such as perzine, fanzine, photo zine, academic item | Defer a separate genre vocabulary until the category/thesaurus work demonstrates a need | Not currently represented |
+| Genre/form | Optional terms such as perzine, fanzine, or photo zine | Defer a separate genre/form vocabulary until the category/thesaurus work demonstrates a need | Not currently represented |
 | Date | Repeatable date claim with precision and provenance | Support exact year, circa/partial, and unknown without forcing a numeric year | `year` / `published_year` only |
 | Language | Repeatable language-tagged values | Add language to values when multilingual records require it; do not infer from text | Not currently represented |
 | Place | Optional place of publication/creation when supplied | Defer as a field until Brazilian catalogue use cases show a clear discovery need | Not currently represented |
@@ -140,14 +140,28 @@ This shape is illustrative metadata, not a TypeScript or Supabase contract:
 {
   "publication": {
     "id": "P-001",
-    "title": "Caderno Azul",
+    "title": {
+      "value": "Caderno Azul",
+      "source": "creator",
+      "visibility": "public"
+    },
     "series_label": "Série Exemplo",
-    "date": { "value": "circa 2019", "precision": "circa-year" },
-    "languages": ["pt-BR"],
-    "subjects": ["Experimental", "Poético"],
+    "date": {
+      "value": "circa 2019",
+      "precision": "circa-year",
+      "source": "submitter"
+    },
+    "languages": [
+      { "value": "pt-BR", "source": "creator" }
+    ],
+    "subjects": [
+      { "id": "experimental", "label": "Experimental", "review": "approved" },
+      { "id": "poetico", "label": "Poético", "review": "approved" }
+    ],
     "description": {
       "value": "Contexto fornecido pela pessoa autora.",
-      "source": "creator"
+      "source": "creator",
+      "visibility": "public"
     },
     "agents": [
       {
@@ -161,7 +175,8 @@ This shape is illustrative metadata, not a TypeScript or Supabase contract:
       {
         "kind": "reading-copy",
         "reference": "https://example.invalid/reading-copy.pdf",
-        "access": "public-reading"
+        "access": "public-reading",
+        "provenance": "submitter-reference; not independently verified"
       }
     ],
     "rights_access": {
@@ -169,7 +184,8 @@ This shape is illustrative metadata, not a TypeScript or Supabase contract:
       "reading": "public",
       "download": "unknown",
       "preservation": "not-established",
-      "reuse": "unknown"
+      "reuse": "unknown",
+      "provenance": "no rights evidence recorded"
     }
   },
   "submission": {
@@ -203,7 +219,7 @@ The status values mean:
 | Series | `collection_title` | Current free-text collection/series label | 0..1 | Submission or maintainer edit; public when published | Clarify label semantics; defer collection entity and ordering |
 | Taxonomy | `categories` | Controlled discovery terms | 0..3 current UI; future cardinality to review | Submitter suggestion plus maintainer review; public | Keep controlled vocabulary; retain source of suggestion |
 | Agent | `author_name` / `authors.name` | Public display name for a person or collective | 1..many | Submission or maintainer review; public when published | Extend with contextual role, alternative name, pseudonym, anonymity, and ordering |
-| Agent | agent kind and authorship status | Distinguishes person, collective, organization, anonymous, pseudonymous, unknown, and unresolved cases | 0..1 per agent assertion | Submission/review; public status may be limited | Extend as controlled values; these are descriptive states, not identity proof |
+| Agent | agent kind and authorship status | `agent_kind` distinguishes person, collective, or organization; `authorship_status` handles identified, pseudonymous, anonymous, unknown, and unresolved cases | 0..1 per agent assertion | Submission/review; public status may be limited | Extend as controlled values; these are descriptive states, not identity proof |
 | Agent | `author_url` / `authors.url` | Public external profile or reference | 0..many | Submitter/creator input; public if approved | Keep as optional external reference; do not treat as identity proof |
 | Agent | `authors.bio` | Public contextual text about an agent | 0..1 | Maintainer/editorial value; public if approved | Keep available; distinguish from creator-supplied publication context |
 | Role | role assertion | Why an agent is associated with this publication | 0..many | Submission/review context; public role only when approved | Extend relationship semantics; roles may overlap or remain unknown |
@@ -252,13 +268,18 @@ the unresolved question to answer before staging or publishing it.
 | --- | --- | --- | --- |
 | `slug` | Required for published `library_zines` rows | Generation rule and any reviewed correction | Can a changed slug receive a redirect without breaking existing links? |
 | `title` | Required | Submitted value, reviewed value, and editor/source | Which value is the public display title? |
+| `alternative_title` | Optional, repeatable | Submitted/creator source and language tag | Is it a subtitle, translation, alias, or variant spelling? |
 | `id` | Required for persisted rows | Database source and row identity | None for identity; never treat it as public identifier |
 | `uuid` | Optional | System/import source and first observation | Is it stable enough for any external exchange? |
 | `description` | Optional | Submitter, creator, maintainer, or unknown source | Was it edited, and is it public context or editorial description? |
 | `year` / `published_year` | Optional; unknown valid | Submitted claim, review, precision, and evidence note | Is it exact, approximate, partial, conflicting, or unknown? |
 | `language` | Optional; repeatable | Language tag source and value-level review | Which submitted values need tags in the current Brazilian-focused catalogue? |
 | `collection_title` | Optional | Submitted label or maintainer correction | Is it a series label or only descriptive text? |
+| `issue_designation` | Optional future qualifier | Submitted label and review decision | Does the publication actually belong to a numbered series? |
+| `edition_statement` | Optional future qualifier | Submitted release/revision claim and review decision | Does this need a relation to another publication entry, or is a new entry sufficient? |
 | `tags.categories` | Optional; current UI max three | Submitted suggestion, vocabulary mapping, and review | Is the term current, an alias, or unresolved? |
+| `subject` / category term | Optional, repeatable | Controlled vocabulary identifier, label version, alias mapping, and reviewer | Is this a subject term, genre/form term, or only a submitter suggestion? |
+| `genre` / form | Optional future field | Vocabulary source and review | Is a separate genre/form vocabulary useful enough to justify adding it? |
 | `author_name` / `authors.name` | Required by current workflow; unknown/anonymous states valid in future | Submitted display name and agent reconciliation | Does the value identify a person, collective, pseudonym, anonymous credit, or unknown? |
 | agent kind/authorship status | Optional current; required when needed to explain authorship | Submitter/reviewer assertion and confidence | Which controlled status best represents the evidence? |
 | `author_url` / `authors.url` | Optional, repeatable | Submitter source and link review | Is it a public agent reference or another kind of source? |
@@ -269,6 +290,8 @@ the unresolved question to answer before staging or publishing it.
 | creator-supplied context | Optional | Creator/submitter source and language | How is it kept distinct from editorial description? |
 | `pdf_url` | Optional reference | Submitted/current field, URL observation, and access review | Is it source, reading copy, preview, derivative, or unknown? |
 | `cover_image` | Optional reference | Submitted/current field and asset observation | Is it a managed asset, source image, or external reference? |
+| `rights` | Optional metadata; required before non-default access claims | Rights source, statement/version, scope, and reviewer | What permission or restriction applies, and to which asset or use? |
+| `identifier` | Optional, repeatable | Namespace, value, and source system | Is it a local ID, external catalogue ID, URL, or another identifier? |
 | local observation | Optional evidence | Inventory run, path, checksum, and validator | Does it correspond to a catalogue asset, and with what confidence? |
 | derivative relation | Optional future relation | Source asset, transformation, run, and result | Which derivatives are authorized and publicly deliverable? |
 | `is_published` | Required current state snapshot | Maintainer decision and review context | What separate discovery/reading/download policy accompanies it? |
@@ -330,7 +353,7 @@ Open questions for the next review are:
 | --- | --- | --- |
 | `title` | Is this the public title, a working title, or a title containing a release label? | Preserve submitted value; create reviewed public title only with provenance |
 | `author_name` and parsed author values | Is the display name a person, collective, pseudonym, anonymous label, or unknown? | Create one or more contextual agent assertions; do not require a legal identity |
-| archive steward context | Was a maintainer acting as reviewer, describer, or archive caretaker? | Retain as operational role only when the workflow requires it; never convert it into publication authorship |
+| archive steward context | Was a maintainer acting as reviewer, describer, or archive steward? | Retain as operational role only when the workflow requires it; never convert it into publication authorship |
 | `author_url` and social links | Is the URL a public profile, source, or unrelated link? | Keep as optional external reference with source context |
 | `author_email` | Is it a submitter, rights-holder, or general contact? | Keep private and attach to submission/rights conversation, not public agent data |
 | `published_year` | Is the value exact, approximate, unknown, or supplied without evidence? | Preserve claim and provenance; map to `year` only when precision is not lost |
@@ -365,6 +388,37 @@ identity. Initial governance rules:
    metadata truth; revisit it with representative records.
 6. The thesaurus issue (#116) may refine labels and relationships, but must not
    expand into unrelated publication or rights modeling.
+
+The initial thesaurus proposal treats the current category list as `subject`
+terms with stable normalized identifiers. Aliases are empty until reviewed; a
+term's display label may change only through an explicit mapping.
+
+| Term identifier | Preferred label | Term type |
+| --- | --- | --- |
+| `ilustracao` | Ilustração | subject |
+| `lgbtqia` | LGBTQIA+ | subject |
+| `quadrinhos` | Quadrinhos | subject |
+| `poetico` | Poético | subject |
+| `filosofia-espiritual` | Filosofia / Espiritual | subject |
+| `critica-social` | Crítica social | subject |
+| `autobiografico` | Autobiográfico | subject |
+| `ficcao-cientifica` | Ficção científica | subject |
+| `fantasia` | Fantasia | subject |
+| `humor` | Humor | subject |
+| `infantil` | Infantil | subject |
+| `infantojuvenil` | Infantojuvenil | subject |
+| `terror` | Terror | subject |
+| `experimental` | Experimental | subject |
+| `arte-digital` | Arte digital | subject |
+| `politico` | Politico | subject |
+| `musica` | Música | subject |
+| `fotografia` | Fotografia | subject |
+| `educacao` | Educação | subject |
+
+This is intentionally a subject vocabulary, not yet a complete zine genre
+vocabulary. `perzine`, `fanzine`, `photo zine`, and similar form terms remain
+future `genre/form` candidates rather than being mixed into the current subject
+list.
 
 ## Synthetic Validation Set
 
