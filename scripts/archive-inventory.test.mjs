@@ -262,7 +262,7 @@ test('compares stable manifest content while ignoring run provenance', () => {
       { relativePath: 'removed.pdf', sha256: 'old', match: { status: 'matched' } },
       { relativePath: 'status-only.pdf', sha256: 'same', match: { status: 'matched' } },
     ],
-    records: [{ id: 1, status: 'matched' }],
+    records: [{ id: 1, status: 'matched', publicationStatus: 'published' }],
   };
   const after = {
     schemaVersion: 1,
@@ -272,7 +272,7 @@ test('compares stable manifest content while ignoring run provenance', () => {
       { relativePath: 'added.pdf', sha256: 'new', match: { status: 'matched' } },
       { relativePath: 'status-only.pdf', sha256: 'same', match: { status: 'matched', method: 'secondary', evidence: ['filename', 'title'] } },
     ],
-    records: [{ id: 1, status: 'ambiguous' }],
+    records: [{ id: 1, status: 'ambiguous', publicationStatus: 'unpublished' }],
   };
 
   assert.deepEqual(compareManifests(before, after), {
@@ -283,6 +283,15 @@ test('compares stable manifest content while ignoring run provenance', () => {
       unchanged: [],
     },
     records: { changed: [{ id: 1, from: 'matched', to: 'ambiguous' }], unchanged: [] },
+  });
+
+  const publicationChange = compareManifests(
+    { schemaVersion: 1, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'unpublished' }] },
+    { schemaVersion: 1, files: [], records: [{ id: 2, status: 'matched', publicationStatus: 'published' }] },
+  );
+  assert.deepEqual(publicationChange.records, {
+    changed: [{ id: 2, from: 'matched', to: 'matched' }],
+    unchanged: [],
   });
 });
 

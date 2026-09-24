@@ -163,8 +163,36 @@ only the reviewed, public-safe conclusions from those artifacts.
 ## Current Application Flows
 
 The following flow descriptions are derived from the current application code
-and database migrations. They describe observed behavior, not a policy that
-the project has formally approved.
+and database migrations. The code evidence is in
+`src/app/(main)/zines/apply/actions.ts`,
+`src/app/(admin)/dashboard/actions.ts`,
+`src/services/zine-import-service.ts`, and
+`src/services/zine-service.ts`. The schema evidence is in
+`supabase/migrations/20250123215138_addFormUploadsTable.sql`,
+`supabase/migrations/20250123215146_addAuthorsTable.sql`, and
+`supabase/migrations/20251226002136_addZinePagesAndImportFields.sql`. They
+describe observed behavior, not a policy that the project has formally
+approved.
+
+### Sanitized Representative Shapes
+
+The baseline uses these representative shapes without publishing real
+contributor values, contact details, or private URLs:
+
+- A submission record contains a title, author metadata, optional description,
+  external PDF/cover URLs, publication flag, and a batch identifier.
+- A catalogue record contains a stable slug, public metadata, publication flag,
+  external PDF reference, import status, and author links.
+- A local archive record contains a relative path, size, checksum, PDF
+  validation result, and match evidence.
+- A page derivative contains a zine ID, page number, R2 image URL, and import
+  status; it is not treated as an original without further evidence.
+- The account dependency is an authenticated Supabase user for the dashboard;
+  the current code does not expose a separate maintainer role in this flow.
+
+External source classes observed in the inventory are direct Drive file links,
+Drive folder links, and non-Drive PDF URLs. Raw URLs and record values remain
+in private snapshots only.
 
 ### Submission
 
@@ -189,6 +217,11 @@ the project has formally approved.
    sets both publication records to published.
 5. An existing catalogue record can be republished or unpublished by changing
    `library_zines.is_published`.
+
+Unpublishing changes the catalogue publication flag only. The observed code
+does not delete the `form_uploads` row, delete an external source, delete R2
+page derivatives, or create a removal/audit record. Editing a submission can
+also update a related catalogue row by slug, but no version history is stored.
 
 The implementation performs these publication steps as separate database
 operations rather than one transaction. A failure between operations can leave

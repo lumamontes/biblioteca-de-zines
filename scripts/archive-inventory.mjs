@@ -591,11 +591,13 @@ export function compareManifests(before, after) {
     const newRecord = afterRecords.get(key);
     const oldFingerprint = oldRecord && JSON.stringify({
       status: oldRecord.status,
+      publicationStatus: oldRecord.publicationStatus ?? null,
       files: oldRecord.files ?? [],
       knownFailure: oldRecord.knownFailure ?? null,
     });
     const newFingerprint = newRecord && JSON.stringify({
       status: newRecord.status,
+      publicationStatus: newRecord.publicationStatus ?? null,
       files: newRecord.files ?? [],
       knownFailure: newRecord.knownFailure ?? null,
     });
