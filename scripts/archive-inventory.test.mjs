@@ -203,6 +203,7 @@ test('preserves publication status and samples workflow states', () => {
         ],
         form_uploads: [
           { id: 9, review_status: 'pending' },
+          { id: 10, is_published: false },
         ],
       },
     },
@@ -213,7 +214,7 @@ test('preserves publication status and samples workflow states', () => {
   assert.equal(result.records[1].publicationStatus, 'unpublished');
   assert.deepEqual(result.sample.workflow, {
     'publication:published': [1],
-    'publication:unpublished': [2],
+    'publication:unpublished': [2, 10],
     'review_status:pending': [9],
   });
 });

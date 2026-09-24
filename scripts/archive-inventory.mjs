@@ -523,11 +523,17 @@ export function selectDeterministicSample(manifest, { snapshot = null, limitPerC
   }
 
   for (const row of tableRows(snapshot, 'form_uploads')) {
+    const states = [];
+    if (typeof row?.is_published === 'boolean') {
+      states.push(`publication:${row.is_published ? 'published' : 'unpublished'}`);
+    }
     const state = workflowState(row);
-    if (!state) continue;
-    const values = workflowCategories[state] ?? [];
-    if (row.id != null) values.push(row.id);
-    workflowCategories[state] = values;
+    if (state) states.push(state);
+    for (const currentState of states) {
+      const values = workflowCategories[currentState] ?? [];
+      if (row.id != null) values.push(row.id);
+      workflowCategories[currentState] = values;
+    }
   }
 
   const sampleValues = (values) => values.sort((a, b) => {
