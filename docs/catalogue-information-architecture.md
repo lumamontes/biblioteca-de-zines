@@ -98,13 +98,40 @@ external schema.
 | Publication roles | Repeatable contextual assertions: `creator`, `contributor`, `publisher` | One agent may hold multiple roles; do not make submitter or archive steward publication credits by default | Author link has no role |
 | Subjects | Controlled subject terms | Use Biblioteca's categories as discovery subjects; coordinate labels and aliases with #116 | `tags.categories`, `categories` table |
 | Genre/form | Optional terms such as perzine, fanzine, or photo zine | Defer a separate genre/form vocabulary until the category/thesaurus work demonstrates a need | Not currently represented |
+| Format | `delivery_form`, `physical_form`, `reproduction_method` | Describe print/digital/hybrid delivery and zine-specific material/production forms | Add to reviewed profile; no current fields |
+| Extent | `page_count`, `dimensions`, `binding_features` | Describe physical extent separately from digital file properties | Add when supplied or observed; no current fields |
 | Date | Repeatable date claim with precision and provenance | Support exact year, circa/partial, and unknown without forcing a numeric year | `year` / `published_year` only |
 | Language | Repeatable language-tagged values | Add language to values when multilingual records require it; do not infer from text | Not currently represented |
-| Place | Optional place of publication/creation when supplied | Defer as a field until Brazilian catalogue use cases show a clear discovery need | Not currently represented |
+| Place | Optional place of creation/publication/circulation or agent location, with role | Add to reviewed profile; prioritize Brazilian municipality/UF discovery only after reviewed values exist | Not currently represented |
+| Geography | `place`, `country`, `state_uf`, `municipality`, place role/precision | Represent Brazilian geography without inferring origin; distinguish creation, publication, circulation, and agent location | Add to reviewed profile; no current fields |
 | Rights/access | Rights statement plus independent discovery/reading/download/preservation/replication/reuse states | Require evidence before making non-default access claims; keep private rights evidence separate | `is_published` and URL reachability only |
 | Identifier | Local slug/id/uuid plus namespaced external identifiers | Preserve source namespace; do not treat external URLs as identifiers of custody or authorization | `slug`, `id`, `uuid`, URLs |
 | Asset and custody evidence | Source, reading copy, preview, derivative, repository/holding observation, checksum, format, pages, access status | Keep file identity and repository custody facts separate from publication metadata; implement only in the authorized pilot | URLs and private inventory evidence |
 | Submission | Proposed publication values, submitter assertion, contact, intake provenance, review state | One submission may contain multiple proposed publications; contact remains private and submission values are not automatically public | `form_uploads` |
+
+### Zine-Specific Format And Brazilian Place
+
+The proposal must describe what kind of zine it is and where its production or
+circulation is situated without assuming that every zine follows a standard
+book format or that every Brazilian zine has one single place of origin.
+
+| Dimension | Proposed fields | Rule for Biblioteca |
+| --- | --- | --- |
+| Delivery form | `delivery_form`: printed, digital, hybrid, unknown | Repeatable when a zine has both print and digital forms; do not infer printed form from a scan alone |
+| Physical form | `physical_form`: single-sheet, folded, booklet, newspaper, poster, minizine, object, other, unknown | Optional and repeatable; preserve creator/maintainer wording when no controlled term fits |
+| Reproduction method | `reproduction_method`: photocopy, risograph, offset, screen print, handwritten, collage, digital print, unknown | Optional; record only when supplied or observed with evidence |
+| Extent | `page_count`, `dimensions`, `binding_features` | Optional; keep page count and physical dimensions separate from the digital file's technical properties |
+| Content form/genre | `genre_form`: perzine, fanzine, photo zine, comic, poetry, artist publication, other | Keep separate from subject categories; defer a controlled genre vocabulary until #116 or a follow-up validates the terms |
+| Creation place | `place` with role `created-in`, `published-in`, `circulated-in`, or `agent-location` | Role is required when a place is recorded; never collapse all place claims into one origin field |
+| Brazilian geography | `country: BR`, `state_uf`, `municipality` | `state_uf` is optional and only applies when the place is in Brazil; preserve municipality and source rather than inferring UF |
+| Place uncertainty | `place_precision`, `place_source`, `place_visibility` | Support unknown, approximate, public, private, and unresolved place values |
+
+The Brazilian focus changes prioritization, not the domain model's ability to
+represent other places. The initial discovery experience can prioritize
+Brazilian municipality and UF filters once enough reviewed values exist, while
+records from outside Brazil or with unknown place remain valid. A place linked
+to a creator or collective must not be presented as the place where the zine was
+published unless that role is explicitly supported.
 
 ### Why These Fields
 
@@ -301,6 +328,10 @@ column; together they form the complete field-level contract.
 | `tags` | Optional legacy container | Raw application value and parser version | Which values can be separated into stable fields without loss? |
 | `subject` / category term | Optional, repeatable | Controlled vocabulary identifier, label version, alias mapping, and reviewer | Is this a subject term, genre/form term, or only a submitter suggestion? |
 | `genre` / form | Optional future field | Vocabulary source and review | Is a separate genre/form vocabulary useful enough to justify adding it? |
+| `delivery_form`, `physical_form`, `reproduction_method` | Optional, repeatable where applicable | Creator/submitter statement or observation with method/source | Which values are supported without forcing a standard book model? |
+| `page_count`, `dimensions`, `binding_features` | Optional | Creator/maintainer observation and measurement source | Are these publication properties, asset properties, or both? |
+| place and geography | Optional, repeatable by place role | Municipality/state/country source, precision, visibility, and role | Is this creation, publication, circulation, or agent location? |
+| `state_uf` | Optional and only for Brazilian place values | Place source and normalized UF authority | Can the UF be supported by the source, or is it unknown? |
 | `author_name` / `authors.name` | Required by current workflow; unknown/anonymous states valid in future | Submitted display name and agent reconciliation | Does the value identify a person, collective, pseudonym, anonymous credit, or unknown? |
 | agent kind/authorship status | Optional current; required when needed to explain authorship | Submitter/reviewer assertion and confidence | Which controlled status best represents the evidence? |
 | `author_url` / `authors.url` | Optional, repeatable | Submitter source and link review | Is it a public agent reference or another kind of source? |

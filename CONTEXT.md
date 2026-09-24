@@ -160,6 +160,22 @@ _Avoid_: A value without evidence context
 A claim, permission, restriction, or unresolved question about how a publication or file may be discovered, read, downloaded, preserved, replicated, or reused.
 _Avoid_: Treating public visibility as permission for every use
 
+**Publication place**:
+A place associated with a zine in a stated role, such as place of creation, publication, circulation, or an agent's location; the role and evidence must be retained.
+_Avoid_: Treating one place value as the answer for every geographic question
+
+**Brazilian state/UF**:
+The Brazilian federative unit associated with a place value when that place is in Brazil. It is optional metadata, not a required assumption for every record.
+_Avoid_: Inferring a state from a city name or from the archive's focus
+
+**Zine format/form**:
+The material or delivery form of a zine, such as printed, digital, hybrid, single-sheet, booklet, newspaper, poster, or minizine, distinct from subject or theme.
+_Avoid_: Treating format, genre, and subject as the same field
+
+**Reproduction method**:
+The production process used for a zine, such as photocopy, risograph, offset, screen print, handwritten, or unknown.
+_Avoid_: Inferring production method from a PDF or cover image
+
 **Asset kind**:
 The role of a file or file reference, such as source, reading copy, preview, or derivative.
 _Avoid_: Calling every PDF an original
