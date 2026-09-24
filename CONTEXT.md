@@ -12,6 +12,10 @@ _Avoid_: Item, resource
 The structured Biblioteca record that describes a zine, its publication state, authorship, links, and related metadata.
 _Avoid_: File, archive item
 
+**Metadata field**:
+A named value describing a publication, agent, submission, asset, access decision, or provenance claim, with its source and visibility understood.
+_Avoid_: A value copied between forms without meaning
+
 **Archive**:
 The collection of files and evidence retained for the continuity of the Biblioteca's catalogue and publications.
 _Avoid_: Backup, storage bucket

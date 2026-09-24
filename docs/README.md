@@ -10,6 +10,9 @@ que registra as conclusões públicas da primeira calibração do inventário.
 O [perfil provisório de catálogo e acesso](./catalogue-access-profile.md)
 separa o modelo atual das decisões futuras de metadados, direitos e plataforma.
 
+O [modelo de organização e metadados do catálogo](./catalogue-information-architecture.md)
+transforma esse perfil em uma estrutura concreta para revisão antes da migração.
+
 ## Como criar uma ADR
 
 São dois passos:
