@@ -244,9 +244,17 @@ publication email.
 The current catalogue is organized around a published `library_zines` record:
 
 - **Identity:** numeric ID, UUID, unique slug, title, description, collection
-  title, and publication year.
+  title, and publication year. The slug is generated as the first submitted
+  author name followed by the normalized zine title, using lowercase strict
+  `slugify` normalization: `<first-author>-<normalized-title>`.
 - **Discovery:** category values in the `tags` JSON field, title full-text
   search, year filters, author relationships, and recent-publication ordering.
+- **Available categories:** the current read-only Supabase `categories` query
+  returned `Arte digital`, `Autobiográfico`, `Clube de Zines`, `Colagem`,
+  `Crítica social`, `Educação`, `Espiritual`, `Experimental`, `Fantasia`,
+  `Ficção científica`, `Filosofia`, `Fotografia`, `Humor`, `Ilustração`,
+  `Infantil`, `Infantojuvenil`, `LGBTQIA+`, `Música`, `Poesia`, `Politico`,
+  `Quadrinhos`, `Saúde Mental`, and `Terror`.
 - **People:** `authors` records connected through the many-to-many
   `library_zines_authors` table. The current publication flow starts from the
   first submitted author when generating a slug, then links the parsed author
