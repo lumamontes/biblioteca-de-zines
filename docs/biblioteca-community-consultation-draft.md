@@ -80,7 +80,15 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
 
 8. Imagine que um zine tenha sido publicado com autorização, mas depois você queira restringir ou retirar o acesso. O que deveria acontecer primeiro?
 
-9. Existem diferenças entre leitura, download, preservação, compartilhamento, remix, uso educacional e uso comercial que a Biblioteca deveria explicar melhor?
+9. Imagine que alguém encontrou seu zine na Biblioteca. Quais usos você gostaria que fossem explicados com exemplos claros?
+   - Ler o zine online
+   - Baixar o arquivo para ler depois
+   - Compartilhar o link da página
+   - Publicar uma imagem ou página do zine
+   - Fazer um remix ou adaptação
+   - Usar o zine em uma aula ou atividade educativa
+   - Usar o zine em um projeto comercial
+   - Outro
 
 ### Direitos e permissões
 
@@ -105,32 +113,68 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
 
 16. Que riscos ou experiências anteriores deveriam orientar as políticas da Biblioteca?
 
+### Métricas e privacidade
+
+17. Você gostaria de receber informações agregadas sobre o interesse no seu zine ou perfil?
+   - Sim, somente eu ou o coletivo deveríamos ver essas informações
+   - Sim, algumas informações poderiam ser públicas
+   - Não
+   - Ainda não sei
+
+18. Quais informações seriam úteis para você? (Pode escolher mais de uma opção.)
+   - Quantas pessoas abriram a página do zine
+   - Quantas pessoas leram o zine online, quando isso puder ser medido
+   - Quantos downloads foram feitos
+   - Quantas pessoas encontraram meu nome ou perfil pela busca
+   - De onde as pessoas chegaram à página, de forma agregada
+   - Outra informação
+
+19. Que limites deveriam existir para essas métricas?
+   - Nunca mostrar nomes, emails, IPs ou o que uma pessoa específica fez
+   - Não mostrar números muito pequenos que possam identificar alguém
+   - Não usar os dados para publicidade ou venda
+   - Permitir que a pessoa autora desative as métricas do seu zine
+   - Outro
+
+### Correções, acesso e segurança
+
+20. Se alguém pedir para alterar, ocultar ou retirar um zine, como a Biblioteca deveria verificar que essa pessoa pode fazer o pedido?
+   - Enviar um link de confirmação para um contato já associado à submissão
+   - Apresentar evidências e passar por revisão humana
+   - Confirmar com outras pessoas autoras do coletivo ou da obra
+   - Usar outro caminho combinado com a Biblioteca
+   - Ainda não sei
+
+Nenhum pedido de alteração ou retirada será executado automaticamente apenas
+porque alguém afirma ser autor. A Biblioteca deve usar verificação adequada,
+revisão humana e, quando houver risco, uma suspensão temporária e reversível.
+
 ### Participação
 
-17. Você gostaria de comentar ou revisar as propostas de política depois desta consulta?
+21. Você gostaria de comentar ou revisar as propostas de política depois desta consulta?
    - Sim, pelo Telegram
    - Sim, por comentários em um documento público
    - Sim, de outra forma
    - Não
 
-18. O que não perguntamos e você considera importante?
+22. O que não perguntamos e você considera importante?
 
-19. Você autoriza que suas respostas sejam usadas em uma síntese pública, sempre sem identificação pessoal?
+23. Você autoriza que suas respostas sejam usadas em uma síntese pública, sempre sem identificação pessoal?
    - Sim
    - Não
 
-20. Se você respondeu “Sim” à pergunta 19, autoriza que um trecho da sua resposta seja publicado com seu nome artístico ou nome do coletivo? (Se respondeu “Não” à pergunta 19, pule esta pergunta.)
+24. Se você respondeu “Sim” à pergunta 23, autoriza que um trecho da sua resposta seja publicado com seu nome artístico ou nome do coletivo? (Se respondeu “Não” à pergunta 23, pule esta pergunta.)
    - Sim
    - Não
 
-21. Você aceita receber contato para esclarecer uma resposta ou participar da revisão das propostas? (Opcional; deixe um contato somente se quiser.)
+25. Você aceita receber contato para esclarecer uma resposta ou participar da revisão das propostas? (Opcional; deixe um contato somente se quiser.)
 
 ## Depois da consulta
 
 As respostas serão agrupadas em temas, preocupações, conflitos e perguntas ainda abertas. A equipe publicará:
 
-- uma síntese usando somente as respostas autorizadas na pergunta 19;
-- qualquer identificação ou citação nominal somente quando autorizada separadamente na pergunta 20;
+- uma síntese usando somente as respostas autorizadas na pergunta 23;
+- qualquer identificação ou citação nominal somente quando autorizada separadamente na pergunta 24;
 - quais propostas foram alteradas;
 - quais decisões continuam abertas;
 - uma proposta de políticas para revisão no Telegram e no repositório.

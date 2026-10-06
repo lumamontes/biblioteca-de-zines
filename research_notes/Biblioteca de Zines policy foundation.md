@@ -118,6 +118,9 @@ Estas não são respostas legais prontas. São decisões de governança que prec
 8. A Biblioteca oferecerá uma licença pública para metadados? Se sim, ela deve deixar claro que a licença do catálogo não licencia automaticamente os zines, scans, capas ou imagens representadas. ([ZineCat, descrição do catálogo](https://www.zinelibraries.info/zine-union-catalog/), acesso em 2026-10-05.)
 9. Qual é o compromisso real de preservação: retenção de fonte autorizada, leitura pública, ambos, ou nenhum sem autorização adicional?
 10. Qual canal será divulgado para permissões e correções, e qual prazo de confirmação e decisão é viável sem prometer um resultado jurídico?
+11. A Biblioteca oferecerá métricas agregadas para pessoas autoras? Quais eventos serão medidos, por quanto tempo, com que limiar mínimo e com qual opção de recusa?
+12. Quem poderá ver métricas de um zine ou perfil, e como essa pessoa será autenticada sem expor dados de leitores ou permitir que outra pessoa altere o registro?
+13. Qual evidência será suficiente para pedidos de alteração, ocultação ou retirada, e quando uma suspensão temporária e reversível será aplicada antes da revisão humana?
 
 ## Implicações práticas depois da consulta
 
@@ -128,6 +131,8 @@ Estas não são respostas legais prontas. São decisões de governança que prec
 - Manter um registro interno mínimo das decisões e dos pedidos, com acesso restrito e sem publicar dados pessoais.
 - Tratar links públicos e arquivos locais existentes como evidência de disponibilidade, não como prova de autorização.
 - Consultar zineiros sobre segurança, pseudonímia, retirada, atribuição, preservação e contato; não usar a consulta para decidir schema técnico, migração ou interface.
+- Se métricas forem adotadas, separar consentimento para medir do consentimento para publicar o zine; usar dados agregados, limites contra reidentificação, retenção definida e acesso autenticado para estatísticas privadas.
+- Nunca executar exclusão ou alteração destrutiva apenas com base em uma alegação de autoria; verificar a solicitação, registrar a decisão e preservar uma possibilidade de revisão humana.
 
 ## Limites e fontes principais
 
