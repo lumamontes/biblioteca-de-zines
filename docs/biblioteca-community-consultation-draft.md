@@ -22,7 +22,9 @@ As respostas serão usadas para revisar propostas de política e documentar as d
 ## Sobre esta mudança na Biblioteca
 
 Até agora, a Biblioteca funcionou principalmente como um espaço para divulgar e
-compartilhar zines. Estamos estudando ampliar esse trabalho para também:
+compartilhar zines. Estamos estudando ampliar seu escopo de atuação para ir um
+pouco além da divulgação e do compartilhamento de trabalhos, pensando junto com
+a comunidade e com zineiros em formas de:
 
 - descrever melhor os zines e seus contextos;
 - tornar os trabalhos mais fáceis de encontrar;
@@ -206,6 +208,6 @@ As respostas serão agrupadas em temas, preocupações, conflitos e perguntas ai
 
 ## Mensagem sugerida para o Telegram
 
-> A Biblioteca de Zines está estudando ampliar seu trabalho: além de divulgar zines, queremos descrevê-los melhor, cuidar de cópias autorizadas e tornar claras as escolhas de acesso e reutilização. Estamos consultando zineiros sobre como fazer isso com responsabilidade. Respostas anônimas serão permitidas e nome/contato são opcionais. Participe até **[prazo]**: **[link do formulário]**. Depois publicaremos uma síntese e discutiremos as propostas no Telegram.
+> A Biblioteca de Zines está estudando ampliar seu escopo de atuação para ir um pouco além da divulgação e do compartilhamento de trabalhos. Queremos pensar junto com a comunidade e com zineiros em formas de descrever melhor os zines, cuidar de cópias autorizadas e tornar claras as escolhas de acesso e reutilização. Respostas anônimas serão permitidas e nome/contato são opcionais. Participe até **[prazo]**: **[link do formulário]**. Depois publicaremos uma síntese e discutiremos as propostas no Telegram.
 
 Este rascunho ainda não é uma política final nem aconselhamento jurídico.
