@@ -1,7 +1,7 @@
 # Biblioteca de Zines: pesquisa para uma base de políticas
 
 **Data da pesquisa:** 2026-10-05
-**Escopo:** somente Biblioteca de Zines. Este memo não trata do Viveiro Digital.
+**Escopo:** somente Biblioteca de Zines.
 **Status:** pesquisa pública para consulta de zineiros; não é a política final da Biblioteca.
 **Aviso:** este documento não constitui aconselhamento jurídico.
 

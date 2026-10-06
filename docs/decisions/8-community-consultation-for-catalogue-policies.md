@@ -8,8 +8,7 @@ privacidade, acesso, preservação e reutilização de trabalhos. Essas escolhas
 devem ser tratadas apenas como decisões técnicas de catalogação, porque podem
 afetar como zineiros são representados e como seus trabalhos circulam.
 
-O escopo desta decisão é somente a Biblioteca de Zines. Ele não inclui o escopo,
-a governança ou as decisões privadas do Viveiro Digital.
+O escopo desta decisão é somente a Biblioteca de Zines.
 
 ## Decisão
 
