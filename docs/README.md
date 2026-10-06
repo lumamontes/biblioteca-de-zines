@@ -25,6 +25,10 @@ A [decisão sobre consulta comunitária](./decisions/8-community-consultation-fo
 registra por que políticas de catálogo e acesso devem ser consultadas com zineiros
 antes da migração.
 
+A [decisão sobre padrões abertos](./decisions/9-open-standards-as-crosswalks.md)
+registra por que padrões externos são usados como lentes e crosswalks seletivos,
+sem substituir a semântica local da Biblioteca.
+
 A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
 compara fontes brasileiras e internacionais para validar campos físicos, digitais,
 geográficos e de classificação.

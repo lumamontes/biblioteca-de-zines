@@ -83,6 +83,16 @@ These sources are not exclusively zine-specific, but support broader concerns
 about digital collections, community archives, rights, access, privacy,
 provenance, and description.
 
+### Traditional And Interoperability Standards
+
+- [Dublin Core Metadata Initiative Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)
+- [RDA Registry](https://www.rdaregistry.info/)
+- [MARC 21 Standards](https://www.loc.gov/marc/)
+- [BIBFRAME](https://www.loc.gov/bibframe/)
+- [Schema.org CreativeWork](https://schema.org/CreativeWork)
+- [PREMIS](https://www.loc.gov/standards/premis/)
+- [IIIF](https://iiif.io/)
+
 ### Community Archives, Ethics, And Description
 
 - [Baker and Cantillon, "Zines as community archive"](https://doi.org/10.1007/s10502-022-09388-1) (zine case study with general community-archive principles)

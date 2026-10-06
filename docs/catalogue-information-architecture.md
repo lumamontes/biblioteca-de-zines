@@ -93,9 +93,9 @@ value and is not automatically a public agent identity.
 
 This is the concrete proposal for Biblioteca, informed by ZineCore2's
 `zineShape` and AgentCore2 profiles, ZineCat's searchable object/collection/
-creator structure, and Barnard's distinction between catalogue description and
-physical/access context. It is a selective crosswalk, not an adoption of any
-external schema.
+creator structure, Barnard's distinction between catalogue description and
+physical/access context, and established library and digital-collection
+practices. It is a selective crosswalk, not an adoption of any external schema.
 
 | Profile area | Proposed values | Biblioteca decision | Current status |
 | --- | --- | --- | --- |
@@ -117,6 +117,83 @@ external schema.
 | Identifier | Local slug/id/uuid plus namespaced external identifiers | Preserve source namespace; do not treat external URLs as identifiers of custody or authorization | `slug`, `id`, `uuid`, URLs |
 | Asset and custody evidence | Source, reading copy, preview, derivative, repository/holding observation, checksum, format, pages, access status | Keep file identity and repository custody facts separate from publication metadata; implement only in the authorized pilot | URLs and private inventory evidence |
 | Submission | Proposed publication values, submitter assertion, contact, intake provenance, review state | One submission may contain multiple proposed publications; contact remains private and submission values are not automatically public | `form_uploads` |
+
+## Open Standards Strategy
+
+Biblioteca should be open-minded about standards without making the catalogue a
+patchwork of competing required fields. The local semantic profile is the source
+of truth. External standards are lenses for comparison, interoperability,
+publication, or a future migration, and each mapping must record where meaning is
+lost or where a local distinction has no direct equivalent.
+
+| Standard or practice | Use as a lens | Biblioteca stance |
+| --- | --- | --- |
+| ZineCore2 / AgentCore2 / HoldingCore2 / RepoCore2 | Zine-specific publication, agent, holding, and repository concepts; repeatable roles, rights, identifiers, dates, languages, and JSON-LD | Provisional domain/interoperability reference; pin the selected specification revision before implementation, adapt selectively, and keep Biblioteca's provenance, privacy, and access distinctions |
+| ZineCat | Shared discovery service across heterogeneous zine-library catalogues and vocabularies | Interoperability and discovery reference; do not assume its fields or local practices are complete for Biblioteca |
+| xZINECOREx | Dublin Core-based zine metadata starting point associated with shared zine cataloguing | Compare field meanings and vocabulary choices separately from the ZineCat service; record divergences locally |
+| Dublin Core Terms | Foundational, widely understood vocabulary for title, creator, subject, description, date, language, format, identifier, rights, and relation; also a basis for zine application profiles | Use as an interoperability baseline and export vocabulary; never use `dc:creator` or `dc:rights` as a replacement for repeatable roles, qualified access, or provenance |
+| RDA | Descriptive guidance for names, titles, statements of responsibility, dates, language, form, and physical description | Consult for descriptive consistency and edge cases; do not impose a conventional book model on zines |
+| MARC 21 | Traditional library exchange and legacy record comparison | Import/export compatibility when needed; not the local data model |
+| BIBFRAME / linked data | Future graph-oriented expression of works, agents, relationships, and identifiers | Keep as a future publication or interoperability option; no requirement to model a full work/expression/manifestation stack now |
+| Schema.org | Web discovery and structured metadata for public pages | Use only at the presentation/export boundary; it must not define rights, privacy, or archival semantics |
+| PREMIS | Preservation events, fixity, rights, and digital-object preservation evidence | Use when a real preservation workflow exists; do not claim preservation semantics from a URL or checksum alone |
+| IIIF | Interoperable delivery of page images and manifests | Consider only if Biblioteca offers page-level image access; it does not grant permission to publish or reuse pages |
+
+### Adoption Rules
+
+For each proposed field or relationship, document four questions:
+
+1. What community or operational need does it serve?
+2. Which source or standard provides a useful precedent?
+3. What meaning would be lost by exporting it to a simpler vocabulary?
+4. What privacy, rights, provenance, or access distinction must remain local?
+
+The profile should therefore support multiple representations of the same record:
+the richer local record, and, if a real consumer is identified, a zine-specific
+JSON-LD representation, a Dublin Core or other discovery export, or web
+structured data. These are potential views of the record, not competing
+authorities. Community consultation remains required for terms that describe
+identity, authorship, access, sensitivity, or reuse.
+
+### Representative Crosswalk
+
+This is a semantic crosswalk, not an implementation contract. A later export
+should pin each external vocabulary version or source revision and record any
+loss of cardinality, provenance, visibility, or access meaning.
+
+| Biblioteca area | Local meaning | Useful external comparison | Local decision |
+| --- | --- | --- | --- |
+| Title and alternative title | Public and discovery titles with source and language where relevant | DCMI `title`, ZineCore2 title properties, RDA title guidance | Keep a required public title; retain alternative titles only when they improve discovery |
+| Agents and roles | Repeatable contextual creator, contributor, publisher, submitter, and steward assertions | AgentCore2 agents/roles, RDA responsibility statements, MARC 1XX/7XX | Do not flatten roles into one `creator` string or require legal identity |
+| Subjects and genre/form | Governed subjects kept separate from free text and optional form terms | DCMI `subject`/`type`, ZineCore2 subject/genre, xZINECOREx terms, RDA form/genre | Coordinate with the community thesaurus; do not force genre when it is unknown or contested |
+| Date and language | Qualified, repeatable claims with precision, source, and uncertainty | DCMI `date`/`language`, ZineCore2 date/language, RDA date guidance, MARC 046/041 | Preserve circa, partial, unknown, and multilingual values instead of inventing exactness |
+| Rights and access | Separate rights claims from discovery, reading, download, preservation, replication, and reuse states | DCMI `rights`, ZineCore2 rights, Barnard access practice, PREMIS rights/events | Keep local qualified states; a Dublin Core rights string is not permission evidence |
+| Format and extent | Delivery/material form, reproduction method, physical extent, and digital-file properties | DCMI `format`, RDA physical description, MARC 300, ZineCore2 format/extent | Keep physical and digital observations distinct; do not impose book pagination assumptions |
+| Files and preservation evidence | Source, reading copy, preview, derivative, holding observation, fixity, and provenance | HoldingCore2/RepoCore2, PREMIS, IIIF where page delivery exists | Keep inventory observations distinct from PREMIS objects, events, agents, and rights; adopt preservation terms only when workflows exist |
+| Identifiers and relations | Local stable identifiers, namespaced external identifiers, and explicit publication relationships | DCMI `identifier`/`relation`, ZineCore2 identifiers/relations, BIBFRAME links, Schema.org identifiers | Preserve namespaces and source; never treat a URL as proof of custody or authorization |
+
+ZineCore2's required or recommended minimal fields are a useful comparison, not
+an automatic local requirement. Biblioteca intentionally keeps genre/form,
+language, and rights claims optional or qualified until community consultation,
+source evidence, and the relevant workflow support them. This is an explicit
+local divergence, not an accidental omission.
+
+### Current Code Boundary
+
+The current application already emits Schema.org data for public pages, but that
+output is a presentation-layer projection rather than an authoritative metadata
+record. Before treating it as a crosswalk, review at least these assumptions:
+
+| Current code value | Current projection risk | Profile rule |
+| --- | --- | --- |
+| `year` converted to a complete date | A year claim can become an invented day and month | Preserve date precision; emit only the precision supported by the source |
+| Every author emitted as `Person` | A collective, anonymous agent, or unresolved role can be misrepresented | Use agent kind and role evidence before choosing a Schema.org type |
+| Biblioteca emitted as `publisher` | Archive stewardship is not automatically publication or publisher credit | Emit publisher only when the publication role is established |
+| Hardcoded `pt-BR` or genre values | Language and genre may be unknown, multilingual, or creator-supplied | Derive from reviewed values and omit unsupported claims |
+| External PDF emitted as `workExample` | A reachable URL does not prove custody, authorization, or reuse permission | Treat it as a source/access reference unless those claims are evidenced |
+
+These are review targets for a future SEO/structured-data change, not reasons to
+make Schema.org define the local catalogue model.
 
 ### Zine-Specific Format And Brazilian Place
 
@@ -171,7 +248,10 @@ identifier. Biblioteca deliberately differs in four places:
 3. `genre`, place, and richer physical-description fields are deferred rather
    than added just because another profile contains them.
 4. Submitter, private contact, review state, asset custody, and access evidence
-   remain outside the public bibliographic description.
+    remain outside the public bibliographic description.
+5. Genre/form, language, and rights are not invented merely to satisfy an
+   external minimal profile; unknown, unresolved, private, or unreviewed values
+   remain possible local states.
 
 AgentCore2 supports the proposed public display name, agent kind, alternative
 names, roles, pseudonyms, anonymity/privacy, and optional private contact
