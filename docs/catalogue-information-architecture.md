@@ -1,6 +1,8 @@
 # Biblioteca Catalogue Information Architecture
 
-Status: concrete metadata structure for issue #131.
+Status: provisional metadata structure for issue #131, pending community consultation
+on representation, privacy, access, rights, reuse, preservation, correction, and
+withdrawal.
 
 This document turns the provisional profile in
 [`catalogue-access-profile.md`](./catalogue-access-profile.md) into a
@@ -21,6 +23,13 @@ This document defines:
 It does not change Supabase, rename records, change slugs, publish private
 contact data, or choose a platform. It also does not create an edition entity,
 an event-sourced workflow, or a full rights-management system.
+
+The structure is a proposal for community review, not a final statement of what
+the Biblioteca should require from or expose about zineiros. Policy and access
+decisions must be informed by the research in
+[`Biblioteca de Zines policy foundation`](../research_notes/Biblioteca%20de%20Zines%20policy%20foundation.md)
+and the [community consultation draft](./biblioteca-community-consultation-draft.md)
+before production migration.
 
 ## Record Organization
 
@@ -629,6 +638,8 @@ backfill strategy, review tooling, and production rollout.
 ## References
 
 - [Provisional catalogue and access profile](./catalogue-access-profile.md)
+- [Community consultation draft](./biblioteca-community-consultation-draft.md)
+- [Policy foundation research](../research_notes/Biblioteca%20de%20Zines%20policy%20foundation.md)
 - [Zine archive reference research](./zine-archive-references.md)
 - [Archive baseline](./archive-baseline.md)
 - [Current apply form schema](../src/schemas/apply-zine.ts)

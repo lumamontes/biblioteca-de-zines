@@ -13,6 +13,18 @@ separa o modelo atual das decisões futuras de metadados, direitos e plataforma.
 O [modelo de organização e metadados do catálogo](./catalogue-information-architecture.md)
 transforma esse perfil em uma estrutura concreta para revisão antes da migração.
 
+A [pesquisa para uma base de políticas](../research_notes/Biblioteca%20de%20Zines%20policy%20foundation.md)
+separa obrigações legais, boas práticas e decisões que ainda precisam ser consultadas
+com zineiros.
+
+O [rascunho de consulta comunitária](./biblioteca-community-consultation-draft.md)
+reúne as perguntas sobre representação, privacidade, acesso, direitos, reutilização,
+preservação, correção e retirada.
+
+A [decisão sobre consulta comunitária](./decisions/8-community-consultation-for-catalogue-policies.md)
+registra por que políticas de catálogo e acesso devem ser consultadas com zineiros
+antes da migração.
+
 A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
 compara fontes brasileiras e internacionais para validar campos físicos, digitais,
 geográficos e de classificação.

@@ -2,6 +2,20 @@
 
 The Biblioteca is a collaborative digital collection of zines and independent publications. This glossary defines the domain language used when caring for its catalogue and archive.
 
+## Project and governance
+
+**Open-source community archive project**:
+Biblioteca de Zines is an open-source project whose primary community is zineiros. Anyone may propose contributions or changes; maintainers coordinate the project, explain decisions, and use community discussion and consultation for decisions that affect representation, access, privacy, rights, or reuse.
+_Avoid_: Treating maintainer responsibility as sole authority over community meaning
+
+**Biblioteca scope**:
+The public catalogue, archive, policies, and community practices belonging to Biblioteca de Zines.
+_Avoid_: Folding Viveiro Digital's strategy, governance, or private scope into Biblioteca decisions
+
+**Community consultation**:
+A public process for gathering zineiros' experiences, preferences, concerns, and proposals before setting or revising Biblioteca policies. Consultation does not ask the community to design implementation details such as schemas or migrations.
+_Avoid_: Treating a form response as automatic consent, consensus, or representation of every zineiro
+
 ## Catalogue and archive
 
 **Zine**:
