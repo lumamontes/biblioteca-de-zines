@@ -58,6 +58,9 @@ Antes de transformar este rascunho em Google Forms, a pessoa mantenedora deve:
 - desativar a coleta automática de endereços de email;
 - deixar nome e contato como campos opcionais;
 - confirmar em uma resposta de teste que o formulário pode ser respondido sem login;
+- preferir perguntas de escolha única ou múltipla, com a opção “Outro” quando necessário;
+- deixar perguntas dissertativas opcionais e incluir exemplos do tipo de resposta esperada;
+- testar o formulário com zineiros antes da publicação para identificar perguntas confusas ou cansativas;
 - publicar prazo, finalidade, retenção e canal de contato da consulta;
 - definir onde pedidos de privacidade, direitos, correção e retirada serão recebidos;
 - compartilhar o resumo e o link no Telegram da comunidade.
@@ -85,13 +88,20 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
 
 ### Representação e catalogação
 
-2. Que informações são importantes para você encontrar e entender um zine na Biblioteca?
+2. Que informações são importantes para você encontrar e entender um zine na Biblioteca? (Pode escolher mais de uma opção.)
+   - Nome do zine e nomes das pessoas ou coletivos envolvidos
+   - Ano ou período de criação/publicação
+   - Temas, assuntos ou palavras usadas por quem fez o zine
+   - Contexto sobre como ou por que o zine foi feito
+   - Formato, número de páginas ou outras características do objeto
+   - Links, formas de acesso e informações sobre reutilização
+   - Outro
 
-3. Como a Biblioteca deve representar nomes artísticos, pseudônimos, anonimato, coletivos e autoria desconhecida?
+3. Como a Biblioteca deve representar nomes artísticos, pseudônimos, anonimato, coletivos e autoria desconhecida? (Por exemplo: mostrar apenas o nome artístico, não exigir nome civil ou indicar quando a autoria não foi identificada.)
 
 4. Existe alguma informação que a Biblioteca nunca deveria publicar sem uma autorização específica?
 
-5. Como a pessoa autora deve poder corrigir um título, nome, descrição, autoria, link ou outra informação do registro?
+5. Como a pessoa autora deve poder corrigir um título, nome, descrição, autoria, link ou outra informação do registro? (Por exemplo: por formulário, email ou um link de correção.)
 
 ### Acesso e compartilhamento
 
@@ -106,9 +116,14 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
    - Ser preservado com acesso público
    - Outro
 
-7. Imagine que você queira que o registro seja encontrado, mas não queira que o arquivo integral fique disponível para download. Como a Biblioteca deveria lidar com essa situação?
+7. Imagine que você queira que o registro seja encontrado, mas não queira que o arquivo integral fique disponível para download. O que você preferiria? (Pode escolher mais de uma opção.)
+   - Mostrar somente o registro e a descrição
+   - Permitir leitura online, mas não download
+   - Mostrar apenas um link para outro lugar
+   - Manter o registro privado
+   - Outro
 
-8. Imagine que um zine tenha sido publicado com autorização, mas depois você queira restringir ou retirar o acesso. O que deveria acontecer primeiro?
+8. Imagine que um zine tenha sido publicado com autorização, mas depois você queira restringir ou retirar o acesso. O que deveria acontecer primeiro? (Por exemplo: suspender o acesso enquanto o pedido é analisado, retirar imediatamente ou conversar com as pessoas envolvidas.)
 
 9. Imagine que alguém encontrou seu zine na Biblioteca. Quais usos você gostaria que fossem explicados com exemplos claros?
    - Ler o zine online
@@ -122,7 +137,7 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
 
 ### Direitos e permissões
 
-10. Se alguém encontrar um zine na Biblioteca e quiser reproduzi-lo, citá-lo, exibi-lo, traduzi-lo ou remixá-lo, qual caminho deveria seguir?
+10. Se alguém encontrar um zine na Biblioteca e quiser reproduzi-lo, citá-lo, exibi-lo, traduzi-lo ou remixá-lo, qual caminho deveria seguir? (Por exemplo: consultar uma informação de licença, pedir autorização ou entrar em contato com a pessoa autora.)
 
 11. Qual forma de contato você preferiria oferecer para pedidos de permissão?
    - Um contato público meu ou do coletivo
@@ -131,17 +146,22 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
    - Nenhum contato público
    - Ainda não sei
 
-12. Que informações sobre autoria, licença, permissão ou restrição ajudariam as pessoas a não presumirem que um zine pode ser reutilizado livremente?
+12. Que informações sobre autoria, licença, permissão ou restrição ajudariam as pessoas a não presumirem que um zine pode ser reutilizado livremente? (Por exemplo: “somente leitura”, “peça autorização para reutilizar” ou uma licença escolhida pela pessoa autora.)
 
-13. Como a Biblioteca deveria lidar com um pedido de retirada, restrição, correção ou contestação de autoria?
+13. Como a Biblioteca deveria lidar com um pedido de retirada, restrição, correção ou contestação de autoria? (Por exemplo: quem deve ser avisado, o que deve ser suspenso primeiro e como uma decisão pode ser revisada.)
 
 ### Preservação e confiança
 
-14. O que significa, para você, a Biblioteca preservar um zine?
+14. O que significa, para você, a Biblioteca preservar um zine? (Por exemplo: guardar uma cópia, manter o registro, conservar arquivos autorizados ou garantir que o zine continue encontrável.)
 
-15. Você aceitaria que a Biblioteca mantivesse uma cópia restrita para continuidade, mesmo que a leitura pública fosse suspensa? Por quê?
+15. Você aceitaria que a Biblioteca mantivesse uma cópia restrita para continuidade, mesmo que a leitura pública fosse suspensa?
+   - Sim
+   - Não
+   - Depende de como a cópia for guardada e usada
+   - Ainda não sei
+   Campo opcional: se quiser, explique que tipo de uso ou proteção seria importante.
 
-16. Que riscos ou experiências anteriores deveriam orientar as políticas da Biblioteca?
+16. Que riscos ou experiências anteriores deveriam orientar as políticas da Biblioteca? (Por exemplo: exposição de identidade, cópias sem autorização, perda de arquivos, dificuldade para corrigir informações ou pedidos de retirada ignorados.)
 
 17. O que seria mais importante para você em uma Biblioteca que também cataloga e preserva zines? (Pode escolher mais de uma opção.)
    - Encontrar zines e pessoas autoras com mais facilidade
@@ -195,7 +215,7 @@ revisão humana e, quando houver risco, uma suspensão temporária e reversível
    - Sim, de outra forma
    - Não
 
-23. O que não perguntamos e você considera importante?
+23. O que não perguntamos e você considera importante? (Opcional. Pode ser uma sugestão, uma preocupação ou um exemplo de outra biblioteca/projeto.)
 
 24. Você autoriza que suas respostas sejam usadas em uma síntese pública, sempre sem identificação pessoal?
    - Sim
