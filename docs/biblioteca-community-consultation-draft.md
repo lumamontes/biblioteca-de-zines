@@ -15,16 +15,27 @@ inspirado pelos recursos da [Zine Librarians Network](https://www.zinelibraries.
 
 ## Objetivo
 
-Esta consulta busca ouvir zineiros sobre como a Biblioteca de Zines deve representar, compartilhar, preservar e proteger seus trabalhos. Ela trata de catálogo, privacidade, acesso, direitos autorais, reutilização, correção e retirada.
+Estamos preparando uma nova fase da Biblioteca de Zines e queremos começar
+ouvindo quem faz parte desse universo.
 
-As respostas serão usadas para revisar propostas de política e documentar as decisões da comunidade.
+Hoje, a Biblioteca funciona principalmente como um espaço de divulgação e
+compartilhamento. Ao olhar para o que já temos, percebemos que ainda faltam
+cuidados mais consistentes com arquivos, catalogação e orientações sobre acesso,
+direitos, preservação, reutilização, correção e retirada.
 
-## Sobre esta mudança na Biblioteca
+Não queremos decidir sozinhos como esse trabalho deve ser feito, nem presumir
+que ampliar a Biblioteca é necessariamente o que a comunidade quer. Queremos
+entender o que seria útil, o que poderia causar problemas e quais limites
+deveríamos respeitar.
 
-Até agora, a Biblioteca funcionou principalmente como um espaço para divulgar e
-compartilhar zines. Estamos estudando ampliar seu escopo de atuação para ir um
-pouco além da divulgação e do compartilhamento de trabalhos, pensando junto com
-a comunidade e com zineiros em formas de:
+As respostas vão orientar uma proposta que será devolvida à comunidade para
+discussão. Também vamos publicar o que ouvimos, quais mudanças fizemos e quais
+questões permanecerem abertas.
+
+## O que estamos pensando
+
+A partir disso, estamos pensando junto com a comunidade e com zineiros em formas
+de:
 
 - descrever melhor os zines e seus contextos;
 - tornar os trabalhos mais fáceis de encontrar;
