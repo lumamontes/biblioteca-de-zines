@@ -1,12 +1,25 @@
 # Consulta comunitária da Biblioteca de Zines
 
+## O que são zines e quem são zineiros?
+
+Zines são publicações independentes feitas por pessoas ou coletivos. Podem ter
+pequena circulação, formatos variados e nascer de experiências pessoais,
+políticas, artísticas, educativas ou comunitárias. Não existe um único formato
+ou uma única maneira de fazer um zine.
+
+Zineiros são as pessoas e coletivos que fazem, publicam, compartilham, leem,
+colecionam, organizam ou cuidam de zines. Uma biblioteca de zines pode existir
+em muitos lugares e assumir formas diferentes, como espaços comunitários,
+escolas, bibliotecas, arquivos e iniciativas independentes. Este contexto é
+inspirado pelos recursos da [Zine Librarians Network](https://www.zinelibraries.info/running-a-zine-library/).
+
 ## Objetivo
 
 Esta consulta busca ouvir zineiros sobre como a Biblioteca de Zines deve representar, compartilhar, preservar e proteger seus trabalhos. Ela trata de catálogo, privacidade, acesso, direitos autorais, reutilização, correção e retirada.
 
-Não estamos pedindo decisões sobre banco de dados, migração, interface ou outras escolhas técnicas. Essas respostas serão usadas para revisar propostas de política e documentar as decisões da comunidade.
+As respostas serão usadas para revisar propostas de política e documentar as decisões da comunidade.
 
-A Biblioteca de Zines é um projeto open source. Qualquer pessoa pode propor mudanças; a equipe mantenedora organiza o projeto, publica as decisões e explica como as contribuições foram consideradas. Esta consulta trata somente da Biblioteca de Zines, não do Viveiro Digital.
+A Biblioteca de Zines é um projeto open source. Qualquer pessoa pode propor mudanças; a equipe mantenedora organiza o projeto, publica as decisões e explica como as contribuições foram consideradas.
 
 ## Configuração antes da publicação
 
@@ -40,24 +53,19 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
    - Outra
    - Prefiro não responder
 
-2. Em que idioma você prefere receber informações sobre políticas e direitos?
-   - Português
-   - Inglês
-   - Outro
-
 ### Representação e catalogação
 
-3. Que informações são importantes para você encontrar e entender um zine na Biblioteca?
+2. Que informações são importantes para você encontrar e entender um zine na Biblioteca?
 
-4. Como a Biblioteca deve representar nomes artísticos, pseudônimos, anonimato, coletivos e autoria desconhecida?
+3. Como a Biblioteca deve representar nomes artísticos, pseudônimos, anonimato, coletivos e autoria desconhecida?
 
-5. Existe alguma informação que a Biblioteca nunca deveria publicar sem uma autorização específica?
+4. Existe alguma informação que a Biblioteca nunca deveria publicar sem uma autorização específica?
 
-6. Como a pessoa autora deve poder corrigir um título, nome, descrição, autoria, link ou outra informação do registro?
+5. Como a pessoa autora deve poder corrigir um título, nome, descrição, autoria, link ou outra informação do registro?
 
 ### Acesso e compartilhamento
 
-7. Para um zine que você enviou, quais formas de acesso você gostaria de escolher separadamente?
+6. Para um zine que você enviou, quais formas de acesso você gostaria de escolher separadamente?
    - Aparecer no catálogo
    - Ter descrição e metadados públicos
    - Ser lido online
@@ -68,67 +76,67 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
    - Ser preservado com acesso público
    - Outro
 
-8. Imagine que você queira que o registro seja encontrado, mas não queira que o arquivo integral fique disponível para download. Como a Biblioteca deveria lidar com essa situação?
+7. Imagine que você queira que o registro seja encontrado, mas não queira que o arquivo integral fique disponível para download. Como a Biblioteca deveria lidar com essa situação?
 
-9. Imagine que um zine tenha sido publicado com autorização, mas depois você queira restringir ou retirar o acesso. O que deveria acontecer primeiro?
+8. Imagine que um zine tenha sido publicado com autorização, mas depois você queira restringir ou retirar o acesso. O que deveria acontecer primeiro?
 
-10. Existem diferenças entre leitura, download, preservação, compartilhamento, remix, uso educacional e uso comercial que a Biblioteca deveria explicar melhor?
+9. Existem diferenças entre leitura, download, preservação, compartilhamento, remix, uso educacional e uso comercial que a Biblioteca deveria explicar melhor?
 
 ### Direitos e permissões
 
-11. Se alguém encontrar um zine na Biblioteca e quiser reproduzi-lo, citá-lo, exibi-lo, traduzi-lo ou remixá-lo, qual caminho deveria seguir?
+10. Se alguém encontrar um zine na Biblioteca e quiser reproduzi-lo, citá-lo, exibi-lo, traduzi-lo ou remixá-lo, qual caminho deveria seguir?
 
-12. Qual forma de contato você preferiria oferecer para pedidos de permissão?
+11. Qual forma de contato você preferiria oferecer para pedidos de permissão?
    - Um contato público meu ou do coletivo
    - Um canal da Biblioteca que encaminha o pedido
    - Um formulário intermediário sem expor meu contato
    - Nenhum contato público
    - Ainda não sei
 
-13. Que informações sobre autoria, licença, permissão ou restrição ajudariam as pessoas a não presumirem que um zine pode ser reutilizado livremente?
+12. Que informações sobre autoria, licença, permissão ou restrição ajudariam as pessoas a não presumirem que um zine pode ser reutilizado livremente?
 
-14. Como a Biblioteca deveria lidar com um pedido de retirada, restrição, correção ou contestação de autoria?
+13. Como a Biblioteca deveria lidar com um pedido de retirada, restrição, correção ou contestação de autoria?
 
 ### Preservação e confiança
 
-15. O que significa, para você, a Biblioteca preservar um zine?
+14. O que significa, para você, a Biblioteca preservar um zine?
 
-16. Você aceitaria que a Biblioteca mantivesse uma cópia restrita para continuidade, mesmo que a leitura pública fosse suspensa? Por quê?
+15. Você aceitaria que a Biblioteca mantivesse uma cópia restrita para continuidade, mesmo que a leitura pública fosse suspensa? Por quê?
 
-17. Que riscos ou experiências anteriores deveriam orientar as políticas da Biblioteca?
+16. Que riscos ou experiências anteriores deveriam orientar as políticas da Biblioteca?
 
 ### Participação
 
-18. Você gostaria de comentar ou revisar as propostas de política depois desta consulta?
+17. Você gostaria de comentar ou revisar as propostas de política depois desta consulta?
    - Sim, pelo Telegram
    - Sim, por comentários em um documento público
    - Sim, de outra forma
    - Não
 
-19. O que não perguntamos e você considera importante?
+18. O que não perguntamos e você considera importante?
 
-20. Você autoriza que suas respostas sejam usadas em uma síntese pública, sempre sem identificação pessoal?
+19. Você autoriza que suas respostas sejam usadas em uma síntese pública, sempre sem identificação pessoal?
    - Sim
    - Não
 
-21. Você autoriza que um trecho da sua resposta seja publicado com seu nome artístico ou nome do coletivo?
+20. Se você respondeu “Sim” à pergunta 19, autoriza que um trecho da sua resposta seja publicado com seu nome artístico ou nome do coletivo? (Se respondeu “Não” à pergunta 19, pule esta pergunta.)
    - Sim
    - Não
 
-22. Você aceita receber contato para esclarecer uma resposta ou participar da revisão das propostas? (Opcional; deixe um contato somente se quiser.)
+21. Você aceita receber contato para esclarecer uma resposta ou participar da revisão das propostas? (Opcional; deixe um contato somente se quiser.)
 
 ## Depois da consulta
 
 As respostas serão agrupadas em temas, preocupações, conflitos e perguntas ainda abertas. A equipe publicará:
 
-- uma síntese usando somente as respostas autorizadas na pergunta 20;
-- qualquer identificação ou citação nominal somente quando autorizada separadamente na pergunta 21;
+- uma síntese usando somente as respostas autorizadas na pergunta 19;
+- qualquer identificação ou citação nominal somente quando autorizada separadamente na pergunta 20;
 - quais propostas foram alteradas;
 - quais decisões continuam abertas;
 - uma proposta de políticas para revisão no Telegram e no repositório.
 
 ## Mensagem sugerida para o Telegram
 
-> Estamos consultando zineiros sobre como a Biblioteca de Zines deve representar, compartilhar, preservar e proteger os trabalhos publicados. A consulta não trata de banco de dados ou interface: queremos ouvir sobre privacidade, acesso, direitos, reutilização, correção e retirada. Respostas anônimas serão permitidas e nome/contato são opcionais. Participe até **[prazo]**: **[link do formulário]**. Depois publicaremos uma síntese e discutiremos as propostas no Telegram.
+> Estamos consultando zineiros sobre como a Biblioteca de Zines deve representar, compartilhar, preservar e proteger os trabalhos publicados. Queremos ouvir sobre privacidade, acesso, direitos, reutilização, correção e retirada. Respostas anônimas serão permitidas e nome/contato são opcionais. Participe até **[prazo]**: **[link do formulário]**. Depois publicaremos uma síntese e discutiremos as propostas no Telegram.
 
 Este rascunho ainda não é uma política final nem aconselhamento jurídico.

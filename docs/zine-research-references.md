@@ -62,6 +62,7 @@ cataloguing.
 
 ### Zine Librarian And Community Practice
 
+- [Running a zine library](https://www.zinelibraries.info/running-a-zine-library/)
 - [Zine Librarians Code of Ethics](https://www.zinelibraries.info/code-of-ethics-1115-web-version/)
 - [Zine cataloguing resource](https://www.zinelibraries.info/running-a-zine-library/zine-cataloging/)
 - [Collection Policy Primer](https://www.zinelibraries.info/running-a-zine-library/collection-policy-primer/)
