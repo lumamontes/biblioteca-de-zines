@@ -130,14 +130,14 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
    - Baixar o arquivo para ler depois
    - Compartilhar o link da página
    - Publicar uma imagem ou página do zine
-   - Fazer um remix ou adaptação
+   - Fazer uma adaptação, transformação ou outro uso criativo
    - Usar o zine em uma aula ou atividade educativa
    - Usar o zine em um projeto comercial
    - Outro
 
 ### Direitos e permissões
 
-10. Se alguém encontrar um zine na Biblioteca e quiser reproduzi-lo, citá-lo, exibi-lo, traduzi-lo ou remixá-lo, qual caminho deveria seguir? (Por exemplo: consultar uma informação de licença, pedir autorização ou entrar em contato com a pessoa autora.)
+10. Se alguém encontrar um zine na Biblioteca e quiser reproduzi-lo, citá-lo, exibi-lo, traduzi-lo, adaptá-lo ou publicar partes dele, qual caminho deveria seguir? (Por exemplo: consultar uma informação de licença, pedir autorização ou entrar em contato com a pessoa autora.)
 
 11. Qual forma de contato você preferiria oferecer para pedidos de permissão?
    - Um contato público meu ou do coletivo
