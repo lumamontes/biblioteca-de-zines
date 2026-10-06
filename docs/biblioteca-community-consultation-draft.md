@@ -19,6 +19,23 @@ Esta consulta busca ouvir zineiros sobre como a Biblioteca de Zines deve represe
 
 As respostas serão usadas para revisar propostas de política e documentar as decisões da comunidade.
 
+## Sobre esta mudança na Biblioteca
+
+Até agora, a Biblioteca funcionou principalmente como um espaço para divulgar e
+compartilhar zines. Estamos estudando ampliar esse trabalho para também:
+
+- descrever melhor os zines e seus contextos;
+- tornar os trabalhos mais fáceis de encontrar;
+- cuidar de cópias autorizadas para continuidade e preservação;
+- deixar mais claras as escolhas sobre leitura, download e reutilização;
+- criar caminhos para correções, permissões e pedidos de retirada.
+
+Isso não significa que a Biblioteca queira tomar posse dos zines, decidir sozinha
+o que deve ser preservado ou tornar todo trabalho público. Catalogar e preservar
+serão responsabilidades feitas com cuidado, transparência e respeito às escolhas
+de quem faz os zines. Esta consulta existe para entender o que essa mudança deve
+significar para zineiros.
+
 A Biblioteca de Zines é um projeto open source. Qualquer pessoa pode propor mudanças; a equipe mantenedora organiza o projeto, publica as decisões e explica como as contribuições foram consideradas.
 
 ## Configuração antes da publicação
@@ -113,15 +130,23 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
 
 16. Que riscos ou experiências anteriores deveriam orientar as políticas da Biblioteca?
 
+17. O que seria mais importante para você em uma Biblioteca que também cataloga e preserva zines? (Pode escolher mais de uma opção.)
+   - Encontrar zines e pessoas autoras com mais facilidade
+   - Ter informações que ajudem a entender o contexto de cada zine
+   - Saber como meu zine será guardado e acessado
+   - Ter controle sobre leitura, download e reutilização
+   - Ter um caminho simples para corrigir ou retirar um zine
+   - Outro
+
 ### Métricas e privacidade
 
-17. Você gostaria de receber informações agregadas sobre o interesse no seu zine ou perfil?
+18. Você gostaria de receber informações agregadas sobre o interesse no seu zine ou perfil?
    - Sim, somente eu ou o coletivo deveríamos ver essas informações
    - Sim, algumas informações poderiam ser públicas
    - Não
    - Ainda não sei
 
-18. Quais informações seriam úteis para você? (Pode escolher mais de uma opção.)
+19. Quais informações seriam úteis para você? (Pode escolher mais de uma opção.)
    - Quantas pessoas abriram a página do zine
    - Quantas pessoas leram o zine online, quando isso puder ser medido
    - Quantos downloads foram feitos
@@ -129,7 +154,7 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
    - De onde as pessoas chegaram à página, de forma agregada
    - Outra informação
 
-19. Que limites deveriam existir para essas métricas?
+20. Que limites deveriam existir para essas métricas?
    - Nunca mostrar nomes, emails, IPs ou o que uma pessoa específica fez
    - Não mostrar números muito pequenos que possam identificar alguém
    - Não usar os dados para publicidade ou venda
@@ -138,7 +163,7 @@ Publicaremos uma síntese das respostas sem identificar pessoas, salvo autoriza�
 
 ### Correções, acesso e segurança
 
-20. Se alguém pedir para alterar, ocultar ou retirar um zine, como a Biblioteca deveria verificar que essa pessoa pode fazer o pedido?
+21. Se alguém pedir para alterar, ocultar ou retirar um zine, como a Biblioteca deveria verificar que essa pessoa pode fazer o pedido?
    - Enviar um link de confirmação para um contato já associado à submissão
    - Apresentar evidências e passar por revisão humana
    - Confirmar com outras pessoas autoras do coletivo ou da obra
@@ -151,36 +176,36 @@ revisão humana e, quando houver risco, uma suspensão temporária e reversível
 
 ### Participação
 
-21. Você gostaria de comentar ou revisar as propostas de política depois desta consulta?
+22. Você gostaria de comentar ou revisar as propostas de política depois desta consulta?
    - Sim, pelo Telegram
    - Sim, por comentários em um documento público
    - Sim, de outra forma
    - Não
 
-22. O que não perguntamos e você considera importante?
+23. O que não perguntamos e você considera importante?
 
-23. Você autoriza que suas respostas sejam usadas em uma síntese pública, sempre sem identificação pessoal?
+24. Você autoriza que suas respostas sejam usadas em uma síntese pública, sempre sem identificação pessoal?
    - Sim
    - Não
 
-24. Se você respondeu “Sim” à pergunta 23, autoriza que um trecho da sua resposta seja publicado com seu nome artístico ou nome do coletivo? (Se respondeu “Não” à pergunta 23, pule esta pergunta.)
+25. Se você respondeu “Sim” à pergunta 24, autoriza que um trecho da sua resposta seja publicado com seu nome artístico ou nome do coletivo? (Se respondeu “Não” à pergunta 24, pule esta pergunta.)
    - Sim
    - Não
 
-25. Você aceita receber contato para esclarecer uma resposta ou participar da revisão das propostas? (Opcional; deixe um contato somente se quiser.)
+26. Você aceita receber contato para esclarecer uma resposta ou participar da revisão das propostas? (Opcional; deixe um contato somente se quiser.)
 
 ## Depois da consulta
 
 As respostas serão agrupadas em temas, preocupações, conflitos e perguntas ainda abertas. A equipe publicará:
 
-- uma síntese usando somente as respostas autorizadas na pergunta 23;
-- qualquer identificação ou citação nominal somente quando autorizada separadamente na pergunta 24;
+- uma síntese usando somente as respostas autorizadas na pergunta 24;
+- qualquer identificação ou citação nominal somente quando autorizada separadamente na pergunta 25;
 - quais propostas foram alteradas;
 - quais decisões continuam abertas;
 - uma proposta de políticas para revisão no Telegram e no repositório.
 
 ## Mensagem sugerida para o Telegram
 
-> Estamos consultando zineiros sobre como a Biblioteca de Zines deve representar, compartilhar, preservar e proteger os trabalhos publicados. Queremos ouvir sobre privacidade, acesso, direitos, reutilização, correção e retirada. Respostas anônimas serão permitidas e nome/contato são opcionais. Participe até **[prazo]**: **[link do formulário]**. Depois publicaremos uma síntese e discutiremos as propostas no Telegram.
+> A Biblioteca de Zines está estudando ampliar seu trabalho: além de divulgar zines, queremos descrevê-los melhor, cuidar de cópias autorizadas e tornar claras as escolhas de acesso e reutilização. Estamos consultando zineiros sobre como fazer isso com responsabilidade. Respostas anônimas serão permitidas e nome/contato são opcionais. Participe até **[prazo]**: **[link do formulário]**. Depois publicaremos uma síntese e discutiremos as propostas no Telegram.
 
 Este rascunho ainda não é uma política final nem aconselhamento jurídico.
