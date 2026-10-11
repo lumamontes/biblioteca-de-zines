@@ -27,6 +27,6 @@ Open the Vite URL shown in the terminal. The default fixture is Mozilla's public
 ## Known spike limitations
 
 - The demo has no production fallback URL because the source URL is user-provided.
-- The image-source path is exercised by the local generated image fixture; a real externally hosted image sequence still needs to be tested with representative headers and dimensions.
+- The image-source path is exercised by the local generated image fixture and accepts one externally hosted image URL per line for representative header and dimension testing.
 - The page-turn library may retain HTML page surfaces even when PDF canvases are cleaned up. This must be measured before choosing it for production.
 - Desktop pointer dragging and real-device touch gestures still need manual validation. The demo enables the candidate library's mouse and mobile settings and has been checked at an emulated mobile viewport.

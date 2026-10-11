@@ -10,7 +10,7 @@ This report is completed after running the spike against representative fixtures
 | --- | --- | --- | --- | --- | --- |
 | PDF.js sample | `https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf` | `*` | `Accept-Ranges: bytes` | Desktop Chrome | Loaded and rendered |
 | CORS/format failure | `https://example.com/` | Not usable as a PDF source | n/a | Desktop Chrome | Failed cleanly |
-| Image sequence | Six generated SVG page URLs | n/a | n/a | Desktop Chrome and 390px viewport | Loaded and navigated |
+| Image sequence | Six generated SVG page URLs and `placehold.co` image URLs | n/a | n/a | Desktop Chrome and 390px viewport | Loaded and navigated |
 
 ## Measurements
 
@@ -43,11 +43,11 @@ Important integration constraint: `PageFlip.destroy()` removes its parent elemen
 
 ### Image representation
 
-Six generated SVG image pages loaded through the same page-turn renderer. The fixture supported navigation from page 1 to page 2, exposed adjacent page surfaces, and remained usable at a 390px viewport. This validates ordered images as a viable second representation rather than requiring a separate reader shell.
+Six generated SVG image pages and four externally hosted `placehold.co` image pages loaded through the same page-turn renderer. Both fixtures supported navigation from page 1 to page 2, exposed adjacent page surfaces, and remained usable at a 390px viewport. This validates ordered images as a viable second representation rather than requiring a separate reader shell.
 
 ### Source restrictions and fallback
 
-Loading `https://example.com/` as a PDF failed with `Failed to fetch`, left the custom reader empty, and enabled an explicit "Open standard viewer" action for the source URL. An invalid host failed similarly. This validates the need for an explicit host-provided standard-viewer fallback. The spike does not attempt to proxy failed sources.
+Loading `https://example.com/` as a PDF failed with `Failed to fetch`, left the custom reader empty, and enabled an explicit "Open standard viewer" action for the separately configured fallback URL. An invalid host failed similarly. This validates the need for an explicit host-provided standard-viewer fallback. The spike does not attempt to proxy failed sources.
 
 ## Recommendation
 
@@ -59,6 +59,7 @@ Proceed with a layered reader architecture:
 4. Use StPageFlip as the initial page-turn candidate behind a disposable mount, while retaining slide mode as a first-class renderer.
 5. Treat external-PDF compatibility as conditional on CORS and source-server behavior.
 6. Add production bundle splitting and memory measurements before accepting this stack for a published reader.
+7. Keep page-render errors observable and release non-adjacent PDF canvases; a production reader must retain only the surfaces required for the current interaction.
 
 ## Downstream ticket changes
 
@@ -71,4 +72,4 @@ The original downstream tickets remain directionally correct, with these changes
 - Ticket 06 must add bundle splitting, worker deployment, canvas cleanup, and retained-page measurements to its acceptance criteria.
 - Tickets 07-08 remain blocked until the source and renderer constraints are validated against Biblioteca fixtures.
 
-The spike did not establish a production performance budget, exercise a large PDF that visibly requires range requests, test a real externally hosted image sequence, or complete real-device touch testing. Those remain explicit tasks for ticket 06 and must not be inferred from this desktop-browser run.
+The spike did not establish a production performance budget, exercise a large PDF that visibly requires range requests, or complete real-device touch testing. Those remain explicit tasks for ticket 06 and must not be inferred from this browser run.

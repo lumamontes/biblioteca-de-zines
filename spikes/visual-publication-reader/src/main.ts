@@ -27,8 +27,14 @@ app.innerHTML = `
         External PDF URL
         <input id="pdf-url" name="pdf-url" type="url" value="${defaultPdfUrl}" required />
       </label>
+      <label>
+        Standard viewer URL
+        <input id="standard-viewer-url" name="standard-viewer-url" type="url" value="${defaultPdfUrl}" required />
+      </label>
       <button type="submit">Load PDF</button>
       <button id="load-image-fixture" type="button">Load image fixture</button>
+      <button id="load-image-urls" type="button">Load image URLs</button>
+      <textarea id="image-urls" aria-label="Image URLs" placeholder="One image URL per line"></textarea>
     </form>
     <div class="toolbar" aria-label="Reader controls">
       <button id="slide-mode" type="button">Slide mode</button>
@@ -56,11 +62,17 @@ const form = must(document.querySelector<HTMLFormElement>('#source-form'), 'sour
 const status = must(document.querySelector<HTMLParagraphElement>('#status'), 'status');
 const pageStatus = must(document.querySelector<HTMLOutputElement>('#page-status'), 'page status');
 const stage = must(document.querySelector<HTMLDivElement>('#reader-stage'), 'reader stage');
+const standardViewerInput = must(
+  document.querySelector<HTMLInputElement>('#standard-viewer-url'),
+  'standard viewer URL input',
+);
+const imageUrlsInput = must(document.querySelector<HTMLTextAreaElement>('#image-urls'), 'image URLs input');
 const previousButton = must(document.querySelector<HTMLButtonElement>('#previous-page'), 'previous button');
 const nextButton = must(document.querySelector<HTMLButtonElement>('#next-page'), 'next button');
 const slideButton = must(document.querySelector<HTMLButtonElement>('#slide-mode'), 'slide button');
 const pageTurnButton = must(document.querySelector<HTMLButtonElement>('#page-turn-mode'), 'page-turn button');
 const imageFixtureButton = must(document.querySelector<HTMLButtonElement>('#load-image-fixture'), 'image fixture button');
+const imageUrlsButton = must(document.querySelector<HTMLButtonElement>('#load-image-urls'), 'image URLs button');
 const standardViewerButton = must(
   document.querySelector<HTMLButtonElement>('#open-standard-viewer'),
   'standard viewer button',
@@ -111,10 +123,6 @@ function createPageElement(index: number) {
 }
 
 function createImageFixturePage(index: number) {
-  const page = document.createElement('div');
-  page.className = 'page';
-  page.dataset.pageIndex = String(index);
-  page.dataset.density = index === 0 || index === 5 ? 'hard' : 'soft';
   const background = index % 2 === 0 ? '#f3b562' : '#b9d6c2';
   const foreground = index % 2 === 0 ? '#2c2117' : '#18241f';
   const image = `data:image/svg+xml,${encodeURIComponent(`
@@ -126,7 +134,15 @@ function createImageFixturePage(index: number) {
       <text x="70" y="760" fill="${foreground}" font-family="system-ui" font-size="24">Page ${index + 1}</text>
     </svg>
   `)}`;
-  page.innerHTML = `<img src="${image}" alt="Image fixture page ${index + 1}" />`;
+  return createImagePage(index, image, `Image fixture page ${index + 1}`, 6);
+}
+
+function createImagePage(index: number, source: string, alt: string, pageCount: number) {
+  const page = document.createElement('div');
+  page.className = 'page';
+  page.dataset.pageIndex = String(index);
+  page.dataset.density = index === 0 || index === pageCount - 1 ? 'hard' : 'soft';
+  page.innerHTML = `<img src="${source}" alt="${alt}" />`;
   return page;
 }
 
@@ -166,7 +182,29 @@ function renderAround(index: number) {
   const candidates = [index - 1, index, index + 1].filter(
     (candidate) => candidate >= 0 && candidate < pages.length,
   );
-  void Promise.all(candidates.map((candidate) => renderPage(candidate, generation)));
+  const retained = new Set(candidates);
+  pages.forEach((page, pageIndex) => {
+    if (!retained.has(pageIndex)) releasePageSurface(page);
+  });
+  void Promise.all(candidates.map((candidate) => renderPage(candidate, generation))).catch((error) => {
+    const message = error instanceof Error ? error.message : String(error);
+    setStatus(`Page rendering failed: ${message}. Open the standard viewer instead.`, true);
+  });
+}
+
+function releasePageSurface(page: HTMLDivElement) {
+  const canvas = page.querySelector<HTMLCanvasElement>('canvas');
+  if (!canvas || (canvas.width === 0 && canvas.height === 0)) return;
+  canvas.width = 0;
+  canvas.height = 0;
+  canvas.style.removeProperty('width');
+  canvas.style.removeProperty('height');
+  if (!page.querySelector('.page-placeholder')) {
+    const placeholder = document.createElement('span');
+    placeholder.className = 'page-placeholder';
+    placeholder.textContent = `Page ${Number(page.dataset.pageIndex) + 1}`;
+    page.append(placeholder);
+  }
 }
 
 function updateModeButtons() {
@@ -235,15 +273,14 @@ function renderPublication() {
   else showPageTurn();
 }
 
-async function loadPdf(url: string) {
-  standardViewerUrl = url;
+async function loadPdf(url: string, fallbackUrl: string) {
+  standardViewerUrl = fallbackUrl;
   clearReader();
   setStatus('Loading PDF metadata...');
   const startedAt = performance.now();
 
   try {
     documentProxy = await getDocument({ url, disableAutoFetch: false }).promise;
-    standardViewerUrl = url;
     pages = Array.from({ length: documentProxy.numPages }, (_, index) => createPageElement(index));
     stage.replaceChildren(...pages);
     renderPublication();
@@ -252,7 +289,6 @@ async function loadPdf(url: string) {
   } catch (error) {
     clearReader();
     const message = error instanceof Error ? error.message : String(error);
-    standardViewerUrl = url;
     updatePageStatus();
     setStatus(`Custom reader failed: ${message}. Open the standard viewer instead.`, true);
   }
@@ -267,10 +303,23 @@ function loadImageFixture() {
   setStatus('Loaded 6 image pages. Compare image surfaces with the PDF path.');
 }
 
+function loadImageUrls(urls: string[]) {
+  clearReader();
+  standardViewerUrl = '';
+  pages = urls.map((url, index) => createImagePage(index, url, `External image page ${index + 1}`, urls.length));
+  currentPage = 0;
+  renderPublication();
+  setStatus(`Loaded ${pages.length} external image pages.`);
+}
+
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  const url = new FormData(form).get('pdf-url');
-  if (typeof url === 'string' && url) void loadPdf(url);
+  const data = new FormData(form);
+  const url = data.get('pdf-url');
+  const fallbackUrl = data.get('standard-viewer-url');
+  if (typeof url === 'string' && url && typeof fallbackUrl === 'string' && fallbackUrl) {
+    void loadPdf(url, fallbackUrl);
+  }
 });
 
 previousButton.addEventListener('click', () => {
@@ -286,6 +335,13 @@ nextButton.addEventListener('click', () => {
 slideButton.addEventListener('click', () => setMode('slide'));
 pageTurnButton.addEventListener('click', () => setMode('page-turn'));
 imageFixtureButton.addEventListener('click', loadImageFixture);
+imageUrlsButton.addEventListener('click', () => {
+  const urls = imageUrlsInput.value
+    .split('\n')
+    .map((url) => url.trim())
+    .filter(Boolean);
+  if (urls.length) loadImageUrls(urls);
+});
 standardViewerButton.addEventListener('click', () => {
   if (standardViewerUrl) window.open(standardViewerUrl, '_blank', 'noopener,noreferrer');
 });

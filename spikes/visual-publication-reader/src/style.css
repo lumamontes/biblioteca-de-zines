@@ -89,7 +89,8 @@ h1 {
   font-size: 0.8rem;
 }
 
-input {
+input,
+textarea {
   border: 1px solid #625b4f;
   border-radius: 0.5rem;
   background: #24221d;
@@ -97,6 +98,12 @@ input {
   min-height: 2.7rem;
   padding: 0.6rem 0.75rem;
   width: 100%;
+}
+
+textarea {
+  flex: 1 1 100%;
+  min-height: 4rem;
+  resize: vertical;
 }
 
 .toolbar {
