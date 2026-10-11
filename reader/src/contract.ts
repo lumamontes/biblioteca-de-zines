@@ -38,7 +38,8 @@ export type ReaderInput = {
 export type ReaderPage = ImagePage & { index: number };
 
 export type ReaderDocument = {
-  pages: readonly ReaderPage[];
+  pageCount: number;
+  loadPage(page: number): Promise<ReaderPage>;
 };
 
 export type ReaderStatus =
@@ -51,6 +52,18 @@ export type ReaderStatus =
       pageCount: number;
       currentPage: number;
       pages: readonly ReaderPage[];
+    }
+  | {
+      status: 'page-failure';
+      metadata: PublicationMetadata;
+      mode: ReaderMode;
+      layout: ReaderLayout;
+      pageCount: number;
+      currentPage: number;
+      pages: readonly ReaderPage[];
+      page: number;
+      message: string;
+      fallback: StandardViewerFallback;
     }
   | {
       status: 'failure';

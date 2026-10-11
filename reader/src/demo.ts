@@ -1,3 +1,6 @@
+import * as pdfjs from 'pdfjs-dist';
+import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { createPdfLoader } from './pdf';
 import { createReader, imagePagesLoader } from './reader';
 import type { ReaderBoundary, ReaderInput, ReaderStatus } from './contract';
 import { imageFixture, incompatiblePdfFixture } from './fixtures';
@@ -10,27 +13,25 @@ const app: HTMLDivElement = root;
 let reader: ReaderBoundary;
 let input = imageFixture;
 
-function pdfLoader(): never {
-  throw new Error('The direct PDF provider is not installed in this shell demo.');
-}
+pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 
 function createInput(): ReaderBoundary {
   return createReader(input, {
     'ordered-images': imagePagesLoader,
-    'direct-pdf': async () => pdfLoader(),
+    'direct-pdf': createPdfLoader(pdfjs),
   });
 }
 
 function render(state: ReaderStatus) {
   const ready = state.status === 'ready' ? state : undefined;
-  const page = ready?.pages[ready.currentPage];
+  const page = ready?.pages.find((candidate) => candidate.index === ready.currentPage);
   const controls = ready
     ? `<div class="controls"><button data-action="previous" ${ready.currentPage === 0 ? 'disabled' : ''}>Previous</button><span>Page ${ready.currentPage + 1} of ${ready.pageCount}</span><button data-action="next" ${ready.currentPage === ready.pageCount - 1 ? 'disabled' : ''}>Next</button></div>`
     : '';
   const mode = ready
     ? `<div class="mode"><button data-mode="slide" ${ready.mode === 'slide' ? 'aria-pressed="true"' : ''}>Slide</button><button data-mode="page-turn" ${ready.mode === 'page-turn' ? 'aria-pressed="true"' : ''}>Page turn</button></div>`
     : '';
-  const fallbackState = state.status === 'failure' || state.status === 'fallback' ? state : undefined;
+  const fallbackState = state.status === 'failure' || state.status === 'page-failure' || state.status === 'fallback' ? state : undefined;
   const fallback = fallbackState
     ? `<button data-action="fallback">${fallbackState.fallback.label ?? 'Open standard viewer'}</button>`
     : '';
@@ -46,7 +47,7 @@ function render(state: ReaderStatus) {
 function statusMessage(state: ReaderStatus): string {
   if (state.status === 'loading') return 'Loading publication...';
   if (state.status === 'ready') return `${state.mode === 'page-turn' ? 'Page-turn' : 'Slide'} mode ready.`;
-  if (state.status === 'failure') return `Custom reader failed: ${state.message}`;
+  if (state.status === 'failure' || state.status === 'page-failure') return `Custom reader failed: ${state.message}`;
   return `Using standard viewer: ${state.reason ?? 'selected by reader'}`;
 }
 
