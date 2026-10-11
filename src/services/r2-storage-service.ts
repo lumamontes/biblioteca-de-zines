@@ -4,6 +4,7 @@
  */
 
 import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { AssetStorage } from './asset-storage';
 
 // Initialize S3 client for R2
 function getR2Client(): S3Client {
@@ -25,94 +26,65 @@ function getR2Client(): S3Client {
   });
 }
 
-/**
- * Generate R2 storage key for a zine page
- * Format: zines/{zineId}/page-{pageNumber}.{extension}
- */
-export function generateR2Key(zineId: number, pageNumber: number, extension: string): string {
-  // Remove leading dot from extension if present
+function generateGenerationKey(
+  zineId: number,
+  generationId: string,
+  kind: 'page' | 'cover',
+  extension: string,
+  pageNumber?: number,
+): string {
   const ext = extension.startsWith('.') ? extension.slice(1) : extension;
-  return `zines/${zineId}/page-${pageNumber}.${ext}`;
+  const name = kind === 'cover' ? 'cover' : `page-${pageNumber}`;
+  return `zines/${zineId}/generations/${generationId}/${name}.${ext}`;
 }
 
-/**
- * Upload buffer to R2 and return public URL
- */
-export async function uploadBufferToR2(
-  buffer: Buffer,
-  key: string,
-  contentType: string
-): Promise<string> {
+export function createR2AssetStorage(): AssetStorage {
   const client = getR2Client();
-  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
-  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
 
-  if (!bucketName) {
-    throw new Error('CLOUDFLARE_R2_BUCKET_NAME is not configured');
-  }
+  return {
+    async upload(asset) {
+      const extension = asset.contentType.includes('jpeg') || asset.contentType.includes('jpg') ? 'jpg' : 'png';
+      const key = generateGenerationKey(
+        asset.zineId,
+        asset.generationId,
+        asset.kind,
+        extension,
+        asset.pageNumber,
+      );
+      const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+      const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+      if (!bucketName || !publicUrl) throw new Error('R2 bucket and public URL are required');
 
-  if (!publicUrl) {
-    throw new Error('NEXT_PUBLIC_R2_PUBLIC_URL is not configured');
-  }
-
-  const command = new PutObjectCommand({
-    Bucket: bucketName,
-    Key: key,
-    Body: buffer,
-    ContentType: contentType,
-  });
-
-  try {
-    await client.send(command);
-    // Return public URL
-    const urlKey = key.startsWith('/') ? key.slice(1) : key;
-    return `${publicUrl}/${urlKey}`;
-  } catch (error) {
-    throw new Error(`Failed to upload to R2: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+      await client.send(new PutObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+        Body: asset.data,
+        ContentType: asset.contentType,
+      }));
+      return `${publicUrl.replace(/\/$/, '')}/${key}`;
+    },
+    async deleteGeneration(zineId, generationId) {
+      await deleteR2Prefix(client, `zines/${zineId}/generations/${generationId}/`);
+    },
+  };
 }
 
-/**
- * Delete all images for a zine from R2
- * Used for cleanup on failed imports or re-imports
- */
-export async function deleteZineImages(zineId: number): Promise<void> {
-  const client = getR2Client();
+async function deleteR2Prefix(client: S3Client, prefix: string): Promise<void> {
   const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  if (!bucketName) throw new Error('CLOUDFLARE_R2_BUCKET_NAME is not configured');
 
-  if (!bucketName) {
-    throw new Error('CLOUDFLARE_R2_BUCKET_NAME is not configured');
-  }
-
-  const prefix = `zines/${zineId}/`;
-
-  try {
-    // List all objects with the prefix
-    const listCommand = new ListObjectsV2Command({
+  let continuationToken: string | undefined;
+  do {
+    const response = await client.send(new ListObjectsV2Command({
       Bucket: bucketName,
       Prefix: prefix,
-    });
-
-    const listResponse = await client.send(listCommand);
-
-    if (!listResponse.Contents || listResponse.Contents.length === 0) {
-      return; // No files to delete
-    }
-
-    // Delete all objects
-    const deletePromises = listResponse.Contents.map((object) => {
-      if (!object.Key) return Promise.resolve();
-      
-      const deleteCommand = new DeleteObjectCommand({
-        Bucket: bucketName,
-        Key: object.Key,
-      });
-      return client.send(deleteCommand);
-    });
-
-    await Promise.all(deletePromises);
-  } catch (error) {
-    throw new Error(`Failed to delete zine images from R2: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+      ContinuationToken: continuationToken,
+    }));
+    await Promise.all((response.Contents ?? []).flatMap((object) => (
+      object.Key
+        ? [client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: object.Key }))]
+        : []
+    )));
+    continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+  } while (continuationToken);
 }
-

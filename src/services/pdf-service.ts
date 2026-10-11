@@ -59,7 +59,22 @@ if (typeof window === 'undefined') {
  * Extract all pages from a PDF and convert them to image buffers
  * Returns an array of image buffers (one per page)
  */
-export async function extractPagesFromPdf(pdfBuffer: Buffer): Promise<Buffer[]> {
+export async function extractPagesFromPdf(
+  pdfBuffer: Buffer,
+  options: { maxPages?: number } = {},
+): Promise<Buffer[]> {
+  const pages: Buffer[] = [];
+  await forEachPageFromPdf(pdfBuffer, async (pageBuffer) => {
+    pages.push(pageBuffer);
+  }, options);
+  return pages;
+}
+
+export async function forEachPageFromPdf(
+  pdfBuffer: Buffer,
+  onPage: (pageBuffer: Buffer, pageNumber: number) => Promise<void>,
+  options: { maxPages?: number } = {},
+): Promise<number> {
   try {
     // Convert Buffer to Uint8Array as required by pdfjs-dist
     const uint8Array = new Uint8Array(pdfBuffer);
@@ -72,8 +87,7 @@ export async function extractPagesFromPdf(pdfBuffer: Buffer): Promise<Buffer[]> 
     });
 
     const pdf = await loadingTask.promise;
-    const numPages = pdf.numPages;
-    const pageBuffers: Buffer[] = [];
+    const numPages = Math.min(pdf.numPages, options.maxPages ?? pdf.numPages);
 
     // Process each page
     for (let pageNum = 1; pageNum <= numPages; pageNum++) {
@@ -103,10 +117,10 @@ export async function extractPagesFromPdf(pdfBuffer: Buffer): Promise<Buffer[]> 
         .png({ quality: 90, compressionLevel: 9 })
         .toBuffer();
 
-      pageBuffers.push(imageBuffer);
+      await onPage(imageBuffer, pageNum);
     }
 
-    return pageBuffers;
+    return numPages;
   } catch (error) {
     throw new Error(
       `Failed to extract pages from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`

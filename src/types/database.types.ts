@@ -108,11 +108,15 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: number
+          import_status: "pending" | "processing" | "completed" | "failed" | null
           is_published: boolean | null
           pdf_url: string | null
+          active_page_generation: string
+          source_upload_id: number | null
           slug: string | null
           tags: Json | null
           title: string
+          total_pages: number | null
           year: number | null
           updated_at: string | null
           uuid: string | null
@@ -123,11 +127,15 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: number
+          import_status?: "pending" | "processing" | "completed" | "failed" | null
           is_published?: boolean | null
           pdf_url?: string | null
+          active_page_generation?: string
+          source_upload_id?: number | null
           slug?: string | null
           tags?: Json | null
           title: string
+          total_pages?: number | null
           updated_at?: string | null
           uuid?: string | null
         }
@@ -137,11 +145,15 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: number
+          import_status?: "pending" | "processing" | "completed" | "failed" | null
           is_published?: boolean | null
           pdf_url?: string | null
+          active_page_generation?: string
+          source_upload_id?: number | null
           slug?: string | null
           tags?: Json | null
           title?: string
+          total_pages?: number | null
           updated_at?: string | null
           uuid?: string | null
         }
@@ -152,6 +164,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "library_zines_authors"
             referencedColumns: ["zine_id"]
+          },
+          {
+            foreignKeyName: "library_zines_source_upload_id_fkey"
+            columns: ["source_upload_id"]
+            isOneToOne: true
+            referencedRelation: "form_uploads"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -186,6 +205,84 @@ export type Database = {
             foreignKeyName: "fk_library_zines"
             columns: ["zine_id"]
             isOneToOne: false
+            referencedRelation: "library_zines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      zine_pages: {
+        Row: {
+          created_at: string | null
+          generation_id: string
+          id: number
+          image_url: string
+          page_number: number
+          zine_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          generation_id?: string
+          id?: number
+          image_url: string
+          page_number: number
+          zine_id: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          image_url?: string
+          page_number?: number
+          zine_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zine_pages_zine_id_fkey"
+            columns: ["zine_id"]
+            isOneToOne: false
+            referencedRelation: "library_zines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      zine_processing_jobs: {
+        Row: {
+          attempt_count: number
+          created_at: string
+          id: number
+          last_error: string | null
+          lease_until: string | null
+          next_attempt_at: string
+          status: "pending" | "processing" | "completed" | "failed"
+          updated_at: string
+          zine_id: number
+        }
+        Insert: {
+          attempt_count?: number
+          created_at?: string
+          id?: number
+          last_error?: string | null
+          lease_until?: string | null
+          next_attempt_at?: string
+          status?: "pending" | "processing" | "completed" | "failed"
+          updated_at?: string
+          zine_id: number
+        }
+        Update: {
+          attempt_count?: number
+          created_at?: string
+          id?: number
+          last_error?: string | null
+          lease_until?: string | null
+          next_attempt_at?: string
+          status?: "pending" | "processing" | "completed" | "failed"
+          updated_at?: string
+          zine_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zine_processing_jobs_zine_id_fkey"
+            columns: ["zine_id"]
+            isOneToOne: true
             referencedRelation: "library_zines"
             referencedColumns: ["id"]
           },
