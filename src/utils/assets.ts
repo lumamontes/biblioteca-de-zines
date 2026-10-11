@@ -16,6 +16,22 @@ export function getThumbnailUrl(url: string) {
     return `https://drive.google.com/thumbnail?id=${cleanId}&sz=w1000`;
   }
 
+  try {
+    const parsedUrl = new URL(url);
+    if (parsedUrl.hostname === 'canva.link') {
+      return null;
+    }
+
+    if (parsedUrl.hostname === 'imgur.com' || parsedUrl.hostname === 'www.imgur.com') {
+      const match = parsedUrl.pathname.match(/^\/([a-zA-Z0-9]+)(\.[a-zA-Z0-9]+)?$/);
+      if (match) {
+        return `https://i.imgur.com/${match[1]}${match[2] || '.jpg'}`;
+      }
+    }
+  } catch {
+    return url;
+  }
+
   return url;
 }
 
