@@ -106,7 +106,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
       <form
         onSubmit={handleSubmit(onSubmit)}
         data-testid="upload-preview"
-        className="flex min-w-0 w-full items-start flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
+        className="flex min-w-0 w-full items-start overflow-hidden flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
       >
         <div className="flex-shrink-0">
           {thumbnailUrl && thumbnailUrl  !== '' && (
@@ -120,7 +120,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
           )}
         </div>
 
-        <div data-testid="upload-content" className="flex min-w-0 flex-1 flex-col break-words space-y-4">
+        <div data-testid="upload-content" className="flex min-w-0 flex-1 flex-col break-words [overflow-wrap:anywhere] space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Título *
@@ -128,11 +128,11 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
             <input
               type="hidden"
               {...register("slug")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="min-w-0 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               {...register("title")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="min-w-0 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.title && (
               <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
@@ -146,7 +146,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
             <textarea
               {...register("description")}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="min-w-0 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -171,7 +171,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
               </label>
               <input
                 {...register("collection_title")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="min-w-0 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -184,7 +184,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
                 type="number"
                 min="1900"
                 max={new Date().getFullYear()}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="min-w-0 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.published_year && (
                 <p className="text-red-500 text-sm mt-1">{errors.published_year.message}</p>
@@ -207,7 +207,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
             <input
               {...register("pdf_url")}
               type="url"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="min-w-0 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.pdf_url && (
               <p className="text-red-500 text-sm mt-1">{errors.pdf_url.message}</p>
@@ -258,7 +258,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
   return (
     <div
       data-testid="upload-preview"
-      className="flex min-w-0 w-full items-start flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
+      className="flex min-w-0 w-full items-start overflow-hidden flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
     >
       <div className="flex-shrink-0">
         {zine?.is_published && zine?.slug ? (
@@ -282,7 +282,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
         )}
       </div>
 
-      <div data-testid="upload-content" className="flex min-w-0 flex-1 flex-col break-words">
+      <div data-testid="upload-content" className="flex min-w-0 flex-1 flex-col break-words [overflow-wrap:anywhere]">
         <p className="text-sm text-gray-500">{zine?.slug}</p>
         <h2 className="text-lg font-semibold">{upload.title}</h2>
         {upload.collection_title && (
@@ -307,7 +307,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
                     href={link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="break-words text-blue-600 hover:underline"
+                    className="break-all text-blue-600 hover:underline"
                   >
                     {link}
                   </Link>
@@ -315,9 +315,9 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
               ))}
             </p>
           ))}
-          <p>{upload.author_email}</p>
+          <p className="break-all">{upload.author_email}</p>
           {legacyAuthorLinksNotice && (
-            <p className="break-words text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+            <p className="break-all text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
               ⚠️ Envio antigo: não é possível saber de qual autor é cada link abaixo.
               Revise em &quot;Editar&quot; antes de publicar. Links originais: {legacyAuthorLinksNotice}
             </p>
@@ -325,13 +325,13 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
         </div>
 
         {upload.pdf_url && (
-          <p className="mt-2 break-words text-sm">
+          <p className="mt-2 break-all text-sm">
             Link da zine:{" "}
             <Link
               href={upload.pdf_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="break-words text-blue-600 hover:underline"
+              className="break-all text-blue-600 hover:underline"
             >
               {upload.pdf_url}
             </Link>

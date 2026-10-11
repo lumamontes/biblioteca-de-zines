@@ -13,12 +13,12 @@ interface AuthorsFieldProps {
 
 export default function AuthorsField({ control, disabled, legacyLinksNotice }: AuthorsFieldProps) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="block text-sm font-medium text-gray-700 mb-1">
         Autores *
       </label>
       {legacyLinksNotice && (
-        <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-2">
+        <p className="break-all text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-2">
           ⚠️ Envio antigo: não sabemos de qual autor é cada link, então os campos
           abaixo começam vazios. Links originais para conferência: {legacyLinksNotice}
         </p>
@@ -57,7 +57,7 @@ function AuthorsListEditor({ authors, onChange, disabled, error }: AuthorsListEd
   } = useAuthorsListEditor(authors, onChange);
 
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3">
       {authors.map((author, authorIndex) => (
         <AuthorForm
           key={authorIndex}
