@@ -17,7 +17,7 @@ This report is completed after running the spike against representative fixtures
 | Scenario | First page | Adjacent page | Peak memory | Retained pages | Notes |
 | --- | ---: | ---: | ---: | ---: | --- |
 | PDF slide mode | 112-135 ms warm load | Visible page rendered | To measure | Three page surfaces requested | 14-page sample |
-| PDF page-turn mode | 112-135 ms warm load | Visible page rendered | To measure | Three page surfaces requested | Canvas pages feed animation |
+| PDF page-turn mode | 112-135 ms warm load | Visible page rendered | To measure | Three high-resolution page surfaces requested; wrappers retained | Canvas pages feed animation |
 | Image page-turn mode | Immediate | Immediate | To measure | HTML page surfaces retained | Six-page fixture |
 
 ## Dependency audit
@@ -47,7 +47,7 @@ Six generated SVG image pages loaded through the same page-turn renderer. The fi
 
 ### Source restrictions and fallback
 
-Loading `https://example.com/` as a PDF failed with `Failed to fetch` and left the custom reader empty while reporting that the standard viewer should be opened. An invalid host failed similarly. This validates the need for an explicit host-provided standard-viewer fallback. The spike does not attempt to proxy failed sources.
+Loading `https://example.com/` as a PDF failed with `Failed to fetch`, left the custom reader empty, and enabled an explicit "Open standard viewer" action for the source URL. An invalid host failed similarly. This validates the need for an explicit host-provided standard-viewer fallback. The spike does not attempt to proxy failed sources.
 
 ## Recommendation
 
@@ -55,7 +55,7 @@ Proceed with a layered reader architecture:
 
 1. Keep the reader shell framework-independent and own navigation state, layout, loading, errors, and fallback.
 2. Use a PDF source adapter based on PDF.js core APIs to render only visible and adjacent pages into page surfaces.
-3. Support ordered image pages through the same page surface contract.
+3. Support ordered image pages through the same page surface contract; mode switching works for the image fixture as well as PDFs.
 4. Use StPageFlip as the initial page-turn candidate behind a disposable mount, while retaining slide mode as a first-class renderer.
 5. Treat external-PDF compatibility as conditional on CORS and source-server behavior.
 6. Add production bundle splitting and memory measurements before accepting this stack for a published reader.
@@ -71,4 +71,4 @@ The original downstream tickets remain directionally correct, with these changes
 - Ticket 06 must add bundle splitting, worker deployment, canvas cleanup, and retained-page measurements to its acceptance criteria.
 - Tickets 07-08 remain blocked until the source and renderer constraints are validated against Biblioteca fixtures.
 
-The spike did not establish a production performance budget or complete real-device touch testing. Those remain explicit tasks for ticket 06 and must not be inferred from this desktop-browser run.
+The spike did not establish a production performance budget, exercise a large PDF that visibly requires range requests, test a real externally hosted image sequence, or complete real-device touch testing. Those remain explicit tasks for ticket 06 and must not be inferred from this desktop-browser run.

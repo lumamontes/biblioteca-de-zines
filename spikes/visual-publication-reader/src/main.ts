@@ -35,6 +35,7 @@ app.innerHTML = `
       <button id="page-turn-mode" type="button">Page-turn mode</button>
       <button id="previous-page" type="button" aria-label="Previous page">Previous</button>
       <button id="next-page" type="button" aria-label="Next page">Next</button>
+      <button id="open-standard-viewer" type="button" disabled>Open standard viewer</button>
       <output id="page-status">No publication loaded</output>
     </div>
     <p class="status" id="status" role="status">Ready to load a PDF.</p>
@@ -60,6 +61,10 @@ const nextButton = must(document.querySelector<HTMLButtonElement>('#next-page'),
 const slideButton = must(document.querySelector<HTMLButtonElement>('#slide-mode'), 'slide button');
 const pageTurnButton = must(document.querySelector<HTMLButtonElement>('#page-turn-mode'), 'page-turn button');
 const imageFixtureButton = must(document.querySelector<HTMLButtonElement>('#load-image-fixture'), 'image fixture button');
+const standardViewerButton = must(
+  document.querySelector<HTMLButtonElement>('#open-standard-viewer'),
+  'standard viewer button',
+);
 
 let documentProxy: PDFDocumentProxy | undefined;
 let pageFlip: PageFlip | undefined;
@@ -68,6 +73,7 @@ let pages: HTMLDivElement[] = [];
 let currentPage = 0;
 let mode: 'slide' | 'page-turn' = 'page-turn';
 let renderGeneration = 0;
+let standardViewerUrl = '';
 
 function setStatus(message: string, error = false) {
   status.textContent = message;
@@ -79,6 +85,7 @@ function updatePageStatus() {
   pageStatus.value = count ? `Page ${currentPage + 1} of ${count}` : 'No publication loaded';
   previousButton.disabled = currentPage <= 0;
   nextButton.disabled = !count || currentPage >= count - 1;
+  standardViewerButton.disabled = !standardViewerUrl;
 }
 
 function clearReader() {
@@ -171,7 +178,7 @@ function updateModeButtons() {
 function setMode(nextMode: 'slide' | 'page-turn') {
   mode = nextMode;
   updateModeButtons();
-  if (documentProxy) renderPublication();
+  if (documentProxy || pages.length > 0) renderPublication();
 }
 
 function showSlide(index: number, animate = true) {
@@ -229,12 +236,14 @@ function renderPublication() {
 }
 
 async function loadPdf(url: string) {
+  standardViewerUrl = url;
   clearReader();
   setStatus('Loading PDF metadata...');
   const startedAt = performance.now();
 
   try {
     documentProxy = await getDocument({ url, disableAutoFetch: false }).promise;
+    standardViewerUrl = url;
     pages = Array.from({ length: documentProxy.numPages }, (_, index) => createPageElement(index));
     stage.replaceChildren(...pages);
     renderPublication();
@@ -243,12 +252,15 @@ async function loadPdf(url: string) {
   } catch (error) {
     clearReader();
     const message = error instanceof Error ? error.message : String(error);
+    standardViewerUrl = url;
+    updatePageStatus();
     setStatus(`Custom reader failed: ${message}. Open the standard viewer instead.`, true);
   }
 }
 
 function loadImageFixture() {
   clearReader();
+  standardViewerUrl = '';
   pages = Array.from({ length: 6 }, (_, index) => createImageFixturePage(index));
   currentPage = 0;
   renderPublication();
@@ -274,5 +286,8 @@ nextButton.addEventListener('click', () => {
 slideButton.addEventListener('click', () => setMode('slide'));
 pageTurnButton.addEventListener('click', () => setMode('page-turn'));
 imageFixtureButton.addEventListener('click', loadImageFixture);
+standardViewerButton.addEventListener('click', () => {
+  if (standardViewerUrl) window.open(standardViewerUrl, '_blank', 'noopener,noreferrer');
+});
 updateModeButtons();
 updatePageStatus();
