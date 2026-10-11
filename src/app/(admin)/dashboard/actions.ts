@@ -11,6 +11,8 @@ import { parseUploadAuthors, flattenAuthors } from "@/utils/authors";
 import { Author } from "@/schemas/apply-zine";
 import { dispatchZineProcessing } from "@/services/zine-processing-dispatch-service";
 import { enqueueZineProcessing } from "@/services/enqueue-zine-processing";
+import { promoteFormUploadPageGeneration } from "@/services/supabase-zine-page-repository";
+import { createAdminClient } from "@/utils/supabase/admin";
 
 /** Creates/finds each author and links them to the zine (does not remove stale links). */
 async function syncZineAuthors(
@@ -176,8 +178,11 @@ export async function publishZine(uploadId: number) {
 
   if (upload.pdf_url) {
     try {
-      await enqueueZineProcessing(zineId);
-      await dispatchZineProcessing();
+      const promoted = await promoteFormUploadPageGeneration(createAdminClient(), uploadId, zineId);
+      if (!promoted) {
+        await enqueueZineProcessing(zineId);
+        await dispatchZineProcessing();
+      }
     } catch (error) {
       console.error("Erro ao enfileirar processamento da zine:", error);
     }

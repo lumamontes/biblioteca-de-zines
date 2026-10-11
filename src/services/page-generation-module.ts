@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { detectFileTypeFromBuffer } from '@/utils/file-type-detection';
 import { isPlaceholderCover } from '@/utils/cover-image';
 import { forEachPageFromPdf } from './pdf-service';
-import type { AssetStorage } from './asset-storage';
+import type { AssetStorage, AssetTarget } from './asset-storage';
 
 export type SourceDocument = {
   buffer: Buffer;
@@ -11,34 +11,35 @@ export type SourceDocument = {
 
 export type PageGenerationState = {
   coverImage: string | null;
-  zineId: number;
 };
 
 export type PageGenerationRepository = {
-  getState: (zineId: number) => Promise<PageGenerationState>;
-  markFailed: (zineId: number) => Promise<void>;
-  markProcessing: (zineId: number) => Promise<void>;
+  getState: (target: AssetTarget) => Promise<PageGenerationState>;
+  markFailed: (target: AssetTarget) => Promise<void>;
+  markProcessing: (target: AssetTarget) => Promise<void>;
   publish: (generation: {
     coverImage?: string;
     generationId: string;
     pages: Array<{ imageUrl: string; pageNumber: number }>;
+    sourceUrl?: string;
     totalPages: number;
-    zineId: number;
+    target: AssetTarget;
   }) => Promise<void>;
 };
 
 export async function createPageGeneration(
   loadSource: () => Promise<SourceDocument>,
-  zineId: number,
+  target: AssetTarget,
   repository: PageGenerationRepository,
   storage: AssetStorage,
+  sourceUrl?: string,
 ): Promise<void> {
   const generationId = randomUUID();
   let state: PageGenerationState | undefined;
 
   try {
-    state = await repository.getState(zineId);
-    await repository.markProcessing(zineId);
+    state = await repository.getState(target);
+    await repository.markProcessing(target);
     const source = await loadSource();
 
     const contentType = isPdf(source) ? 'image/png' : source.mimeType;
@@ -55,7 +56,7 @@ export async function createPageGeneration(
         generationId,
         kind: 'page',
         pageNumber,
-        zineId,
+        target,
       });
       pages.push({ imageUrl, pageNumber });
 
@@ -65,7 +66,7 @@ export async function createPageGeneration(
           contentType,
           generationId,
           kind: 'cover',
-          zineId,
+          target,
         });
       }
     };
@@ -79,14 +80,15 @@ export async function createPageGeneration(
       ...(coverImage ? { coverImage } : {}),
       generationId,
       pages,
+      ...(sourceUrl ? { sourceUrl } : {}),
       totalPages,
-      zineId,
+      target,
     });
   } catch (error) {
-    await repository.markFailed(zineId).catch((failureError) => {
+    await repository.markFailed(target).catch((failureError) => {
       console.error('Failed to record page-generation failure:', failureError);
     });
-    await storage.deleteGeneration(zineId, generationId).catch((cleanupError) => {
+    await storage.deleteGeneration(target, generationId).catch((cleanupError) => {
       console.error('Failed to remove incomplete page generation:', cleanupError);
     });
     throw error;

@@ -66,8 +66,12 @@ export type Database = {
           id: number
           is_published: boolean | null
           pdf_url: string | null
+          active_page_generation: string | null
+          processing_status: "pending" | "processing" | "completed" | "failed" | null
+          processed_pdf_url: string | null
           tags: Json | null
           title: string
+          total_pages: number | null
           published_year: number | null
           uuid: string | null
         }
@@ -81,8 +85,12 @@ export type Database = {
           id?: number
           is_published?: boolean | null
           pdf_url?: string | null
+          active_page_generation?: string | null
+          processing_status?: "pending" | "processing" | "completed" | "failed" | null
+          processed_pdf_url?: string | null
           tags?: Json | null
           title: string
+          total_pages?: number | null
           uuid?: string | null
         }
         Update: {
@@ -95,11 +103,50 @@ export type Database = {
           id?: number
           is_published?: boolean | null
           pdf_url?: string | null
+          active_page_generation?: string | null
+          processing_status?: "pending" | "processing" | "completed" | "failed" | null
+          processed_pdf_url?: string | null
           tags?: Json | null
           title?: string
+          total_pages?: number | null
           uuid?: string | null
         }
         Relationships: []
+      }
+      form_upload_pages: {
+        Row: {
+          created_at: string
+          form_upload_id: number
+          generation_id: string
+          id: number
+          image_url: string
+          page_number: number
+        }
+        Insert: {
+          created_at?: string
+          form_upload_id: number
+          generation_id: string
+          id?: number
+          image_url: string
+          page_number: number
+        }
+        Update: {
+          created_at?: string
+          form_upload_id?: number
+          generation_id?: string
+          id?: number
+          image_url?: string
+          page_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_upload_pages_form_upload_id_fkey"
+            columns: ["form_upload_id"]
+            isOneToOne: false
+            referencedRelation: "form_uploads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       library_zines: {
         Row: {
