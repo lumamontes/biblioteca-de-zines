@@ -92,6 +92,20 @@ export type ReaderPageSurface = {
   release(page: ReaderPage): void;
 };
 
+export type ReaderRendererOptions = {
+  pageCount: number;
+  currentPage: number;
+  wideViewport: boolean;
+  onPageChange: (page: number) => void;
+};
+
+/** A renderer owns only its mount node; the reader shell owns the container. */
+export type ReaderRenderer = {
+  mount(container: HTMLElement, pages: readonly ReaderPage[], options: ReaderRendererOptions): void;
+  update(pages: readonly ReaderPage[], options: ReaderRendererOptions): void;
+  destroy(): void;
+};
+
 export type ReaderDependencies = Partial<Record<ReaderProvider, ReaderLoader>> & {
   pageSurface?: ReaderPageSurface;
 };
