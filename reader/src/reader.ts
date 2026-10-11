@@ -7,6 +7,7 @@ import type {
   ReaderLayout,
   ReaderMode,
   ReaderPage,
+  ReaderPageSurface,
   ReaderStatus,
 } from './contract';
 
@@ -34,6 +35,17 @@ function validateProvider(input: ReaderInput): void {
   }
 }
 
+function visibleIndexes(pageCount: number, currentPage: number, layout: ReaderLayout, wideViewport: boolean): number[] {
+  if (layout === 'single-page' || (!wideViewport && layout === 'responsive') || pageCount < 2) {
+    return [currentPage];
+  }
+  if (currentPage === 0 || currentPage === pageCount - 1) return [currentPage];
+
+  const firstInterior = currentPage % 2 === 0 ? currentPage - 1 : currentPage;
+  const secondInterior = firstInterior + 1;
+  return secondInterior < pageCount - 1 ? [firstInterior, secondInterior] : [firstInterior];
+}
+
 export function createReader(input: ReaderInput, dependencies: ReaderDependencies): ReaderBoundary {
   let state = initialState(input);
   let destroyed = false;
@@ -41,6 +53,8 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
   let document: ReaderDocument | undefined;
   const pages = new Map<number, ReaderPage>();
   const pending = new Map<number, Promise<ReaderPage>>();
+  const activeSurfacePages = new Set<number>();
+  let surfaceRequest = 0;
 
   const publish = (nextState: ReaderStatus) => {
     if (destroyed) return;
@@ -61,11 +75,15 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
       status: 'ready',
       metadata: input.metadata,
       mode: current?.mode ?? input.configuration.mode,
-      layout: current?.layout ?? input.configuration.layout ?? 'responsive',
-      pageCount: document.pageCount,
-      currentPage,
-      pages: loadedPages(),
-    });
+       layout: current?.layout ?? input.configuration.layout ?? 'responsive',
+       pageCount: document.pageCount,
+       currentPage,
+       pages: loadedPages(),
+       loadedPages: dependencies.pageSurface
+         ? [...activeSurfacePages].sort((left, right) => left - right)
+         : [...pages.keys()].sort((left, right) => left - right),
+       representation: 'reading-derivative',
+     });
   };
 
   const loadPage = (page: number): Promise<ReaderPage> => {
@@ -91,6 +109,7 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     [currentPage - 1, currentPage + 1]
       .filter((page) => page >= 0 && document && page < document.pageCount)
       .forEach((page) => {
+        if (pages.has(page)) return;
         void loadPage(page).then(() => {
           if (state.status === 'ready') publishReady(state.currentPage);
         }).catch((error) => {
@@ -121,7 +140,8 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     try {
       await loadPage(target);
       publishReady(target);
-      warmAdjacent(target);
+      if (dependencies.pageSurface) void prepareSurfaces(target);
+      else warmAdjacent(target);
     } catch (error) {
       publish({
         status: 'page-failure',
@@ -143,14 +163,76 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     if (ready) publish({ ...ready, mode });
   };
 
+  const prepareSurfaces = async (currentPage: number): Promise<void> => {
+    const ready = readyState();
+    if (!ready) return;
+    const request = ++surfaceRequest;
+    const first = Math.max(0, currentPage - 1);
+    const last = Math.min(ready.pageCount - 1, currentPage + 1);
+    const retained = Array.from({ length: last - first + 1 }, (_, offset) => first + offset);
+    const surface = dependencies.pageSurface;
+
+    try {
+      if (surface) {
+        for (const index of retained) {
+          if (!activeSurfacePages.has(index)) {
+            const page = await loadPage(index);
+            await surface.load(page);
+            if (request !== surfaceRequest || destroyed) {
+              surface.release(page);
+              return;
+            }
+            activeSurfacePages.add(index);
+          }
+        }
+        if (request !== surfaceRequest || destroyed) return;
+        for (const index of ready.loadedPages) {
+          if (!retained.includes(index) && activeSurfacePages.has(index)) {
+            const page = pages.get(index);
+            if (page) surface.release(page);
+            activeSurfacePages.delete(index);
+          }
+        }
+      }
+      if (request !== surfaceRequest || destroyed) return;
+      const current = readyState();
+      const loadedPagesChanged = current !== undefined &&
+        (current.loadedPages.length !== retained.length ||
+          current.loadedPages.some((index, offset) => index !== retained[offset]));
+      if (loadedPagesChanged && current) {
+        publish({ ...current, loadedPages: retained });
+      }
+    } catch (error) {
+      if (request === surfaceRequest) {
+        if (surface) {
+          activeSurfacePages.forEach((index) => surface.release(ready.pages[index]));
+          activeSurfacePages.clear();
+        }
+        publish({
+          status: 'failure',
+          metadata: input.metadata,
+          message: errorMessage(error),
+          fallback: input.fallback,
+        });
+      }
+    }
+  };
+
   const goTo = (page: number) => {
     const ready = readyState();
     if (!ready) return;
     const target = Math.max(0, Math.min(page, ready.pageCount - 1));
     if (target === ready.currentPage) return;
+    if (pages.has(target)) {
+      publishReady(target);
+      if (dependencies.pageSurface) void prepareSurfaces(target);
+      else warmAdjacent(target);
+      return;
+    }
     void loadPage(target).then(() => {
       publishReady(target);
-      warmAdjacent(target);
+      if (dependencies.pageSurface) void prepareSurfaces(target);
+      else warmAdjacent(target);
     }).catch((error) => {
       publish({
         status: 'page-failure',
@@ -192,9 +274,15 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
         validateProvider(input);
         document = await loader(input.publication);
         validate(document);
+        if (loader === imagePagesLoader) {
+          for (let index = 0; index < document.pageCount; index += 1) {
+            await loadPage(index);
+          }
+        }
         await loadPage(0);
         publishReady(0);
-        warmAdjacent(0);
+        if (dependencies.pageSurface) await prepareSurfaces(0);
+        else warmAdjacent(0);
       } catch (error) {
         if (document && pages.size === 0) {
           publish({
@@ -224,6 +312,13 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     goTo,
     next: () => { void navigate(1); },
     previous: () => { void navigate(-1); },
+    getVisiblePages: (wideViewport) => {
+      const ready = readyState();
+      if (!ready) return [];
+      return visibleIndexes(ready.pageCount, ready.currentPage, ready.layout, wideViewport).map(
+        (index) => ready.pages[index],
+      );
+    },
     useFallback: () => {
       publish({
         status: 'fallback',
@@ -233,6 +328,15 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
       });
     },
     destroy: () => {
+      surfaceRequest += 1;
+      const ready = readyState();
+      if (ready && dependencies.pageSurface) {
+          activeSurfacePages.forEach((index) => {
+            const page = pages.get(index);
+            if (page) dependencies.pageSurface?.release(page);
+          });
+        activeSurfacePages.clear();
+      }
       destroyed = true;
       listeners.clear();
     },
@@ -251,4 +355,28 @@ export function imagePagesLoader(
     pageCount: publication.pages.length,
     loadPage: async (index) => ({ ...publication.pages[index], index }),
   });
+}
+
+/** Browser adapter for external image derivatives; the reader core remains DOM-free. */
+export function imagePageSurface(): ReaderPageSurface {
+  const images = new Map<number, HTMLImageElement>();
+  return {
+    load: (page) => new Promise<void>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        images.set(page.index, image);
+        resolve();
+      };
+      image.onerror = () => reject(new Error(`Unable to load page image ${page.index + 1}.`));
+      image.src = page.url;
+    }),
+    release: (page) => {
+      const image = images.get(page.index);
+      if (!image) return;
+      image.onload = null;
+      image.onerror = null;
+      image.src = '';
+      images.delete(page.index);
+    },
+  };
 }
