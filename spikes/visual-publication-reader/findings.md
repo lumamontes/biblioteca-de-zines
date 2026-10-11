@@ -10,7 +10,7 @@ This report is completed after running the spike against representative fixtures
 | --- | --- | --- | --- | --- | --- |
 | PDF.js sample | `https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf` | `*` | `Accept-Ranges: bytes` | Desktop Chrome | Loaded and rendered |
 | CORS/format failure | `https://example.com/` | Not usable as a PDF source | n/a | Desktop Chrome | Failed cleanly |
-| Image sequence | Six generated SVG page URLs and `placehold.co` image URLs | n/a | n/a | Desktop Chrome and 390px viewport | Loaded and navigated |
+| Image sequence | Six generated SVG page URLs and `https://placehold.co/600x840/png?text=Page+1` through `Page+4` | n/a | n/a | Desktop Chrome and 390px viewport | Loaded and navigated |
 
 ## Measurements
 
@@ -72,4 +72,4 @@ The original downstream tickets remain directionally correct, with these changes
 - Ticket 06 must add bundle splitting, worker deployment, canvas cleanup, and retained-page measurements to its acceptance criteria.
 - Tickets 07-08 remain blocked until the source and renderer constraints are validated against Biblioteca fixtures.
 
-The spike did not establish a production performance budget, exercise a large PDF that visibly requires range requests, or complete real-device touch testing. Those remain explicit tasks for ticket 06 and must not be inferred from this browser run.
+The spike did not establish a production performance budget, exercise a large PDF that visibly requires range requests, validate mixed/landscape/rotated PDF fixtures, or complete real-device touch testing. Those remain explicit tasks for ticket 06 and must not be inferred from this browser run.

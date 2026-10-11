@@ -30,3 +30,4 @@ Open the Vite URL shown in the terminal. The default fixture is Mozilla's public
 - The image-source path is exercised by the local generated image fixture and accepts one externally hosted image URL per line for representative header and dimension testing.
 - The page-turn library may retain HTML page surfaces even when PDF canvases are cleaned up. This must be measured before choosing it for production.
 - Desktop pointer dragging and real-device touch gestures still need manual validation. The demo enables the candidate library's mouse and mobile settings and has been checked at an emulated mobile viewport.
+- To test external image loading, paste one URL per line into the image URL field. The findings use `https://placehold.co/600x840/png?text=Page+1` through `Page+4`.

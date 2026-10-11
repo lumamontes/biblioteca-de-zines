@@ -143,6 +143,9 @@ function createImagePage(index: number, source: string, alt: string, pageCount: 
   page.dataset.pageIndex = String(index);
   page.dataset.density = index === 0 || index === pageCount - 1 ? 'hard' : 'soft';
   page.innerHTML = `<img src="${source}" alt="${alt}" />`;
+  page.querySelector('img')?.addEventListener('error', () => {
+    setStatus(`Image page ${index + 1} failed to load. Open the standard viewer instead.`, true);
+  });
   return page;
 }
 
@@ -245,7 +248,7 @@ function showPageTurn() {
     maxHeight: 720,
     showCover: true,
     drawShadow: true,
-    flippingTime: 850,
+    flippingTime: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 850,
     mobileScrollSupport: true,
   });
   pageFlip.loadFromHTML(pages);
