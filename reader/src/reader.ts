@@ -96,6 +96,9 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
       const normalized = { ...loadedPage, index: page };
       pages.set(page, normalized);
       pending.delete(page);
+      if (destroyed) {
+        pages.delete(page);
+      }
       return normalized;
     }, (error) => {
       pending.delete(page);
@@ -111,7 +114,10 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
       .forEach((page) => {
         if (pages.has(page)) return;
         void loadPage(page).then(() => {
-          if (state.status === 'ready') publishReady(state.currentPage);
+          if (state.status === 'ready') {
+            evictDistant(state.currentPage);
+            publishReady(state.currentPage);
+          }
         }).catch((error) => {
           const ready = readyState();
           if (ready) {
@@ -132,6 +138,17 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
       });
   };
 
+  const evictDistant = (currentPage: number) => {
+    const retained = new Set([currentPage - 1, currentPage, currentPage + 1]);
+    [...pages.keys()].forEach((index) => {
+      if (retained.has(index)) return;
+      const page = pages.get(index);
+      if (page && activeSurfacePages.has(index)) dependencies.pageSurface?.release(page);
+      activeSurfacePages.delete(index);
+      pages.delete(index);
+    });
+  };
+
   const navigate = async (delta: number) => {
     const ready = readyState();
     if (!ready) return;
@@ -139,6 +156,7 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     if (target === ready.currentPage) return;
     try {
       await loadPage(target);
+      evictDistant(target);
       publishReady(target);
       if (dependencies.pageSurface) void prepareSurfaces(target);
       else warmAdjacent(target);
@@ -191,6 +209,7 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
             const page = pages.get(index);
             if (page) surface.release(page);
             activeSurfacePages.delete(index);
+            pages.delete(index);
           }
         }
       }
@@ -205,9 +224,16 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     } catch (error) {
       if (request === surfaceRequest) {
         if (surface) {
-          activeSurfacePages.forEach((index) => surface.release(ready.pages[index]));
+          activeSurfacePages.forEach((index) => {
+            const page = pages.get(index);
+            if (page) surface.release(page);
+            pages.delete(index);
+          });
           activeSurfacePages.clear();
         }
+        pages.clear();
+        document?.cleanup?.();
+        document = undefined;
         publish({
           status: 'failure',
           metadata: input.metadata,
@@ -224,12 +250,14 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     const target = Math.max(0, Math.min(page, ready.pageCount - 1));
     if (target === ready.currentPage) return;
     if (pages.has(target)) {
+      evictDistant(target);
       publishReady(target);
       if (dependencies.pageSurface) void prepareSurfaces(target);
       else warmAdjacent(target);
       return;
     }
     void loadPage(target).then(() => {
+      evictDistant(target);
       publishReady(target);
       if (dependencies.pageSurface) void prepareSurfaces(target);
       else warmAdjacent(target);
@@ -268,17 +296,18 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
       }
 
       publish(initialState(input));
+      activeSurfacePages.forEach((index) => {
+        const page = pages.get(index);
+        if (page) dependencies.pageSurface?.release(page);
+      });
+      activeSurfacePages.clear();
+      document?.cleanup?.();
       document = undefined;
       pages.clear();
       try {
         validateProvider(input);
         document = await loader(input.publication);
         validate(document);
-        if (loader === imagePagesLoader) {
-          for (let index = 0; index < document.pageCount; index += 1) {
-            await loadPage(index);
-          }
-        }
         await loadPage(0);
         publishReady(0);
         if (dependencies.pageSurface) await prepareSurfaces(0);
@@ -305,6 +334,8 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
             fallback: input.fallback,
           });
         }
+        document?.cleanup?.();
+        document = undefined;
       }
       return state;
     },
@@ -315,9 +346,11 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     getVisiblePages: (wideViewport) => {
       const ready = readyState();
       if (!ready) return [];
-      return visibleIndexes(ready.pageCount, ready.currentPage, ready.layout, wideViewport).map(
-        (index) => ready.pages[index],
-      );
+      return visibleIndexes(ready.pageCount, ready.currentPage, ready.layout, wideViewport)
+        .flatMap((index) => {
+          const page = pages.get(index);
+          return page ? [page] : [];
+        });
     },
     useFallback: () => {
       publish({
@@ -337,6 +370,10 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
           });
         activeSurfacePages.clear();
       }
+      document?.cleanup?.();
+      document = undefined;
+      pages.clear();
+      pending.clear();
       destroyed = true;
       listeners.clear();
     },
@@ -353,7 +390,11 @@ export function imagePagesLoader(
   }
   return Promise.resolve({
     pageCount: publication.pages.length,
-    loadPage: async (index) => ({ ...publication.pages[index], index }),
+    loadPage: async (index) => {
+      const page = publication.pages[index];
+      if (!page) throw new Error(`Image page ${index + 1} is out of range.`);
+      return { ...page, index };
+    },
   });
 }
 

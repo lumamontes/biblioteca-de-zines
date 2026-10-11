@@ -35,10 +35,14 @@ async function renderCanvasPage(page: PdfPage, index: number, scale: number): Pr
   const canvas = document.createElement('canvas');
   canvas.width = Math.ceil(viewport.width);
   canvas.height = Math.ceil(viewport.height);
-  await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
-  const url = canvas.toDataURL('image/png');
-  page.cleanup?.();
-  return { url, alt: `PDF page ${index + 1}`, index };
+  try {
+    await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+    return { url: canvas.toDataURL('image/png'), alt: `PDF page ${index + 1}`, index };
+  } finally {
+    page.cleanup?.();
+    canvas.width = 0;
+    canvas.height = 0;
+  }
 }
 
 /** Creates a lazy PDF.js source adapter; only requested pages are fetched and rendered. */
@@ -58,6 +62,7 @@ export function createPdfLoader(pdfjs: PdfJs, options: PdfLoaderOptions = {}): R
           ? options.renderPage(page, index)
           : renderCanvasPage(page, index, scale);
       },
+      cleanup: () => pdf.cleanup?.(),
     } satisfies ReaderDocument;
   };
 }

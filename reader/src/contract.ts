@@ -43,6 +43,7 @@ export type ReaderPage = ImagePage & { index: number };
 export type ReaderDocument = {
   pageCount: number;
   loadPage(page: number): Promise<ReaderPage>;
+  cleanup?: () => void;
 };
 
 export type ReaderStatus =
