@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseProcessingJobStore } from '@/services/processing-job-module';
+import { createSupabaseProcessingJobStore } from '@/services/supabase-processing-job-store';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { processClaimedZine } from '@/services/process-claimed-zine';
+import { createPageGenerationFromUrl } from '@/services/zine-import-service';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -21,7 +22,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const status = await processClaimedZine(job, supabase, jobs);
+    const status = await processClaimedZine(
+      job,
+      jobs,
+      () => createPageGenerationFromUrl(job.zineId, job.pdfUrl, supabase),
+    );
     return NextResponse.json({ processed: true, status, zineId: job.zineId });
   } catch (error) {
     return NextResponse.json({

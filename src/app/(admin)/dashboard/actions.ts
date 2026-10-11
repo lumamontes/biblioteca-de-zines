@@ -10,8 +10,7 @@ import { editUploadSchema, EditUploadFormData } from "@/schemas/edit-upload";
 import { parseUploadAuthors, flattenAuthors } from "@/utils/authors";
 import { Author } from "@/schemas/apply-zine";
 import { dispatchZineProcessing } from "@/services/zine-processing-dispatch-service";
-import { createSupabaseProcessingJobStore } from "@/services/processing-job-module";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { enqueueZineProcessing } from "@/services/enqueue-zine-processing";
 
 /** Creates/finds each author and links them to the zine (does not remove stale links). */
 async function syncZineAuthors(
@@ -177,7 +176,7 @@ export async function publishZine(uploadId: number) {
 
   if (upload.pdf_url) {
     try {
-      await createSupabaseProcessingJobStore(createAdminClient()).enqueue(zineId);
+      await enqueueZineProcessing(zineId);
       await dispatchZineProcessing();
     } catch (error) {
       console.error("Erro ao enfileirar processamento da zine:", error);
@@ -239,7 +238,7 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
             .single();
           if (publishedZine) {
             try {
-              await createSupabaseProcessingJobStore(createAdminClient()).enqueue(publishedZine.id);
+              await enqueueZineProcessing(publishedZine.id);
               await dispatchZineProcessing();
             } catch (dispatchError) {
               console.error("Erro ao enfileirar processamento da zine:", dispatchError);

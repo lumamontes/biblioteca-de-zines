@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import { createAdminClient } from '../src/utils/supabase/admin';
-import { createSupabaseProcessingJobStore } from '../src/services/processing-job-module';
+import { createSupabaseProcessingJobStore } from '../src/services/supabase-processing-job-store';
 import { processClaimedZine } from '../src/services/process-claimed-zine';
+import { createPageGenerationFromUrl } from '../src/services/zine-import-service';
 
 const limit = getNumberArgument('--limit', 10);
 const concurrency = getNumberArgument('--concurrency', 2);
@@ -16,7 +17,14 @@ async function main(): Promise<void> {
       claimedCount += 1;
       const job = await jobs.claimNext();
       if (!job) return;
-      results.push({ id: job.zineId, status: await processClaimedZine(job, supabase, jobs) });
+      results.push({
+        id: job.zineId,
+        status: await processClaimedZine(
+          job,
+          jobs,
+          () => createPageGenerationFromUrl(job.zineId, job.pdfUrl, supabase),
+        ),
+      });
     }
   }));
 

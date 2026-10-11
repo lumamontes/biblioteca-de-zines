@@ -3,9 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { googleDriveImportSchema } from "@/schemas/google-drive-import";
 import { createClient } from "@/utils/supabase/server";
-import { createSupabaseProcessingJobStore } from "@/services/processing-job-module";
+import { enqueueZineProcessing } from "@/services/enqueue-zine-processing";
 import { dispatchZineProcessing } from "@/services/zine-processing-dispatch-service";
-import { createAdminClient } from "@/utils/supabase/admin";
 
 /**
  * Import zine from Google Drive URL
@@ -35,7 +34,7 @@ export async function importZineFromDrive(
       .eq("id", zineId);
     if (updateError) throw new Error(`Failed to queue zine processing: ${updateError.message}`);
 
-    await createSupabaseProcessingJobStore(createAdminClient()).enqueue(zineId);
+    await enqueueZineProcessing(zineId);
     await dispatchZineProcessing();
 
     revalidatePath("/dashboard");
