@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState, useTransition, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +21,7 @@ import { parseTags } from "@/utils/utils";
 import { toast } from "sonner";
 import { parseUploadAuthors, getLegacyAuthorLinksNotice } from "@/utils/authors";
 import AuthorsField from "./authors-field";
+import SafeImage from "../safe-image";
 
 interface EditableUploadPreviewProps {
   upload: Tables<"form_uploads">;
@@ -110,7 +110,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
       >
         <div className="flex-shrink-0">
           {thumbnailUrl && thumbnailUrl  !== '' && (
-            <Image
+            <SafeImage
               src={thumbnailUrl}
               alt={`Capa da zine ${upload.title}`}
               width={120}
@@ -263,7 +263,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
       <div className="flex-shrink-0">
         {zine?.is_published && zine?.slug ? (
           <Link href={`/zines/${zine.slug}`}>
-            <Image
+            <SafeImage
               src={thumbnailUrl}
               alt={`Capa da zine ${upload.title}`}
               width={120}
@@ -272,9 +272,9 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
             />
           </Link>
         ) : (
-          <Image
-            src={thumbnailUrl}
-            alt={`Capa da zine ${upload.title}`}
+            <SafeImage
+              src={thumbnailUrl}
+              alt={`Capa da zine ${upload.title}`}
             width={120}
             height={120}
             className="rounded-md object-cover"

@@ -6,6 +6,7 @@ import CategoryBadge from "./category-badge";
 import YearBadge from "./year-badge";
 import { PLACEHOLDER_COVER_IMAGE } from "@/app/config/site";
 import { limitText } from "@/utils/string";
+import SafeImage from "../safe-image";
 
 type ZineCardProps = {
   zine: Zine;
@@ -25,7 +26,7 @@ const ZineCard: React.FC<ZineCardProps> = ({ zine, onCategoryClick }) => {
     >
       <div className="flex flex-col items-center p-4flex-grow">
         <div className="relative w-full h-56 flex items-center justify-center">
-          <img
+          <SafeImage
             src={thumbnailUrl}
             alt={zine.title}
             className="rounded-md object-contain w-full h-full"
