@@ -20,6 +20,16 @@ async function main(): Promise<void> {
     throw new Error('NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required');
   }
 
+  const supabase = createClient<Database>(supabaseUrl, serviceRoleKey);
+  if (formUploadId) {
+    const parsedFormUploadId = Number(formUploadId);
+    if (!Number.isInteger(parsedFormUploadId) || parsedFormUploadId <= 0) {
+      throw new Error('--form-upload-id must be a positive integer');
+    }
+    await processFormUpload(supabase, parsedFormUploadId);
+    return;
+  }
+
   const report = JSON.parse(await readFile(reportPath, 'utf8')) as MonitorReport;
   const excludedIds = new Set(
     (report.results ?? [])
@@ -27,12 +37,6 @@ async function main(): Promise<void> {
       .map((result) => parseResourceId(result.resourceId))
       .filter((id): id is number => id !== null),
   );
-
-  const supabase = createClient<Database>(supabaseUrl, serviceRoleKey);
-  if (formUploadId) {
-    await processFormUpload(supabase, Number(formUploadId));
-    return;
-  }
 
   const { data: zines, error } = await supabase
     .from('library_zines')
@@ -81,6 +85,9 @@ async function processFormUpload(
 
   console.log(`${apply ? 'Applying' : 'Dry run'} form-upload page migration for 1 submission`);
   console.log(`[${apply ? 'process' : 'would process'}] ${upload.id}: ${upload.title}`);
+  if (apply && !upload.pdf_url) {
+    throw new Error(`Form upload ${formUploadId} has no PDF URL`);
+  }
   if (apply && upload.pdf_url) {
     const { createFormUploadPageGenerationFromUrl } = await import('../src/services/form-upload-generation-service');
     await createFormUploadPageGenerationFromUrl(upload.id, upload.pdf_url, supabase);
