@@ -15,6 +15,13 @@ test.describe("Login Page", () => {
   test("should display the login form", async ({ page }) => {
     await expect(page.locator("h1")).toHaveText("Biblioteca de Zines");
     await expect(page.locator("form")).toBeVisible();
+
+    const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
+    expect(manifestHref).toBe("/site.webmanifest");
+    if (!manifestHref) throw new Error("Manifest link is missing");
+    const manifestResponse = await page.request.get(new URL(manifestHref, page.url()).toString());
+    expect(manifestResponse.ok()).toBe(true);
+    expect(new URL(manifestResponse.url()).origin).toBe(new URL(page.url()).origin);
   });
 
   test("should log in successfully", async ({ page }) => {
@@ -30,10 +37,24 @@ test.describe("Login Page", () => {
   });
 
   test("should show error on invalid login", async ({ page }) => {
+    await page.context().clearCookies();
+    await page.goto("/login");
     await page.fill('input[name="email"]', "wrong@example.com");
     await page.fill('input[name="password"]', "wrongpassword");
     await page.click('button[type="submit"]');
 
-    await page.waitForURL("/error");
+    await expect(page).toHaveURL(/\/login\?error=invalid/);
+    await expect(page.getByRole("alert")).toHaveText(
+      "Não foi possível entrar. Verifique seu email e senha e tente novamente.",
+    );
+  });
+
+  test("should return safely when auth confirmation fails", async ({ page }) => {
+    await page.goto("/auth/confirm");
+
+    await expect(page).toHaveURL(/\/login\?error=auth/);
+    await expect(page.getByRole("alert")).toHaveText(
+      "Não foi possível concluir a autenticação. Tente novamente.",
+    );
   });
 });

@@ -1,7 +1,18 @@
 import Link from "next/link";
 import { login } from "./actions";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
+  const loginError = {
+    invalid: "Não foi possível entrar. Verifique seu email e senha e tente novamente.",
+    auth: "Não foi possível concluir a autenticação. Tente novamente.",
+    logout: "Não foi possível sair com segurança. Sua sessão pode continuar ativa.",
+  }[error ?? ""];
+
   return (
     <main className="flex flex-col items-center justify-center min-h-screen px-4">
       <section className="w-full max-w-md p-6 bg-white shadow-md rounded-md">
@@ -9,6 +20,12 @@ export default function LoginPage() {
         <p className="text-sm text-center text-gray-500 mt-2">
           Faça login para acessar o painel de administração.
         </p>
+
+        {loginError && (
+          <p role="alert" className="mt-4 text-sm text-red-600" aria-live="polite">
+            {loginError}
+          </p>
+        )}
 
         {/* Formulário */}
         <form className="flex flex-col gap-4 mt-6">

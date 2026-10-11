@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     shortcut: "/manifest/favicon-16x16.png",
     apple: "/manifest/apple-touch-icon.png",
   },
-  manifest: `${siteConfig.url}/site.webmanifest`,
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

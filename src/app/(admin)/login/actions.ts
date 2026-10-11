@@ -21,14 +21,13 @@ export async function login(formData: FormData) {
   const parsedData = loginSchema.safeParse(data);
 
   if (!parsedData.success) {
-    throw new Error('Email ou senha inválidos');
-    return;
+    redirect("/login?error=invalid");
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { error } = await supabase.auth.signInWithPassword(parsedData.data);
 
   if (error) {
-    redirect("/error");
+    redirect("/login?error=invalid");
   }
 
   revalidatePath("/", "layout");
@@ -40,7 +39,7 @@ export async function logout() {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    redirect("/error");
+    redirect("/login?error=logout");
   }
   
   revalidatePath("/", "layout");
@@ -58,7 +57,7 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    redirect("/error");
+    redirect("/login?error=auth");
   }
 
   revalidatePath("/", "layout");
