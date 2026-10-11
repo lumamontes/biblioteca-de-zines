@@ -6,7 +6,7 @@ export default defineConfig({
     fs: { allow: ['..'] },
   },
   build: {
-    outDir: '../dist',
+    outDir: '../demo-dist',
     emptyOutDir: true,
   },
 });

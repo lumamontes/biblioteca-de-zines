@@ -1,11 +1,28 @@
 {
-  "name": "visual-publication-reader",
+  "name": "@biblioteca-de-zines/visual-publication-reader",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "type": "module",
+  "description": "Framework-independent reader core and browser adapters for fixed-layout visual publications.",
+  "license": "GPL-3.0-only",
+  "files": ["dist", "README.md", "ADOPTION.md", "LICENSE.md"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:package": "tsc -p tsconfig.build.json",
+    "pack:check": "pnpm build:package && pnpm pack --dry-run",
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts"
   },
