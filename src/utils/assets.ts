@@ -18,7 +18,7 @@ export function getThumbnailUrl(url: string) {
 
   try {
     const parsedUrl = new URL(url);
-    if (parsedUrl.hostname === 'canva.link') {
+    if (parsedUrl.hostname === 'canva.link' || parsedUrl.hostname === 'photos.app.goo.gl') {
       return null;
     }
 
