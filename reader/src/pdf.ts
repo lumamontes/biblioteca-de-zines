@@ -2,32 +2,40 @@ import type { ReaderDocument, ReaderLoader, ReaderPage } from './contract';
 
 export type PdfViewport = { width: number; height: number };
 
-export type PdfPage = {
-  getViewport(options: { scale: number }): PdfViewport;
-  render(options: { canvasContext: CanvasRenderingContext2D; viewport: PdfViewport }): {
+export type PdfPage<Viewport extends PdfViewport = PdfViewport> = {
+  getViewport(options: { scale: number }): Viewport;
+  render(options: {
+    canvas: HTMLCanvasElement | null;
+    canvasContext: CanvasRenderingContext2D;
+    viewport: Viewport;
+  }): {
     promise: Promise<void>;
   };
   cleanup?: () => void;
 };
 
-export type PdfDocument = {
+export type PdfDocument<Viewport extends PdfViewport = PdfViewport> = {
   numPages: number;
-  getPage(page: number): Promise<PdfPage>;
+  getPage(page: number): Promise<PdfPage<Viewport>>;
   cleanup?: () => void;
 };
 
-export type PdfJs = {
+export type PdfJs<Viewport extends PdfViewport = PdfViewport> = {
   getDocument(source: { url: string; disableAutoFetch?: boolean }): {
-    promise: Promise<PdfDocument>;
+    promise: Promise<PdfDocument<Viewport>>;
   };
 };
 
-export type PdfLoaderOptions = {
+export type PdfLoaderOptions<Viewport extends PdfViewport = PdfViewport> = {
   scale?: number;
-  renderPage?: (page: PdfPage, index: number) => Promise<ReaderPage>;
+  renderPage?: (page: PdfPage<Viewport>, index: number) => Promise<ReaderPage>;
 };
 
-async function renderCanvasPage(page: PdfPage, index: number, scale: number): Promise<ReaderPage> {
+async function renderCanvasPage<Viewport extends PdfViewport>(
+  page: PdfPage<Viewport>,
+  index: number,
+  scale: number,
+): Promise<ReaderPage> {
   if (typeof document === 'undefined') {
     throw new Error('PDF pages require a browser document to render.');
   }
@@ -36,7 +44,7 @@ async function renderCanvasPage(page: PdfPage, index: number, scale: number): Pr
   canvas.width = Math.ceil(viewport.width);
   canvas.height = Math.ceil(viewport.height);
   try {
-    await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+    await page.render({ canvas: null, canvasContext: canvas.getContext('2d')!, viewport }).promise;
     return { url: canvas.toDataURL('image/png'), alt: `PDF page ${index + 1}`, index };
   } finally {
     page.cleanup?.();
@@ -46,7 +54,10 @@ async function renderCanvasPage(page: PdfPage, index: number, scale: number): Pr
 }
 
 /** Creates a lazy PDF.js source adapter; only requested pages are fetched and rendered. */
-export function createPdfLoader(pdfjs: PdfJs, options: PdfLoaderOptions = {}): ReaderLoader {
+export function createPdfLoader<Viewport extends PdfViewport>(
+  pdfjs: PdfJs<Viewport>,
+  options: PdfLoaderOptions<Viewport> = {},
+): ReaderLoader {
   const scale = options.scale ?? 1;
   return async (publication) => {
     if (publication.kind !== 'pdf') {
