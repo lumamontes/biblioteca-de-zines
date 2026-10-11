@@ -1,2 +1,2 @@
 export * from './contract';
-export { createReader, imagePagesLoader } from './reader';
+export { createReader, imagePageSurface, imagePagesLoader } from './reader';

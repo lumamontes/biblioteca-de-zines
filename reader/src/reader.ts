@@ -7,6 +7,7 @@ import type {
   ReaderLayout,
   ReaderMode,
   ReaderPage,
+  ReaderPageSurface,
   ReaderStatus,
 } from './contract';
 
@@ -33,10 +34,23 @@ function validateProvider(input: ReaderInput): void {
   }
 }
 
+function visibleIndexes(pageCount: number, currentPage: number, layout: ReaderLayout, wideViewport: boolean): number[] {
+  if (layout === 'single-page' || (!wideViewport && layout === 'responsive') || pageCount < 2) {
+    return [currentPage];
+  }
+  if (currentPage === 0 || currentPage === pageCount - 1) return [currentPage];
+
+  const firstInterior = currentPage % 2 === 0 ? currentPage - 1 : currentPage;
+  const secondInterior = firstInterior + 1;
+  return secondInterior < pageCount - 1 ? [firstInterior, secondInterior] : [firstInterior];
+}
+
 export function createReader(input: ReaderInput, dependencies: ReaderDependencies): ReaderBoundary {
   let state = initialState(input);
   let destroyed = false;
   const listeners = new Set<(nextState: ReaderStatus) => void>();
+  const activeSurfacePages = new Set<number>();
+  let surfaceRequest = 0;
 
   const publish = (nextState: ReaderStatus) => {
     if (destroyed) return;
@@ -52,10 +66,65 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     if (ready) publish({ ...ready, mode });
   };
 
+  const prepareSurfaces = async (currentPage: number): Promise<void> => {
+    const ready = readyState();
+    if (!ready) return;
+    const request = ++surfaceRequest;
+    const first = Math.max(0, currentPage - 1);
+    const last = Math.min(ready.pageCount - 1, currentPage + 1);
+    const retained = Array.from({ length: last - first + 1 }, (_, offset) => first + offset);
+    const surface = dependencies.pageSurface;
+
+    try {
+      if (surface) {
+        for (const index of retained) {
+          if (!activeSurfacePages.has(index)) {
+            await surface.load(ready.pages[index]);
+            if (request !== surfaceRequest || destroyed) {
+              surface.release(ready.pages[index]);
+              return;
+            }
+            activeSurfacePages.add(index);
+          }
+        }
+        if (request !== surfaceRequest || destroyed) return;
+        for (const index of ready.loadedPages) {
+          if (!retained.includes(index) && activeSurfacePages.has(index)) {
+            surface.release(ready.pages[index]);
+            activeSurfacePages.delete(index);
+          }
+        }
+      }
+      if (request !== surfaceRequest || destroyed) return;
+      const current = readyState();
+      const loadedPagesChanged = current !== undefined &&
+        (current.loadedPages.length !== retained.length ||
+          current.loadedPages.some((index, offset) => index !== retained[offset]));
+      if (loadedPagesChanged && current) {
+        publish({ ...current, loadedPages: retained });
+      }
+    } catch (error) {
+      if (request === surfaceRequest) {
+        if (surface) {
+          activeSurfacePages.forEach((index) => surface.release(ready.pages[index]));
+          activeSurfacePages.clear();
+        }
+        publish({
+          status: 'failure',
+          metadata: input.metadata,
+          message: errorMessage(error),
+          fallback: input.fallback,
+        });
+      }
+    }
+  };
+
   const goTo = (page: number) => {
     const ready = readyState();
     if (!ready) return;
-    publish({ ...ready, currentPage: Math.max(0, Math.min(page, ready.pageCount - 1)) });
+    const currentPage = Math.max(0, Math.min(page, ready.pageCount - 1));
+    publish({ ...ready, currentPage });
+    void prepareSurfaces(currentPage);
   };
 
   const boundary: ReaderBoundary = {
@@ -88,7 +157,12 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
           pageCount: pages.length,
           currentPage: 0,
           pages,
+          loadedPages: dependencies.pageSurface
+            ? []
+            : [0, ...(pages.length > 1 ? [1] : [])],
+          representation: 'reading-derivative',
         });
+        await prepareSurfaces(0);
       } catch (error) {
         publish({
           status: 'failure',
@@ -109,6 +183,13 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
       const ready = readyState();
       if (ready) goTo(ready.currentPage - 1);
     },
+    getVisiblePages: (wideViewport) => {
+      const ready = readyState();
+      if (!ready) return [];
+      return visibleIndexes(ready.pageCount, ready.currentPage, ready.layout, wideViewport).map(
+        (index) => ready.pages[index],
+      );
+    },
     useFallback: () => {
       publish({
         status: 'fallback',
@@ -118,6 +199,12 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
       });
     },
     destroy: () => {
+      surfaceRequest += 1;
+      const ready = readyState();
+      if (ready && dependencies.pageSurface) {
+        activeSurfacePages.forEach((index) => dependencies.pageSurface?.release(ready.pages[index]));
+        activeSurfacePages.clear();
+      }
       destroyed = true;
       listeners.clear();
     },
@@ -135,4 +222,28 @@ export function imagePagesLoader(
   return Promise.resolve({
     pages: publication.pages.map((page, index) => ({ ...page, index })),
   });
+}
+
+/** Browser adapter for external image derivatives; the reader core remains DOM-free. */
+export function imagePageSurface(): ReaderPageSurface {
+  const images = new Map<number, HTMLImageElement>();
+  return {
+    load: (page) => new Promise<void>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        images.set(page.index, image);
+        resolve();
+      };
+      image.onerror = () => reject(new Error(`Unable to load page image ${page.index + 1}.`));
+      image.src = page.url;
+    }),
+    release: (page) => {
+      const image = images.get(page.index);
+      if (!image) return;
+      image.onload = null;
+      image.onerror = null;
+      image.src = '';
+      images.delete(page.index);
+    },
+  };
 }

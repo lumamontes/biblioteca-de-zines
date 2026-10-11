@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { ReaderInput } from './contract';
+import type { ReaderInput, ReaderPage } from './contract';
 import { createReader, imagePagesLoader } from './reader';
 
 const input: ReaderInput = {
@@ -21,7 +21,13 @@ describe('framework-independent reader boundary', () => {
     await reader.load();
 
     expect(statuses).toEqual(['loading', 'ready']);
-    expect(reader.getState()).toMatchObject({ status: 'ready', pageCount: 2, currentPage: 0 });
+    expect(reader.getState()).toMatchObject({
+      status: 'ready',
+      pageCount: 2,
+      currentPage: 0,
+      loadedPages: [0, 1],
+      representation: 'reading-derivative',
+    });
   });
 
   it('does not silently switch providers when the configured one is unavailable', async () => {
@@ -78,5 +84,70 @@ describe('framework-independent reader boundary', () => {
 
     await reader.load();
     expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('preserves image order and keeps covers out of interior spreads', async () => {
+    const orderedInput = {
+      ...input,
+      publication: {
+        kind: 'image-pages' as const,
+        pages: [{ url: 'cover' }, { url: 'one' }, { url: 'two' }, { url: 'back' }],
+      },
+    };
+    const reader = createReader(orderedInput, { 'ordered-images': imagePagesLoader });
+
+    await reader.load();
+
+    expect(reader.getState()).toMatchObject({
+      status: 'ready',
+      pages: [{ index: 0, url: 'cover' }, { index: 1, url: 'one' }, { index: 2, url: 'two' }, { index: 3, url: 'back' }],
+    });
+    expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([0]);
+    reader.goTo(1);
+    expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([1, 2]);
+    reader.goTo(3);
+    expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([3]);
+    reader.goTo(2);
+    expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([1, 2]);
+  });
+
+  it('loads the visible page and adjacent pages, then releases distant surfaces', async () => {
+    const surface = {
+      load: vi.fn(async (_page: ReaderPage) => undefined),
+      release: vi.fn(),
+    };
+    const reader = createReader({
+      ...input,
+      publication: { kind: 'image-pages', pages: Array.from({ length: 5 }, (_, index) => ({ url: `page-${index}` })) },
+    }, { 'ordered-images': imagePagesLoader, pageSurface: surface });
+
+    await reader.load();
+    expect(surface.load.mock.calls.map(([page]) => page.index)).toEqual([0, 1]);
+    expect(reader.getState()).toMatchObject({ status: 'ready', loadedPages: [0, 1] });
+
+    reader.goTo(3);
+    await vi.waitFor(() => expect(reader.getState()).toMatchObject({ status: 'ready', loadedPages: [2, 3, 4] }));
+    expect(surface.release.mock.calls.map(([page]) => page.index)).toEqual([0, 1]);
+  });
+
+  it('fails consistently when a page surface cannot load and retains the fallback', async () => {
+    const reader = createReader(input, {
+      'ordered-images': imagePagesLoader,
+      pageSurface: { load: async () => { throw new Error('Image is not browser-readable.'); }, release: vi.fn() },
+    });
+
+    await reader.load();
+
+    expect(reader.getState()).toMatchObject({ status: 'failure', message: 'Image is not browser-readable.', fallback: input.fallback });
+  });
+
+  it('releases retained surfaces when the reader is destroyed', async () => {
+    const surface = { load: vi.fn(async (_page: ReaderPage) => undefined), release: vi.fn() };
+    const reader = createReader(input, { 'ordered-images': imagePagesLoader, pageSurface: surface });
+
+    await reader.load();
+    reader.destroy();
+
+    expect(surface.release.mock.calls.map(([page]) => page.index)).toEqual([0, 1]);
   });
 });

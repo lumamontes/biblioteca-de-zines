@@ -7,6 +7,9 @@ export type ImagePage = {
   alt?: string;
 };
 
+/** Page images are delivery derivatives, never claims about the retained original. */
+export type ReaderRepresentation = 'reading-derivative';
+
 export type ReaderMode = 'page-turn' | 'slide';
 export type ReaderLayout = 'responsive' | 'single-page' | 'spread';
 export type ReaderProvider = 'direct-pdf' | 'ordered-images';
@@ -51,6 +54,8 @@ export type ReaderStatus =
       pageCount: number;
       currentPage: number;
       pages: readonly ReaderPage[];
+      loadedPages: readonly number[];
+      representation: ReaderRepresentation;
     }
   | {
       status: 'failure';
@@ -69,7 +74,14 @@ export type ReaderLoader = (
   publication: PublicationRepresentation,
 ) => Promise<ReaderDocument>;
 
-export type ReaderDependencies = Partial<Record<ReaderProvider, ReaderLoader>>;
+export type ReaderPageSurface = {
+  load(page: ReaderPage): Promise<void>;
+  release(page: ReaderPage): void;
+};
+
+export type ReaderDependencies = Partial<Record<ReaderProvider, ReaderLoader>> & {
+  pageSurface?: ReaderPageSurface;
+};
 
 export type ReaderBoundary = {
   getState(): ReaderStatus;
@@ -79,6 +91,7 @@ export type ReaderBoundary = {
   goTo(page: number): void;
   next(): void;
   previous(): void;
+  getVisiblePages(wideViewport: boolean): readonly ReaderPage[];
   useFallback(): void;
   destroy(): void;
 };
