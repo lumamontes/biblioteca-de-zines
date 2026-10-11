@@ -22,6 +22,16 @@ export function getThumbnailUrl(url: string) {
       return null;
     }
 
+    if (
+      parsedUrl.hostname === 'www.dropbox.com'
+      && (parsedUrl.pathname.includes('/s/') || parsedUrl.pathname.includes('/scl/'))
+    ) {
+      parsedUrl.hostname = 'dl.dropboxusercontent.com';
+      parsedUrl.searchParams.delete('dl');
+      parsedUrl.searchParams.set('raw', '1');
+      return parsedUrl.toString();
+    }
+
     if (parsedUrl.hostname === 'imgur.com' || parsedUrl.hostname === 'www.imgur.com') {
       const match = parsedUrl.pathname.match(/^\/([a-zA-Z0-9]+)(\.[a-zA-Z0-9]+)?$/);
       if (match) {
