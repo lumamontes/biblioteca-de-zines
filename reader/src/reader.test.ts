@@ -26,9 +26,10 @@ describe('framework-independent reader boundary', () => {
       status: 'ready',
       pageCount: 2,
       currentPage: 0,
-      loadedPages: [0, 1],
+      loadedPages: [0],
       representation: 'reading-derivative',
     });
+    await vi.waitFor(() => expect(reader.getState()).toMatchObject({ loadedPages: [0, 1] }));
   });
 
   it('does not silently switch providers when the configured one is unavailable', async () => {
@@ -149,17 +150,52 @@ describe('framework-independent reader boundary', () => {
 
     await reader.load();
 
-    expect(reader.getState()).toMatchObject({
-      status: 'ready',
-      pages: [{ index: 0, url: 'cover' }, { index: 1, url: 'one' }, { index: 2, url: 'two' }, { index: 3, url: 'back' }],
-    });
+    expect(reader.getState()).toMatchObject({ status: 'ready', pages: [{ index: 0, url: 'cover' }] });
     expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([0]);
     reader.goTo(1);
+    await vi.waitFor(() => expect(reader.getState()).toMatchObject({ currentPage: 1 }));
+    await vi.waitFor(() => expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([1, 2]));
     expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([1, 2]);
     reader.goTo(3);
+    await vi.waitFor(() => expect(reader.getState()).toMatchObject({ currentPage: 3 }));
     expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([3]);
     reader.goTo(2);
+    await vi.waitFor(() => expect(reader.getState()).toMatchObject({ currentPage: 2 }));
+    await vi.waitFor(() => expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([1, 2]));
     expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([1, 2]);
+  });
+
+  it('retains only the current page and immediate neighbors while navigating', async () => {
+    const loadPage = vi.fn(async (index: number) => ({ url: `/page-${index + 1}.svg`, index }));
+    const reader = createReader({
+      ...input,
+      publication: { kind: 'image-pages', pages: Array.from({ length: 8 }, (_, index) => ({ url: `page-${index}` })) },
+    }, { 'ordered-images': async () => ({ pageCount: 8, loadPage }) });
+
+    await reader.load();
+    reader.goTo(5);
+    await vi.waitFor(() => expect(reader.getState()).toMatchObject({ currentPage: 5, loadedPages: [4, 5, 6] }));
+
+    expect(reader.getState()).toMatchObject({ pages: [
+      { index: 4 }, { index: 5 }, { index: 6 },
+    ] });
+    expect(loadPage).toHaveBeenCalledWith(5);
+  });
+
+  it('keeps odd-page publications single at both covers and the final page', async () => {
+    const reader = createReader({
+      ...input,
+      publication: { kind: 'image-pages', pages: Array.from({ length: 5 }, (_, index) => ({ url: `page-${index}` })) },
+    }, { 'ordered-images': imagePagesLoader });
+
+    await reader.load();
+    reader.goTo(1);
+    await vi.waitFor(() => expect(reader.getState()).toMatchObject({ currentPage: 1 }));
+    await vi.waitFor(() => expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([1, 2]));
+    expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([1, 2]);
+    reader.goTo(4);
+    await vi.waitFor(() => expect(reader.getState()).toMatchObject({ currentPage: 4 }));
+    expect(reader.getVisiblePages(true).map((page) => page.index)).toEqual([4]);
   });
 
   it('loads the visible page and adjacent pages, then releases distant surfaces', async () => {
@@ -200,5 +236,26 @@ describe('framework-independent reader boundary', () => {
     reader.destroy();
 
     expect(surface.release.mock.calls.map(([page]) => page.index)).toEqual([0, 1]);
+  });
+
+  it('cleans the PDF document when the reader is destroyed', async () => {
+    const cleanup = vi.fn();
+    const reader = createReader({
+      publication: { kind: 'pdf', url: 'https://cdn.example/zine.pdf' },
+      configuration: { provider: 'direct-pdf', mode: 'slide' },
+      metadata: input.metadata,
+      fallback: input.fallback,
+    }, {
+      'direct-pdf': async () => ({
+        pageCount: 1,
+        loadPage: async (index) => ({ url: `/pdf-${index}.png`, index }),
+        cleanup,
+      }),
+    });
+
+    await reader.load();
+    reader.destroy();
+
+    expect(cleanup).toHaveBeenCalledOnce();
   });
 });

@@ -16,8 +16,13 @@ h1 { font: clamp(2rem, 7vw, 4.5rem)/.95 Georgia, serif; margin: 0 0 1rem; max-wi
 .reader-page-turn-mount { height: min(70vh, 720px); max-width: 100%; width: min(100%, 1040px); }
 .reader-page { align-items: center; background: #fffdf8; display: flex; justify-content: center; overflow: hidden; }
 .reader-page img { height: 100%; max-width: 100%; object-fit: contain; width: 100%; }
+.reader-page { touch-action: pan-y; }
 .reader-page:not(:has(img)) { color: #30201699; font: .9rem system-ui, sans-serif; }
 .empty { opacity: .6; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
 
 @media (max-width: 699px) {
   .stage { min-height: 70vh; padding: 1rem; }

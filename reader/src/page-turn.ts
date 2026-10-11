@@ -34,6 +34,8 @@ export function createPageTurnRenderer(settings: PageTurnSettings = {}): ReaderR
   let pageCount = 0;
 
   const create = (container: HTMLElement, pages: readonly ReaderPage[], options: ReaderRendererOptions) => {
+    flip?.destroy();
+    mount?.remove();
     mount = document.createElement('div');
     mount.className = 'reader-page-turn-mount';
     container.append(mount);
@@ -53,6 +55,8 @@ export function createPageTurnRenderer(settings: PageTurnSettings = {}): ReaderR
       useMouseEvents: true,
       mobileScrollSupport: true,
       swipeDistance: 30,
+      drawShadow: !settings.reducedMotion,
+      maxShadowOpacity: settings.reducedMotion ? 0 : 0.35,
       flippingTime: settings.reducedMotion ? 1 : 850,
     });
     flip.loadFromHTML(items);

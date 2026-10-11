@@ -10,6 +10,12 @@ The PDF URL must be browser-consumable from the reader's origin. The source serv
 
 The standard viewer URL is supplied separately in `ReaderInput.fallback`. The reader never silently substitutes it for a failed custom load; the host chooses `useFallback()` after receiving a source or page failure.
 
+## Quality and support limits
+
+The quality baseline and the measurements made in this ticket are recorded in [`QUALITY.md`](./QUALITY.md). The core keeps a three-page working set (current page plus immediate neighbors), releases page surfaces before eviction, and cleans PDF.js documents on reader destruction or reload.
+
+The supported interaction path is PageFlip's pointer/mouse input on desktop and touch/swipe input on mobile, with Previous/Next controls as a non-gesture path. The checked browser path is the local Chromium/Vite demo. Safari, mobile Safari, Android Chrome, real-device touch latency, and large range-request PDFs were not available in this environment and remain consumer validation requirements rather than claims of support.
+
 ```bash
 pnpm install
 pnpm test
