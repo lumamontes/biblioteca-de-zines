@@ -5,6 +5,7 @@
  */
 
 import sharp from 'sharp';
+import { pathToFileURL } from 'node:url';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { createCanvas } = require('canvas');
 
@@ -25,11 +26,35 @@ type PdfJsLibrary = {
   version: string;
   GlobalWorkerOptions: { workerSrc: string };
   getDocument: (options: {
+    CanvasFactory?: typeof ProjectCanvasFactory;
     data: Uint8Array;
+    isImageDecoderSupported?: boolean;
+    isOffscreenCanvasSupported?: boolean;
     useSystemFonts: boolean;
     verbosity: number;
   }) => { promise: Promise<PdfDocument> };
 };
+
+class ProjectCanvasFactory {
+  create(width: number, height: number): { canvas: ReturnType<typeof createCanvas>; context: unknown } {
+    const canvas = createCanvas(width, height);
+    return { canvas, context: canvas.getContext('2d') };
+  }
+
+  reset(
+    canvasAndContext: { canvas: ReturnType<typeof createCanvas> },
+    width: number,
+    height: number,
+  ): void {
+    canvasAndContext.canvas.width = width;
+    canvasAndContext.canvas.height = height;
+  }
+
+  destroy(canvasAndContext: { canvas: ReturnType<typeof createCanvas> }): void {
+    canvasAndContext.canvas.width = 0;
+    canvasAndContext.canvas.height = 0;
+  }
+}
 
 // Import pdfjs-dist - using require to avoid ESM issues in Next.js
 let pdfjsLib: PdfJsLibrary;
@@ -45,14 +70,17 @@ try {
 
 // Polyfill browser APIs for Node.js
 if (typeof window === 'undefined') {
-  // Polyfill DOMMatrix and DOMPoint
+  // Use the same geometry types as the canvas implementation used for rendering.
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { DOMMatrix, DOMPoint } = require('@thednp/dommatrix');
+  const { DOMMatrix, DOMPoint } = require('canvas');
   global.DOMMatrix = DOMMatrix;
   global.DOMPoint = DOMPoint;
 
-  // Configure pdfjs worker for server-side
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+  // Use the installed worker in Node. A CDN URL makes pdfjs try to import it as
+  // a browser worker, which fails for local file URLs on macOS.
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pathToFileURL(
+    require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs'),
+  ).href;
 }
 
 /**
@@ -82,6 +110,9 @@ export async function forEachPageFromPdf(
     // Load the PDF document
     const loadingTask = pdfjsLib.getDocument({
       data: uint8Array,
+      CanvasFactory: ProjectCanvasFactory,
+      isImageDecoderSupported: false,
+      isOffscreenCanvasSupported: false,
       useSystemFonts: true,
       verbosity: 0, // Suppress warnings
     });
