@@ -36,4 +36,6 @@ CREATE TABLE IF NOT EXISTS public.zine_processing_jobs (
 CREATE INDEX IF NOT EXISTS idx_zine_processing_jobs_queue
   ON public.zine_processing_jobs(status, next_attempt_at, updated_at);
 
+ALTER TABLE public.zine_processing_jobs ENABLE ROW LEVEL SECURITY;
+
 COMMIT;
