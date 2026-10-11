@@ -12,7 +12,7 @@ export default async function HomePage() {
   const zines = await getAllZines();
 
   return (
-    <div className="flex flex-col min-h-screen max-w-8xl mx-auto px-6">
+    <div className="flex min-h-screen min-w-0 max-w-full flex-col overflow-x-hidden mx-auto px-6">
       <header className="flex items-center justify-between py-4 border-b">
         <Link href="/" className="text-lg font-semibold">
           Biblioteca de Zines

@@ -26,9 +26,9 @@ export default function AuthorForm({
   disabled = false,
 }: AuthorFormProps) {
   return (
-    <div className="border border-neutral-200 p-4 rounded-lg bg-neutral-50">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">
+    <div className="min-w-0 border border-neutral-200 p-4 rounded-lg bg-neutral-50">
+      <div className="flex min-w-0 items-center justify-between mb-4">
+        <h3 className="min-w-0 break-words text-lg font-medium">
           Autor {authorIndex + 1}
         </h3>
         {isRemovable && (
@@ -62,27 +62,27 @@ export default function AuthorForm({
           </label>
           <div className="space-y-2">
             {author.socialLinks.length === 0 ? (
-              <div className="flex gap-2">
+                <div className="flex min-w-0 gap-2">
                 <Input
                   id={`author-${authorIndex}-social-0`}
                   type="url"
                   value=""
                   onChange={(e) => onUpdateSocialLink(authorIndex, 0, e.target.value)}
                   placeholder="https://instagram.com/usuario"
-                  className="flex-1"
+                  className="min-w-0 flex-1"
                   disabled={disabled}
                 />
               </div>
             ) : (
               author.socialLinks.map((link, linkIndex) => (
-                <div key={linkIndex} className="flex gap-2">
+                <div key={linkIndex} className="flex min-w-0 gap-2">
                   <Input
                     id={`author-${authorIndex}-social-${linkIndex}`}
                     type="url"
                     value={link}
                     onChange={(e) => onUpdateSocialLink(authorIndex, linkIndex, e.target.value)}
                     placeholder="https://instagram.com/usuario"
-                    className="flex-1"
+                     className="min-w-0 flex-1"
                     disabled={disabled}
                   />
                   {author.socialLinks.length > 1 && (
@@ -113,4 +113,4 @@ export default function AuthorForm({
       </div>
     </div>
   );
-} 
+}

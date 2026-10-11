@@ -9,6 +9,7 @@ import { MediaMention } from "@/components/media-mention";
 import { WebsiteStructuredData } from "@/components/seo/structured-data";
 import { siteConfig } from "./config/site";
 import type { Metadata } from "next";
+import SafeImage from "@/components/safe-image";
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} - Arquivo Digital de Zines Brasileiros e Latino-Americanos`,
@@ -94,7 +95,7 @@ export default async function HomePage() {
             <div className="relative group perspective-1000">
               <div className="relative transform hover:scale-105  transition-all duration-300 cursor-pointer group-hover:shadow-2xl">
                 <div className="bg-white p-3 shadow-xl border border-gray-200 transform rotate-1 hover:rotate-2 transition-transform duration-300">
-                  <Image
+                  <SafeImage
                     src={thumbnailUrl}
                     alt={randomZine.title}
                     width={280}
