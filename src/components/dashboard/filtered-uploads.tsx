@@ -26,7 +26,7 @@ export const FilteredUploads = ({
 
   return (
     <section className="mt-8" data-testid="uploads-section">
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <Button
           onClick={() => setFilter("all")}
           className={`py-2 rounded-md transition ${

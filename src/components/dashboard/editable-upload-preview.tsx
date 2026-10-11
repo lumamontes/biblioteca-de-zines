@@ -105,7 +105,8 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
     return (
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
+        data-testid="upload-preview"
+        className="flex min-w-0 w-full items-start flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
       >
         <div className="flex-shrink-0">
           {thumbnailUrl && thumbnailUrl  !== '' && (
@@ -119,7 +120,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
           )}
         </div>
 
-        <div className="flex flex-col flex-grow space-y-4">
+        <div data-testid="upload-content" className="flex min-w-0 flex-1 flex-col break-words space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Título *
@@ -231,7 +232,10 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
           </div>
         </div>
 
-        <div className="flex flex-col justify-center gap-2 mt-4 sm:mt-0 sm:ml-4 min-w-[200px]">
+        <div
+          data-testid="upload-actions"
+          className="flex w-full shrink-0 flex-col gap-2 self-start sm:mt-0 sm:ml-4 sm:w-[200px]"
+        >
           <Button
             type="submit"
             disabled={isLoading}
@@ -254,7 +258,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
   return (
     <div
       data-testid="upload-preview"
-      className="flex flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
+      className="flex min-w-0 w-full items-start flex-col sm:flex-row border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition gap-4"
     >
       <div className="flex-shrink-0">
         {zine?.is_published && zine?.slug ? (
@@ -278,7 +282,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
         )}
       </div>
 
-      <div className="flex flex-col flex-grow">
+      <div data-testid="upload-content" className="flex min-w-0 flex-1 flex-col break-words">
         <p className="text-sm text-gray-500">{zine?.slug}</p>
         <h2 className="text-lg font-semibold">{upload.title}</h2>
         {upload.collection_title && (
@@ -303,7 +307,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
                     href={link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="break-words text-blue-600 hover:underline"
                   >
                     {link}
                   </Link>
@@ -313,7 +317,7 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
           ))}
           <p>{upload.author_email}</p>
           {legacyAuthorLinksNotice && (
-            <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+            <p className="break-words text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
               ⚠️ Envio antigo: não é possível saber de qual autor é cada link abaixo.
               Revise em &quot;Editar&quot; antes de publicar. Links originais: {legacyAuthorLinksNotice}
             </p>
@@ -321,13 +325,13 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
         </div>
 
         {upload.pdf_url && (
-          <p className="text-sm mt-2">
+          <p className="mt-2 break-words text-sm">
             Link da zine:{" "}
             <Link
               href={upload.pdf_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="break-words text-blue-600 hover:underline"
             >
               {upload.pdf_url}
             </Link>
@@ -348,7 +352,10 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
         )}
       </div>
 
-      <div className="flex flex-col justify-center gap-2 mt-4 sm:mt-0 sm:ml-4 min-w-[200px]">
+      <div
+        data-testid="upload-actions"
+        className="flex w-full shrink-0 flex-col gap-2 self-start sm:mt-0 sm:ml-4 sm:w-[200px]"
+      >
         <Button
           onClick={() => setIsEditing(true)}
           className="w-full bg-blue-500 text-white"
@@ -388,4 +395,4 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
       </div>
     </div>
   );
-}; 
+};
