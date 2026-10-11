@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import PDFViewer from "./pdf-viewer";
 import { createPdfLoader } from "../../reader/src/pdf";
 import { createReader } from "../../reader/src/reader";
-import type { PdfJs } from "../../reader/src/pdf";
 import type { ReaderBoundary, ReaderStatus } from "../../reader/src/contract";
 import {
   createPublicPublicationReaderInput,
@@ -30,7 +29,7 @@ export default function VisualPublicationReader(props: VisualPublicationReaderPr
         if (cancelled) return;
 
         const reader = createReader(input, {
-          "direct-pdf": createPdfLoader(pdfjs as unknown as PdfJs),
+          "direct-pdf": createPdfLoader(pdfjs),
         });
         readerRef.current = reader;
         const unsubscribe = reader.subscribe(setState);
