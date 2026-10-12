@@ -107,7 +107,7 @@ pnpm install
 pnpm dev
 ```
 
-The demo has an image-pages fixture and an intentionally incompatible PDF fixture. It demonstrates ready, loading, failure, explicit fallback, page-turn, slide, cover, spread, and narrow viewport behavior without depending on the Biblioteca application.
+The standalone demo is a comparison lab. It uses real external content from VisionFever and Borderline, preloads every selected page before initializing an engine, and keeps one clearly labelled 404 source for failure testing. React PageFlip, direct PageFlip, the Borderline-style BookReader browser bundle, and stable slide navigation are compared without changing the Biblioteca host integration or claiming a final tool.
 
 ## License and dependencies
 

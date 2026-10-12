@@ -26,9 +26,9 @@ reader.subscribe((state) => renderYourHostUi(state));
 await reader.load();
 ```
 
-For a complete browser integration, including PDF.js worker setup, page surfaces, the page-turn renderer, controls, and fallback action, see [`ADOPTION.md`](./ADOPTION.md). The runnable adopter fixture is in [`demo/`](./demo/).
+For a complete browser integration, including PDF.js worker setup, page surfaces, the page-turn renderer, controls, and fallback action, see [`ADOPTION.md`](./ADOPTION.md). The comparison lab is in [`demo/`](./demo/).
 
-The `demo/` application uses ordered image fixtures and an intentionally incompatible PDF fixture to demonstrate ready, failure, and fallback states. `createPdfLoader` adapts PDF.js core's `getDocument` API to the same lazy page contract: the reader renders the visible page first, then requests the previous and next pages. The adapter's default renderer creates browser canvas page surfaces; tests and alternate renderers can provide `renderPage`.
+The `demo/` application is a standalone comparison lab. It uses the first 12 pages, in repository order, from the real `lumamontes/visionfever-website` image set and the real PDF from `lumamontes/borderline-magazine`, plus one clearly labelled 404 source for failure testing. The lab materializes every selected source page before mounting React PageFlip, direct PageFlip, or BookReader, and includes stable slide navigation as the control. Its BookReader adapter follows Borderline's browser-bundle approach (jQuery, BookReader CSS, and `BookReader.js` from jsDelivr); if that bundle cannot initialize in Chromium, the lab reports the failure and offers slide fallback rather than claiming support.
 
 ## Direct PDF requirements
 
@@ -51,4 +51,5 @@ pnpm build
 pnpm build:package
 pnpm pack:check
 pnpm dev
+pnpm test:smoke
 ```

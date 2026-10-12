@@ -5,7 +5,12 @@
   "type": "module",
   "description": "Framework-independent reader core and browser adapters for fixed-layout visual publications.",
   "license": "GPL-3.0-only",
-  "files": ["dist", "README.md", "ADOPTION.md", "LICENSE.md"],
+  "files": [
+    "dist",
+    "README.md",
+    "ADOPTION.md",
+    "LICENSE.md"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -24,16 +29,24 @@
     "build:package": "tsc -p tsconfig.build.json",
     "pack:check": "pnpm build:package && pnpm pack --dry-run",
     "test": "vitest run --config vitest.config.ts",
+    "test:smoke": "playwright test",
     "test:watch": "vitest --config vitest.config.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@playwright/test": "^1.49.1",
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
     "vitest": "^2.1.8"
   },
   "dependencies": {
+    "@internetarchive/bookreader": "5.0.0-87",
     "page-flip": "^2.0.7",
-    "pdfjs-dist": "^4.10.38"
+    "pdfjs-dist": "^4.10.38",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-pageflip": "2.0.3"
   }
 }
