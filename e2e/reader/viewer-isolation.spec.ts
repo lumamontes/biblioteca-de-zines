@@ -86,6 +86,73 @@ test('does not load BookReader resources on the main application route', async (
   expect(bookReaderRequests).toEqual([]);
 });
 
+test('serves the versioned embed route for a historical slug without Biblioteca branding', async ({ page }) => {
+  let requestedApiUrl = '';
+  await page.route('**/api/public-reader/**', async (route) => {
+    requestedApiUrl = route.request().url();
+    await route.fulfill({ contentType: 'application/json', status: 200, body: JSON.stringify({
+      ...readerApi,
+      publication: { ...readerApi.publication, slug: 'canonical-zine' },
+    }) });
+  });
+  await page.route('**/api/public-reader/events', (route) => route.fulfill({ status: 204 }));
+  await mockBookReaderAssets(page);
+
+  await page.goto('/embed/v1/historical-zine');
+
+  await expect(page.locator('[data-reader-generation="generation-1"]')).toBeVisible();
+  const requestedUrl = new URL(requestedApiUrl);
+  expect(requestedUrl.pathname).toContain('/historical-zine');
+  expect(requestedUrl.searchParams.get('surface')).toBe('embed');
+  await expect(page.locator('.bookreader-viewer--branded')).toHaveCount(0);
+});
+
+test('opts into Biblioteca branding without changing the embed reader surface', async ({ page }) => {
+  let requestedApiUrl = '';
+  await page.route('**/api/public-reader/**', async (route) => {
+    requestedApiUrl = route.request().url();
+    await route.fulfill({ contentType: 'application/json', status: 200, body: JSON.stringify(readerApi) });
+  });
+  await page.route('**/api/public-reader/events', (route) => route.fulfill({ status: 204 }));
+  await mockBookReaderAssets(page);
+
+  await page.goto('/embed/v1/zine?branding=biblioteca');
+
+  await expect(page.locator('[data-reader-generation="generation-1"]')).toBeVisible();
+  expect(new URL(requestedApiUrl).searchParams.get('surface')).toBe('embed');
+  await expect(page.locator('.bookreader-viewer--branded')).toHaveCount(1);
+});
+
+test('keeps the explicit PDF fallback on the versioned embed route', async ({ page }) => {
+  await mockReaderApi(page, {
+    fallback: readerApi.fallback,
+    publication: readerApi.publication,
+    reason: 'page-generation-unavailable',
+    status: 'fallback',
+  });
+
+  await page.goto('/embed/v1/zine');
+
+  await expect(page.getByRole('link', { name: /Abrir o PDF original/ })).toHaveAttribute('href', readerApi.fallback.url);
+  await expect(page.locator('.bookreader-viewer--branded')).toHaveCount(0);
+});
+
+test('keeps the explicit PDF fallback when the embed renderer fails', async ({ page }) => {
+  await mockReaderApi(page, readerApi);
+  await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.js', (route) => route.fulfill({
+    contentType: 'application/javascript',
+    body: 'window.BookReader = function() { this.init = function() { throw new Error("embed init failed"); }; };',
+  }));
+  await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.css', (route) => route.fulfill({
+    contentType: 'text/css',
+    body: '',
+  }));
+
+  await page.goto('/embed/v1/zine');
+
+  await expect(page.getByRole('link', { name: /Abrir o PDF original/ })).toHaveAttribute('href', readerApi.fallback.url);
+});
+
 async function mockReaderApi(page: Page, body: object) {
   await page.route('**/api/public-reader/**', (route) => route.fulfill({
     contentType: 'application/json',
