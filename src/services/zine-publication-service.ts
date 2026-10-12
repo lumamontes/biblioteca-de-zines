@@ -1,11 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Json } from '@/types/database.types';
-import type { Author } from '@/schemas/apply-zine';
 import type { EditUploadFormData } from '@/schemas/edit-upload';
 import type { ZineTags } from '@/@types/zine';
 import { generateSlug } from '@/utils/slug';
 import { parseTags } from '@/utils/utils';
 import { flattenAuthors, parseUploadAuthors } from '@/utils/authors';
+import { syncAuthorsToZine } from './author-service';
 import { dispatchZineProcessing } from './zine-processing-dispatch-service';
 import { enqueueZineProcessing } from './enqueue-zine-processing';
 import {
@@ -121,7 +121,7 @@ export async function publishZineFromUpload(
     if (error) throw new Error(`Erro ao atualizar a zine: ${error.message}`);
   }
 
-  await syncZineAuthors(supabase, zineId, authors);
+  await syncAuthorsToZine(supabase, zineId, authors);
   const { error: uploadError } = await supabase
     .from('form_uploads')
     .update({ is_published: true })
@@ -207,46 +207,5 @@ async function requestZineProcessing(zineId: number): Promise<void> {
     await dispatchZineProcessing();
   } catch (error) {
     console.error('Erro ao enfileirar processamento da zine:', error);
-  }
-}
-
-async function syncZineAuthors(
-  supabase: ZineDatabaseClient,
-  zineId: number,
-  authors: Author[],
-): Promise<void> {
-  for (const author of authors) {
-    const name = author.name.trim();
-    if (!name) continue;
-    const url = (author.socialLinks || []).map((link) => link.trim()).filter(Boolean).join(', ') || null;
-
-    const { data: existingAuthor } = await supabase
-      .from('authors')
-      .select('id')
-      .eq('name', name)
-      .single();
-    let authorId = existingAuthor?.id;
-    if (!authorId) {
-      const { data: newAuthor, error } = await supabase
-        .from('authors')
-        .insert([{ name, url }])
-        .select('id')
-        .single();
-      if (error || !newAuthor) throw new Error(`Erro ao criar autor: ${error?.message}`);
-      authorId = newAuthor.id;
-    }
-
-    const { data: relation } = await supabase
-      .from('library_zines_authors')
-      .select('id')
-      .eq('zine_id', zineId)
-      .eq('author_id', authorId)
-      .single();
-    if (!relation) {
-      const { error } = await supabase
-        .from('library_zines_authors')
-        .insert([{ zine_id: zineId, author_id: authorId }]);
-      if (error) throw new Error(`Erro ao associar autor: ${error.message}`);
-    }
   }
 }
