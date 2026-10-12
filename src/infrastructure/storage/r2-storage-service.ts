@@ -7,6 +7,7 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, 
 import type { AssetStorage } from '@/application/asset-storage';
 import type { CoverAssetStore } from '@/application/cover-generation/cover-generation-types';
 import { coverObjectKey } from '@/infrastructure/storage/r2-cover-reference';
+import { IMMUTABLE_DERIVATIVE_CACHE_CONTROL } from '@/infrastructure/storage/cache-policy';
 
 // Initialize S3 client for R2
 function getR2Client(): S3Client {
@@ -62,13 +63,13 @@ export function createR2AssetStorage(): AssetStorage {
       const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
       if (!bucketName || !publicUrl) throw new Error('R2 bucket and public URL are required');
 
-       await client.send(new PutObjectCommand({
-         Bucket: bucketName,
-         Key: key,
-         Body: asset.data,
-         ContentType: asset.contentType,
-         CacheControl: 'public, max-age=31536000, immutable',
-       }));
+      await client.send(createPutObjectCommand({
+        body: asset.data,
+        bucket: bucketName,
+        cacheControl: IMMUTABLE_DERIVATIVE_CACHE_CONTROL,
+        contentType: asset.contentType,
+        key,
+      }));
       return `${publicUrl.replace(/\/$/, '')}/${key}`;
     },
     async deleteGeneration(target, generationId) {
@@ -117,6 +118,22 @@ export function createR2AssetStorage(): AssetStorage {
       }
     },
   };
+}
+
+export function createPutObjectCommand(input: {
+  body: Buffer;
+  bucket: string;
+  cacheControl: string;
+  contentType: string;
+  key: string;
+}) {
+  return new PutObjectCommand({
+    Bucket: input.bucket,
+    Body: input.body,
+    CacheControl: input.cacheControl,
+    ContentType: input.contentType,
+    Key: input.key,
+  });
 }
 
 export function createR2CoverAssetStore(): CoverAssetStore {

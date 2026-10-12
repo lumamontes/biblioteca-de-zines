@@ -6,6 +6,7 @@ import {
 } from '@/application/reader/viewer-rollout';
 import { getPublicReader } from '@/composition/server/public-reader';
 import { getViewerTrafficGuard } from '@/composition/server/viewer-traffic';
+import { createReaderResponseHeaders } from '@/infrastructure/storage/cache-policy';
 
 export async function GET(
   request: NextRequest,
@@ -47,12 +48,7 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 function response(body: unknown, status: number, origin: string | null, viewerOrigin: string, remaining = 120) {
-  const headers = new Headers({
-    'Cache-Control': 'no-store',
-    'X-RateLimit-Remaining': String(remaining),
-    Vary: 'Origin',
-  });
-  if (origin === viewerOrigin) headers.set('Access-Control-Allow-Origin', origin);
+  const headers = createReaderResponseHeaders(origin, viewerOrigin, remaining);
   if (status === 204) {
     headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
     headers.set('Access-Control-Allow-Headers', 'Content-Type');
