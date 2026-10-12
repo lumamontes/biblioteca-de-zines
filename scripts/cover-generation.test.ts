@@ -113,9 +113,10 @@ test('migration selects missing and unreachable generated covers while preservin
       createMigrationZine(2, 'https://drive.google.com/open?id=cover-2'),
       createMigrationZine(3, 'https://assets.example/zines/3/covers/old.webp'),
       createMigrationZine(4, 'https://assets.example/zines/4/covers/old.webp'),
+      createMigrationZine(6, 'file:///Users/example/Downloads/cover.pdf'),
     ], new Set([5]), async (url) => url !== 'https://assets.example/zines/4/covers/old.webp');
 
-    assert.deepEqual(candidates.map((zine) => zine.id), [1, 4]);
+    assert.deepEqual(candidates.map((zine) => zine.id), [1, 4, 6]);
   } finally {
     if (previousPublicUrl === undefined) delete process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
     else process.env.NEXT_PUBLIC_R2_PUBLIC_URL = previousPublicUrl;

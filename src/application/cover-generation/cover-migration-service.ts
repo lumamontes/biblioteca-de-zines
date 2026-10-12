@@ -1,4 +1,8 @@
-import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
+import {
+  isGeneratedCover,
+  isInvalidCoverReference,
+  isPlaceholderCover,
+} from '@/utils/cover-image';
 import type { CoverMigrationZine } from '@/application/cover-generation/cover-migration-types';
 
 export async function selectCoverMigrationCandidates(
@@ -15,7 +19,8 @@ export async function selectCoverMigrationCandidates(
       && zine.import_status === 'completed';
     if (generatedCoverIsCurrent && await isReachableImage(zine.cover_image)) continue;
     if (!isPlaceholderCover(zine.cover_image)
-      && !isGeneratedCover(zine.cover_image, zine.id)) continue;
+      && !isGeneratedCover(zine.cover_image, zine.id)
+      && !isInvalidCoverReference(zine.cover_image)) continue;
 
     candidates.push(zine);
   }
