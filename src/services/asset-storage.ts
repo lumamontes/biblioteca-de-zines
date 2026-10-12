@@ -15,6 +15,7 @@ export type AssetUpload = {
 };
 
 export type AssetStorage = {
+  deleteCover: (target: AssetTarget, coverUrl: string) => Promise<void>;
   deleteGeneration: (target: AssetTarget, generationId: string) => Promise<void>;
   upload: (asset: AssetUpload) => Promise<string>;
 };

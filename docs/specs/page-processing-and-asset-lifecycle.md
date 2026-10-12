@@ -4,7 +4,7 @@ This specification defines how Biblioteca de Zines turns submitted PDF sources i
 
 ## Status
 
-The generation-aware rendering, queue types, processed-source marker, and process-on-publication path exist. Automated legacy cleanup and the automatic worker workflow remain operational work. This document describes the contract those components satisfy.
+The full page-generation contract is preserved for future reader work. The current operational workflow is the cover-only contract in `cover-only-generation-and-migration.md`; queue and processed-source infrastructure are shared.
 
 ## Scope
 
@@ -151,7 +151,7 @@ Current R2 pricing reference: [Cloudflare R2 pricing](https://developers.cloudfl
 | `scripts/process-pending-zines.ts` | Local queue worker |
 | `src/app/api/internal/process-zines/route.ts` | Authenticated HTTP worker entry point |
 
-The dispatch service currently targets `.github/workflows/process-pending-zines.yml`, but no checked-in workflow currently exists. That worker integration must be completed or the dispatch path must be changed before it is considered production-ready.
+The dispatch service targets the checked-in `.github/workflows/process-pending-zines.yml` workflow. The workflow supports manual and scheduled execution; production credentials must be configured before relying on automatic processing.
 
 ## Legacy Schema
 

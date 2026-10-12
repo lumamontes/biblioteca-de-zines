@@ -1,6 +1,6 @@
 # Page Processing Runbook
 
-This runbook covers local migrations, queue processing, verification, and recovery for page and cover derivatives.
+This runbook covers local cover migrations, queue processing, verification, and recovery. Full page derivatives are a future capability.
 
 ## Storage Configuration
 
@@ -28,7 +28,7 @@ supabase db push
 
 Relevant migrations:
 
-- `20251226002136_addZinePagesAndImportFields.sql`: legacy zine page/import fields.
+- `20251226002136_addZinePagesAndImportFields.sql`: retained future zine page/import fields.
 - `20261011000000_addZineProcessingJobs.sql`: generation-aware publication pages and processing queue.
 - `20261011010000_addFormUploadPageProcessing.sql`: historical form-upload processing state and staging pages.
 - `20261012000000_removeLegacyFormUploadPages.sql`: removes the unused form-upload processing state and staging table.
@@ -50,12 +50,18 @@ Apply processing:
 pnpm migrate:pdf-covers -- --only-id <zine_id> --apply
 ```
 
-The command downloads the current source, renders pages into the public bucket, and records `active_page_generation`, `total_pages`, and `import_status`.
+Apply all eligible published-zine covers after reviewing the dry run:
+
+```bash
+pnpm migrate:pdf-covers -- --apply
+```
+
+The command downloads the current source, renders only the first page into an optimized WebP cover, and records the processed PDF source and processing status.
 
 To render only the first page of an existing intake PDF locally, without changing the database or uploading an asset:
 
 ```bash
-pnpm generate:form-upload-cover --upload-id 123 --output /tmp/form-upload-123-cover.png
+pnpm generate:form-upload-cover --upload-id 123 --output /tmp/form-upload-123-cover.webp
 ```
 
 The command is dry-run by default. `--only-id` applies to published `library_zines`.
@@ -77,19 +83,19 @@ Authorization: Bearer <CRON_SECRET>
 
 The route claims one leased job, processes one generation, and records completion or retryable failure.
 
-The dispatch service currently references `.github/workflows/process-pending-zines.yml`. Verify that workflow exists before relying on automatic dispatch; it is currently not checked into this repository.
+The workflow supports manual dispatch and a scheduled fallback. The application can request an immediate workflow dispatch when GitHub Actions credentials are configured.
 
 ## Verification Queries
 
-Check a publication:
+Check a publication's current cover:
 
 ```sql
-select id, pdf_url, processed_pdf_url, active_page_generation, total_pages, import_status, is_published
+select id, pdf_url, processed_pdf_url, cover_image, import_status, is_published
 from library_zines
 where id = <zine_id>;
 ```
 
-Check publication pages:
+Future page-derivative verification:
 
 ```sql
 select generation_id, page_number, image_url
@@ -98,28 +104,20 @@ where zine_id = <zine_id>
 order by generation_id, page_number;
 ```
 
-Check a publication:
-
-```sql
-select id, source_upload_id, pdf_url, active_page_generation, total_pages, import_status, is_published
-from library_zines
-where id = <zine_id>;
-```
-
 ## Safe Reprocessing Rules
 
-- Same source URL and complete active generation: reuse; do not rerender.
-- Changed source URL: create a new generation.
-- Missing or incomplete active generation: regenerate.
+- Same source URL and complete generated cover: reuse; do not rerender.
+- Changed source URL and generated fallback cover: create a new cover generation.
+- Missing or incomplete generated cover: regenerate.
 - Metadata-only edit: do not process.
 - Keep the current successful generation until its replacement is verified.
-- Delete old public objects only after the new public generation is active.
+- Delete old generated cover objects only after the new cover is active.
 
 ## Cover Verification
 
 - A provided cover URL must remain unchanged.
 - An empty cover uses the first PDF page as the default.
-- A PDF change regenerates a fallback cover.
+- A PDF change regenerates a generated fallback cover.
 - A cover-only edit does not rerender the PDF.
 
 ## Troubleshooting

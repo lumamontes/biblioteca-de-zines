@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../src/types/database.types';
-import { isPlaceholderCover } from '../src/utils/cover-image';
+import { isGeneratedCover, isPlaceholderCover } from '../src/utils/cover-image';
 
 type MonitorReport = {
   results?: Array<{ resourceId?: string; outcome?: string }>;
@@ -30,39 +30,45 @@ async function main(): Promise<void> {
 
   const { data: zines, error } = await supabase
     .from('library_zines')
-    .select('id, title, pdf_url, processed_pdf_url, cover_image, import_status, total_pages')
+    .select('id, title, pdf_url, processed_pdf_url, cover_image, import_status')
     .eq('is_published', true)
     .not('pdf_url', 'is', null);
 
   if (error) throw new Error(`Failed to load zines: ${error.message}`);
 
-  const candidates = (zines ?? []).filter((zine) => {
-    if (onlyId && zine.id !== Number(onlyId)) return false;
-    if (excludedIds.has(zine.id)) return false;
-    return zine.pdf_url !== zine.processed_pdf_url
-      || zine.import_status !== 'completed'
-      || !zine.total_pages
-      || isPlaceholderCover(zine.cover_image);
-  });
+  const candidates: Array<NonNullable<typeof zines>[number]> = [];
+  for (const zine of zines ?? []) {
+    if (onlyId && zine.id !== Number(onlyId)) continue;
+    if (excludedIds.has(zine.id)) continue;
+    if (!zine.pdf_url || isGeneratedCover(zine.cover_image)
+      && zine.processed_pdf_url === zine.pdf_url
+      && zine.import_status === 'completed') continue;
+    if (!isPlaceholderCover(zine.cover_image) && await isReachableImage(zine.cover_image)) continue;
+    candidates.push(zine);
+  }
 
   console.log(`${apply ? 'Applying' : 'Dry run'} PDF migration for ${candidates.length} zines`);
   console.log(`Excluded by monitor report: ${excludedIds.size}`);
 
-  const { createPageGenerationFromUrl } = apply
-    ? await import('../src/services/zine-import-service')
-    : { createPageGenerationFromUrl: null };
+  const { createCoverGenerationFromUrl } = apply
+    ? await import('../src/services/cover-import-service')
+    : { createCoverGenerationFromUrl: null };
 
+  let failures = 0;
   for (const zine of candidates) {
     console.log(`[${apply ? 'process' : 'would process'}] ${zine.id}: ${zine.title}`);
-    if (apply && zine.pdf_url && createPageGenerationFromUrl) {
+    if (apply && zine.pdf_url && createCoverGenerationFromUrl) {
       try {
-        await createPageGenerationFromUrl(zine.id, zine.pdf_url, supabase);
+        await createCoverGenerationFromUrl(zine.id, zine.pdf_url, supabase);
         console.log(`  completed (${zine.id})`);
       } catch (migrationError) {
+        failures += 1;
         console.error(`  failed (${zine.id}):`, migrationError);
       }
     }
   }
+  console.log(`${apply ? 'Processed' : 'Selected'} ${candidates.length} zines; ${failures} failures`);
+  if (failures > 0) process.exitCode = 1;
 }
 
 function getArgument(name: string): string | undefined {
@@ -73,6 +79,16 @@ function getArgument(name: string): string | undefined {
 function parseResourceId(resourceId: string | undefined): number | null {
   const match = resourceId?.match(/^library_zines:(\d+)$/);
   return match ? Number(match[1]) : null;
+}
+
+async function isReachableImage(url: string | null): Promise<boolean> {
+  if (!url) return false;
+  try {
+    const response = await fetch(url, { method: 'HEAD', redirect: 'follow' });
+    return response.ok && response.headers.get('content-type')?.startsWith('image/') === true;
+  } catch {
+    return false;
+  }
 }
 
 main().catch((error: unknown) => {

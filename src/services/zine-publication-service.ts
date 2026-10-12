@@ -5,13 +5,11 @@ import type { ZineTags } from '@/@types/zine';
 import { generateSlug } from '@/utils/slug';
 import { parseTags } from '@/utils/utils';
 import { flattenAuthors, parseUploadAuthors } from '@/utils/authors';
+import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
 import { syncAuthorsToZine } from './author-service';
 import { dispatchZineProcessing } from './zine-processing-dispatch-service';
 import { enqueueZineProcessing } from './enqueue-zine-processing';
-import {
-  hasCompleteZineGeneration,
-  restoreFirstPageCover,
-} from './supabase-zine-page-repository';
+import { hasCompleteGeneratedCover } from './supabase-zine-cover-repository';
 
 type ZineDatabaseClient = SupabaseClient<Database>;
 
@@ -32,7 +30,7 @@ export async function republishZine(
 ): Promise<void> {
   const { data: zine, error: fetchError } = await supabase
     .from('library_zines')
-    .select('pdf_url')
+    .select('pdf_url, cover_image')
     .eq('id', zineId)
     .single();
   if (fetchError) throw new Error(`Erro ao buscar zine: ${fetchError.message}`);
@@ -43,7 +41,9 @@ export async function republishZine(
     .eq('id', zineId);
   if (error) throw new Error(`Erro ao republicar a zine: ${error.message}`);
 
-  if (zine.pdf_url && !(await hasCompleteZineGeneration(supabase, zineId, zine.pdf_url))) {
+  if (zine.pdf_url && (isPlaceholderCover(zine.cover_image)
+    || isGeneratedCover(zine.cover_image)
+      && !(await hasCompleteGeneratedCover(supabase, zineId, zine.pdf_url)))) {
     await requestZineProcessing(zineId);
   }
 }
@@ -65,12 +65,12 @@ export async function publishZineFromUpload(
   const slug = generateSlug(authors[0].name, upload.title);
   const { data: existingZine } = await supabase
     .from('library_zines')
-    .select('id, tags, source_upload_id')
+    .select('id, tags, source_upload_id, cover_image')
     .eq('slug', slug)
     .single();
 
   let zineId: number;
-  let shouldProcess = true;
+  let shouldProcess = false;
   if (!existingZine) {
     const { data: newZine, error } = await supabase
       .from('library_zines')
@@ -91,12 +91,14 @@ export async function publishZineFromUpload(
       .single();
     if (error || !newZine) throw new Error(`Erro ao publicar a zine: ${error?.message}`);
     zineId = newZine.id;
+    shouldProcess = Boolean(upload.pdf_url && isPlaceholderCover(upload.cover_image));
   } else {
     zineId = existingZine.id;
-    shouldProcess = Boolean(
-      upload.pdf_url
-      && !(await hasCompleteZineGeneration(supabase, zineId, upload.pdf_url)),
-    );
+    shouldProcess = Boolean(upload.pdf_url && (
+      isPlaceholderCover(existingZine.cover_image)
+      || isGeneratedCover(existingZine.cover_image)
+        && !(await hasCompleteGeneratedCover(supabase, zineId, upload.pdf_url))
+    ));
 
     const existingTags = parseTags(existingZine.tags);
     const newTags = parseTags(upload.tags);
@@ -151,7 +153,7 @@ export async function updateUploadAndPublishedZine(
   const publishedZine = validatedData.slug
     ? (await supabase
       .from('library_zines')
-      .select('id, is_published')
+      .select('id, is_published, cover_image')
       .eq('slug', validatedData.slug)
       .single()).data
     : null;
@@ -175,6 +177,11 @@ export async function updateUploadAndPublishedZine(
 
   if (!validatedData.slug) return;
 
+  const nextCoverImage = validatedData.cover_image
+    || (publishedZine?.cover_image && isGeneratedCover(publishedZine.cover_image)
+      ? publishedZine.cover_image
+      : null);
+
   const { error: zineError } = await supabase
     .from('library_zines')
     .update({
@@ -182,7 +189,7 @@ export async function updateUploadAndPublishedZine(
       description: validatedData.description || null,
       collection_title: validatedData.collection_title || null,
       pdf_url: nextPdfUrl,
-      cover_image: validatedData.cover_image || null,
+      cover_image: nextCoverImage,
       year: validatedData.published_year || null,
       tags: tagsJson,
       ...(pdfChanged && nextPdfUrl ? { import_status: 'pending' } : {}),
@@ -193,12 +200,10 @@ export async function updateUploadAndPublishedZine(
   const shouldProcessPublished = Boolean(
     publishedZine
     && nextPdfUrl
-    && !(await hasCompleteZineGeneration(supabase, publishedZine.id, nextPdfUrl)),
+    && (!validatedData.cover_image || isGeneratedCover(validatedData.cover_image))
+    && !(await hasCompleteGeneratedCover(supabase, publishedZine.id, nextPdfUrl)),
   );
   if (shouldProcessPublished && publishedZine) await requestZineProcessing(publishedZine.id);
-  if (publishedZine?.is_published && !validatedData.cover_image) {
-    await restoreFirstPageCover(supabase, publishedZine.id);
-  }
 }
 
 async function requestZineProcessing(zineId: number): Promise<void> {

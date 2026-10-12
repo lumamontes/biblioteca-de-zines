@@ -97,6 +97,15 @@ export async function extractPagesFromPdf(
   return pages;
 }
 
+export async function extractFirstPageFromPdf(pdfBuffer: Buffer): Promise<Buffer> {
+  let firstPage: Buffer | undefined;
+  await forEachPageFromPdf(pdfBuffer, async (pageBuffer) => {
+    firstPage = pageBuffer;
+  }, { maxPages: 1 });
+  if (!firstPage) throw new Error('The source PDF has no pages');
+  return firstPage;
+}
+
 export async function forEachPageFromPdf(
   pdfBuffer: Buffer,
   onPage: (pageBuffer: Buffer, pageNumber: number) => Promise<void>,

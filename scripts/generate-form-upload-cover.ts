@@ -2,11 +2,12 @@ import 'dotenv/config';
 import { writeFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../src/types/database.types';
-import { forEachPageFromPdf } from '../src/services/pdf-service';
+import { extractFirstPageFromPdf } from '../src/services/pdf-service';
+import { optimizeCoverImage } from '../src/services/cover-generation-module';
 import { downloadSource } from '../src/services/source-download-service';
 
 const uploadId = getRequiredArgument('--upload-id');
-const outputPath = getArgument('--output') ?? `/tmp/form-upload-${uploadId}-cover.png`;
+const outputPath = getArgument('--output') ?? `/tmp/form-upload-${uploadId}-cover.webp`;
 
 async function main(): Promise<void> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -30,9 +31,8 @@ async function main(): Promise<void> {
     throw new Error(`Form upload ${uploadId} is not a PDF source`);
   }
 
-  await forEachPageFromPdf(source.buffer, async (cover) => {
-    await writeFile(outputPath, cover);
-  }, { maxPages: 1 });
+  const firstPage = await extractFirstPageFromPdf(source.buffer);
+  await writeFile(outputPath, await optimizeCoverImage(firstPage));
 
   console.log(`Generated cover for ${upload.id} (${upload.title}) at ${outputPath}`);
 }

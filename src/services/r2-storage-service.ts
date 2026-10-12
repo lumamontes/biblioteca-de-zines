@@ -34,7 +34,8 @@ function generateGenerationKey(
   pageNumber?: number,
 ): string {
   const ext = extension.startsWith('.') ? extension.slice(1) : extension;
-  const name = kind === 'cover' ? 'cover' : `page-${pageNumber}`;
+  if (kind === 'cover') return `zines/${target.id}/covers/${generationId}.${ext}`;
+  const name = `page-${pageNumber}`;
   return `zines/${target.id}/generations/${generationId}/${name}.${ext}`;
 }
 
@@ -55,18 +56,41 @@ export function createR2AssetStorage(): AssetStorage {
       const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
       if (!bucketName || !publicUrl) throw new Error('R2 bucket and public URL are required');
 
-      await client.send(new PutObjectCommand({
-        Bucket: bucketName,
-        Key: key,
-        Body: asset.data,
-        ContentType: asset.contentType,
-      }));
+       await client.send(new PutObjectCommand({
+         Bucket: bucketName,
+         Key: key,
+         Body: asset.data,
+         ContentType: asset.contentType,
+         CacheControl: 'public, max-age=31536000, immutable',
+       }));
       return `${publicUrl.replace(/\/$/, '')}/${key}`;
     },
     async deleteGeneration(target, generationId) {
       await deleteR2Prefix(client, `zines/${target.id}/generations/${generationId}/`);
+      await deleteCoverObject(client, target, `${generationId}.webp`);
+    },
+    async deleteCover(target, coverUrl) {
+      const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/$/, '');
+      const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+      if (!publicUrl || !bucketName || !coverUrl.startsWith(`${publicUrl}/zines/${target.id}/covers/`)) return;
+      const key = coverUrl.slice(`${publicUrl}/`.length);
+      if (!/^zines\/\d+\/covers\/[^/]+\.webp$/.test(key)) return;
+      await client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: key }));
     },
   };
+}
+
+async function deleteCoverObject(
+  client: S3Client,
+  target: { id: number; kind: 'zine' },
+  fileName: string,
+): Promise<void> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  if (!bucketName) throw new Error('CLOUDFLARE_R2_BUCKET_NAME is not configured');
+  await client.send(new DeleteObjectCommand({
+    Bucket: bucketName,
+    Key: `zines/${target.id}/covers/${fileName}`,
+  }));
 }
 
 async function deleteR2Prefix(client: S3Client, prefix: string): Promise<void> {
