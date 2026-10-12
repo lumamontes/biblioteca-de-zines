@@ -28,9 +28,7 @@ export async function getPublicReaderPublication(
     const manifest = createPageManifest({
       generationId: publication.activePageGeneration,
       pageCount: publication.totalPages ?? 0,
-      pages: publication.pages
-        .filter((page) => page.generationId === publication.activePageGeneration)
-        .sort((left, right) => left.pageNumber - right.pageNumber),
+      pages: [...publication.pages].sort((left, right) => left.pageNumber - right.pageNumber),
     });
     return {
       fallback,

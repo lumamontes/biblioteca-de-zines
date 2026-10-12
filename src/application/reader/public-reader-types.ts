@@ -21,6 +21,7 @@ export type PublicReaderFallbackReason =
   | 'incomplete-page-generation'
   | 'page-generation-failed'
   | 'page-generation-unavailable'
+  | 'reader-failure'
   | 'source-unavailable';
 
 export type PublicReaderFallback = {

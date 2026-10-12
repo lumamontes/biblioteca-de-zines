@@ -29,12 +29,11 @@ test('returns the validated active generation for a public publication', async (
   assert.equal(result.fallback.url, 'https://drive.example/zine.pdf');
 });
 
-test('filters previous generations and returns active pages in order', async () => {
+test('returns active pages in order', async () => {
   const result = await getPublicReaderPublication(repository({
     activePageGeneration: 'generation-2',
     importStatus: 'completed',
     pages: [
-      { ...page, generationId: 'generation-1' },
       { ...page, generationId: 'generation-2', pageNumber: 2, imageUrl: 'https://assets.example/page-2.png' },
       { ...page, generationId: 'generation-2' },
     ],

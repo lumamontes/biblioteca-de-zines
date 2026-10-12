@@ -1,11 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getPreviewUrl } from '@/utils/assets';
-import { createReaderSession } from '@/application/reader';
-import type { ReaderSession, ReaderSessionState } from '@/application/reader';
 import type { PublicReaderFallbackReason, PublicReaderResult } from '@/application/reader';
-import { createPublicReaderRenderer } from '@/composition/client/create-image-reader-renderer';
 import PDFViewer from '@/components/pdf-viewer';
 
 type PublicReaderProps = {
@@ -22,27 +19,14 @@ const FALLBACK_MESSAGES: Record<PublicReaderFallbackReason | 'reader-failure' | 
 };
 
 export function PublicReader({ reader }: PublicReaderProps) {
-  const targetRef = useRef<HTMLDivElement>(null);
-  const sessionRef = useRef<ReaderSession | null>(null);
-  const [state, setState] = useState<ReaderSessionState>(() => initialState(reader));
+  const [state, setState] = useState<PublicReaderResult>(reader);
 
   useEffect(() => {
-    setState(initialState(reader));
-    if (reader.status !== 'ready' || !targetRef.current) return undefined;
-    const session = createReaderSession({ fallback: reader.fallback, manifest: reader.manifest }, createPublicReaderRenderer());
-    sessionRef.current = session;
-    const unsubscribe = session.subscribe(setState);
-    session.mount(targetRef.current);
-    return () => {
-      unsubscribe();
-      session.destroy();
-      sessionRef.current = null;
-    };
+    setState(reader);
   }, [reader]);
 
-  if (state.status === 'fallback') {
-    return <FallbackView fallback={state.fallback} reason={state.reason} />;
-  }
+  if (state.status === 'fallback') return <FallbackView fallback={state.fallback} reason={state.reason} />;
+  if (reader.status === 'fallback') return <FallbackView fallback={reader.fallback} reason={reader.reason} />;
 
   return (
     <section
@@ -51,34 +35,30 @@ export function PublicReader({ reader }: PublicReaderProps) {
       data-reader-generation={state.manifest.generationId}
       data-reader-state="ready"
     >
-      <div className="flex min-h-[60vh] items-center justify-center bg-neutral-100 p-4" ref={targetRef} />
+      <div className="flex min-h-[60vh] items-center justify-center bg-neutral-100 p-4">
+        {/* Page derivatives may come from the configured custom asset domain. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          alt={`Página 1 de ${state.manifest.pageCount}`}
+          className="max-h-[70vh] max-w-full object-contain"
+          height={state.manifest.pages[0].height}
+          onError={() => setState({
+            fallback: state.fallback,
+            reason: 'reader-failure',
+            status: 'fallback',
+          })}
+          src={state.manifest.pages[0].imageUrl}
+          width={state.manifest.pages[0].width}
+        />
+      </div>
       <div className="flex items-center justify-between gap-4 text-sm">
-        <div className="flex items-center gap-3">
-          <button className="underline" onClick={() => sessionRef.current?.previous()} type="button">
-            Página anterior
-          </button>
-          <span>Página {state.currentPage} de {state.manifest.pageCount}</span>
-          <button className="underline" onClick={() => sessionRef.current?.next()} type="button">
-            Próxima página
-          </button>
-        </div>
+        <span>{state.manifest.pageCount} páginas disponíveis</span>
         <a className="underline" href={reader.fallback.url} target="_blank" rel="noreferrer">
           Abrir o PDF original
         </a>
       </div>
     </section>
   );
-}
-
-function initialState(reader: PublicReaderResult): ReaderSessionState {
-  if (reader.status === 'fallback') {
-    return reader;
-  }
-  return {
-    currentPage: reader.manifest.pages[0].pageNumber,
-    manifest: reader.manifest,
-    status: 'ready',
-  };
 }
 
 function FallbackView({
