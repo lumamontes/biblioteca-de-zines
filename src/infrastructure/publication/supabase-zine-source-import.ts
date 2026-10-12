@@ -1,13 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
-import { enqueueZineProcessing } from '@/infrastructure/processing/enqueue-zine-processing';
-import { dispatchZineProcessing } from '@/infrastructure/processing/zine-processing-dispatch-service';
-import { createZineSourceImportService } from '@/application/source-import/zine-source-import-service';
+import { createZineProcessingRequester } from '@/infrastructure/processing/zine-processing-requester';
+import { createZineSourceImportModule } from '@/application/source-import/source-import-module';
 
 export function createSupabaseZineSourceImportService(
   supabase: SupabaseClient<Database>,
 ) {
-  return createZineSourceImportService({
+  return createZineSourceImportModule({
     zines: {
       async updatePdfUrl(zineId, pdfUrl) {
         const { error } = await supabase
@@ -17,11 +16,6 @@ export function createSupabaseZineSourceImportService(
         if (error) throw new Error(`Failed to queue zine processing: ${error.message}`);
       },
     },
-    processing: {
-      async request(zineId) {
-        await enqueueZineProcessing(zineId);
-        await dispatchZineProcessing();
-      },
-    },
+    processing: createZineProcessingRequester(),
   });
 }

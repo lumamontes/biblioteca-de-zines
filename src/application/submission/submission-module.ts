@@ -5,7 +5,7 @@ import type {
   SubmissionRepository,
 } from '@/application/submission/submission-types';
 
-export function createSubmissionService(deps: {
+export function createSubmissionModule(deps: {
   submissions: SubmissionRepository;
   notifications: SubmissionNotifier;
 }) {

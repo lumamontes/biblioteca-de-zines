@@ -1,3 +1,5 @@
+import type { ProcessingRequester } from '@/application/processing/processing-request-types';
+
 export type PublicationAuthor = {
   name: string;
   socialLinks: string[];
@@ -81,9 +83,7 @@ export interface CoverAvailability {
   isAvailable(zineId: number, coverImage: string): Promise<boolean>;
 }
 
-export interface ProcessingRequester {
-  request(zineId: number): Promise<void>;
-}
+export type { ProcessingRequester } from '@/application/processing/processing-request-types';
 
 export interface ZinePublicationDependencies {
   publications: PublicationRepository;

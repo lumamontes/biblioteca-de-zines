@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createZinePublicationService } from '../src/application/publication/zine-publication-service';
+import { createZinePublicationModule } from '../src/application/publication/publication-module';
 import { needsGeneratedCover, resolvePublishedCover } from '../src/application/publication/cover-publication-policy';
 import type {
   PublicationRecord,
@@ -61,7 +61,7 @@ test('publication service queues a missing cover and preserves a custom cover', 
   };
   const queued: number[] = [];
   const repository = createRepository(upload, null, created);
-  const service = createZinePublicationService({
+  const service = createZinePublicationModule({
     publications: repository,
     authors: { sync: async () => {} },
     covers: { isAvailable: async () => false },
@@ -78,7 +78,7 @@ test('publication service queues a missing cover and preserves a custom cover', 
     importStatus: 'completed',
   });
   const customQueued: number[] = [];
-  const customService = createZinePublicationService({
+  const customService = createZinePublicationModule({
     publications: customRepository,
     authors: { sync: async () => {} },
     covers: { isAvailable: async () => false },

@@ -5,6 +5,7 @@
 
 import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, HeadObjectCommand } from '@aws-sdk/client-s3';
 import type { AssetStorage } from '@/application/asset-storage';
+import type { CoverAssetStore } from '@/application/cover-generation/cover-generation-types';
 import { coverObjectKey } from '@/infrastructure/storage/r2-cover-reference';
 
 // Initialize S3 client for R2
@@ -93,6 +94,24 @@ export function createR2AssetStorage(): AssetStorage {
         return false;
       }
     },
+  };
+}
+
+export function createR2CoverAssetStore(): CoverAssetStore {
+  const storage = createR2AssetStorage();
+  return {
+    storeCover(asset) {
+      return storage.upload({
+        data: asset.data,
+        contentType: 'image/webp',
+        generationId: asset.generationId,
+        kind: 'cover',
+        target: asset.target,
+      });
+    },
+    discardGeneration: storage.deleteGeneration,
+    removeCover: storage.deleteCover,
+    isAvailable: storage.isCoverAvailable,
   };
 }
 

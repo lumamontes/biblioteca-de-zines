@@ -6,8 +6,11 @@ import { selectCoverMigrationCandidates } from '../src/application/cover-generat
 import { isCompleteGeneratedCover } from '../src/application/cover-generation/cover-generation-policy';
 import { optimizeCoverImage } from '../src/infrastructure/cover-generation/cover-image-optimizer';
 import { generateGenerationKey } from '../src/infrastructure/storage/r2-storage-service';
-import type { AssetStorage } from '../src/application/asset-storage';
-import type { CoverGenerationRepository } from '../src/application/cover-generation/cover-generation-types';
+import { coverObjectKey } from '../src/infrastructure/storage/r2-cover-reference';
+import type {
+  CoverAssetStore,
+  CoverGenerationRepository,
+} from '../src/application/cover-generation/cover-generation-types';
 
 test('cover generation produces a bounded WebP and publishes it after upload', async () => {
   const source = await createImage(2400, 1800);
@@ -26,7 +29,6 @@ test('cover generation produces a bounded WebP and publishes it after upload', a
   );
 
   const uploaded = storage.uploaded[0];
-  assert.equal(uploaded.contentType, 'image/webp');
   assert.deepEqual(await sharp(uploaded.data).metadata().then(({ format, width, height }) => ({ format, width, height })), {
     format: 'webp',
     width: 1600,
@@ -53,6 +55,24 @@ test('failed cover generation records failure and removes the new generation', a
   assert.deepEqual(calls, ['mark-processing', 'mark-failed', 'delete-generation']);
 });
 
+test('stale cover generation is discarded without deleting the active cover', async () => {
+  const calls: string[] = [];
+  const repository = createRepository(calls, false);
+  const storage = createStorage(calls);
+
+  await createCoverGeneration(
+    async () => ({ buffer: Buffer.from('%PDF stale'), mimeType: 'application/pdf' }),
+    { id: 42, kind: 'zine' },
+    repository,
+    storage,
+    'https://drive.example/source.pdf',
+    async () => Buffer.from('rendered'),
+    async (image) => image,
+  );
+
+  assert.deepEqual(calls, ['mark-processing', 'upload', 'publish', 'delete-generation']);
+});
+
 test('cover optimization does not enlarge small images', async () => {
   const optimized = await optimizeCoverImage(await createImage(400, 600));
   const metadata = await sharp(optimized).metadata();
@@ -65,6 +85,22 @@ test('cover storage uses the immutable WebP cover namespace', () => {
   assert.equal(
     generateGenerationKey({ id: 42, kind: 'zine' }, 'generation-1', 'cover', 'webp'),
     'zines/42/covers/generation-1.webp',
+  );
+});
+
+test('cover storage accepts only generated cover URLs from the configured public domain', () => {
+  const target = { id: 42, kind: 'zine' as const };
+  assert.equal(
+    coverObjectKey('https://assets.example', target, 'https://assets.example/zines/42/covers/generation-1.webp'),
+    'zines/42/covers/generation-1.webp',
+  );
+  assert.equal(
+    coverObjectKey('https://assets.example', target, 'https://other.example/zines/42/covers/generation-1.webp'),
+    null,
+  );
+  assert.equal(
+    coverObjectKey('https://assets.example', target, 'https://assets.example/zines/42/covers/generation-1.png'),
+    null,
   );
 });
 
@@ -110,7 +146,7 @@ async function createImage(width: number, height: number): Promise<Buffer> {
   }).png().toBuffer();
 }
 
-function createRepository(calls: string[]): CoverGenerationRepository {
+function createRepository(calls: string[], activated = true): CoverGenerationRepository {
   return {
     async getState() {
       return { coverImage: 'https://assets.example/zines/42/covers/old.webp' };
@@ -123,26 +159,26 @@ function createRepository(calls: string[]): CoverGenerationRepository {
     },
     async publish() {
       calls.push('publish');
-      return true;
+      return activated;
     },
   };
 }
 
-function createStorage(calls: string[]): AssetStorage & { uploaded: Array<{ contentType: string; data: Buffer }> } {
-  const uploaded: Array<{ contentType: string; data: Buffer }> = [];
+function createStorage(calls: string[]): CoverAssetStore & { uploaded: Array<{ data: Buffer }> } {
+  const uploaded: Array<{ data: Buffer }> = [];
   return {
     uploaded,
-    async deleteCover() {
+    async removeCover() {
       calls.push('delete-cover');
     },
-    async deleteGeneration() {
+    async discardGeneration() {
       calls.push('delete-generation');
     },
-    async isCoverAvailable() {
+    async isAvailable() {
       return true;
     },
-    async upload(asset) {
-      uploaded.push({ contentType: asset.contentType, data: asset.data });
+    async storeCover(asset) {
+      uploaded.push({ data: asset.data });
       calls.push('upload');
       return 'https://assets.example/zines/42/covers/new.webp';
     },

@@ -1,5 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
-import { createSupabaseAuthorReader } from '@/infrastructure/authors/supabase-author-reader';
+import { createAuthorReader } from '@/composition/server/author-reader';
 import { ZineGridServer } from "@/components/zines/zine-grid-server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -15,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const reader = createSupabaseAuthorReader(await createClient());
+  const reader = await createAuthorReader();
   const author = await reader.getBySlug(slug);
 
   if (!author) {
@@ -40,7 +39,7 @@ export default async function AuthorPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const reader = createSupabaseAuthorReader(await createClient());
+  const reader = await createAuthorReader();
   const author = await reader.getBySlug(slug);
 
   if (!author) {

@@ -1,33 +1,23 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
-import { createZinePublicationService } from '@/application/publication/zine-publication-service';
+import { createZinePublicationModule } from '@/application/publication/publication-module';
 import { syncAuthorsToZine } from '@/infrastructure/publication/supabase-author-sync';
 import { createSupabaseZinePublicationRepository } from '@/infrastructure/publication/supabase-zine-publication-repository';
-import { enqueueZineProcessing } from '@/infrastructure/processing/enqueue-zine-processing';
-import { dispatchZineProcessing } from '@/infrastructure/processing/zine-processing-dispatch-service';
-import { createR2AssetStorage } from '@/infrastructure/storage/r2-storage-service';
+import { createZineProcessingRequester } from '@/infrastructure/processing/zine-processing-requester';
+import { createR2CoverAssetStore } from '@/infrastructure/storage/r2-storage-service';
 
 export function createSupabaseZinePublicationService(
   supabase: SupabaseClient<Database>,
 ) {
-  return createZinePublicationService({
+  return createZinePublicationModule({
     publications: createSupabaseZinePublicationRepository(supabase),
     authors: { sync: (zineId, authors) => syncAuthorsToZine(supabase, zineId, authors) },
     covers: {
-      isAvailable: (zineId, coverImage) => createR2AssetStorage().isCoverAvailable(
+      isAvailable: (zineId, coverImage) => createR2CoverAssetStore().isAvailable(
         { id: zineId, kind: 'zine' },
         coverImage,
       ),
     },
-    processing: {
-      async request(zineId) {
-        try {
-          await enqueueZineProcessing(zineId);
-          await dispatchZineProcessing();
-        } catch (error) {
-          console.error('Erro ao enfileirar processamento da zine:', error);
-        }
-      },
-    },
+    processing: createZineProcessingRequester(),
   });
 }

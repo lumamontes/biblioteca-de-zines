@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { googleDriveImportSchema } from "@/schemas/google-drive-import";
-import { createZineSourceImportService } from '@/composition/server/create-zine-source-import-service';
+import { createSourceImportModule } from '@/composition/server/source-import-module';
 
 /**
  * Import zine from Google Drive URL
@@ -25,7 +25,7 @@ export async function importZineFromDrive(
       };
     }
 
-    await (await createZineSourceImportService()).importFromDrive(zineId, driveUrl);
+    await (await createSourceImportModule()).importFromDrive(zineId, driveUrl);
 
     revalidatePath("/dashboard");
     return {

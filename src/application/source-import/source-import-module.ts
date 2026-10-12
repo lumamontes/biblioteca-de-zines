@@ -3,7 +3,7 @@ import type {
   ZineSourceRepository,
 } from '@/application/source-import/zine-source-import-types';
 
-export function createZineSourceImportService(deps: {
+export function createZineSourceImportModule(deps: {
   zines: ZineSourceRepository;
   processing: ZineProcessingRequester;
 }) {

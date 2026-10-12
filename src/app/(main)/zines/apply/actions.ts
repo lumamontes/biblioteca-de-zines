@@ -1,7 +1,7 @@
 "use server";
 
 import { pipe, composable } from 'composable-functions';
-import { createSubmissionServiceForRequest } from '@/composition/server/create-submission-service';
+import { createSubmissionModule } from '@/composition/server/submission-module';
 import { 
   FormData as ZineFormData,
   FormDataSchema 
@@ -48,7 +48,7 @@ export const submitZine = composable(async (formData: FormData) => {
       throw new Error(result.errors[0]?.message || 'Erro desconhecido');
     }
 
-    const submission = await createSubmissionServiceForRequest();
+    const submission = await createSubmissionModule();
     const receipt = await submission.submit({
       authors: result.data.authors,
       zines: result.data.zines,

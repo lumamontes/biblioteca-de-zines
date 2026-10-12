@@ -11,7 +11,7 @@ import type {
   ZinePublicationDependencies,
 } from '@/application/publication/zine-publication-types';
 
-export function createZinePublicationService(deps: ZinePublicationDependencies) {
+export function createZinePublicationModule(deps: ZinePublicationDependencies) {
   return {
     async unpublishZine(zineId: number): Promise<void> {
       await deps.publications.setPublished(zineId, false);

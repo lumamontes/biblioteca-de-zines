@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import type { AssetStorage, AssetTarget } from '@/application/asset-storage';
+import type { AssetTarget } from '@/application/asset-storage';
 import type { SourceDocument } from '@/domain/source-document';
 import type {
   CoverGenerationRepository,
+  CoverAssetStore,
   CoverGenerationState,
   CoverOptimizer,
   FirstPageRenderer,
@@ -13,7 +14,7 @@ export async function createCoverGeneration(
   loadSource: () => Promise<SourceDocument>,
   target: AssetTarget,
   repository: CoverGenerationRepository,
-  storage: AssetStorage,
+  storage: CoverAssetStore,
   sourceUrl: string,
   renderFirstPage: FirstPageRenderer,
   optimizeCover: CoverOptimizer,
@@ -30,11 +31,9 @@ export async function createCoverGeneration(
     const page = await renderFirstPage(source);
 
     const cover = await optimizeCover(page);
-    const coverImage = await storage.upload({
-      contentType: 'image/webp',
+    const coverImage = await storage.storeCover({
       data: cover,
       generationId,
-      kind: 'cover',
       target,
     });
 
@@ -46,11 +45,11 @@ export async function createCoverGeneration(
       target,
     });
     if (!activated) {
-      await storage.deleteGeneration(target, generationId);
+      await storage.discardGeneration(target, generationId);
       return;
     }
     if (state.coverImage) {
-      await storage.deleteCover(target, state.coverImage).catch((cleanupError) => {
+      await storage.removeCover(target, state.coverImage).catch((cleanupError) => {
         console.error('Failed to remove superseded generated cover:', cleanupError);
       });
     }
@@ -58,7 +57,7 @@ export async function createCoverGeneration(
     await repository.markFailed(target).catch((failureError) => {
       console.error('Failed to record cover-generation failure:', failureError);
     });
-    await storage.deleteGeneration(target, generationId).catch((cleanupError) => {
+    await storage.discardGeneration(target, generationId).catch((cleanupError) => {
       console.error('Failed to remove incomplete cover generation:', cleanupError);
     });
     throw error;

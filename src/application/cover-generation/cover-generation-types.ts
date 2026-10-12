@@ -1,4 +1,4 @@
-import type { AssetStorage, AssetTarget } from '@/application/asset-storage';
+import type { AssetTarget } from '@/application/asset-storage';
 import type { SourceDocument } from '@/domain/source-document';
 
 export type CoverGenerationState = {
@@ -31,7 +31,20 @@ export type CoverOptimizer = (image: Buffer) => Promise<Buffer>;
 
 export type CoverGenerationDependencies = {
   repository: CoverGenerationRepository;
-  storage: AssetStorage;
+  storage: CoverAssetStore;
   renderFirstPage: FirstPageRenderer;
   optimizeCover: CoverOptimizer;
 };
+
+export type CoverAsset = {
+  data: Buffer;
+  generationId: string;
+  target: AssetTarget;
+};
+
+export interface CoverAssetStore {
+  storeCover(asset: CoverAsset): Promise<string>;
+  discardGeneration(target: AssetTarget, generationId: string): Promise<void>;
+  removeCover(target: AssetTarget, coverUrl: string): Promise<void>;
+  isAvailable(target: AssetTarget, coverUrl: string): Promise<boolean>;
+}

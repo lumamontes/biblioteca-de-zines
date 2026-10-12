@@ -3,7 +3,7 @@ import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createCoverGeneration } from '@/application/cover-generation/cover-generation-service';
 import { extractFirstPageFromPdf } from '@/infrastructure/rendering/pdf-service';
-import { createR2AssetStorage } from '@/infrastructure/storage/r2-storage-service';
+import { createR2CoverAssetStore } from '@/infrastructure/storage/r2-storage-service';
 import { optimizeCoverImage } from './cover-image-optimizer';
 import { createSupabaseZineCoverRepository } from './supabase-zine-cover-repository';
 import { downloadSource } from '@/infrastructure/source-acquisition/source-download-service';
@@ -21,7 +21,7 @@ export async function createCoverGenerationFromUrl(
     () => downloadSource(sourceUrl),
     { id: zineId, kind: 'zine' },
     createSupabaseZineCoverRepository(supabase),
-    createR2AssetStorage(),
+    createR2CoverAssetStore(),
     sourceUrl,
     (source) => extractFirstPageFromPdf(source.buffer),
     optimizeCoverImage,

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createSubmissionService } from '../src/application/submission/submission-service';
+import { createSubmissionModule } from '../src/application/submission/submission-module';
 import type {
   SubmissionInput,
   SubmissionReceipt,
@@ -20,7 +20,7 @@ test('submission service persists first and notifies with the receipt', async ()
     zineCount: 1,
     zineTitles: ['Test zine'],
   };
-  const service = createSubmissionService({
+  const service = createSubmissionModule({
     submissions: {
       async create(_, batchId) {
         events.push(`persist:${batchId}`);
@@ -43,7 +43,7 @@ test('submission service persists first and notifies with the receipt', async ()
 
 test('submission service does not notify when persistence fails', async () => {
   let notified = false;
-  const service = createSubmissionService({
+  const service = createSubmissionModule({
     submissions: {
       async create() {
         throw new Error('database unavailable');
