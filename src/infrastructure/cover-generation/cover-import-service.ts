@@ -14,6 +14,7 @@ export async function createCoverGenerationFromUrl(
   zineId: number,
   sourceUrl: string,
   databaseClient?: ZineDatabaseClient,
+  options: { replaceExternalCover?: boolean } = {},
 ): Promise<void> {
   const supabase = databaseClient ?? await createClient();
   await createCoverGeneration(
@@ -24,5 +25,6 @@ export async function createCoverGenerationFromUrl(
     sourceUrl,
     (source) => extractFirstPageFromPdf(source.buffer),
     optimizeCoverImage,
+    options,
   );
 }

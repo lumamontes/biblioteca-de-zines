@@ -71,7 +71,9 @@ export function createR2AssetStorage(): AssetStorage {
     },
     async deleteGeneration(target, generationId) {
       await deleteR2Prefix(client, `zines/${target.id}/generations/${generationId}/`);
-      await deleteCoverObject(client, target, `${generationId}.webp`);
+      await Promise.all(['webp', 'png', 'jpg'].map((extension) => (
+        deleteCoverObject(client, target, `${generationId}.${extension}`)
+      )));
     },
     async deleteCover(target, coverUrl) {
       const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/$/, '');

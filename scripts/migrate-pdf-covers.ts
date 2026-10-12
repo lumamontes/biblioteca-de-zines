@@ -56,7 +56,7 @@ async function main(): Promise<void> {
     console.log(`[${apply ? 'process' : 'would process'}] ${zine.id}: ${zine.title}`);
     if (apply && zine.pdf_url && createCoverGenerationFromUrl) {
       try {
-        await createCoverGenerationFromUrl(zine.id, zine.pdf_url, supabase);
+        await createCoverGenerationFromUrl(zine.id, zine.pdf_url, supabase, { replaceExternalCover: true });
         console.log(`  completed (${zine.id})`);
       } catch (migrationError) {
         failures += 1;

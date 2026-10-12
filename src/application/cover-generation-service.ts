@@ -12,6 +12,7 @@ export type CoverGenerationRepository = {
   markProcessing: (target: AssetTarget) => Promise<void>;
   publish: (generation: {
     coverImage: string;
+    replaceExternalCover?: boolean;
     sourceUrl: string;
     target: AssetTarget;
   }) => Promise<boolean>;
@@ -28,6 +29,7 @@ export async function createCoverGeneration(
   sourceUrl: string,
   renderFirstPage: FirstPageRenderer,
   optimizeCover: CoverOptimizer,
+  options: { replaceExternalCover?: boolean } = {},
 ): Promise<void> {
   const generationId = randomUUID();
   let state: CoverGenerationState | undefined;
@@ -48,7 +50,12 @@ export async function createCoverGeneration(
       target,
     });
 
-    const activated = await repository.publish({ coverImage, sourceUrl, target });
+    const activated = await repository.publish({
+      coverImage,
+      replaceExternalCover: options.replaceExternalCover,
+      sourceUrl,
+      target,
+    });
     if (!activated) {
       await storage.deleteGeneration(target, generationId);
       return;

@@ -39,7 +39,8 @@ export function createSupabaseZineCoverRepository(
         throw new Error('The publication PDF changed while cover processing was running');
       }
       if (!isPlaceholderCover(current.cover_image)
-        && !isGeneratedCover(current.cover_image, zineId)) {
+        && !isGeneratedCover(current.cover_image, zineId)
+        && !generation.replaceExternalCover) {
         await updateStatus(zineId, 'completed');
         return false;
       }
