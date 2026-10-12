@@ -12,6 +12,7 @@ export function createSupabasePublicReaderRepository(
         .select('id, slug, title, pdf_url, active_page_generation, total_pages, import_status, is_published, zine_pages(generation_id, page_number, image_url, width, height)')
         .eq('slug', slug)
         .eq('is_published', true)
+        .order('page_number', { ascending: true, referencedTable: 'zine_pages' })
         .maybeSingle();
       if (error) throw new Error(`Failed to load public reader publication: ${error.message}`);
       if (!data || !data.is_published || !data.slug) return null;

@@ -16,7 +16,13 @@ export type ReaderReadyState = {
 export type ReaderFallbackState = {
   status: 'fallback';
   fallback: ReaderFallback;
-  reason: 'page-generation-unavailable' | 'reader-failure' | 'user-selected';
+  reason:
+    | 'incomplete-page-generation'
+    | 'page-generation-failed'
+    | 'page-generation-unavailable'
+    | 'reader-failure'
+    | 'source-unavailable'
+    | 'user-selected';
 };
 
 export type ReaderSessionState = ReaderReadyState | ReaderFallbackState;
@@ -26,6 +32,7 @@ export type ReaderRenderer = {
     target: ReaderRenderTarget,
     manifest: ReaderPageManifest,
     onPageChanged: (pageNumber: number) => void,
+    onError?: () => void,
   ) => void;
   next: () => void;
   previous: () => void;

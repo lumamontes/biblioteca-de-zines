@@ -52,7 +52,11 @@ export default async function ZinePreview({
   }
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
-  const reader = await getPublicReader(slug);
+  const reader = await getPublicReader(slug).catch(() => preview.pdf_url ? {
+    fallback: { label: 'Abrir o PDF original', url: preview.pdf_url },
+    reason: 'page-generation-unavailable' as const,
+    status: 'fallback' as const,
+  } : null);
   const categories = getZineCategories(preview.tags);
 
   const breadcrumbItems = [

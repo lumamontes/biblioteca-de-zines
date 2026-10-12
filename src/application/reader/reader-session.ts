@@ -72,7 +72,7 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
       if (destroyed || mounted || state.status !== 'ready') return;
       mounted = true;
       try {
-        renderer.mount(target, state.manifest, onPageChanged);
+        renderer.mount(target, state.manifest, onPageChanged, () => switchToFallback('reader-failure'));
       } catch {
         switchToFallback('reader-failure');
       }
