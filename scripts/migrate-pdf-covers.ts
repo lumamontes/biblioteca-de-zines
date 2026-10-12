@@ -47,18 +47,24 @@ async function main(): Promise<void> {
   console.log(`${apply ? 'Applying' : 'Dry run'} PDF migration for ${candidates.length} zines`);
   console.log(`Excluded by monitor report: ${excludedIds.size}`);
 
-  const { createCoverGenerationFromUrl } = apply
-    ? await import('../src/infrastructure/cover-generation/cover-import-service')
-    : { createCoverGenerationFromUrl: null };
+  const createCoverProcessor = apply
+    ? (await import('../src/composition/server/create-zine-cover-processor')).createZineCoverProcessor
+    : null;
 
   let failures = 0;
   for (const zine of candidates) {
     console.log(`[${apply ? 'process' : 'would process'}] ${zine.id}: ${zine.title}`);
-    if (apply && zine.pdf_url && createCoverGenerationFromUrl) {
+    if (apply && zine.pdf_url && createCoverProcessor) {
       try {
-        await createCoverGenerationFromUrl(zine.id, zine.pdf_url, supabase, {
+        await createCoverProcessor(supabase, {
           expectedCoverImage: zine.cover_image,
           replaceExternalCover: true,
+        })({
+          attemptCount: 0,
+          id: zine.id,
+          pdfUrl: zine.pdf_url,
+          title: zine.title,
+          zineId: zine.id,
         });
         console.log(`  completed (${zine.id})`);
       } catch (migrationError) {

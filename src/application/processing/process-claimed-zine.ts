@@ -1,12 +1,16 @@
-import type { ProcessingJob, ProcessingJobStore } from '@/application/processing/processing-job-types';
+import type {
+  ProcessingJob,
+  ProcessingJobStore,
+  ProcessingProcessor,
+} from '@/application/processing/processing-job-types';
 
 export async function processClaimedZine(
   job: ProcessingJob,
   jobs: ProcessingJobStore,
-  process: () => Promise<void>,
+  processor: ProcessingProcessor,
 ): Promise<'completed' | 'failed'> {
   try {
-    await process();
+    await processor(job);
     await jobs.complete(job.id);
     return 'completed';
   } catch (error) {

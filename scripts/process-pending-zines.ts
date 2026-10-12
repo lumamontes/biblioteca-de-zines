@@ -6,17 +6,16 @@ const concurrency = getNumberArgument('--concurrency', 2);
 
 async function main(): Promise<void> {
   const worker = createZineProcessingWorker();
-  const { jobs } = worker;
   const results: Array<{ id: number; status: string }> = [];
   let claimedCount = 0;
   await Promise.all(Array.from({ length: Math.max(1, concurrency) }, async () => {
     while (claimedCount < limit) {
       claimedCount += 1;
-      const job = await jobs.claimNext();
+      const job = await worker.claimNext();
       if (!job) return;
       results.push({
         id: job.zineId,
-        status: await worker.process(job),
+        status: await worker.processClaimed(job),
       });
     }
   }));

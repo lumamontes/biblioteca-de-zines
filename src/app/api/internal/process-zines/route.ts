@@ -12,14 +12,13 @@ export async function GET(request: Request) {
   }
 
   const worker = createZineProcessingWorker();
-  const { jobs } = worker;
-  const job = await jobs.claimNext();
+  const job = await worker.claimNext();
   if (!job) {
     return NextResponse.json({ processed: false, message: 'No pending zines' });
   }
 
   try {
-    const status = await worker.process(job);
+    const status = await worker.processClaimed(job);
     return NextResponse.json({ processed: true, status, zineId: job.zineId });
   } catch (error) {
     return NextResponse.json({

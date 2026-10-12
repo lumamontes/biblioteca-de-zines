@@ -12,3 +12,10 @@ export interface ProcessingJobStore {
   enqueue(zineId: number): Promise<void>;
   fail(jobId: number, errorMessage: string): Promise<void>;
 }
+
+export type ProcessingProcessor = (job: ProcessingJob) => Promise<void>;
+
+export interface ProcessingWorker {
+  claimNext(): Promise<ProcessingJob | null>;
+  processClaimed(job: ProcessingJob): Promise<'completed' | 'failed'>;
+}
