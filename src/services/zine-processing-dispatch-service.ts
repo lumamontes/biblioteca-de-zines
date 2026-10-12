@@ -12,7 +12,7 @@ export async function dispatchZineProcessing(): Promise<void> {
 
   try {
     const response = await fetch(
-      `https://api.github.com/repos/${repository}/actions/workflows/process-pending-zines.yml/dispatches`,
+      `https://api.github.com/repos/${repository}/dispatches`,
       {
         method: 'POST',
         headers: {
@@ -21,7 +21,7 @@ export async function dispatchZineProcessing(): Promise<void> {
           'X-GitHub-Api-Version': githubApiVersion,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ref: 'main' }),
+        body: JSON.stringify({ event_type: 'process-pending-zines' }),
       },
     );
 

@@ -10,6 +10,7 @@ import { isCompleteGeneratedCover } from '@/application/cover-generation-policy'
 import { syncAuthorsToZine } from './author-service';
 import { dispatchZineProcessing } from './zine-processing-dispatch-service';
 import { enqueueZineProcessing } from './enqueue-zine-processing';
+import { createR2AssetStorage } from './r2-storage-service';
 
 type ZineDatabaseClient = SupabaseClient<Database>;
 
@@ -216,5 +217,8 @@ async function hasCompleteGeneratedCover(
     .select('cover_image, import_status, processed_pdf_url')
     .eq('id', zineId)
     .single();
-  return !error && Boolean(data) && isCompleteGeneratedCover(data, zineId, pdfUrl);
+  return !error
+    && Boolean(data)
+    && isCompleteGeneratedCover(data, zineId, pdfUrl)
+    && await createR2AssetStorage().isCoverAvailable({ id: zineId, kind: 'zine' }, data.cover_image ?? '');
 }

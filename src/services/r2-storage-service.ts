@@ -3,7 +3,7 @@
  * Handles uploading files to Cloudflare R2 (S3-compatible API)
  */
 
-import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, HeadObjectCommand } from '@aws-sdk/client-s3';
 import type { AssetStorage } from '@/application/asset-storage';
 
 // Initialize S3 client for R2
@@ -80,6 +80,19 @@ export function createR2AssetStorage(): AssetStorage {
       const key = coverUrl.slice(`${publicUrl}/`.length);
       if (!/^zines\/\d+\/covers\/[^/]+\.webp$/.test(key)) return;
       await client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: key }));
+    },
+    async isCoverAvailable(target, coverUrl) {
+      const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/$/, '');
+      const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+      if (!publicUrl || !bucketName || !coverUrl.startsWith(`${publicUrl}/zines/${target.id}/covers/`)) return false;
+      const key = coverUrl.slice(`${publicUrl}/`.length);
+      if (!/^zines\/\d+\/covers\/[^/]+\.webp$/.test(key)) return false;
+      try {
+        await client.send(new HeadObjectCommand({ Bucket: bucketName, Key: key }));
+        return true;
+      } catch {
+        return false;
+      }
     },
   };
 }

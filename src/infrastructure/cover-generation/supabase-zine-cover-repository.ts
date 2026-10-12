@@ -2,6 +2,7 @@ import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CoverGenerationRepository } from '@/application/cover-generation-service';
 import type { AssetTarget } from '@/application/asset-storage';
+import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
 
 export function createSupabaseZineCoverRepository(
   supabase: SupabaseClient<Database>,
@@ -27,6 +28,22 @@ export function createSupabaseZineCoverRepository(
     },
 
     async publish(generation) {
+      const zineId = assertZineTarget(generation.target);
+      const { data: current, error: currentError } = await supabase
+        .from('library_zines')
+        .select('cover_image, pdf_url')
+        .eq('id', zineId)
+        .single();
+      if (currentError || !current) throw new Error(`Zine with ID ${zineId} not found`);
+      if (current.pdf_url !== generation.sourceUrl) {
+        throw new Error('The publication PDF changed while cover processing was running');
+      }
+      if (!isPlaceholderCover(current.cover_image)
+        && !isGeneratedCover(current.cover_image, zineId)) {
+        await updateStatus(zineId, 'completed');
+        return false;
+      }
+
       const { error } = await supabase
         .from('library_zines')
         .update({
@@ -34,12 +51,13 @@ export function createSupabaseZineCoverRepository(
           import_status: 'completed',
           processed_pdf_url: generation.sourceUrl,
         })
-        .eq('id', assertZineTarget(generation.target));
+        .eq('id', zineId);
       if (error) throw new Error(`Failed to finish cover processing: ${error.message}`);
+      return true;
     },
   };
 
-  async function updateStatus(zineId: number, status: 'processing' | 'failed'): Promise<void> {
+  async function updateStatus(zineId: number, status: 'processing' | 'failed' | 'completed'): Promise<void> {
     const { error } = await supabase
       .from('library_zines')
       .update({ import_status: status })

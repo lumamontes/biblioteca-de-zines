@@ -14,7 +14,7 @@ export type CoverGenerationRepository = {
     coverImage: string;
     sourceUrl: string;
     target: AssetTarget;
-  }) => Promise<void>;
+  }) => Promise<boolean>;
 };
 
 export type FirstPageRenderer = (source: SourceDocument) => Promise<Buffer>;
@@ -48,7 +48,11 @@ export async function createCoverGeneration(
       target,
     });
 
-    await repository.publish({ coverImage, sourceUrl, target });
+    const activated = await repository.publish({ coverImage, sourceUrl, target });
+    if (!activated) {
+      await storage.deleteGeneration(target, generationId);
+      return;
+    }
     if (state.coverImage) {
       await storage.deleteCover(target, state.coverImage).catch((cleanupError) => {
         console.error('Failed to remove superseded generated cover:', cleanupError);

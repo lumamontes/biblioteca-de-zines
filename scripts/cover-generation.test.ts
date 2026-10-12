@@ -123,6 +123,7 @@ function createRepository(calls: string[]): CoverGenerationRepository {
     },
     async publish() {
       calls.push('publish');
+      return true;
     },
   };
 }
@@ -136,6 +137,9 @@ function createStorage(calls: string[]): AssetStorage & { uploaded: Array<{ cont
     },
     async deleteGeneration() {
       calls.push('delete-generation');
+    },
+    async isCoverAvailable() {
+      return true;
     },
     async upload(asset) {
       uploaded.push({ contentType: asset.contentType, data: asset.data });

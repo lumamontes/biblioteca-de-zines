@@ -83,7 +83,7 @@ Authorization: Bearer <CRON_SECRET>
 
 The route claims one leased job, processes one generation, and records completion or retryable failure.
 
-The workflow supports manual dispatch and a scheduled fallback. The application can request an immediate workflow dispatch when GitHub Actions credentials are configured.
+The workflow supports repository dispatch, manual dispatch, and a scheduled fallback. The application can request an immediate repository dispatch when GitHub Actions credentials are configured.
 
 ## Verification Queries
 
