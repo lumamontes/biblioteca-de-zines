@@ -6,7 +6,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createPageGeneration } from './page-generation-module';
 import { createR2AssetStorage } from './r2-storage-service';
 import { createSupabaseZinePageRepository } from './supabase-zine-page-repository';
-import { downloadSource } from './source-download-service';
+import { downloadSource } from '@/infrastructure/source-acquisition/source-download-service';
 
 type ZineDatabaseClient = SupabaseClient<Database>;
 

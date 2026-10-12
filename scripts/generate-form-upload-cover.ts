@@ -2,9 +2,9 @@ import 'dotenv/config';
 import { writeFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../src/types/database.types';
-import { extractFirstPageFromPdf } from '../src/services/pdf-service';
+import { extractFirstPageFromPdf } from '../src/infrastructure/rendering/pdf-service';
 import { optimizeCoverImage } from '../src/infrastructure/cover-generation/cover-image-optimizer';
-import { downloadSource } from '../src/services/source-download-service';
+import { downloadSource } from '../src/infrastructure/source-acquisition/source-download-service';
 
 const uploadId = getRequiredArgument('--upload-id');
 const outputPath = getArgument('--output') ?? `/tmp/form-upload-${uploadId}-cover.webp`;

@@ -144,6 +144,13 @@ export async function updateUploadAndPublishedZine(
   const { author_name, author_url } = flattenAuthors(validatedData.authors);
   const nextPdfUrl = validatedData.pdf_url || null;
 
+  const { data: currentUpload, error: currentUploadError } = await supabase
+    .from('form_uploads')
+    .select('cover_image')
+    .eq('id', uploadId)
+    .single();
+  if (currentUploadError) throw new Error(`Erro ao buscar upload atual: ${currentUploadError.message}`);
+
   const publishedZine = validatedData.slug
     ? (await supabase
       .from('library_zines')
@@ -169,17 +176,22 @@ export async function updateUploadAndPublishedZine(
 
   if (!validatedData.slug) return;
 
+  const coverWasRemoved = Boolean(currentUpload.cover_image && !validatedData.cover_image);
   const nextCoverImage = validatedData.cover_image
-    || (publishedZine?.cover_image && isGeneratedCover(publishedZine.cover_image, publishedZine.id)
+    || (publishedZine?.cover_image && (
+      isGeneratedCover(publishedZine.cover_image, publishedZine.id)
+      || (!coverWasRemoved && !isPlaceholderCover(publishedZine.cover_image))
+    )
       ? publishedZine.cover_image
       : null);
-  const shouldProcessPublished = Boolean(
+  const coverNeedsGeneration = Boolean(
     publishedZine
     && nextPdfUrl
-    && (!validatedData.cover_image || isGeneratedCover(validatedData.cover_image, publishedZine.id))
+    && (!nextCoverImage
+      || isPlaceholderCover(nextCoverImage)
+      || isGeneratedCover(nextCoverImage, publishedZine.id))
     && !(await hasCompleteGeneratedCover(supabase, publishedZine.id, nextPdfUrl)),
   );
-
   const { error: zineError } = await supabase
     .from('library_zines')
     .update({
@@ -190,12 +202,12 @@ export async function updateUploadAndPublishedZine(
       cover_image: nextCoverImage,
       year: validatedData.published_year || null,
       tags: tagsJson,
-       ...(shouldProcessPublished ? { import_status: 'pending' } : {}),
+      ...(coverNeedsGeneration ? { import_status: 'pending' } : {}),
     })
     .eq('slug', validatedData.slug);
   if (zineError) throw new Error(`Erro ao atualizar zine: ${zineError.message}`);
 
-  if (shouldProcessPublished && publishedZine) await requestZineProcessing(publishedZine.id);
+  if (coverNeedsGeneration && publishedZine) await requestZineProcessing(publishedZine.id);
 }
 
 async function requestZineProcessing(zineId: number): Promise<void> {

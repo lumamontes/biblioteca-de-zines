@@ -2,11 +2,11 @@ import { createClient } from '@/utils/supabase/server';
 import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createCoverGeneration } from '@/application/cover-generation-service';
-import { extractFirstPageFromPdf } from '@/services/pdf-service';
+import { extractFirstPageFromPdf } from '@/infrastructure/rendering/pdf-service';
 import { createR2AssetStorage } from '@/services/r2-storage-service';
 import { optimizeCoverImage } from './cover-image-optimizer';
 import { createSupabaseZineCoverRepository } from './supabase-zine-cover-repository';
-import { downloadSource } from '@/services/source-download-service';
+import { downloadSource } from '@/infrastructure/source-acquisition/source-download-service';
 
 type ZineDatabaseClient = SupabaseClient<Database>;
 
