@@ -30,7 +30,7 @@ registra por que padrões externos são usados como lentes e crosswalks seletivo
 sem substituir a semântica local da Biblioteca.
 
 A [especificação de processamento de páginas e ciclo de vida de assets](./specs/page-processing-and-asset-lifecycle.md)
-define os buckets privados e públicos, gerações, reprocessamento de PDFs, capas,
+define o bucket público ativo, gerações, reprocessamento de PDFs, capas,
 publicação e limpeza.
 
 A [decisão sobre processar páginas na publicação](./decisions/11-process-pages-at-publication.md)

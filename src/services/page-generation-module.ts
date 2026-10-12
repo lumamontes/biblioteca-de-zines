@@ -10,6 +10,7 @@ export type SourceDocument = {
 };
 
 export type PageGenerationState = {
+  activePageGeneration: string | null;
   coverImage: string | null;
 };
 
@@ -84,6 +85,12 @@ export async function createPageGeneration(
       totalPages,
       target,
     });
+
+    if (state.activePageGeneration && state.activePageGeneration !== 'legacy') {
+      await storage.deleteGeneration(target, state.activePageGeneration).catch((cleanupError) => {
+        console.error('Failed to remove superseded page generation:', cleanupError);
+      });
+    }
   } catch (error) {
     await repository.markFailed(target).catch((failureError) => {
       console.error('Failed to record page-generation failure:', failureError);

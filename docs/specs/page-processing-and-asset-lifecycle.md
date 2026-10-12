@@ -4,7 +4,7 @@ This specification defines how Biblioteca de Zines turns submitted PDF sources i
 
 ## Status
 
-The generation-aware rendering, queue types, and local processing commands exist. The process-on-publication path, processed-source marker, automated legacy cleanup, and automatic worker workflow remain implementation work. This document describes the target contract those components must satisfy.
+The generation-aware rendering, queue types, processed-source marker, and process-on-publication path exist. Automated legacy cleanup and the automatic worker workflow remain operational work. This document describes the contract those components satisfy.
 
 ## Scope
 

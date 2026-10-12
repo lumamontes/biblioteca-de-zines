@@ -11,6 +11,16 @@ import { parseUploadAuthors, flattenAuthors } from "@/utils/authors";
 import { Author } from "@/schemas/apply-zine";
 import { dispatchZineProcessing } from "@/services/zine-processing-dispatch-service";
 import { enqueueZineProcessing } from "@/services/enqueue-zine-processing";
+import { hasCompleteZineGeneration, restoreFirstPageCover } from "@/services/supabase-zine-page-repository";
+
+async function requestZineProcessing(zineId: number) {
+  try {
+    await enqueueZineProcessing(zineId);
+    await dispatchZineProcessing();
+  } catch (error) {
+    console.error("Erro ao enfileirar processamento da zine:", error);
+  }
+}
 
 /** Creates/finds each author and links them to the zine (does not remove stale links). */
 async function syncZineAuthors(
@@ -91,11 +101,8 @@ export async function updatePublishedZine(zineId: number) {
 
   if (error) throw new Error(`Erro ao republicar a zine: ${error.message}`);
 
-  if (zine?.pdf_url && (zine.pdf_url !== zine.processed_pdf_url
-    || zine.import_status !== "completed"
-    || zine.active_page_generation === "legacy")) {
-    await enqueueZineProcessing(zineId);
-    await dispatchZineProcessing();
+  if (zine?.pdf_url && !(await hasCompleteZineGeneration(supabase, zineId, zine.pdf_url))) {
+    await requestZineProcessing(zineId);
   }
 
   revalidatePath("/dashboard");
@@ -157,13 +164,8 @@ export async function publishZine(uploadId: number) {
     zineId = newZine.id;
   } else {
     zineId = existingZine.id;
-    shouldProcess = Boolean(
-      upload.pdf_url
-      && (existingZine.pdf_url !== upload.pdf_url
-        || existingZine.pdf_url !== existingZine.processed_pdf_url
-        || existingZine.import_status !== "completed"
-        || existingZine.active_page_generation === "legacy"),
-    );
+    shouldProcess = Boolean(upload.pdf_url
+      && !(await hasCompleteZineGeneration(supabase, existingZine.id, upload.pdf_url)));
 
     const existingTags = parseTags(existingZine.tags);
     const newTags = parseTags(upload.tags);
@@ -183,6 +185,8 @@ export async function publishZine(uploadId: number) {
       .from("library_zines")
       .update({
         tags: mergedTags,
+        pdf_url: upload.pdf_url,
+        ...(shouldProcess ? { import_status: "pending" } : {}),
         ...(existingZine.source_upload_id ? {} : { source_upload_id: uploadId }),
       })
       .eq("id", zineId);
@@ -195,14 +199,7 @@ export async function publishZine(uploadId: number) {
     .update({ is_published: true })
     .eq("id", uploadId);
 
-  if (upload.pdf_url && shouldProcess) {
-    try {
-      await enqueueZineProcessing(zineId);
-      await dispatchZineProcessing();
-    } catch (error) {
-      console.error("Erro ao enfileirar processamento da zine:", error);
-    }
-  }
+  if (upload.pdf_url && shouldProcess) await requestZineProcessing(zineId);
 
   revalidatePath("/dashboard");
 }
@@ -229,7 +226,7 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
     const { data: publishedZine } = validatedData.slug
       ? await supabase
         .from("library_zines")
-        .select("id, pdf_url, processed_pdf_url, import_status, active_page_generation")
+        .select("id, is_published, pdf_url, processed_pdf_url, import_status, active_page_generation")
         .eq("slug", validatedData.slug)
         .single()
       : { data: null };
@@ -279,13 +276,9 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
             || publishedZine.import_status !== "completed"
             || publishedZine.active_page_generation === "legacy"),
         );
-        if (shouldProcessPublished && publishedZine) {
-          try {
-            await enqueueZineProcessing(publishedZine.id);
-            await dispatchZineProcessing();
-          } catch (dispatchError) {
-            console.error("Erro ao enfileirar processamento da zine:", dispatchError);
-          }
+        if (shouldProcessPublished && publishedZine) await requestZineProcessing(publishedZine.id);
+        if (publishedZine?.is_published && !validatedData.cover_image) {
+          await restoreFirstPageCover(supabase, publishedZine.id);
         }
       }
 

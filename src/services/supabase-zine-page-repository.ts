@@ -11,11 +11,12 @@ export function createSupabaseZinePageRepository(
       const zineId = assertZineTarget(target);
       const { data, error } = await supabase
         .from('library_zines')
-        .select('id, cover_image')
+        .select('id, cover_image, active_page_generation')
         .eq('id', zineId)
         .single();
       if (error || !data) throw new Error(`Zine with ID ${zineId} not found`);
       return {
+        activePageGeneration: data.active_page_generation,
         coverImage: data.cover_image,
       };
     },
@@ -52,7 +53,14 @@ export function createSupabaseZinePageRepository(
           total_pages: generation.totalPages,
         })
         .eq('id', zineId);
-      if (updateError) throw new Error(`Failed to finish page processing: ${updateError.message}`);
+      if (updateError) {
+        await supabase
+          .from('zine_pages')
+          .delete()
+          .eq('zine_id', zineId)
+          .eq('generation_id', generation.generationId);
+        throw new Error(`Failed to finish page processing: ${updateError.message}`);
+      }
 
       const { error: oldPagesError } = await supabase
         .from('zine_pages')
@@ -70,6 +78,58 @@ export function createSupabaseZinePageRepository(
       .eq('id', zineId);
     if (error) throw new Error(`Failed to update zine status: ${error.message}`);
   }
+}
+
+export async function hasCompleteZineGeneration(
+  supabase: SupabaseClient<Database>,
+  zineId: number,
+  pdfUrl: string,
+): Promise<boolean> {
+  const { data: zine, error: zineError } = await supabase
+    .from('library_zines')
+    .select('active_page_generation, import_status, processed_pdf_url, total_pages')
+    .eq('id', zineId)
+    .single();
+  if (zineError || !zine || !zine.active_page_generation || zine.active_page_generation === 'legacy') {
+    return false;
+  }
+  if (zine.import_status !== 'completed' || zine.processed_pdf_url !== pdfUrl || !zine.total_pages) {
+    return false;
+  }
+
+  const { count, error: pagesError } = await supabase
+    .from('zine_pages')
+    .select('id', { count: 'exact', head: true })
+    .eq('zine_id', zineId)
+    .eq('generation_id', zine.active_page_generation);
+  return !pagesError && count === zine.total_pages;
+}
+
+export async function restoreFirstPageCover(
+  supabase: SupabaseClient<Database>,
+  zineId: number,
+): Promise<void> {
+  const { data: zine } = await supabase
+    .from('library_zines')
+    .select('active_page_generation')
+    .eq('id', zineId)
+    .single();
+  if (!zine?.active_page_generation || zine.active_page_generation === 'legacy') return;
+
+  const { data: firstPage } = await supabase
+    .from('zine_pages')
+    .select('image_url')
+    .eq('zine_id', zineId)
+    .eq('generation_id', zine.active_page_generation)
+    .eq('page_number', 1)
+    .single();
+  if (!firstPage) return;
+
+  const { error } = await supabase
+    .from('library_zines')
+    .update({ cover_image: firstPage.image_url })
+    .eq('id', zineId);
+  if (error) throw new Error(`Failed to restore first-page cover: ${error.message}`);
 }
 
 function assertZineTarget(target: AssetTarget): number {
