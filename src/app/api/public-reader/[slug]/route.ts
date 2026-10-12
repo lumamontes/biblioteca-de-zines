@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { serializePublicReaderResult } from '@/application/reader/public-reader-api';
 import {
   createViewerRolloutConfig,
-  isViewerPublicationAllowed,
 } from '@/application/reader/viewer-rollout';
 import { getPublicReader } from '@/composition/server/public-reader';
 import { getViewerTrafficGuard } from '@/composition/server/viewer-traffic';
 import { createReaderResponseHeaders } from '@/infrastructure/storage/cache-policy';
+import { createViewerPreflightHeaders } from '@/application/reader/viewer-cors';
+import { resolveViewerAccess } from '@/application/reader/viewer-access';
 
 export async function GET(
   request: NextRequest,
@@ -30,11 +31,9 @@ export async function GET(
     return response({ error: 'Publication not found' }, 404, origin, rollout.viewerOrigin, traffic.remaining);
   }
 
-  const canonicalSlug = reader.status === 'ready'
-    ? reader.publication.slug
-    : reader.publication?.slug ?? slug;
-  if (!isViewerPublicationAllowed(rollout, canonicalSlug, surface, betaToken)) {
-    report('unavailable', canonicalSlug);
+  const access = resolveViewerAccess(reader, slug, rollout, surface, betaToken);
+  if (!access.allowed) {
+    report('unavailable', access.canonicalSlug);
     return response({ error: 'Reader unavailable' }, 404, origin, rollout.viewerOrigin, traffic.remaining);
   }
 
@@ -44,7 +43,10 @@ export async function GET(
 
 export async function OPTIONS(request: NextRequest) {
   const rollout = createViewerRolloutConfig(process.env);
-  return response(null, 204, request.headers.get('origin'), rollout.viewerOrigin);
+  return new NextResponse(null, {
+    headers: createViewerPreflightHeaders(request.headers.get('origin'), rollout.viewerOrigin),
+    status: 204,
+  });
 }
 
 function response(body: unknown, status: number, origin: string | null, viewerOrigin: string, remaining = 120) {

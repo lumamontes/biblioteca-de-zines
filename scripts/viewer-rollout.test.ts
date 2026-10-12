@@ -18,6 +18,7 @@ test('parses disabled viewer rollout by default', () => {
 
 test('allows configured beta publications on each enabled surface', () => {
   const config = createViewerRolloutConfig({
+    READER_BETA_ENABLED: 'true',
     READER_BETA_SLUGS: 'first-zine, second-zine',
     READER_EMBED_ENABLED: 'true',
     READER_VIEWER_ENABLED: 'true',
@@ -41,10 +42,31 @@ test('creates versioned viewer URLs without treating branding as access', () => 
 
 test('requires a configured beta token when tester gating is enabled', () => {
   const config = createViewerRolloutConfig({
+    READER_BETA_ALLOW_ALL: 'true',
+    READER_BETA_ENABLED: 'true',
     READER_BETA_TOKENS: 'tester-1',
     READER_EMBED_ENABLED: 'true',
   });
 
   assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'embed'), false);
   assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'embed', 'tester-1'), true);
+});
+
+test('keeps both surfaces unavailable until the beta gate is explicitly enabled', () => {
+  const config = createViewerRolloutConfig({
+    READER_EMBED_ENABLED: 'true',
+    READER_VIEWER_ENABLED: 'true',
+  });
+
+  assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'reader'), false);
+  assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'embed'), false);
+});
+
+test('fails closed when beta is enabled without a publication allowlist', () => {
+  const config = createViewerRolloutConfig({
+    READER_BETA_ENABLED: 'true',
+    READER_EMBED_ENABLED: 'true',
+  });
+
+  assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'embed'), false);
 });

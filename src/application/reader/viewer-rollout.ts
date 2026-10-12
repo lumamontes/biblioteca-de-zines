@@ -1,4 +1,6 @@
 export type ViewerRolloutConfig = {
+  allowAllPublications: boolean;
+  betaEnabled: boolean;
   enabled: boolean;
   embedEnabled: boolean;
   betaSlugs: readonly string[];
@@ -8,6 +10,8 @@ export type ViewerRolloutConfig = {
 
 export function createViewerRolloutConfig(env: Record<string, string | undefined>): ViewerRolloutConfig {
   return {
+    allowAllPublications: env.READER_BETA_ALLOW_ALL === 'true',
+    betaEnabled: env.READER_BETA_ENABLED === 'true',
     enabled: env.READER_VIEWER_ENABLED === 'true',
     embedEnabled: env.READER_EMBED_ENABLED === 'true',
     betaSlugs: (env.READER_BETA_SLUGS ?? '')
@@ -28,9 +32,10 @@ export function isViewerPublicationAllowed(
   surface: 'reader' | 'embed',
   betaToken?: string,
 ): boolean {
+  if (!config.betaEnabled) return false;
   if (surface === 'reader' && !config.enabled) return false;
   if (surface === 'embed' && !config.embedEnabled) return false;
-  const publicationAllowed = config.betaSlugs.length === 0 || config.betaSlugs.includes(slug);
+  const publicationAllowed = config.allowAllPublications || config.betaSlugs.includes(slug);
   const testerAllowed = config.betaTokens.length === 0 || Boolean(betaToken && config.betaTokens.includes(betaToken));
   return publicationAllowed && testerAllowed;
 }

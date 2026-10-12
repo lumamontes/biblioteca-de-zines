@@ -7,9 +7,11 @@ The BookReader viewer is disabled unless the rollout environment explicitly enab
 Set these environment values for a beta deployment:
 
 - `READER_VIEWER_ORIGIN`: canonical viewer origin, normally `https://viewer.biblioteca-de-zines.com.br`.
+- `READER_BETA_ENABLED=true`: master beta gate. The viewer and embed remain unavailable unless this is explicitly enabled.
 - `READER_VIEWER_ENABLED=true`: permits the selected publications to use the viewer from the main Biblioteca reader.
 - `READER_EMBED_ENABLED=true`: permits selected publications to use the embed route.
-- `READER_BETA_SLUGS`: comma-separated publication slugs. An empty value allows every public publication once the corresponding surface is enabled; keep it populated during beta.
+- `READER_BETA_SLUGS`: comma-separated publication slugs. Keep it populated during selected-publication beta rollout.
+- `READER_BETA_ALLOW_ALL=true`: explicit full-publication beta override. Leave unset during selected-publication rollout.
 - `READER_BETA_TOKENS`: optional comma-separated short-lived beta tokens accepted through the embed URL's `beta` parameter. Keep these temporary and rotate them after the beta.
 
 The viewer and embed surfaces are independently controlled. Disable `READER_EMBED_ENABLED` to stop embeds without disabling the normal reader. Disable both viewer flags to return all publications to the explicit PDF fallback path.
@@ -48,6 +50,12 @@ Review public-reader request logs and delivery metrics for:
 - Viewer and derivative bandwidth.
 - Embed host and origin distribution.
 - Time to first visible page, adjacent-page navigation, memory use, and cache reuse on representative desktop and mobile devices.
+
+Run the repeatable delivery probe against a beta API endpoint with `READER_PERFORMANCE_URL`:
+
+`READER_PERFORMANCE_URL=https://biblioteca-de-zines.com.br/api/public-reader/<slug> pnpm reader:performance`
+
+Set `READER_BETA_TOKEN` when the beta requires tester-token access and `READER_PERFORMANCE_OUTPUT` to persist the JSON result. The probe measures manifest delivery, first-page delivery, adjacent-page delivery, revisit delivery, response cache headers, status, elapsed time, and bytes. Browser memory and mobile-device timing still require a Playwright/device run.
 
 ## Rollback
 
