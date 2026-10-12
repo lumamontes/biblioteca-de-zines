@@ -61,6 +61,11 @@ test('returns the PDF fallback when the publication has no active generation', a
       label: 'Abrir o PDF original',
       url: 'https://drive.example/zine.pdf',
     },
+    publication: {
+      id: 42,
+      slug: 'test-zine',
+      title: 'Test zine',
+    },
     reason: 'page-generation-unavailable',
     status: 'fallback',
   });

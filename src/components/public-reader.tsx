@@ -7,6 +7,7 @@ import PDFViewer from '@/components/pdf-viewer';
 
 type PublicReaderProps = {
   reader: PublicReaderResult;
+  viewerUrl?: string;
 };
 
 const FALLBACK_MESSAGES: Record<PublicReaderFallbackReason | 'reader-failure' | 'user-selected', string> = {
@@ -18,7 +19,7 @@ const FALLBACK_MESSAGES: Record<PublicReaderFallbackReason | 'reader-failure' | 
   'user-selected': 'Abra o PDF original para continuar a leitura.',
 };
 
-export function PublicReader({ reader }: PublicReaderProps) {
+export function PublicReader({ reader, viewerUrl }: PublicReaderProps) {
   const [state, setState] = useState<PublicReaderResult>(reader);
 
   useEffect(() => {
@@ -27,6 +28,26 @@ export function PublicReader({ reader }: PublicReaderProps) {
 
   if (state.status === 'fallback') return <FallbackView fallback={state.fallback} reason={state.reason} />;
   if (reader.status === 'fallback') return <FallbackView fallback={reader.fallback} reason={reader.reason} />;
+  if (viewerUrl) {
+    return (
+      <section
+        aria-label={`Leitor de ${reader.publication.title}`}
+        className="w-full space-y-4"
+        data-reader-generation={state.manifest.generationId}
+        data-reader-state="ready"
+      >
+        <iframe
+          className="h-[75vh] min-h-[32rem] w-full border-0"
+          loading="lazy"
+          src={viewerUrl}
+          title={`Leitor de ${reader.publication.title}`}
+        />
+        <a className="underline" href={reader.fallback.url} rel="noreferrer" target="_blank">
+          Abrir o PDF original
+        </a>
+      </section>
+    );
+  }
 
   return (
     <section

@@ -26,6 +26,7 @@ export type PublicReaderFallbackReason =
 
 export type PublicReaderFallback = {
   fallback: ReaderFallback;
+  publication?: Pick<PublicReaderPublicationRecord, 'id' | 'slug' | 'title'>;
   reason: PublicReaderFallbackReason;
   status: 'fallback';
 };

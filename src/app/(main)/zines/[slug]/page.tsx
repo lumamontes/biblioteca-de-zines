@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/structured-data";
 import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
 import { getPublicReader } from "@/composition/server/public-reader";
+import { createViewerRolloutConfig, createViewerUrl, isViewerPublicationAllowed } from "@/application/reader/viewer-rollout";
 
 export async function generateMetadata({
   params,
@@ -64,6 +65,11 @@ export default async function ZinePreview({
       </h3>
     );
   }
+  const rollout = createViewerRolloutConfig(process.env);
+  const viewerSlug = reader.status === 'ready' ? reader.publication.slug : slug;
+  const viewerUrl = isViewerPublicationAllowed(rollout, viewerSlug, 'reader')
+    ? createViewerUrl(rollout, viewerSlug, false, 'reader')
+    : undefined;
   const categories = getZineCategories(preview.tags);
 
   const breadcrumbItems = [
@@ -98,7 +104,7 @@ export default async function ZinePreview({
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
           <div className="bg-neutral-500 w-full min-h-screen max-w-xl mx-auto overflow-hidden p-4">
-            {reader ? <PublicReader reader={reader} /> : <PDFViewer url={previewUrl} />}
+            {reader ? <PublicReader reader={reader} viewerUrl={viewerUrl} /> : <PDFViewer url={previewUrl} />}
           </div>
         </div>
       </BreadcrumbWrapper>

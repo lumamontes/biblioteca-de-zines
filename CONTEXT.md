@@ -166,6 +166,10 @@ _Avoid_: Event sourcing by default
 Separate decisions about discovery, reading, downloading, preservation, replication, and reuse.
 _Avoid_: Published means permitted for everything
 
+**Embedding access**:
+The reuse decision governing whether a public publication may be displayed through the Biblioteca reader in a third-party web page. Public zines are embeddable by default unless a publication is explicitly restricted.
+_Avoid_: Treating an embed as a separate copy of the publication
+
 **Editorial state**:
 The current review/publication condition of a submission or publication, such as in review, published, unpublished, or withdrawn.
 _Avoid_: Treating editorial state as file availability or access permission

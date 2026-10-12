@@ -12,16 +12,21 @@ export async function getPublicReaderPublication(
     label: 'Abrir o PDF original',
     url: publication.pdfUrl ?? '',
   };
+  const publicationSummary = {
+    id: publication.id,
+    slug: publication.slug,
+    title: publication.title,
+  };
   if (!publication.pdfUrl) {
-    return { fallback, reason: 'source-unavailable', status: 'fallback' };
+    return { fallback, publication: publicationSummary, reason: 'source-unavailable', status: 'fallback' };
   }
   if (publication.importStatus === 'failed' && (
     !publication.activePageGeneration || publication.activePageGeneration === 'legacy'
   )) {
-    return { fallback, reason: 'page-generation-failed', status: 'fallback' };
+    return { fallback, publication: publicationSummary, reason: 'page-generation-failed', status: 'fallback' };
   }
   if (!publication.activePageGeneration || publication.activePageGeneration === 'legacy') {
-    return { fallback, reason: 'page-generation-unavailable', status: 'fallback' };
+    return { fallback, publication: publicationSummary, reason: 'page-generation-unavailable', status: 'fallback' };
   }
 
   try {
@@ -41,6 +46,6 @@ export async function getPublicReaderPublication(
       status: 'ready',
     };
   } catch {
-    return { fallback, reason: 'incomplete-page-generation', status: 'fallback' };
+    return { fallback, publication: publicationSummary, reason: 'incomplete-page-generation', status: 'fallback' };
   }
 }

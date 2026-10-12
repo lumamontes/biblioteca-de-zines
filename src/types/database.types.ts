@@ -213,6 +213,32 @@ export type Database = {
           },
         ]
       }
+      zine_slug_aliases: {
+        Row: {
+          created_at: string | null
+          slug: string
+          zine_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          slug: string
+          zine_id: number
+        }
+        Update: {
+          created_at?: string | null
+          slug?: string
+          zine_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zine_slug_aliases_zine_id_fkey"
+            columns: ["zine_id"]
+            isOneToOne: false
+            referencedRelation: "library_zines"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       zine_pages: {
         Row: {
           created_at: string | null
