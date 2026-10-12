@@ -1,8 +1,41 @@
 import { describe, expect, it } from 'vitest';
-import { createPublicPublicationReaderInput } from '../../src/components/publication-reader-boundary';
+import {
+  classifyPublicationUrl,
+  createPublicPublicationReaderInput,
+} from '../../src/components/publication-reader-boundary';
 import { createReader } from './reader';
 
 describe('Biblioteca publication reader host boundary', () => {
+  it('routes only exact Google Drive file links through the same-origin integration', () => {
+    expect(classifyPublicationUrl('https://drive.google.com/file/d/abc_123/view?usp=sharing')).toEqual({
+      kind: 'google-drive',
+      fileId: 'abc_123',
+      readerUrl: '/api/publications/google-drive/abc_123',
+    });
+    expect(classifyPublicationUrl('https://drive.google.com/drive/folders/folder-id')).toEqual({
+      kind: 'direct-pdf',
+      readerUrl: 'https://drive.google.com/drive/folders/folder-id',
+    });
+    expect(classifyPublicationUrl('https://cdn.example/zine.pdf')).toEqual({
+      kind: 'direct-pdf',
+      readerUrl: 'https://cdn.example/zine.pdf',
+    });
+  });
+
+  it('uses the routed PDF as the reader source and keeps Drive preview as fallback', () => {
+    const input = createPublicPublicationReaderInput({
+      title: 'A Drive zine',
+      externalPdfUrl: 'https://drive.google.com/file/d/abc_123/view',
+      standardViewerUrl: 'https://drive.google.com/file/d/abc_123/preview',
+    });
+
+    expect(input.publication).toEqual({
+      kind: 'pdf',
+      url: '/api/publications/google-drive/abc_123',
+    });
+    expect(input.fallback.url).toBe('https://drive.google.com/file/d/abc_123/preview');
+  });
+
   it('passes publication metadata and the external PDF as the custom representation', () => {
     const input = createPublicPublicationReaderInput({
       title: 'A public zine',

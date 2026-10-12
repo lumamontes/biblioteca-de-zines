@@ -76,6 +76,11 @@ export default function VisualPublicationReader(props: VisualPublicationReaderPr
             </button>
           )}
         </div>
+        {failed && state && (
+          <p role="alert" className="border-b border-neutral-300 bg-amber-50 p-3 text-sm text-neutral-800">
+            {state.message} O visualizador padrão continua disponível abaixo.
+          </p>
+        )}
         <PDFViewer url={fallbackUrl} />
       </section>
     );
