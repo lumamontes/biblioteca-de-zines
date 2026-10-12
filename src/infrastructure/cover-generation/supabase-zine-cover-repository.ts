@@ -44,6 +44,9 @@ export function createSupabaseZineCoverRepository(
         await updateStatus(zineId, 'completed');
         return false;
       }
+      if (generation.replaceExternalCover && current.cover_image !== generation.expectedCoverImage) {
+        return false;
+      }
 
       const { error } = await supabase
         .from('library_zines')
@@ -52,7 +55,10 @@ export function createSupabaseZineCoverRepository(
           import_status: 'completed',
           processed_pdf_url: generation.sourceUrl,
         })
-        .eq('id', zineId);
+        .eq('id', zineId)
+        .eq('pdf_url', generation.sourceUrl)
+        .select('id')
+        .single();
       if (error) throw new Error(`Failed to finish cover processing: ${error.message}`);
       return true;
     },

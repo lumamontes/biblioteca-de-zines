@@ -12,6 +12,7 @@ export type CoverGenerationRepository = {
   markProcessing: (target: AssetTarget) => Promise<void>;
   publish: (generation: {
     coverImage: string;
+    expectedCoverImage?: string | null;
     replaceExternalCover?: boolean;
     sourceUrl: string;
     target: AssetTarget;
@@ -52,6 +53,7 @@ export async function createCoverGeneration(
 
     const activated = await repository.publish({
       coverImage,
+      expectedCoverImage: state.coverImage,
       replaceExternalCover: options.replaceExternalCover,
       sourceUrl,
       target,

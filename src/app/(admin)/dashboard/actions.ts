@@ -8,7 +8,7 @@ import {
   republishZine,
   unpublishZine as unpublishPublishedZine,
   updateUploadAndPublishedZine,
-} from "@/services/zine-publication-service";
+} from "@/application/zine-publication-service";
 
 export async function unpublishZine(zineId: number) {
   const supabase = await createClient();
