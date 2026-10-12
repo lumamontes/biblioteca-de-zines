@@ -29,6 +29,16 @@ A [decisão sobre padrões abertos](./decisions/9-open-standards-as-crosswalks.m
 registra por que padrões externos são usados como lentes e crosswalks seletivos,
 sem substituir a semântica local da Biblioteca.
 
+A [especificação de processamento de páginas e ciclo de vida de assets](./specs/page-processing-and-asset-lifecycle.md)
+define os buckets privados e públicos, gerações, reprocessamento de PDFs, capas,
+publicação e limpeza.
+
+A [decisão sobre o ciclo de vida de assets](./decisions/10-private-public-page-asset-lifecycle.md)
+registra a decisão arquitetural e as alternativas consideradas.
+
+O [runbook de processamento de páginas](./runbooks/page-processing.md)
+documenta migrações, scripts, variáveis de ambiente, verificações e recuperação.
+
 A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
 compara fontes brasileiras e internacionais para validar campos físicos, digitais,
 geográficos e de classificação.

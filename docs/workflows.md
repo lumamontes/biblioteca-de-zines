@@ -37,4 +37,13 @@ Este documento explica como os zines **passam da submissão à publicação**.
 📌 Admin revisa → Clica em "Publicar"  
 📌 Zine vai para `library_zines` (publicado)  
 📌 Detalhes do autor vinculados (`library_zines_authors`)  
-📌 Se despublicado → `is_published = false`  
+📌 Se despublicado → `is_published = false`
+
+## Processamento de páginas e capas
+
+O fluxo detalhado de gerações, páginas privadas de submissão, páginas públicas de
+publicações, reprocessamento quando o PDF muda, fallback de capa e retenção está em
+[`docs/specs/page-processing-and-asset-lifecycle.md`](./specs/page-processing-and-asset-lifecycle.md).
+
+Os procedimentos operacionais, migrações e comandos estão em
+[`docs/runbooks/page-processing.md`](./runbooks/page-processing.md).
