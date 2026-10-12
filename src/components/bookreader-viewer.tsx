@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { PublicReaderApiResponse } from '@/application/reader/public-reader-api';
-import type { ViewerEventType } from '@/application/reader/viewer-events';
+import type { ViewerEvent } from '@/application/reader/viewer-events';
 import { createReaderSession } from '@/application/reader/reader-session';
 import { createClientBookReaderRenderer } from '@/composition/client/bookreader';
 
@@ -27,10 +27,20 @@ export function BookReaderViewer({ apiOrigin = '', betaToken, branding = false, 
 
     async function mount() {
       let availableFallback: { label: string; url: string } | undefined;
+      const startedAt = performance.now();
       try {
         const response = await fetch(`${apiOrigin}/api/public-reader/${encodeURIComponent(slug)}?surface=${surface}`, {
           credentials: 'omit',
           headers: betaToken ? { 'X-Reader-Beta-Token': betaToken } : undefined,
+        });
+        reportViewerEvent(apiOrigin, {
+          durationMs: Math.max(0, performance.now() - startedAt),
+          slug,
+          surface,
+          type: 'page-load',
+          ...(Number(response.headers.get('content-length')) > 0
+            ? { metadataBytes: Number(response.headers.get('content-length')) }
+            : {}),
         });
         if (!response.ok) throw new Error('Reader data unavailable');
         const data = await response.json() as PublicReaderApiResponse;
@@ -124,7 +134,7 @@ export function BookReaderViewer({ apiOrigin = '', betaToken, branding = false, 
 
 function reportViewerEvent(
   apiOrigin: string,
-  event: { slug: string; surface: 'reader' | 'embed'; type: ViewerEventType },
+  event: ViewerEvent,
 ) {
   void fetch(`${apiOrigin}/api/public-reader/events`, {
     body: JSON.stringify(event),

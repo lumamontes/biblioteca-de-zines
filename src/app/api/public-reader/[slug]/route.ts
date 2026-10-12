@@ -5,6 +5,7 @@ import { createViewerReaderHttpResponse } from '@/app/api/public-reader/viewer-r
 import { getViewerTrafficGuard } from '@/composition/server/viewer-traffic';
 import { createReaderResponseHeaders } from '@/infrastructure/storage/cache-policy';
 import { createViewerPreflightHeaders } from '@/application/reader/viewer-cors';
+import { createViewerRequestMetric } from '@/application/reader/viewer-metrics';
 
 export async function GET(
   request: NextRequest,
@@ -19,11 +20,12 @@ export async function GET(
   const traffic = getViewerTrafficGuard().check(key);
 
   if (!traffic.allowed) {
+    report('rate-limited', slug, surface, origin);
     return response({ error: 'Too many requests' }, 429, origin, rollout.viewerOrigin, traffic.remaining);
   }
 
   const result = await getViewerReader(slug, rollout, surface, betaToken);
-  report(result.status === 'available' ? result.reader.status : result.status, slug);
+  report(result.status === 'available' ? result.reader.status : result.status, slug, surface, origin);
   const http = createViewerReaderHttpResponse(result);
   return response(http.body, http.status, origin, rollout.viewerOrigin, traffic.remaining);
 }
@@ -45,6 +47,6 @@ function response(body: unknown, status: number, origin: string | null, viewerOr
   return new NextResponse(body === null ? null : JSON.stringify(body), { status, headers });
 }
 
-function report(status: string, slug: string) {
-  console.info(JSON.stringify({ event: 'public_reader_request', slug, status }));
+function report(status: string, slug: string, surface: 'reader' | 'embed', origin: string | null) {
+  console.info(JSON.stringify(createViewerRequestMetric(status, slug, surface, origin)));
 }

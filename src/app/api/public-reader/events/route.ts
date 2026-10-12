@@ -17,7 +17,21 @@ export async function POST(request: NextRequest) {
   console.info(JSON.stringify({
     event: 'public_reader_viewer',
     origin,
-    ...event,
+    embedHost: getEmbedHost(request.headers.get('referer')),
+    slug: event.slug,
+    surface: event.surface,
+    type: event.type,
+    ...(event.metadataBytes === undefined ? {} : { metadataBytes: event.metadataBytes }),
+    ...(event.durationMs === undefined ? {} : { durationMs: event.durationMs }),
   }));
   return new NextResponse(null, { status: 204 });
+}
+
+function getEmbedHost(referer: string | null) {
+  if (!referer) return null;
+  try {
+    return new URL(referer).hostname;
+  } catch {
+    return null;
+  }
 }

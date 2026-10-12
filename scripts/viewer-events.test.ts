@@ -9,3 +9,19 @@ test('accepts only the viewer telemetry events owned by the public reader bounda
   assert.equal(isViewerEvent({ slug: 'test-zine', surface: 'embed', type: 'request-database' }), false);
   assert.equal(isViewerEvent({ slug: 42, surface: 'embed', type: 'ready' }), false);
 });
+
+test('accepts page-load timing and byte metrics', () => {
+  assert.equal(isViewerEvent({
+    durationMs: 125.5,
+    metadataBytes: 2048,
+    slug: 'zine',
+    surface: 'embed',
+    type: 'page-load',
+  }), true);
+  assert.equal(isViewerEvent({
+    metadataBytes: -1,
+    slug: 'zine',
+    surface: 'embed',
+    type: 'page-load',
+  }), false);
+});

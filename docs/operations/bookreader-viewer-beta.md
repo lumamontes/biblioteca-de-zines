@@ -75,4 +75,4 @@ Set `READER_BETA_TOKEN` when the beta requires tester-token access and `READER_P
 
 General public exposure requires performance evidence, abuse review, and legal/source-distribution review for the AGPL-3.0 Internet Archive BookReader dependency.
 
-The current traffic guard is a bounded best-effort process-local safeguard. Production deployment should add a trusted-platform/shared rate limiter before broad public exposure; the in-process guard must not be treated as a distributed quota system.
+The current traffic guard is a bounded best-effort process-local safeguard. Production deployment should add a trusted-platform/shared rate limiter before broad public exposure; the in-process guard must not be treated as a distributed quota system. Metadata response size is reported separately from derivative bandwidth; use the delivery probe and storage/CDN metrics for derivative bandwidth.
