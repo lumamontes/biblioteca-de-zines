@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseProcessingJobStore } from '@/infrastructure/processing/supabase-processing-job-store';
-import { createAdminClient } from '@/utils/supabase/admin';
-import { processClaimedZine } from '@/application/processing/process-claimed-zine';
-import { createCoverGenerationFromUrl } from '@/infrastructure/cover-generation/cover-import-service';
+import { createZineProcessingWorker } from '@/composition/server/create-zine-processing-worker';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -14,19 +11,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const supabase = createAdminClient();
-  const jobs = createSupabaseProcessingJobStore(supabase);
+  const worker = createZineProcessingWorker();
+  const { jobs } = worker;
   const job = await jobs.claimNext();
   if (!job) {
     return NextResponse.json({ processed: false, message: 'No pending zines' });
   }
 
   try {
-    const status = await processClaimedZine(
-      job,
-      jobs,
-      () => createCoverGenerationFromUrl(job.zineId, job.pdfUrl, supabase),
-    );
+    const status = await worker.process(job);
     return NextResponse.json({ processed: true, status, zineId: job.zineId });
   } catch (error) {
     return NextResponse.json({
