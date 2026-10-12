@@ -41,6 +41,7 @@ The public reader is a Biblioteca application feature, not a reusable reader pac
 - Keep the original PDF as an explicit fallback/download representation.
 - Put BookReader lifecycle, vendor assets, DOM integration, and event translation in its adapter.
 - Let composition select the concrete adapter; routes and UI must not instantiate BookReader directly.
+- Ticket #147 exposes the access-filtered active manifest and explicit fallback; the concrete renderer/adapter lifecycle is ticket #148 and must remain outside the application reader data path.
 - Test application behavior with fake reader/page adapters. Vendor/browser tests belong at the adapter seam.
 - Every implementation ticket must identify its architectural layer, dependencies, and replacement seam.
 - Do not add generic abstractions or vendor-shaped concepts without a concrete responsibility and a testable interface.
