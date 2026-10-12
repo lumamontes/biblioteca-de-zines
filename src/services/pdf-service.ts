@@ -7,7 +7,7 @@
 import sharp from 'sharp';
 import { pathToFileURL } from 'node:url';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { createCanvas } = require('canvas');
+const { createCanvas, DOMMatrix, DOMPoint } = require('@napi-rs/canvas');
 
 type PdfDocument = {
   numPages: number;
@@ -71,8 +71,6 @@ try {
 // Polyfill browser APIs for Node.js
 if (typeof window === 'undefined') {
   // Use the same geometry types as the canvas implementation used for rendering.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { DOMMatrix, DOMPoint } = require('canvas');
   global.DOMMatrix = DOMMatrix;
   global.DOMPoint = DOMPoint;
 
