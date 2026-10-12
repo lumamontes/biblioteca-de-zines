@@ -1,9 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import sharp from 'sharp';
-import { detectFileTypeFromBuffer } from '@/utils/file-type-detection';
-import { extractFirstPageFromPdf } from './pdf-service';
 import type { AssetStorage, AssetTarget } from './asset-storage';
-import type { SourceDocument } from './page-generation-module';
+import type { SourceDocument } from '@/domain/source-document';
 
 export type CoverGenerationState = {
   coverImage: string | null;
@@ -20,12 +17,17 @@ export type CoverGenerationRepository = {
   }) => Promise<void>;
 };
 
+export type FirstPageRenderer = (source: SourceDocument) => Promise<Buffer>;
+export type CoverOptimizer = (image: Buffer) => Promise<Buffer>;
+
 export async function createCoverGeneration(
   loadSource: () => Promise<SourceDocument>,
   target: AssetTarget,
   repository: CoverGenerationRepository,
   storage: AssetStorage,
   sourceUrl: string,
+  renderFirstPage: FirstPageRenderer,
+  optimizeCover: CoverOptimizer,
 ): Promise<void> {
   const generationId = randomUUID();
   let state: CoverGenerationState | undefined;
@@ -34,14 +36,10 @@ export async function createCoverGeneration(
     state = await repository.getState(target);
     await repository.markProcessing(target);
     const source = await loadSource();
-    const page = isPdf(source)
-      ? await extractFirstPageFromPdf(source.buffer)
-      : isImage(source)
-        ? source.buffer
-        : null;
-    if (!page) throw new Error(`Unsupported cover source file type: ${source.mimeType}`);
+    if (!isPdf(source)) throw new Error(`Unsupported cover source file type: ${source.mimeType}`);
+    const page = await renderFirstPage(source);
 
-    const cover = await optimizeCoverImage(page);
+    const cover = await optimizeCover(page);
     const coverImage = await storage.upload({
       contentType: 'image/webp',
       data: cover,
@@ -67,17 +65,6 @@ export async function createCoverGeneration(
   }
 }
 
-export async function optimizeCoverImage(image: Buffer): Promise<Buffer> {
-  return sharp(image)
-    .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
-    .webp({ quality: 85, effort: 4 })
-    .toBuffer();
-}
-
 function isPdf(source: SourceDocument): boolean {
   return source.mimeType.includes('pdf') || source.buffer.subarray(0, 4).toString() === '%PDF';
-}
-
-function isImage(source: SourceDocument): boolean {
-  return source.mimeType.startsWith('image/') || detectFileTypeFromBuffer(source.buffer).mimeType.startsWith('image/');
 }

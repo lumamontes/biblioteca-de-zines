@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../src/types/database.types';
 import { extractFirstPageFromPdf } from '../src/services/pdf-service';
-import { optimizeCoverImage } from '../src/services/cover-generation-module';
+import { optimizeCoverImage } from '../src/infrastructure/cover-generation/cover-image-optimizer';
 import { downloadSource } from '../src/services/source-download-service';
 
 const uploadId = getRequiredArgument('--upload-id');

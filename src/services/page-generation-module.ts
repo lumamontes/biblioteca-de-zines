@@ -2,12 +2,9 @@ import { randomUUID } from 'node:crypto';
 import { detectFileTypeFromBuffer } from '@/utils/file-type-detection';
 import { isPlaceholderCover } from '@/utils/cover-image';
 import { forEachPageFromPdf } from './pdf-service';
-import type { AssetStorage, AssetTarget } from './asset-storage';
-
-export type SourceDocument = {
-  buffer: Buffer;
-  mimeType: string;
-};
+import type { AssetStorage, AssetTarget } from '@/application/asset-storage';
+import type { SourceDocument } from '@/domain/source-document';
+export type { SourceDocument } from '@/domain/source-document';
 
 export type PageGenerationState = {
   activePageGeneration: string | null;

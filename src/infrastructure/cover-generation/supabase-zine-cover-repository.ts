@@ -1,7 +1,7 @@
 import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { CoverGenerationRepository } from './cover-generation-module';
-import type { AssetTarget } from './asset-storage';
+import type { CoverGenerationRepository } from '@/application/cover-generation-service';
+import type { AssetTarget } from '@/application/asset-storage';
 import { isGeneratedCover } from '@/utils/cover-image';
 
 export function createSupabaseZineCoverRepository(

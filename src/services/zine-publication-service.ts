@@ -9,7 +9,7 @@ import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
 import { syncAuthorsToZine } from './author-service';
 import { dispatchZineProcessing } from './zine-processing-dispatch-service';
 import { enqueueZineProcessing } from './enqueue-zine-processing';
-import { hasCompleteGeneratedCover } from './supabase-zine-cover-repository';
+import { hasCompleteGeneratedCover } from '@/infrastructure/cover-generation/supabase-zine-cover-repository';
 
 type ZineDatabaseClient = SupabaseClient<Database>;
 
@@ -143,13 +143,6 @@ export async function updateUploadAndPublishedZine(
   const { author_name, author_url } = flattenAuthors(validatedData.authors);
   const nextPdfUrl = validatedData.pdf_url || null;
 
-  const { data: currentUpload, error: currentUploadError } = await supabase
-    .from('form_uploads')
-    .select('pdf_url')
-    .eq('id', uploadId)
-    .single();
-  if (currentUploadError) throw new Error(`Erro ao buscar upload atual: ${currentUploadError.message}`);
-
   const publishedZine = validatedData.slug
     ? (await supabase
       .from('library_zines')
@@ -157,8 +150,6 @@ export async function updateUploadAndPublishedZine(
       .eq('slug', validatedData.slug)
       .single()).data
     : null;
-  const pdfChanged = currentUpload.pdf_url !== nextPdfUrl;
-
   const { error: uploadError } = await supabase
     .from('form_uploads')
     .update({
@@ -181,6 +172,12 @@ export async function updateUploadAndPublishedZine(
     || (publishedZine?.cover_image && isGeneratedCover(publishedZine.cover_image)
       ? publishedZine.cover_image
       : null);
+  const shouldProcessPublished = Boolean(
+    publishedZine
+    && nextPdfUrl
+    && (!validatedData.cover_image || isGeneratedCover(validatedData.cover_image))
+    && !(await hasCompleteGeneratedCover(supabase, publishedZine.id, nextPdfUrl)),
+  );
 
   const { error: zineError } = await supabase
     .from('library_zines')
@@ -192,17 +189,11 @@ export async function updateUploadAndPublishedZine(
       cover_image: nextCoverImage,
       year: validatedData.published_year || null,
       tags: tagsJson,
-      ...(pdfChanged && nextPdfUrl ? { import_status: 'pending' } : {}),
+       ...(shouldProcessPublished ? { import_status: 'pending' } : {}),
     })
     .eq('slug', validatedData.slug);
   if (zineError) throw new Error(`Erro ao atualizar zine: ${zineError.message}`);
 
-  const shouldProcessPublished = Boolean(
-    publishedZine
-    && nextPdfUrl
-    && (!validatedData.cover_image || isGeneratedCover(validatedData.cover_image))
-    && !(await hasCompleteGeneratedCover(supabase, publishedZine.id, nextPdfUrl)),
-  );
   if (shouldProcessPublished && publishedZine) await requestZineProcessing(publishedZine.id);
 }
 

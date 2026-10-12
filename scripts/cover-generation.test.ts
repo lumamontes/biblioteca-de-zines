@@ -1,9 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
-import { createCoverGeneration, optimizeCoverImage } from '../src/services/cover-generation-module';
-import type { AssetStorage } from '../src/services/asset-storage';
-import type { CoverGenerationRepository } from '../src/services/cover-generation-module';
+import { createCoverGeneration } from '../src/application/cover-generation-service';
+import { optimizeCoverImage } from '../src/infrastructure/cover-generation/cover-image-optimizer';
+import { generateGenerationKey } from '../src/services/r2-storage-service';
+import type { AssetStorage } from '../src/application/asset-storage';
+import type { CoverGenerationRepository } from '../src/application/cover-generation-service';
 
 test('cover generation produces a bounded WebP and publishes it after upload', async () => {
   const source = await createImage(2400, 1800);
@@ -12,11 +14,13 @@ test('cover generation produces a bounded WebP and publishes it after upload', a
   const storage = createStorage(calls);
 
   await createCoverGeneration(
-    async () => ({ buffer: source, mimeType: 'image/png' }),
+    async () => ({ buffer: source, mimeType: 'application/pdf' }),
     { id: 42, kind: 'zine' },
     repository,
     storage,
     'https://drive.example/source.pdf',
+    async () => source,
+    optimizeCoverImage,
   );
 
   const uploaded = storage.uploaded[0];
@@ -40,6 +44,8 @@ test('failed cover generation records failure and removes the new generation', a
     repository,
     storage,
     'https://drive.example/source.pdf',
+    async () => Buffer.from('not an image'),
+    optimizeCoverImage,
   ));
 
   assert.deepEqual(calls, ['mark-processing', 'mark-failed', 'delete-generation']);
@@ -51,6 +57,13 @@ test('cover optimization does not enlarge small images', async () => {
   assert.equal(metadata.format, 'webp');
   assert.equal(metadata.width, 400);
   assert.equal(metadata.height, 600);
+});
+
+test('cover storage uses the immutable WebP cover namespace', () => {
+  assert.equal(
+    generateGenerationKey({ id: 42, kind: 'zine' }, 'generation-1', 'cover', 'webp'),
+    'zines/42/covers/generation-1.webp',
+  );
 });
 
 async function createImage(width: number, height: number): Promise<Buffer> {

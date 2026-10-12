@@ -1,6 +1,6 @@
 import { detectFileTypeFromBuffer } from '@/utils/file-type-detection';
 import { extractFileIdFromUrl, downloadFile } from './google-drive-service';
-import type { SourceDocument } from './page-generation-module';
+import type { SourceDocument } from '@/domain/source-document';
 
 export async function downloadSource(url: string): Promise<SourceDocument> {
   if (url.includes('drive.google.com')) {

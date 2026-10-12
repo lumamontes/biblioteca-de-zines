@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createSupabaseProcessingJobStore } from '@/services/supabase-processing-job-store';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { processClaimedZine } from '@/services/process-claimed-zine';
-import { createCoverGenerationFromUrl } from '@/services/cover-import-service';
+import { createCoverGenerationFromUrl } from '@/infrastructure/cover-generation/cover-import-service';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;

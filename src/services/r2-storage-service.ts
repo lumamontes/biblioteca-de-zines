@@ -4,7 +4,7 @@
  */
 
 import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
-import { AssetStorage } from './asset-storage';
+import type { AssetStorage } from '@/application/asset-storage';
 
 // Initialize S3 client for R2
 function getR2Client(): S3Client {
@@ -26,7 +26,7 @@ function getR2Client(): S3Client {
   });
 }
 
-function generateGenerationKey(
+export function generateGenerationKey(
   target: { id: number; kind: 'zine' },
   generationId: string,
   kind: 'page' | 'cover',
@@ -44,7 +44,11 @@ export function createR2AssetStorage(): AssetStorage {
 
   return {
     async upload(asset) {
-      const extension = asset.contentType.includes('jpeg') || asset.contentType.includes('jpg') ? 'jpg' : 'png';
+      const extension = asset.contentType.includes('webp')
+        ? 'webp'
+        : asset.contentType.includes('jpeg') || asset.contentType.includes('jpg')
+          ? 'jpg'
+          : 'png';
       const key = generateGenerationKey(
         asset.target,
         asset.generationId,

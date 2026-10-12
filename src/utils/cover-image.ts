@@ -5,5 +5,14 @@ export function isPlaceholderCover(coverImage: string | null): boolean {
 }
 
 export function isGeneratedCover(coverImage: string | null): boolean {
-  return Boolean(coverImage && /\/zines\/\d+\/covers\/[^/]+\.webp$/.test(coverImage));
+  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/$/, '');
+  return Boolean(
+    publicUrl
+    && coverImage?.startsWith(`${publicUrl}/`)
+    && new RegExp(`^${escapeRegExp(publicUrl)}/zines/\\d+/covers/[^/]+\\.webp$`).test(coverImage),
+  );
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

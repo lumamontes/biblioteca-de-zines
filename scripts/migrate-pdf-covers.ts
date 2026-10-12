@@ -23,7 +23,9 @@ async function main(): Promise<void> {
   const report = JSON.parse(await readFile(reportPath, 'utf8')) as MonitorReport;
   const excludedIds = new Set(
     (report.results ?? [])
-      .filter((result) => result.outcome === 'inaccessible' || result.outcome === 'invalid')
+      .filter((result) => result.outcome === 'inaccessible'
+        || result.outcome === 'invalid'
+        || result.outcome === 'invalid-input')
       .map((result) => parseResourceId(result.resourceId))
       .filter((id): id is number => id !== null),
   );
@@ -40,10 +42,14 @@ async function main(): Promise<void> {
   for (const zine of zines ?? []) {
     if (onlyId && zine.id !== Number(onlyId)) continue;
     if (excludedIds.has(zine.id)) continue;
-    if (!zine.pdf_url || isGeneratedCover(zine.cover_image)
+    const generatedCoverIsCurrent = isGeneratedCover(zine.cover_image)
       && zine.processed_pdf_url === zine.pdf_url
-      && zine.import_status === 'completed') continue;
-    if (!isPlaceholderCover(zine.cover_image) && await isReachableImage(zine.cover_image)) continue;
+      && zine.import_status === 'completed';
+    if (!zine.pdf_url) continue;
+    if (generatedCoverIsCurrent && await isReachableImage(zine.cover_image)) continue;
+    if (!isPlaceholderCover(zine.cover_image)
+      && !isGeneratedCover(zine.cover_image)
+      && await isReachableImage(zine.cover_image)) continue;
     candidates.push(zine);
   }
 
@@ -51,7 +57,7 @@ async function main(): Promise<void> {
   console.log(`Excluded by monitor report: ${excludedIds.size}`);
 
   const { createCoverGenerationFromUrl } = apply
-    ? await import('../src/services/cover-import-service')
+    ? await import('../src/infrastructure/cover-generation/cover-import-service')
     : { createCoverGenerationFromUrl: null };
 
   let failures = 0;
@@ -84,11 +90,22 @@ function parseResourceId(resourceId: string | undefined): number | null {
 async function isReachableImage(url: string | null): Promise<boolean> {
   if (!url) return false;
   try {
-    const response = await fetch(url, { method: 'HEAD', redirect: 'follow' });
-    return response.ok && response.headers.get('content-type')?.startsWith('image/') === true;
+    const head = await fetch(url, { method: 'HEAD', redirect: 'follow' });
+    if (isImageResponse(head)) return true;
+    if (head.status !== 405 && head.status !== 501) return false;
+
+    const response = await fetch(url, {
+      headers: { Range: 'bytes=0-0' },
+      redirect: 'follow',
+    });
+    return isImageResponse(response);
   } catch {
     return false;
   }
+}
+
+function isImageResponse(response: Response): boolean {
+  return response.ok && response.headers.get('content-type')?.startsWith('image/') === true;
 }
 
 main().catch((error: unknown) => {
