@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { importFromGoogleDrive } from "@/services/zine-import-service";
 import { googleDriveImportSchema } from "@/schemas/google-drive-import";
+import { createSourceImportModule } from '@/composition/server/source-import-module';
 
 /**
  * Import zine from Google Drive URL
@@ -25,13 +25,12 @@ export async function importZineFromDrive(
       };
     }
 
-    // Import from Google Drive
-    await importFromGoogleDrive(zineId, driveUrl);
+    await (await createSourceImportModule()).importFromDrive(zineId, driveUrl);
 
     revalidatePath("/dashboard");
     return {
       success: true,
-      message: "Zine imported successfully from Google Drive",
+      message: "Zine queued for processing from Google Drive",
     };
   } catch (error) {
     console.error("Error importing zine from Drive:", error);
@@ -52,4 +51,3 @@ export async function retryFailedImport(
   // Same as importZineFromDrive, but can be extended with retry-specific logic
   return importZineFromDrive(zineId, driveUrl);
 }
-

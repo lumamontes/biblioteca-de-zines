@@ -1,5 +1,5 @@
 import { Zine } from "@/@types/zine"
-import { Author } from "@/services/author-service"
+import { Author } from '@/infrastructure/authors/author-types'
 import { siteConfig } from "@/app/config/site"
 
 interface WebsiteStructuredDataProps {

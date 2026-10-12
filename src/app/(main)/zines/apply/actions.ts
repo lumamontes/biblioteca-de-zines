@@ -1,12 +1,8 @@
 "use server";
 
 import { pipe, composable } from 'composable-functions';
-import { createClient } from '@/utils/supabase/server';
-import { sendTelegramNotification } from '@/utils/telegram';
-import { flattenAuthors } from '@/utils/authors';
-import { TablesInsert } from '@/types/database.types';
+import { createSubmissionModule } from '@/composition/server/submission-module';
 import { 
-  Author, 
   FormData as ZineFormData,
   FormDataSchema 
 } from '@/schemas/apply-zine';
@@ -42,80 +38,26 @@ const validateFormData = composable((formData: ZineFormData) => {
   throw new Error(result.error.errors[0]?.message || 'Erro de validação');
 });
 
-const createDatabaseEntries = composable(async (formData: ZineFormData) => {
-  const supabase = await createClient();
-  const submissionBatchId = Date.now().toString();
-  
-  const structuredAuthors = formData.authors.map((author: Author) => ({
-    name: author.name.trim(),
-    socialLinks: (author.socialLinks || []).map((link) => link.trim()).filter(Boolean),
-  }));
-  const { author_name, author_url } = flattenAuthors(structuredAuthors);
-  const authorNames = structuredAuthors.map((author) => author.name);
-
-  const zinesData: TablesInsert<"form_uploads">[] = formData.zines.map((zine) => ({
-    title: zine.title.trim(),
-    collection_title: zine.collectionTitle?.trim() || null,
-    author_name,
-    author_url,
-    author_email: formData.additionalInfo.contactEmail,
-    pdf_url: zine.pdfUrl.trim(),
-    description: zine.description?.trim() || null,
-    cover_image: zine.coverImageUrl?.trim() || null,
-    published_year: zine.year.trim(),
-    tags: {
-      submission_batch_id: submissionBatchId,
-      categories: zine.categories || [],
-    },
-    is_published: false,
-  }));
-
-  const { data, error } = await supabase
-    .from("form_uploads")
-    .insert(zinesData)
-    .select();
-
-  if (error) {
-    console.error('Error inserting zines:', error);
-    throw new Error(`Erro ao enviar ${formData.zines.length} zine${formData.zines.length !== 1 ? 's' : ''}`);
-  }
-
-  return {
-    results: data,
-    submissionBatchId,
-    authorNames,
-    zineTitles: formData.zines.map(z => z.title.trim()),
-    contactEmail: formData.additionalInfo.contactEmail,
-    zineCount: formData.zines.length
-  };
-});
-
 export const submitZine = composable(async (formData: FormData) => {
-    //usa pipe do composable-functions pra executar em sequencia
-    //https://github.com/seasonedcc/composable-functions/blob/main/API.md#pipe
     const result = await pipe(
       parseFormData,
-      validateFormData,
-      createDatabaseEntries
+      validateFormData
     )(formData);
     
     if (!result.success) {
       throw new Error(result.errors[0]?.message || 'Erro desconhecido');
     }
 
-    const { authorNames, zineCount, zineTitles, contactEmail, submissionBatchId, results} = result.data
-
-    await sendTelegramNotification({
-      authorNames: authorNames,
-      zineCount: zineCount,
-      zineTitles: zineTitles,
-      contactEmail: contactEmail || undefined,
-      submissionId: submissionBatchId,
+    const submission = await createSubmissionModule();
+    const receipt = await submission.submit({
+      authors: result.data.authors,
+      zines: result.data.zines,
+      contactEmail: result.data.additionalInfo.contactEmail,
     });
 
     return { 
-      success: true, 
-      message: `${zineCount} zine${zineCount !== 1 ? 's' : ''} enviada${zineCount !== 1 ? 's' : ''} com sucesso!!!`,
-      data: results
+      success: true,
+      message: `${receipt.zineCount} zine${receipt.zineCount !== 1 ? 's' : ''} enviada${receipt.zineCount !== 1 ? 's' : ''} com sucesso!!!`,
+      data: receipt,
     };
-}); 
+});

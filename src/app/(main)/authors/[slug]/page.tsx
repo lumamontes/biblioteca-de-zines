@@ -1,4 +1,4 @@
-import { getAuthorBySlug, getAuthorZines } from "@/services/author-service";
+import { createAuthorReader } from '@/composition/server/author-reader';
 import { ZineGridServer } from "@/components/zines/zine-grid-server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -14,7 +14,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const author = await getAuthorBySlug(slug);
+  const reader = await createAuthorReader();
+  const author = await reader.getBySlug(slug);
 
   if (!author) {
     return {
@@ -23,7 +24,7 @@ export async function generateMetadata({
     };
   }
 
-  const zines = await getAuthorZines(author.id);
+  const zines = await reader.getZines(author.id);
   const firstZine = zines.length > 0 ? zines[0] : null;
   const thumbnailUrl = firstZine?.cover_image 
     ? getThumbnailUrl(firstZine.cover_image) 
@@ -38,13 +39,14 @@ export default async function AuthorPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const author = await getAuthorBySlug(slug);
+  const reader = await createAuthorReader();
+  const author = await reader.getBySlug(slug);
 
   if (!author) {
     notFound();
   }
 
-  const zines = await getAuthorZines(author.id);
+  const zines = await reader.getZines(author.id);
 
   const breadcrumbItems = [
     { name: "Início", url: siteConfig.url },
@@ -99,4 +101,3 @@ export default async function AuthorPage({
     </>
   );
 }
-

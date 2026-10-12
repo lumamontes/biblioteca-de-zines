@@ -102,6 +102,14 @@ _Avoid_: Reading copy, original
 A file or representation produced from another publication file, such as a page image, preview, or reading copy.
 _Avoid_: Duplicate
 
+**Generated cover**:
+A web-ready derivative made from the first page of a PDF when a publication does not have a valid submitted cover image. It is a cover asset, not a replacement for the source PDF or the reader's PDF preview.
+_Avoid_: Treating the generated cover as a reading copy or as evidence that the PDF is preserved
+
+**Cover-only processing**:
+The current processing workflow that downloads a publication's PDF, renders only its first page, optimizes that image, and stores it as the publication's cover derivative. Full PDF-to-image page generation is a reusable future capability, not part of the current cover workflow.
+_Avoid_: Calling cover-only processing page processing
+
 ## Evidence and diagnosis
 
 **Inventory**:

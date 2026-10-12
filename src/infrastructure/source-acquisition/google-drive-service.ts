@@ -71,4 +71,3 @@ export async function downloadFile(fileId: string): Promise<{ buffer: Buffer; mi
 
   return { buffer, mimeType };
 }
-

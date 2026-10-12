@@ -101,6 +101,9 @@ export default function ZineForm({
             placeholder="https://exemplo.com/capa.jpg"
             disabled={disabled}
           />
+          <p className="mt-1 text-sm text-neutral-600">
+            Se você não informar uma imagem, usaremos a primeira página do PDF como capa por padrão.
+          </p>
         </div>
 
         <div className="md:col-span-2">
@@ -137,4 +140,4 @@ export default function ZineForm({
       </div>
     </div>
   );
-} 
+}

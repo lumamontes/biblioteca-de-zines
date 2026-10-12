@@ -29,6 +29,22 @@ A [decisão sobre padrões abertos](./decisions/9-open-standards-as-crosswalks.m
 registra por que padrões externos são usados como lentes e crosswalks seletivos,
 sem substituir a semântica local da Biblioteca.
 
+A [especificação de processamento de páginas e ciclo de vida de assets](./specs/page-processing-and-asset-lifecycle.md)
+define o bucket público ativo, gerações, reprocessamento de PDFs, capas,
+publicação e limpeza futuras.
+
+A [especificação de geração e migração de capas](./specs/cover-only-generation-and-migration.md)
+define o fluxo atual de capas geradas a partir da primeira página do PDF.
+
+A [decisão sobre processar páginas na publicação](./decisions/11-process-pages-at-publication.md)
+registra a decisão histórica e as alternativas consideradas.
+
+A [decisão sobre processamento somente de capas](./decisions/12-cover-only-processing-at-publication.md)
+registra o fluxo atual de derivados para a leitura via Google Drive.
+
+O [runbook de processamento de páginas](./runbooks/page-processing.md)
+documenta migrações, scripts, variáveis de ambiente, verificações e recuperação.
+
 A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
 compara fontes brasileiras e internacionais para validar campos físicos, digitais,
 geográficos e de classificação.

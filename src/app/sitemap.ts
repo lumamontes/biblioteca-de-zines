@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 import { getAllZines } from '@/services/zine-service'
-import { getAllAuthors } from '@/services/author-service'
+import { createAuthorReader } from '@/composition/server/author-reader'
 import { siteConfig } from './config/site'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -53,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
 
     // Fetch all authors
-    const authors = await getAllAuthors()
+    const authors = await (await createAuthorReader()).getAll()
     const authorPages: MetadataRoute.Sitemap = authors
       .filter(author => author.slug)
       .map((author) => ({
