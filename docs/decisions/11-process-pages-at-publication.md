@@ -15,7 +15,7 @@ Process PDFs only after a submission becomes a `library_zine`, writing the gener
 - A matching complete active generation is reused during republish.
 - Metadata-only edits do not trigger processing.
 - A missing custom cover uses the first PDF page as the default.
-- Existing form-upload processing columns and `form_upload_pages` remain legacy schema because applied migrations are immutable; active code no longer writes them.
+- The cleanup migration removes the unused form-upload processing columns and `form_upload_pages`; form uploads remain intake records only.
 
 See the [page-processing and asset-lifecycle specification](../specs/page-processing-and-asset-lifecycle.md) for the complete lifecycle and the [runbook](../runbooks/page-processing.md) for operations.
 

@@ -17,7 +17,6 @@ The submitted PDF URL remains the source reference. R2 objects are derivatives, 
 | Relation | Role | Visibility |
 | --- | --- | --- |
 | `form_uploads` | Intake/submission record | Private workflow data |
-| `form_upload_pages` | Legacy processing generations for a submission | Not written by the active workflow |
 | `library_zines` | Catalogue/publication record | Public only when `is_published = true` |
 | `zine_pages` | Page generations associated with a catalogue publication | Public delivery derivatives |
 | `zine_processing_jobs` | Retryable queue for published-zine processing | Backend-only operational data |
@@ -28,7 +27,6 @@ There is no separate `library_zine_pages` table. `zine_pages.zine_id` is the pub
 
 ```mermaid
 erDiagram
-    form_uploads ||--o{ form_upload_pages : legacy_stages
     form_uploads ||--o| library_zines : becomes
     library_zines ||--o{ zine_pages : publishes
     library_zines ||--o{ zine_processing_jobs : queues
@@ -157,4 +155,4 @@ The dispatch service currently targets `.github/workflows/process-pending-zines.
 
 ## Legacy Schema
 
-The applied migration `20261011010000_addFormUploadPageProcessing.sql` created `form_upload_pages` and form-upload processing columns before the process-on-publication decision. Applied migrations are not edited. The active code no longer writes those tables or columns; they remain legacy schema until a separately planned cleanup migration is approved.
+The applied migration `20261011010000_addFormUploadPageProcessing.sql` created `form_upload_pages` and form-upload processing columns before the process-on-publication decision. The cleanup migration `20261012000000_removeLegacyFormUploadPages.sql` removes them. Form uploads remain intake records; generated pages belong only to published zines.

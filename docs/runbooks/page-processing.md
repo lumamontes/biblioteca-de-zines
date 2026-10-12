@@ -30,7 +30,8 @@ Relevant migrations:
 
 - `20251226002136_addZinePagesAndImportFields.sql`: legacy zine page/import fields.
 - `20261011000000_addZineProcessingJobs.sql`: generation-aware publication pages and processing queue.
-- `20261011010000_addFormUploadPageProcessing.sql`: legacy form-upload processing state and staging pages; the active code no longer writes them.
+- `20261011010000_addFormUploadPageProcessing.sql`: historical form-upload processing state and staging pages.
+- `20261012000000_removeLegacyFormUploadPages.sql`: removes the unused form-upload processing state and staging table.
 - `20261011020000_addProcessedZineSource.sql`: records the PDF URL used by the active public generation.
 
 Never edit an applied migration. Add a new timestamped migration for every later schema change.
@@ -50,6 +51,12 @@ pnpm migrate:pdf-covers -- --only-id <zine_id> --apply
 ```
 
 The command downloads the current source, renders pages into the public bucket, and records `active_page_generation`, `total_pages`, and `import_status`.
+
+To render only the first page of an existing intake PDF locally, without changing the database or uploading an asset:
+
+```bash
+pnpm generate:form-upload-cover --upload-id 123 --output /tmp/form-upload-123-cover.png
+```
 
 The command is dry-run by default. `--only-id` applies to published `library_zines`.
 
