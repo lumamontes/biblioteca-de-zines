@@ -5,7 +5,7 @@ import { createCoverGeneration } from '../src/application/cover-generation-servi
 import { selectCoverMigrationCandidates } from '../src/application/cover-migration-service';
 import { isCompleteGeneratedCover } from '../src/application/cover-generation-policy';
 import { optimizeCoverImage } from '../src/infrastructure/cover-generation/cover-image-optimizer';
-import { generateGenerationKey } from '../src/services/r2-storage-service';
+import { generateGenerationKey } from '../src/infrastructure/storage/r2-storage-service';
 import type { AssetStorage } from '../src/application/asset-storage';
 import type { CoverGenerationRepository } from '../src/application/cover-generation-service';
 
