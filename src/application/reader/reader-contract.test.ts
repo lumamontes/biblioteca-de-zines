@@ -61,9 +61,11 @@ test('rejects duplicate, skipped, mixed-generation, and dimensionless pages', ()
 test('delegates mounted reader operations and publishes page changes through a fake adapter', () => {
   const manifest = createPageManifest({ generationId: 'generation-1', pageCount: 2, pages: [page(1), page(2)] });
   const calls: string[] = [];
-  let onPageChanged = (_pageNumber: number) => {};
+  let onPageChanged = (_pageNumber: number) => { void _pageNumber; };
   const renderer: ReaderRenderer = {
     mount: (_target, _manifest, callback) => {
+      void _target;
+      void _manifest;
       calls.push('mount');
       onPageChanged = callback;
     },

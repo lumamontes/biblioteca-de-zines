@@ -4,7 +4,6 @@ import type {
   ReaderFallback,
   ReaderFallbackState,
   ReaderRenderer,
-  ReaderRenderTarget,
   ReaderSession,
   ReaderSessionState,
 } from './reader-contracts';
@@ -42,7 +41,7 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
     publish({ ...state, currentPage: pageNumber });
   };
 
-  const useFallback = (reason: ReaderFallbackState['reason'] = 'user-selected') => {
+  const switchToFallback = (reason: ReaderFallbackState['reason'] = 'user-selected') => {
     if (destroyed || state.status === 'fallback') return;
     try {
       if (mounted) renderer.destroy();
@@ -59,7 +58,7 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
     try {
       operation();
     } catch {
-      useFallback('reader-failure');
+      switchToFallback('reader-failure');
     }
   };
 
@@ -75,13 +74,13 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
       try {
         renderer.mount(target, state.manifest, onPageChanged);
       } catch {
-        useFallback('reader-failure');
+        switchToFallback('reader-failure');
       }
     },
     next: () => runRenderer(() => renderer.next()),
     previous: () => runRenderer(() => renderer.previous()),
     goTo: (pageNumber) => runRenderer(() => renderer.goTo(pageNumber)),
-    useFallback,
+    useFallback: switchToFallback,
     destroy: () => {
       if (destroyed) return;
       if (mounted) {
