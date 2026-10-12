@@ -35,6 +35,27 @@ test.describe('comparison lab real-source smoke', () => {
     await expect(page.locator('.BRcontrols')).toBeAttached({ timeout: 30_000 });
   });
 
+  test('loads the external image-pages test preset before mounting engines', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: /External image pages \(test\)/ }).click();
+    await expect(page.getByText('Page 1 / 4')).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText('image-pages loaded and every image preloaded')).toBeVisible();
+    await page.getByRole('tab', { name: /Stable slide/ }).click();
+    await expect(page.locator('.slide-page')).toHaveAttribute('src', /images\.unsplash\.com/);
+    await expect(page.locator('.slide-page')).toHaveJSProperty('complete', true);
+
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await expect(page.getByText('Page 2 / 4')).toBeVisible();
+
+    await page.getByRole('tab', { name: /Direct PageFlip/ }).click();
+    await expect(page.locator('.reader-page-turn-mount')).toBeAttached();
+
+    await page.getByRole('tab', { name: /React PageFlip/ }).click();
+    await expect(page.locator('.react-flip-book')).toBeVisible();
+    await page.getByRole('tab', { name: /Internet Archive BookReader/ }).click();
+    await expect(page.locator('.BRcontrols')).toBeAttached({ timeout: 30_000 });
+  });
+
   test('keeps the intentionally broken source separate and exposes the slide fallback', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: /Broken source/ }).click();

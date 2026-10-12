@@ -107,7 +107,7 @@ pnpm install
 pnpm dev
 ```
 
-The standalone demo is a comparison lab. It uses the provided Biblioteca de Zines Google Drive PDF through the local Vite development proxy, preloads every PDF.js-rendered page before initializing an engine, and keeps one clearly labelled broken source for failure testing. React PageFlip, direct PageFlip, the Internet Archive BookReader browser bundle, and stable slide navigation are compared without changing the Biblioteca host integration or claiming a final tool. Production uses the existing Next route at `/api/publications/google-drive/<fileId>`; the Vite proxy is not a production endpoint.
+The standalone demo is a comparison lab. It defaults to the provided Biblioteca de Zines Google Drive PDF through the local Vite development proxy and also includes a clearly labelled `External image pages (test)` preset. That preset uses the real `image-pages` representation with one stable public image URL per ordered page, preloads all images before initializing an engine, and is not Biblioteca publication content. React PageFlip, direct PageFlip, the Internet Archive BookReader browser bundle, and stable slide navigation are compared without changing the Biblioteca host integration or claiming a final tool. Production uses the existing Next route at `/api/publications/google-drive/<fileId>`; the Vite proxy is not a production endpoint.
 
 ## License and dependencies
 

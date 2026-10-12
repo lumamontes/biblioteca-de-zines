@@ -4,6 +4,7 @@ import HTMLFlipBook from 'react-pageflip';
 import * as pdfjs from 'pdfjs-dist';
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { createPdfLoader } from '../src/pdf';
+import { imagePagesLoader } from '../src/reader';
 import { createPageTurnRenderer } from '../src/page-turn';
 import type { ReaderPage } from '../src/contract';
 import './lab.css';
@@ -24,6 +25,17 @@ const sources = {
     description: 'The provided Biblioteca de Zines PDF, loaded through the local development proxy.',
     url: `/api/google-drive/${providedFileId}`,
     source: PROVIDED_DRIVE_URL,
+  },
+  externalImages: {
+    id: 'external-images', title: 'External image pages (test)', creator: 'Test image CDN', kind: 'image-pages' as const,
+    description: 'Test content only: ordered public images loaded directly from images.unsplash.com.',
+    pages: [
+      { url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&h=1600&q=80', alt: 'Mountain landscape test page', width: 1200, height: 1600 },
+      { url: 'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&h=1600&q=80', alt: 'Coastal landscape test page', width: 1200, height: 1600 },
+      { url: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&h=1600&q=80', alt: 'Forest landscape test page', width: 1200, height: 1600 },
+      { url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=1600&q=80', alt: 'Desert landscape test page', width: 1200, height: 1600 },
+    ],
+    source: 'images.unsplash.com; test content, not a Biblioteca publication',
   },
   broken: {
     id: 'broken', title: 'Broken source (intentional)', creator: 'Failure path', kind: 'pdf' as const,
@@ -48,6 +60,15 @@ type Materialized = { pages: LabPage[]; elapsed: number; sourceStatus: string };
 
 async function materialize(source: Source): Promise<Materialized> {
   const started = performance.now();
+  if (source.kind === 'image-pages') {
+    await Promise.all(source.pages.map((page) => preloadImage(page.url)));
+    const document = await imagePagesLoader({ kind: 'image-pages', pages: source.pages });
+    const pages = [] as LabPage[];
+    for (let index = 0; index < document.pageCount; index += 1) {
+      pages.push(await document.loadPage(index));
+    }
+    return { pages, elapsed: performance.now() - started, sourceStatus: 'image-pages loaded and every image preloaded' };
+  }
   const loader = createPdfLoader(pdfjs, { scale: 1.2 });
   const document = await loader({ kind: 'pdf', url: source.url });
   const pages = [] as LabPage[];
@@ -56,6 +77,15 @@ async function materialize(source: Source): Promise<Materialized> {
   }
   document.cleanup?.();
   return { pages, elapsed: performance.now() - started, sourceStatus: 'PDF.js loaded and rendered every page' };
+}
+
+function preloadImage(url: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error(`Unable to preload external page image: ${url}`));
+    image.src = url;
+  });
 }
 
 const Page = forwardRef<HTMLDivElement, { page: LabPage }>((props, ref) => (
@@ -190,7 +220,7 @@ function App() {
 
   return <div className="lab-shell">
     <header className="masthead"><div><span className="eyebrow">Standalone comparison lab</span><h1>Same pages. Four reading surfaces.</h1></div><p>Demo-only instrumentation for visual publication readers. No tool is the final choice.</p></header>
-    <section className="library" aria-label="Demo library"><div className="section-label">Choose a real source</div><div className="source-grid">{Object.entries(sources).map(([id, item]) => <button key={id} className={id === sourceId ? 'source-card selected' : 'source-card'} onClick={() => setSourceId(id as SourceId)} type="button"><strong>{item.title}</strong><span>{item.description}</span><small>{item.source}</small></button>)}</div></section>
+    <section className="library" aria-label="Demo library"><div className="section-label">Choose a source or test representation</div><div className="source-grid">{Object.entries(sources).map(([id, item]) => <button key={id} className={id === sourceId ? 'source-card selected' : 'source-card'} onClick={() => setSourceId(id as SourceId)} type="button"><strong>{item.title}</strong><span>{item.description}</span><small>{item.source}</small></button>)}</div></section>
     <main className={fullscreen ? 'reader-panel fullscreen' : 'reader-panel'}><div className="reader-heading"><div><span className="eyebrow">{source.creator}</span><h2>{source.title}</h2></div><span className="honesty">Comparison, not a recommendation</span></div>
       <div className="engine-tabs" role="tablist" aria-label="Reader engines">{engines.map((item) => <button key={item.id} role="tab" aria-selected={item.id === engineId} onClick={() => setEngineId(item.id)} type="button"><strong>{item.label}</strong><small>{item.note}</small></button>)}</div>
       <div className="reader-stage"><div className="stage-backdrop" />{loading && <div className="state"><strong>Materializing every page</strong><span>Nothing turns until the source is complete.</span></div>}{error && <div className="state failure"><strong>Source unavailable</strong><span>{error}</span><button type="button" onClick={() => setEngineId('slide')}>Use stable slide</button></div>}{!loading && !error && materialized && engineId === 'slide' && slidePage && <img className="slide-page" src={slidePage.url} alt={slidePage.alt} />}{!loading && !error && materialized && <div ref={host} className="engine-host" aria-label={`${engine.label} surface`} />}{engineError && <div className="state failure"><strong>Engine unavailable</strong><span>{engineError}</span><button type="button" onClick={() => setEngineId('slide')}>Use stable slide</button></div>}</div>
