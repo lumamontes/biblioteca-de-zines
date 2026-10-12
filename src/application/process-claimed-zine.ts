@@ -1,4 +1,4 @@
-import type { ProcessingJob, ProcessingJobStore } from './processing-job-module';
+import type { ProcessingJob, ProcessingJobStore } from '@/application/processing-job-types';
 
 export async function processClaimedZine(
   job: ProcessingJob,

@@ -4,26 +4,10 @@ import { isPlaceholderCover } from '@/utils/cover-image';
 import { forEachPageFromPdf } from '@/infrastructure/rendering/pdf-service';
 import type { AssetStorage, AssetTarget } from '@/application/asset-storage';
 import type { SourceDocument } from '@/domain/source-document';
-export type { SourceDocument } from '@/domain/source-document';
-
-export type PageGenerationState = {
-  activePageGeneration: string | null;
-  coverImage: string | null;
-};
-
-export type PageGenerationRepository = {
-  getState: (target: AssetTarget) => Promise<PageGenerationState>;
-  markFailed: (target: AssetTarget) => Promise<void>;
-  markProcessing: (target: AssetTarget) => Promise<void>;
-  publish: (generation: {
-    coverImage?: string;
-    generationId: string;
-    pages: Array<{ imageUrl: string; pageNumber: number }>;
-    sourceUrl?: string;
-    totalPages: number;
-    target: AssetTarget;
-  }) => Promise<void>;
-};
+import type {
+  PageGenerationRepository,
+  PageGenerationState,
+} from '@/application/page-generation-types';
 
 export async function createPageGeneration(
   loadSource: () => Promise<SourceDocument>,

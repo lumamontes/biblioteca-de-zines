@@ -1,13 +1,5 @@
 import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
-
-export type CoverMigrationZine = {
-  cover_image: string | null;
-  id: number;
-  import_status: string | null;
-  pdf_url: string | null;
-  processed_pdf_url: string | null;
-  title: string;
-};
+import type { CoverMigrationZine } from '@/application/cover-migration-types';
 
 export async function selectCoverMigrationCandidates(
   zines: CoverMigrationZine[],

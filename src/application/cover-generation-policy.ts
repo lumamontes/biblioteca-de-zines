@@ -1,10 +1,5 @@
 import { isGeneratedCover } from '@/utils/cover-image';
-
-export type CoverGenerationRecord = {
-  cover_image: string | null;
-  import_status: string | null;
-  processed_pdf_url: string | null;
-};
+import type { CoverGenerationRecord } from '@/application/cover-generation-types';
 
 export function isCompleteGeneratedCover(
   record: CoverGenerationRecord,

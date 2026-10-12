@@ -3,7 +3,7 @@
 import { createClient } from '@/utils/supabase/server';
 import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createPageGeneration } from './page-generation-module';
+import { createPageGeneration } from '@/application/page-generation-service';
 import { createR2AssetStorage } from '@/infrastructure/storage/r2-storage-service';
 import { createSupabaseZinePageRepository } from './supabase-zine-page-repository';
 import { downloadSource } from '@/infrastructure/source-acquisition/source-download-service';

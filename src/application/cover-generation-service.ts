@@ -1,26 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import type { AssetStorage, AssetTarget } from './asset-storage';
 import type { SourceDocument } from '@/domain/source-document';
+import type {
+  CoverGenerationRepository,
+  CoverGenerationState,
+  CoverOptimizer,
+  FirstPageRenderer,
+} from '@/application/cover-generation-types';
 
-export type CoverGenerationState = {
-  coverImage: string | null;
-};
-
-export type CoverGenerationRepository = {
-  getState: (target: AssetTarget) => Promise<CoverGenerationState>;
-  markFailed: (target: AssetTarget) => Promise<void>;
-  markProcessing: (target: AssetTarget) => Promise<void>;
-  publish: (generation: {
-    coverImage: string;
-    expectedCoverImage?: string | null;
-    replaceExternalCover?: boolean;
-    sourceUrl: string;
-    target: AssetTarget;
-  }) => Promise<boolean>;
-};
-
-export type FirstPageRenderer = (source: SourceDocument) => Promise<Buffer>;
-export type CoverOptimizer = (image: Buffer) => Promise<Buffer>;
 
 export async function createCoverGeneration(
   loadSource: () => Promise<SourceDocument>,

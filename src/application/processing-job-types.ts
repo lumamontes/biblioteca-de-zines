@@ -1,0 +1,14 @@
+export type ProcessingJob = {
+  attemptCount: number;
+  id: number;
+  pdfUrl: string;
+  title: string;
+  zineId: number;
+};
+
+export interface ProcessingJobStore {
+  claimNext(): Promise<ProcessingJob | null>;
+  complete(jobId: number): Promise<void>;
+  enqueue(zineId: number): Promise<void>;
+  fail(jobId: number, errorMessage: string): Promise<void>;
+}
