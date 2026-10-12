@@ -28,13 +28,15 @@ await reader.load();
 
 For a complete browser integration, including PDF.js worker setup, page surfaces, the page-turn renderer, controls, and fallback action, see [`ADOPTION.md`](./ADOPTION.md). The comparison lab is in [`demo/`](./demo/).
 
-The `demo/` application is a standalone comparison lab. It uses the first 12 pages, in repository order, from the real `lumamontes/visionfever-website` image set and the real PDF from `lumamontes/borderline-magazine`, plus one clearly labelled 404 source for failure testing. The lab materializes every selected source page before mounting React PageFlip, direct PageFlip, or BookReader, and includes stable slide navigation as the control. Its BookReader adapter follows Borderline's browser-bundle approach (jQuery, BookReader CSS, and `BookReader.js` from jsDelivr); if that bundle cannot initialize in Chromium, the lab reports the failure and offers slide fallback rather than claiming support.
+The `demo/` application is a standalone comparison lab. Its sole real publication is the provided Biblioteca de Zines Google Drive PDF (`1nPD9vfTuJeVkTiLLN0FmLOjGLMmESKzM`), plus one clearly labelled broken source for failure testing. The lab parses the Drive file ID, requests `/api/google-drive/<fileId>` from the same origin, and materializes every PDF page with PDF.js before mounting React PageFlip, direct PageFlip, or BookReader. It includes stable slide navigation as the control. The Vite route is a local development proxy only; production keeps using the existing Next route at `/api/publications/google-drive/<fileId>`. Its BookReader adapter loads the browser bundle (jQuery, BookReader CSS, and `BookReader.js` from jsDelivr); if that bundle cannot initialize in Chromium, the lab reports the failure and offers slide fallback rather than claiming support.
 
 ## Direct PDF requirements
 
 The PDF URL must be browser-consumable from the reader's origin. The source server must return `Access-Control-Allow-Origin` for that origin (and allow redirects to preserve CORS). PDF.js can use range loading when the response supports `Accept-Ranges: bytes` and exposes the relevant range responses and headers through CORS. A server that blocks CORS, redirects without CORS, rejects range requests, or serves non-PDF bytes can fail during source loading or an individual page render.
 
 The standard viewer URL is supplied separately in `ReaderInput.fallback`. The reader never silently substitutes it for a failed custom load and never tries another provider. The host chooses `useFallback()` after receiving a source or page failure, or can present the fallback as an independent user action.
+
+The comparison lab's Drive proxy depends on the file being publicly downloadable. Google Drive authentication, access restrictions, download-confirmation HTML, or upstream availability can prevent the proxy from returning PDF bytes in CI. In that case the smoke test must report the exact proxy error and the visible stable-slide fallback remains available; it must not substitute a different publication.
 
 ## Quality and support limits
 

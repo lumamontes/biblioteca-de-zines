@@ -107,7 +107,7 @@ pnpm install
 pnpm dev
 ```
 
-The standalone demo is a comparison lab. It uses real external content from VisionFever and Borderline, preloads every selected page before initializing an engine, and keeps one clearly labelled 404 source for failure testing. React PageFlip, direct PageFlip, the Borderline-style BookReader browser bundle, and stable slide navigation are compared without changing the Biblioteca host integration or claiming a final tool.
+The standalone demo is a comparison lab. It uses the provided Biblioteca de Zines Google Drive PDF through the local Vite development proxy, preloads every PDF.js-rendered page before initializing an engine, and keeps one clearly labelled broken source for failure testing. React PageFlip, direct PageFlip, the Internet Archive BookReader browser bundle, and stable slide navigation are compared without changing the Biblioteca host integration or claiming a final tool. Production uses the existing Next route at `/api/publications/google-drive/<fileId>`; the Vite proxy is not a production endpoint.
 
 ## License and dependencies
 

@@ -45,7 +45,13 @@ async function renderCanvasPage<Viewport extends PdfViewport>(
   canvas.height = Math.ceil(viewport.height);
   try {
     await page.render({ canvas: null, canvasContext: canvas.getContext('2d')!, viewport }).promise;
-    return { url: canvas.toDataURL('image/png'), alt: `PDF page ${index + 1}`, index };
+    return {
+      url: canvas.toDataURL('image/png'),
+      alt: `PDF page ${index + 1}`,
+      index,
+      width: canvas.width,
+      height: canvas.height,
+    };
   } finally {
     page.cleanup?.();
     canvas.width = 0;

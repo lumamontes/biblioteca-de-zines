@@ -10,24 +10,25 @@ import './lab.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 
-const RAW = 'https://raw.githubusercontent.com';
+const PROVIDED_DRIVE_URL = 'https://drive.google.com/file/d/1nPD9vfTuJeVkTiLLN0FmLOjGLMmESKzM/view?usp=drive_link';
+function parseGoogleDriveFileId(url: string): string {
+  const match = new URL(url).pathname.match(/^\/file\/d\/([A-Za-z0-9_-]+)(?:\/|$)/);
+  if (!match) throw new Error(`Invalid Google Drive publication URL: ${url}`);
+  return match[1];
+}
+
+const providedFileId = parseGoogleDriveFileId(PROVIDED_DRIVE_URL);
 const sources = {
-  colors: {
-    id: 'colors', title: 'Colors', creator: 'VisionFever', kind: 'images' as const,
-    description: 'The first 12 pages of an ordered image set from lumamontes/visionfever-website.',
-    urls: Array.from({ length: 12 }, (_, index) => `${RAW}/lumamontes/visionfever-website/main/public/images/zines/zine-colors/pages/${index + 1}.jpg`),
-    source: 'VisionFever / public/images/zines/zine-colors/pages/*.jpg',
-  },
-  borderline: {
-    id: 'borderline', title: 'The Borderline Literary Magazine', creator: 'Borderline', kind: 'pdf' as const,
-    description: 'A real PDF from lumamontes/borderline-magazine, rendered by PDF.js.',
-    url: `${RAW}/lumamontes/borderline-magazine/main/public/zine.pdf`,
-    source: 'Borderline / public/zine.pdf',
+  biblioteca: {
+    id: 'biblioteca', title: 'Biblioteca de Zines publication', creator: 'Biblioteca de Zines', kind: 'pdf' as const,
+    description: 'The provided Biblioteca de Zines PDF, loaded through the local development proxy.',
+    url: `/api/google-drive/${providedFileId}`,
+    source: PROVIDED_DRIVE_URL,
   },
   broken: {
-    id: 'broken', title: 'Broken source (intentional)', creator: 'Failure path', kind: 'images' as const,
-    description: 'A deliberately unavailable URL. Use it to verify fallback and diagnostics.',
-    urls: ['https://raw.githubusercontent.com/lumamontes/does-not-exist/main/page.jpg'],
+    id: 'broken', title: 'Broken source (intentional)', creator: 'Failure path', kind: 'pdf' as const,
+    description: 'A deliberately unavailable local-proxy URL. Use it to verify fallback and diagnostics.',
+    url: '/api/google-drive/does-not-exist',
     source: 'Intentional 404; not publication content',
   },
 };
@@ -36,30 +37,17 @@ type SourceId = keyof typeof sources;
 type EngineId = 'react-pageflip' | 'page-flip' | 'bookreader' | 'slide';
 type Engine = { id: EngineId; label: string; note: string };
 const engines: Engine[] = [
-  { id: 'react-pageflip', label: 'React PageFlip', note: 'VisionFever pattern: stable forwarded Page components.' },
+  { id: 'react-pageflip', label: 'React PageFlip', note: 'React wrapper over the pre-rendered publication pages.' },
   { id: 'page-flip', label: 'Direct PageFlip', note: 'Existing baseline adapter, mounted directly.' },
-  { id: 'bookreader', label: 'Internet Archive BookReader', note: 'Borderline browser-bundle integration.' },
+  { id: 'bookreader', label: 'Internet Archive BookReader', note: 'Browser-bundle integration over local page images.' },
   { id: 'slide', label: 'Stable slide', note: 'Control: no page-turn illusion.' },
 ];
 
 type LabPage = ReaderPage & { width?: number; height?: number };
 type Materialized = { pages: LabPage[]; elapsed: number; sourceStatus: string };
 
-function loadImage(url: string, index: number): Promise<LabPage> {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve({ index, url, alt: `Publication page ${index + 1}`, width: image.naturalWidth, height: image.naturalHeight });
-    image.onerror = () => reject(new Error(`Image page ${index + 1} failed: ${url}`));
-    image.src = url;
-  });
-}
-
 async function materialize(source: Source): Promise<Materialized> {
   const started = performance.now();
-  if (source.kind === 'images') {
-    const pages = await Promise.all(source.urls.map((url, index) => loadImage(url, index)));
-    return { pages, elapsed: performance.now() - started, sourceStatus: 'Browser image requests completed' };
-  }
   const loader = createPdfLoader(pdfjs, { scale: 1.2 });
   const document = await loader({ kind: 'pdf', url: source.url });
   const pages = [] as LabPage[];
@@ -71,7 +59,7 @@ async function materialize(source: Source): Promise<Materialized> {
 }
 
 const Page = forwardRef<HTMLDivElement, { page: LabPage }>((props, ref) => (
-  <div ref={ref} className="flip-page" data-density={props.page.index === 0 || props.page.index === 84 ? 'hard' : 'soft'}>
+  <div ref={ref} className="flip-page" data-density={props.page.index === 0 ? 'hard' : 'soft'}>
     <img src={props.page.url} alt={props.page.alt} draggable={false} />
   </div>
 ));
@@ -153,7 +141,7 @@ async function mountBookReader(container: HTMLElement, pages: LabPage[]): Promis
 }
 
 function App() {
-  const [sourceId, setSourceId] = useState<SourceId>('colors');
+  const [sourceId, setSourceId] = useState<SourceId>('biblioteca');
   const [engineId, setEngineId] = useState<EngineId>('react-pageflip');
   const [materialized, setMaterialized] = useState<Materialized | null>(null);
   const [current, setCurrent] = useState(0);
