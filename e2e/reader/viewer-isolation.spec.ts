@@ -153,6 +153,16 @@ test('keeps the explicit PDF fallback when the embed renderer fails', async ({ p
   await expect(page.getByRole('link', { name: /Abrir o PDF original/ })).toHaveAttribute('href', readerApi.fallback.url);
 });
 
+test('keeps the explicit PDF fallback when a rendered page reports an image failure', async ({ page }) => {
+  await mockReaderApi(page, readerApi);
+  await page.route('https://assets.example/page-1.webp', (route) => route.abort());
+  await mockBookReaderAssets(page, true);
+
+  await page.goto('/viewer/v1/zine');
+
+  await expect(page.getByRole('link', { name: /Abrir o PDF original/ })).toHaveAttribute('href', readerApi.fallback.url);
+});
+
 async function mockReaderApi(page: Page, body: object) {
   await page.route('**/api/public-reader/**', (route) => route.fulfill({
     contentType: 'application/json',
@@ -162,7 +172,7 @@ async function mockReaderApi(page: Page, body: object) {
   await page.route('**/api/public-reader/events', (route) => route.fulfill({ status: 204 }));
 }
 
-async function mockBookReaderAssets(page: Page) {
+async function mockBookReaderAssets(page: Page, renderPageImage = false) {
   await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.js', (route) => route.fulfill({
     contentType: 'application/javascript',
     body: `window.__bibliotecaBookReaderEvents = [];
@@ -171,7 +181,9 @@ async function mockBookReaderAssets(page: Page) {
       this.options = options;
       this.bind = function(name, callback) { this.pageChanged = callback; };
       this.unbind = function() { window.__bibliotecaBookReaderEvents.push('unbind'); };
-      this.init = function() {};
+      this.init = function() {
+        ${renderPageImage ? "const image = document.createElement('img'); image.src = 'https://assets.example/page-1.webp'; document.querySelector(this.options.el)?.appendChild(image);" : ''}
+      };
       this.destroy = function() {
         window.__bibliotecaBookReaderEvents.push('destroy');
       };
