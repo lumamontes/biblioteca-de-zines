@@ -2,7 +2,7 @@ import * as pdfjs from 'pdfjs-dist';
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { createPdfLoader } from './pdf';
 import { createPageTurnRenderer } from './page-turn';
-import { createReader, imagePagesLoader } from './reader';
+import { createReader, imagePageSurface, imagePagesLoader } from './reader';
 import type { ReaderBoundary, ReaderInput, ReaderMode, ReaderStatus } from './contract';
 import { imageFixture, incompatiblePdfFixture } from './fixtures';
 import './demo.css';
@@ -84,13 +84,6 @@ if (!title || !description || !creator || !status || !toolbar || !controls || !p
   throw new Error('Missing reader demo elements.');
 }
 
-function createInput(): ReaderBoundary {
-  return createReader(input, {
-    'ordered-images': imagePagesLoader,
-    'direct-pdf': createPdfLoader(pdfjs),
-  });
-}
-
 function statusMessage(state: ReaderStatus): string {
   if (state.status === 'loading') return 'Preparing the reading room…';
   if (state.status === 'ready') return `${state.mode === 'page-turn' ? 'Page-turn' : 'Slide'} mode`;
@@ -104,6 +97,7 @@ function renderSurface(state: Extract<ReaderStatus, { status: 'ready' }>) {
     currentPage: state.currentPage,
     wideViewport: window.matchMedia('(min-width: 760px)').matches,
     onPageChange: (page: number) => reader.goTo(page),
+    onRequestPage: (page: number) => reader.preparePage(page),
   };
 
   if (state.mode === 'page-turn') {
@@ -199,8 +193,8 @@ app.addEventListener('click', (event) => {
   const action = target.closest<HTMLButtonElement>('[data-action]')?.dataset.action;
   const mode = target.closest<HTMLButtonElement>('[data-mode]')?.dataset.mode as ReaderMode | undefined;
   const fixture = target.closest<HTMLButtonElement>('[data-fixture]')?.dataset.fixture;
-  if (action === 'previous') reader.previous();
-  if (action === 'next') reader.next();
+  if (action === 'previous') pageTurnMounted && input.configuration.mode === 'page-turn' ? pageTurnRenderer.previous() : reader.previous();
+  if (action === 'next') pageTurnMounted && input.configuration.mode === 'page-turn' ? pageTurnRenderer.next() : reader.next();
   if (mode) reader.setMode(mode);
   if (fixture) {
     input = fixture === 'pdf' ? incompatiblePdfFixture : imageFixture;
@@ -210,8 +204,8 @@ app.addEventListener('click', (event) => {
 
 window.addEventListener('keydown', (event) => {
   if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
-  if (event.key === 'ArrowLeft') { event.preventDefault(); reader.previous(); }
-  if (event.key === 'ArrowRight' || event.key === ' ') { event.preventDefault(); reader.next(); }
+  if (event.key === 'ArrowLeft') { event.preventDefault(); pageTurnMounted ? pageTurnRenderer.previous() : reader.previous(); }
+  if (event.key === 'ArrowRight' || event.key === ' ') { event.preventDefault(); pageTurnMounted ? pageTurnRenderer.next() : reader.next(); }
   if (event.key === 'Home') { event.preventDefault(); reader.goTo(0); }
   if (event.key === 'End') { event.preventDefault(); const state = reader.getState(); if (state.status === 'ready') reader.goTo(state.pageCount - 1); }
   if (event.key === 'Escape') stage.focus();
@@ -227,7 +221,11 @@ async function start() {
   pageTurnMounted = false;
   renderedMode = undefined;
   reader?.destroy();
-  reader = createInput();
+  reader = createReader(input, {
+    'ordered-images': imagePagesLoader,
+    'direct-pdf': createPdfLoader(pdfjs),
+    pageSurface: imagePageSurface(),
+  });
   reader.subscribe(render);
   render(reader.getState());
   await reader.load();

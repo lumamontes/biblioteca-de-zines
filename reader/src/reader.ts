@@ -277,6 +277,28 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     });
   };
 
+  const preparePage = async (page: number): Promise<boolean> => {
+    const ready = readyState();
+    if (!ready || page < 0 || page >= ready.pageCount) return false;
+    const wasLoaded = pages.has(page) && (!dependencies.pageSurface || activeSurfacePages.has(page));
+    try {
+      const loaded = await loadPage(page);
+      if (dependencies.pageSurface && !activeSurfacePages.has(page)) {
+        await dependencies.pageSurface.load(loaded);
+        if (destroyed) {
+          dependencies.pageSurface.release(loaded);
+          return false;
+        }
+        activeSurfacePages.add(page);
+      }
+      const current = readyState();
+      if (!wasLoaded && current) publishReady(current.currentPage);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const boundary: ReaderBoundary = {
     getState: () => state,
     subscribe: (listener) => {
@@ -341,6 +363,7 @@ export function createReader(input: ReaderInput, dependencies: ReaderDependencie
     },
     setMode,
     goTo,
+    preparePage,
     next: () => { void navigate(1); },
     previous: () => { void navigate(-1); },
     getVisiblePages: (wideViewport) => {

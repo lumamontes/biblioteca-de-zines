@@ -39,13 +39,19 @@ h1 { font: clamp(2.5rem, 7vw, 6.5rem)/.98 'Libre Baskerville', Georgia, serif; l
 .page-count { align-items: center; color: #bbc7bd; display: flex; font: .7rem 'DM Mono', monospace; gap: .7rem; }
 progress { appearance: none; background: #44514a; border: 0; height: 3px; width: clamp(3rem, 10vw, 7rem); }
 progress::-webkit-progress-bar { background: #44514a; } progress::-webkit-progress-value { background: #e36d42; } progress::-moz-progress-bar { background: #e36d42; }
-.stage { align-items: center; background: #303c35; display: flex; justify-content: center; min-height: min(68vh, 760px); overflow: hidden; padding: clamp(1rem, 4vw, 3rem); }
+.stage { align-items: center; background: #303c35; display: flex; justify-content: center; min-height: min(68vh, 760px); overflow: hidden; padding: clamp(1rem, 4vw, 3rem); position: relative; }
 .stage img { box-shadow: 0 1rem 2rem #0005; display: block; max-height: min(68vh, 720px); max-width: 100%; object-fit: contain; }
 .reader-page-turn-mount { height: min(68vh, 720px); max-width: 100%; width: min(100%, 1040px); }
+.reader-page-turn-mount { position: relative; }
+.reader-page-turn-controls { inset: 0; pointer-events: none; position: absolute; z-index: 20; }
+.reader-page-turn-zone { align-items: center; background: #1b2421cc; border: 1px solid #bbc7bd; border-radius: 50%; color: #f3f1eb; display: flex; font-size: 2rem; height: 2.6rem; justify-content: center; line-height: 1; opacity: .75; pointer-events: auto; position: absolute; top: 50%; transform: translateY(-50%); width: 2.6rem; }
+.reader-page-turn-zone:hover, .reader-page-turn-zone:focus-visible { opacity: 1; }
+.reader-page-turn-zone--previous { left: .4rem; }
+.reader-page-turn-zone--next { right: .4rem; }
 .reader-page { align-items: center; background: #fffdf8; display: flex; justify-content: center; overflow: hidden; }
 .reader-page img { height: 100%; max-width: 100%; object-fit: contain; width: 100%; }
 .reader-page { touch-action: pan-y; }
-.reader-page:not(:has(img)) { color: #63716b; font: .8rem 'DM Mono', monospace; }
+.reader-page-loading { color: #63716b; font: .8rem 'DM Mono', monospace; }
 .reader-controls { border-top: 1px solid #44514a; padding-top: .8rem; }
 .icon-button { background: transparent; color: #f3f1eb; font-size: .75rem; padding: .4rem 0; }
 .icon-button:hover:not(:disabled) { color: #e36d42; }
