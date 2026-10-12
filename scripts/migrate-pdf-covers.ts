@@ -2,7 +2,8 @@ import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../src/types/database.types';
-import { isGeneratedCover, isPlaceholderCover } from '../src/utils/cover-image';
+import { selectCoverMigrationCandidates } from '../src/application/cover-migration-service';
+import { isReachableImage } from '../src/infrastructure/cover-generation/cover-reference-validator';
 
 type MonitorReport = {
   results?: Array<{ resourceId?: string; outcome?: string }>;
@@ -38,20 +39,10 @@ async function main(): Promise<void> {
 
   if (error) throw new Error(`Failed to load zines: ${error.message}`);
 
-  const candidates: Array<NonNullable<typeof zines>[number]> = [];
-  for (const zine of zines ?? []) {
-    if (onlyId && zine.id !== Number(onlyId)) continue;
-    if (excludedIds.has(zine.id)) continue;
-    const generatedCoverIsCurrent = isGeneratedCover(zine.cover_image)
-      && zine.processed_pdf_url === zine.pdf_url
-      && zine.import_status === 'completed';
-    if (!zine.pdf_url) continue;
-    if (generatedCoverIsCurrent && await isReachableImage(zine.cover_image)) continue;
-    if (!isPlaceholderCover(zine.cover_image)
-      && !isGeneratedCover(zine.cover_image)
-      && await isReachableImage(zine.cover_image)) continue;
-    candidates.push(zine);
-  }
+  const scopedZines = onlyId
+    ? (zines ?? []).filter((zine) => zine.id === Number(onlyId))
+    : zines ?? [];
+  const candidates = await selectCoverMigrationCandidates(scopedZines, excludedIds, isReachableImage);
 
   console.log(`${apply ? 'Applying' : 'Dry run'} PDF migration for ${candidates.length} zines`);
   console.log(`Excluded by monitor report: ${excludedIds.size}`);
@@ -87,26 +78,6 @@ function parseResourceId(resourceId: string | undefined): number | null {
   return match ? Number(match[1]) : null;
 }
 
-async function isReachableImage(url: string | null): Promise<boolean> {
-  if (!url) return false;
-  try {
-    const head = await fetch(url, { method: 'HEAD', redirect: 'follow' });
-    if (isImageResponse(head)) return true;
-    if (head.status !== 405 && head.status !== 501) return false;
-
-    const response = await fetch(url, {
-      headers: { Range: 'bytes=0-0' },
-      redirect: 'follow',
-    });
-    return isImageResponse(response);
-  } catch {
-    return false;
-  }
-}
-
-function isImageResponse(response: Response): boolean {
-  return response.ok && response.headers.get('content-type')?.startsWith('image/') === true;
-}
 
 main().catch((error: unknown) => {
   console.error(error);

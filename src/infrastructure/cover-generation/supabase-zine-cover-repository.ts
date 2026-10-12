@@ -2,7 +2,6 @@ import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CoverGenerationRepository } from '@/application/cover-generation-service';
 import type { AssetTarget } from '@/application/asset-storage';
-import { isGeneratedCover } from '@/utils/cover-image';
 
 export function createSupabaseZineCoverRepository(
   supabase: SupabaseClient<Database>,
@@ -47,23 +46,6 @@ export function createSupabaseZineCoverRepository(
       .eq('id', zineId);
     if (error) throw new Error(`Failed to update zine status: ${error.message}`);
   }
-}
-
-export async function hasCompleteGeneratedCover(
-  supabase: SupabaseClient<Database>,
-  zineId: number,
-  pdfUrl: string,
-): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('library_zines')
-    .select('cover_image, import_status, processed_pdf_url')
-    .eq('id', zineId)
-    .single();
-  return !error
-    && Boolean(data)
-    && isGeneratedCover(data.cover_image)
-    && data.import_status === 'completed'
-    && data.processed_pdf_url === pdfUrl;
 }
 
 function assertZineTarget(target: AssetTarget): number {

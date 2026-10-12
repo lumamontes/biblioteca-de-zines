@@ -6,10 +6,10 @@ import { generateSlug } from '@/utils/slug';
 import { parseTags } from '@/utils/utils';
 import { flattenAuthors, parseUploadAuthors } from '@/utils/authors';
 import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
+import { isCompleteGeneratedCover } from '@/application/cover-generation-policy';
 import { syncAuthorsToZine } from './author-service';
 import { dispatchZineProcessing } from './zine-processing-dispatch-service';
 import { enqueueZineProcessing } from './enqueue-zine-processing';
-import { hasCompleteGeneratedCover } from '@/infrastructure/cover-generation/supabase-zine-cover-repository';
 
 type ZineDatabaseClient = SupabaseClient<Database>;
 
@@ -42,7 +42,7 @@ export async function republishZine(
   if (error) throw new Error(`Erro ao republicar a zine: ${error.message}`);
 
   if (zine.pdf_url && (isPlaceholderCover(zine.cover_image)
-    || isGeneratedCover(zine.cover_image)
+    || isGeneratedCover(zine.cover_image, zineId)
       && !(await hasCompleteGeneratedCover(supabase, zineId, zine.pdf_url)))) {
     await requestZineProcessing(zineId);
   }
@@ -96,7 +96,7 @@ export async function publishZineFromUpload(
     zineId = existingZine.id;
     shouldProcess = Boolean(upload.pdf_url && (
       isPlaceholderCover(existingZine.cover_image)
-      || isGeneratedCover(existingZine.cover_image)
+      || isGeneratedCover(existingZine.cover_image, zineId)
         && !(await hasCompleteGeneratedCover(supabase, zineId, upload.pdf_url))
     ));
 
@@ -169,13 +169,13 @@ export async function updateUploadAndPublishedZine(
   if (!validatedData.slug) return;
 
   const nextCoverImage = validatedData.cover_image
-    || (publishedZine?.cover_image && isGeneratedCover(publishedZine.cover_image)
+    || (publishedZine?.cover_image && isGeneratedCover(publishedZine.cover_image, publishedZine.id)
       ? publishedZine.cover_image
       : null);
   const shouldProcessPublished = Boolean(
     publishedZine
     && nextPdfUrl
-    && (!validatedData.cover_image || isGeneratedCover(validatedData.cover_image))
+    && (!validatedData.cover_image || isGeneratedCover(validatedData.cover_image, publishedZine.id))
     && !(await hasCompleteGeneratedCover(supabase, publishedZine.id, nextPdfUrl)),
   );
 
@@ -204,4 +204,17 @@ async function requestZineProcessing(zineId: number): Promise<void> {
   } catch (error) {
     console.error('Erro ao enfileirar processamento da zine:', error);
   }
+}
+
+async function hasCompleteGeneratedCover(
+  supabase: ZineDatabaseClient,
+  zineId: number,
+  pdfUrl: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('library_zines')
+    .select('cover_image, import_status, processed_pdf_url')
+    .eq('id', zineId)
+    .single();
+  return !error && Boolean(data) && isCompleteGeneratedCover(data, zineId, pdfUrl);
 }

@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import { createCoverGeneration } from '../src/application/cover-generation-service';
+import { selectCoverMigrationCandidates } from '../src/application/cover-migration-service';
+import { isCompleteGeneratedCover } from '../src/application/cover-generation-policy';
 import { optimizeCoverImage } from '../src/infrastructure/cover-generation/cover-image-optimizer';
 import { generateGenerationKey } from '../src/services/r2-storage-service';
 import type { AssetStorage } from '../src/application/asset-storage';
@@ -66,6 +68,42 @@ test('cover storage uses the immutable WebP cover namespace', () => {
   );
 });
 
+test('migration selects missing and unreachable generated covers only', async () => {
+  const previousPublicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+  process.env.NEXT_PUBLIC_R2_PUBLIC_URL = 'https://assets.example';
+  try {
+    const candidates = await selectCoverMigrationCandidates([
+      createMigrationZine(1, '/zines.png'),
+      createMigrationZine(2, 'https://external.example/cover.jpg'),
+      createMigrationZine(3, 'https://assets.example/zines/3/covers/old.webp'),
+      createMigrationZine(4, 'https://assets.example/zines/4/covers/old.webp'),
+    ], new Set([5]), async (url) => url !== 'https://assets.example/zines/4/covers/old.webp');
+
+    assert.deepEqual(candidates.map((zine) => zine.id), [1, 4]);
+  } finally {
+    if (previousPublicUrl === undefined) delete process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+    else process.env.NEXT_PUBLIC_R2_PUBLIC_URL = previousPublicUrl;
+  }
+});
+
+test('cover reuse requires the same source and the current zine generated cover', () => {
+  const previousPublicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+  process.env.NEXT_PUBLIC_R2_PUBLIC_URL = 'https://assets.example';
+  try {
+    const record = {
+      cover_image: 'https://assets.example/zines/42/covers/old.webp',
+      import_status: 'completed',
+      processed_pdf_url: 'https://drive.example/source.pdf',
+    };
+    assert.equal(isCompleteGeneratedCover(record, 42, record.processed_pdf_url), true);
+    assert.equal(isCompleteGeneratedCover(record, 42, 'https://drive.example/changed.pdf'), false);
+    assert.equal(isCompleteGeneratedCover(record, 7, record.processed_pdf_url), false);
+  } finally {
+    if (previousPublicUrl === undefined) delete process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+    else process.env.NEXT_PUBLIC_R2_PUBLIC_URL = previousPublicUrl;
+  }
+});
+
 async function createImage(width: number, height: number): Promise<Buffer> {
   return sharp({
     create: { width, height, channels: 3, background: '#d6b48a' },
@@ -104,5 +142,23 @@ function createStorage(calls: string[]): AssetStorage & { uploaded: Array<{ cont
       calls.push('upload');
       return 'https://assets.example/zines/42/covers/new.webp';
     },
+  };
+}
+
+function createMigrationZine(id: number, cover_image: string): {
+  cover_image: string;
+  id: number;
+  import_status: string;
+  pdf_url: string;
+  processed_pdf_url: string;
+  title: string;
+} {
+  return {
+    cover_image,
+    id,
+    import_status: 'completed',
+    pdf_url: `https://drive.example/${id}.pdf`,
+    processed_pdf_url: `https://drive.example/${id}.pdf`,
+    title: `Zine ${id}`,
   };
 }

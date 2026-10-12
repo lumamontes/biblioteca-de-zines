@@ -4,12 +4,12 @@ export function isPlaceholderCover(coverImage: string | null): boolean {
   return normalized.endsWith('/zines.png') || normalized.endsWith('/home-gif.gif');
 }
 
-export function isGeneratedCover(coverImage: string | null): boolean {
+export function isGeneratedCover(coverImage: string | null, zineId: number): boolean {
   const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/$/, '');
   return Boolean(
     publicUrl
     && coverImage?.startsWith(`${publicUrl}/`)
-    && new RegExp(`^${escapeRegExp(publicUrl)}/zines/\\d+/covers/[^/]+\\.webp$`).test(coverImage),
+    && new RegExp(`^${escapeRegExp(publicUrl)}/zines/${zineId}/covers/[^/]+\\.webp$`).test(coverImage),
   );
 }
 
