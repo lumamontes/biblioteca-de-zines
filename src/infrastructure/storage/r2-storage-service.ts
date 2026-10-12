@@ -77,9 +77,6 @@ export function createR2AssetStorage(): AssetStorage {
         deleteCoverObject(client, target, `${generationId}.${extension}`)
       )));
     },
-    deletePageGeneration(target, generationId) {
-      return deleteR2Prefix(client, `zines/${target.id}/generations/${generationId}/`);
-    },
     async deleteGeneratedCover(target, generationId) {
       const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
       if (!bucketName) throw new Error('CLOUDFLARE_R2_BUCKET_NAME is not configured');

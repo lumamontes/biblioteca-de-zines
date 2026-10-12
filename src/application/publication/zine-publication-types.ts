@@ -29,6 +29,7 @@ export type PublicationRecord = {
 };
 
 export type PublicationUpdate = {
+  activePageGeneration?: string;
   title?: string;
   description?: string | null;
   collectionTitle?: string | null;
@@ -37,6 +38,8 @@ export type PublicationUpdate = {
   tags?: unknown;
   publishedYear?: number | null;
   importStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+  processedPdfUrl?: string | null;
+  totalPages?: number | null;
 };
 
 export type PublicationInsert = {

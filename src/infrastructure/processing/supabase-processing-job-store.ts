@@ -83,11 +83,13 @@ export function createSupabaseProcessingJobStore(
       };
     },
 
-    async complete(jobId) {
+    async complete(jobId, attemptCount) {
       const { error } = await supabase
         .from('zine_processing_jobs')
         .update({ status: 'completed', lease_until: null, updated_at: new Date().toISOString() })
-        .eq('id', jobId);
+        .eq('id', jobId)
+        .eq('status', 'processing')
+        .eq('attempt_count', attemptCount);
       if (error) throw new Error(`Failed to complete processing job: ${error.message}`);
     },
 

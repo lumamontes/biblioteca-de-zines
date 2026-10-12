@@ -11,7 +11,7 @@ export async function processClaimedZine(
 ): Promise<'completed' | 'failed'> {
   try {
     await processor(job);
-    await jobs.complete(job.id);
+    await jobs.complete(job.id, job.attemptCount);
     return 'completed';
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown processing error';

@@ -132,6 +132,7 @@ function toPublicationRecord(
 
 function toPublicationUpdate(input: PublicationUpdate) {
   return {
+    ...(input.activePageGeneration !== undefined ? { active_page_generation: input.activePageGeneration } : {}),
     ...(input.title !== undefined ? { title: input.title } : {}),
     ...(input.description !== undefined ? { description: input.description } : {}),
     ...(input.collectionTitle !== undefined ? { collection_title: input.collectionTitle } : {}),
@@ -140,5 +141,7 @@ function toPublicationUpdate(input: PublicationUpdate) {
     ...(input.tags !== undefined ? { tags: input.tags as Json } : {}),
     ...(input.publishedYear !== undefined ? { year: input.publishedYear } : {}),
     ...(input.importStatus !== undefined ? { import_status: input.importStatus } : {}),
+    ...(input.processedPdfUrl !== undefined ? { processed_pdf_url: input.processedPdfUrl } : {}),
+    ...(input.totalPages !== undefined ? { total_pages: input.totalPages } : {}),
   };
 }

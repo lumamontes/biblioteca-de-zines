@@ -99,7 +99,9 @@ export function createZinePublicationModule(deps: ZinePublicationDependencies) {
       });
 
        const pageNeedsGeneration = needsPageProcessing(publishedZine, input.pdfUrl || '');
+       const removingPdf = !input.pdfUrl;
        await deps.publications.update(publishedZine.id, {
+         activePageGeneration: removingPdf ? 'legacy' : undefined,
         title: input.title,
         description: input.description || null,
         collectionTitle: input.collectionTitle || null,
@@ -108,6 +110,8 @@ export function createZinePublicationModule(deps: ZinePublicationDependencies) {
         publishedYear: input.publishedYear || null,
         tags: { categories: input.categories || [] },
          importStatus: coverNeedsGeneration || pageNeedsGeneration ? 'pending' : undefined,
+         processedPdfUrl: removingPdf ? null : undefined,
+         totalPages: removingPdf ? 0 : undefined,
        });
 
        if (coverNeedsGeneration || pageNeedsGeneration) await deps.processing.request(publishedZine.id);

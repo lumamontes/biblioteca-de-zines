@@ -9,7 +9,7 @@ export type ProcessingJob = {
 
 export interface ProcessingJobStore {
   claimNext(): Promise<ProcessingJob | null>;
-  complete(jobId: number): Promise<void>;
+  complete(jobId: number, attemptCount: number): Promise<void>;
   enqueue(zineId: number): Promise<void>;
   fail(jobId: number, errorMessage: string): Promise<void>;
 }
