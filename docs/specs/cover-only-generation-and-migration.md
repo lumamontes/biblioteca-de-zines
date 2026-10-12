@@ -1,5 +1,9 @@
 # Cover-Only Generation and Migration
 
+## Status
+
+This document remains normative for explicit cover migration and diagnostic commands. The publication queue now uses the complete page-generation workflow defined in `page-processing-and-asset-lifecycle.md`; references below to the current cover workflow apply to this legacy cover-only path.
+
 ## Problem Statement
 
 The Biblioteca currently uses Google Drive's PDF preview for reading. When a submission or catalogue publication does not have a valid cover image, the application displays the Biblioteca placeholder instead.
@@ -21,7 +25,7 @@ The workflow downloads the current PDF source, renders only its first page, opti
 
 Generated covers use the existing processed-source marker to determine whether the current PDF has already produced the active generated cover. No new source-marker column is required.
 
-The full PDF renderer remains a reusable infrastructure capability. It is separated from the cover application workflow and is not used to write `zine_pages` during current publication or migration processing.
+The full PDF renderer remains separate from this cover-only workflow and is not used by explicit cover migration or diagnostic processing to write `zine_pages`.
 
 ## User Stories
 
@@ -55,7 +59,7 @@ The full PDF renderer remains a reusable infrastructure capability. It is separa
 
 ## Implementation Decisions
 
-- The current domain capability is **cover-only processing**: one first-page derivative per processing run.
+- The legacy cover-only capability is **cover-only processing**: one first-page derivative per explicit migration or diagnostic run.
 - The current public reader continues to use Google Drive PDF preview. Generated R2 covers do not replace the PDF reader.
 - A generated cover is a derivative, not the source PDF, reading copy, or preservation copy.
 - `form_uploads` remain intake records and do not create R2 derivatives before publication.
@@ -76,7 +80,7 @@ The full PDF renderer remains a reusable infrastructure capability. It is separa
 - The migration never replaces a valid reachable external cover automatically.
 - Local cover generation is diagnostic only: it downloads one existing form-upload source, renders page 1, writes a local image, and does not update Supabase or R2.
 - The reusable PDF rendering primitive remains separate from the cover workflow. Future full page generation may use that primitive and its own application service, repository contract, storage layout, and page-generation lifecycle.
-- The existing page-derivative schema and renderer are retained as dormant future capability unless a separate decision removes them. They are not written by the current cover-only workflow.
+- The existing page-derivative schema and renderer are used by the separate publication page-generation workflow. They are not written by this cover-only workflow.
 - New server actions remain thin adapters that create clients, call application services, and revalidate paths.
 - Application services own use cases and orchestration. Domain rules remain independent of Next.js, Supabase, R2, Google Drive, and PDF.js. Infrastructure owns persistence, storage, source acquisition, and rendering adapters. Scripts call application services explicitly.
 - The application boundary should remain lightweight. Full DDD ceremony, aggregates, factories, and value objects are not required without a concrete domain need.
@@ -99,8 +103,8 @@ The full PDF renderer remains a reusable infrastructure capability. It is separa
 ## Out of Scope
 
 - Replacing the current Google Drive PDF reader.
-- Generating or serving full PDF page images in the current workflow.
-- Creating `zine_pages` rows during cover processing.
+- Generating or serving full PDF page images in this cover-only workflow.
+- Creating `zine_pages` rows during cover-only processing.
 - Pre-processing unreviewed form uploads.
 - Creating a private R2 derivative bucket.
 - Re-encoding or rewriting valid external/manual cover URLs without evidence that they are unreachable or invalid.

@@ -21,9 +21,11 @@ export type PublicationRecord = {
   tags: unknown;
   sourceUploadId: number | null;
   coverImage: string | null;
+  activePageGeneration?: string;
   pdfUrl: string | null;
   importStatus: string | null;
   processedPdfUrl: string | null;
+  totalPages?: number | null;
 };
 
 export type PublicationUpdate = {

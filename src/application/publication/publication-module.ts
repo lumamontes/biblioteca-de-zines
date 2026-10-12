@@ -1,6 +1,5 @@
 import { generateSlug } from '@/utils/slug';
 import { parseTags } from '@/utils/utils';
-import { isPlaceholderCover } from '@/utils/cover-image';
 import { isCompleteGeneratedCover } from '@/application/cover-generation/cover-generation-policy';
 import { needsGeneratedCover, resolvePublishedCover } from '@/application/publication/cover-publication-policy';
 import type {
@@ -21,7 +20,7 @@ export function createZinePublicationModule(deps: ZinePublicationDependencies) {
       const zine = await requirePublication(deps, zineId);
       await deps.publications.setPublished(zineId, true);
 
-      if (zine.pdfUrl && await needsCoverProcessing(deps, zine)) {
+      if (zine.pdfUrl && await needsPublicationProcessing(deps, zine, zine.pdfUrl)) {
         await deps.processing.request(zineId);
       }
     },
@@ -34,7 +33,7 @@ export function createZinePublicationModule(deps: ZinePublicationDependencies) {
       const existingZine = await deps.publications.findBySlug(slug);
       const shouldProcess = existingZine
         ? await shouldProcessExistingPublication(deps, existingZine, upload.pdfUrl)
-        : Boolean(upload.pdfUrl && isPlaceholderCover(upload.coverImage));
+        : Boolean(upload.pdfUrl);
 
       const zineId = existingZine
         ? existingZine.id
@@ -92,14 +91,15 @@ export function createZinePublicationModule(deps: ZinePublicationDependencies) {
         currentZineId: publishedZine.id,
         coverWasRemoved: Boolean(currentUpload.coverImage && !input.coverImage),
       });
-      const coverNeedsGeneration = needsGeneratedCover({
+       const coverNeedsGeneration = needsGeneratedCover({
         pdfUrl: input.pdfUrl || null,
         coverImage: nextCoverImage,
         zineId: publishedZine.id,
         hasCompleteGeneratedCover: await hasCompleteGeneratedCover(deps, publishedZine, input.pdfUrl || ''),
       });
 
-      await deps.publications.update(publishedZine.id, {
+       const pageNeedsGeneration = needsPageProcessing(publishedZine, input.pdfUrl || '');
+       await deps.publications.update(publishedZine.id, {
         title: input.title,
         description: input.description || null,
         collectionTitle: input.collectionTitle || null,
@@ -107,10 +107,10 @@ export function createZinePublicationModule(deps: ZinePublicationDependencies) {
         coverImage: nextCoverImage,
         publishedYear: input.publishedYear || null,
         tags: { categories: input.categories || [] },
-        importStatus: coverNeedsGeneration ? 'pending' : undefined,
-      });
+         importStatus: coverNeedsGeneration || pageNeedsGeneration ? 'pending' : undefined,
+       });
 
-      if (coverNeedsGeneration) await deps.processing.request(publishedZine.id);
+       if (coverNeedsGeneration || pageNeedsGeneration) await deps.processing.request(publishedZine.id);
     },
   };
 }
@@ -147,19 +147,28 @@ async function needsCoverProcessing(
   });
 }
 
+async function needsPublicationProcessing(
+  deps: ZinePublicationDependencies,
+  zine: PublicationRecord,
+  pdfUrl: string,
+): Promise<boolean> {
+  return needsPageProcessing(zine, pdfUrl) || await needsCoverProcessing(deps, zine);
+}
+
+function needsPageProcessing(zine: PublicationRecord, pdfUrl: string): boolean {
+  return Boolean(pdfUrl)
+    && (zine.pdfUrl !== pdfUrl
+      || !zine.activePageGeneration
+      || zine.activePageGeneration === 'legacy'
+      || zine.importStatus !== 'completed');
+}
+
 async function shouldProcessExistingPublication(
   deps: ZinePublicationDependencies,
   zine: PublicationRecord,
   pdfUrl: string | null,
 ): Promise<boolean> {
-  return needsGeneratedCover({
-    pdfUrl,
-    coverImage: zine.coverImage,
-    zineId: zine.id,
-    hasCompleteGeneratedCover: pdfUrl
-      ? await hasCompleteGeneratedCover(deps, zine, pdfUrl)
-      : false,
-  });
+  return pdfUrl ? needsPublicationProcessing(deps, zine, pdfUrl) : false;
 }
 
 async function hasCompleteGeneratedCover(
