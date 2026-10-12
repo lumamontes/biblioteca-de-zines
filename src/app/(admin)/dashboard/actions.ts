@@ -2,32 +2,27 @@
 
 import { revalidatePath } from "next/cache";
 import { editUploadSchema } from "@/schemas/edit-upload";
-import { createClient } from "@/utils/supabase/server";
-import { createSupabaseZinePublicationService } from '@/infrastructure/publication/supabase-zine-publication-dependencies';
+import { createZinePublicationService } from '@/composition/server/create-zine-publication-service';
 
 export async function unpublishZine(zineId: number) {
-  const supabase = await createClient();
-  await createSupabaseZinePublicationService(supabase).unpublishZine(zineId);
+  await (await createZinePublicationService()).unpublishZine(zineId);
   revalidatePath("/dashboard");
 }
 
 export async function updatePublishedZine(zineId: number) {
-  const supabase = await createClient();
-  await createSupabaseZinePublicationService(supabase).republishZine(zineId);
+  await (await createZinePublicationService()).republishZine(zineId);
   revalidatePath("/dashboard");
 }
 
 export async function publishZine(uploadId: number) {
-  const supabase = await createClient();
-  await createSupabaseZinePublicationService(supabase).publishZineFromUpload(uploadId);
+  await (await createZinePublicationService()).publishZineFromUpload(uploadId);
   revalidatePath("/dashboard");
 }
 
 export async function updateUpload(uploadId: number, data: unknown) {
   try {
     const validatedData = editUploadSchema.parse(data);
-    const supabase = await createClient();
-    await createSupabaseZinePublicationService(supabase).updateUploadAndPublishedZine(uploadId, {
+    await (await createZinePublicationService()).updateUploadAndPublishedZine(uploadId, {
       slug: validatedData.slug,
       title: validatedData.title,
       description: validatedData.description,

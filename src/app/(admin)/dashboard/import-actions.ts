@@ -2,8 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { googleDriveImportSchema } from "@/schemas/google-drive-import";
-import { createClient } from "@/utils/supabase/server";
-import { createSupabaseZineSourceImportService } from '@/infrastructure/publication/supabase-zine-source-import';
+import { createZineSourceImportService } from '@/composition/server/create-zine-source-import-service';
 
 /**
  * Import zine from Google Drive URL
@@ -26,8 +25,7 @@ export async function importZineFromDrive(
       };
     }
 
-    const supabase = await createClient();
-    await createSupabaseZineSourceImportService(supabase).importFromDrive(zineId, driveUrl);
+    await (await createZineSourceImportService()).importFromDrive(zineId, driveUrl);
 
     revalidatePath("/dashboard");
     return {

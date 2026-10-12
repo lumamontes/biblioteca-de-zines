@@ -1,10 +1,7 @@
 "use server";
 
 import { pipe, composable } from 'composable-functions';
-import { createClient } from '@/utils/supabase/server';
-import { createSubmissionService } from '@/application/submission/submission-service';
-import { createSupabaseSubmissionRepository } from '@/infrastructure/submission/supabase-submission-repository';
-import { telegramSubmissionNotifier } from '@/infrastructure/submission/telegram-submission-notifier';
+import { createSubmissionServiceForRequest } from '@/composition/server/create-submission-service';
 import { 
   FormData as ZineFormData,
   FormDataSchema 
@@ -51,11 +48,7 @@ export const submitZine = composable(async (formData: FormData) => {
       throw new Error(result.errors[0]?.message || 'Erro desconhecido');
     }
 
-    const supabase = await createClient();
-    const submission = createSubmissionService({
-      submissions: createSupabaseSubmissionRepository(supabase),
-      notifications: telegramSubmissionNotifier,
-    });
+    const submission = await createSubmissionServiceForRequest();
     const receipt = await submission.submit({
       authors: result.data.authors,
       zines: result.data.zines,
