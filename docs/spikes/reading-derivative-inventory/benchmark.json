@@ -1,0 +1,100 @@
+{
+  "results": [
+    {
+      "reason": "shortest",
+      "relativePath": "roma-quando-nos-tornaremos-fotos.pdf",
+      "sourceBytes": 8046101,
+      "pageCount": 1,
+      "firstPageDimensions": {
+        "width": 745.0909,
+        "height": 595.9091
+      },
+      "elapsedMs": 3757,
+      "renderedPages": 1,
+      "pngBytes": 1130367,
+      "webpBytes": 457124,
+      "pngBytesPerPage": 1130367,
+      "webpBytesPerPage": 457124
+    },
+    {
+      "reason": "median-pages",
+      "relativePath": "pedro-daquer-o-que-sao-zines.pdf",
+      "sourceBytes": 58865146,
+      "pageCount": 8,
+      "firstPageDimensions": {
+        "width": 419.52,
+        "height": 595.2
+      },
+      "elapsedMs": 18568,
+      "renderedPages": 8,
+      "pngBytes": 5834988,
+      "webpBytes": 555098,
+      "pngBytesPerPage": 729374,
+      "webpBytesPerPage": 69387
+    },
+    {
+      "reason": "p90-pages",
+      "relativePath": "nihilo-malassombro.pdf",
+      "sourceBytes": 51050350,
+      "pageCount": 20,
+      "firstPageDimensions": {
+        "width": 420.48,
+        "height": 596.16
+      },
+      "elapsedMs": 39224,
+      "renderedPages": 20,
+      "pngBytes": 10126217,
+      "webpBytes": 1271554,
+      "pngBytesPerPage": 506311,
+      "webpBytesPerPage": 63578
+    },
+    {
+      "reason": "longest",
+      "relativePath": "lais-melo-osasunafever.pdf",
+      "sourceBytes": 15561418,
+      "pageCount": 122,
+      "firstPageDimensions": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "elapsedMs": 54052,
+      "renderedPages": 122,
+      "pngBytes": 17000915,
+      "webpBytes": 10696886,
+      "pngBytesPerPage": 139352,
+      "webpBytesPerPage": 87679
+    },
+    {
+      "reason": "largest-source",
+      "relativePath": "papermelon-ser-um-ser-devagar.pdf",
+      "sourceBytes": 81743018,
+      "pageCount": 9,
+      "firstPageDimensions": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "elapsedMs": 36466,
+      "renderedPages": 9,
+      "pngBytes": 8174490,
+      "webpBytes": 2709282,
+      "pngBytesPerPage": 908277,
+      "webpBytesPerPage": 301031
+    },
+    {
+      "reason": "landscape",
+      "relativePath": "daniella-deisy-lesbozine.pdf",
+      "sourceBytes": 29817500,
+      "pageCount": 27,
+      "firstPageDimensions": {
+        "width": 419.528,
+        "height": 595.276
+      },
+      "elapsedMs": 6469,
+      "renderedPages": 27,
+      "pngBytes": 270700,
+      "webpBytes": 377192,
+      "pngBytesPerPage": 10026,
+      "webpBytesPerPage": 13970
+    }
+  ]
+}
