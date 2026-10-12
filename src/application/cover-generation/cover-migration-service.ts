@@ -15,7 +15,8 @@ export async function selectCoverMigrationCandidates(
       && zine.import_status === 'completed';
     if (generatedCoverIsCurrent && await isReachableImage(zine.cover_image)) continue;
     if (!isPlaceholderCover(zine.cover_image)
-      && !isGeneratedCover(zine.cover_image, zine.id)) continue;
+      && !isGeneratedCover(zine.cover_image, zine.id)
+      && await isReachableImage(zine.cover_image)) continue;
 
     candidates.push(zine);
   }
