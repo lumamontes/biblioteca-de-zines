@@ -1,6 +1,9 @@
 # Page Processing Runbook
 
-This runbook covers local cover migrations, queue processing, verification, and recovery. Full page derivatives are a future capability.
+This runbook covers two separate workflows:
+
+- Explicit migration and diagnostic commands are **cover-only** and render one first-page WebP.
+- The publication queue is the current full page-generation workflow and writes complete `zine_pages` generations for the reader.
 
 ## Storage Configuration
 
@@ -12,6 +15,10 @@ CLOUDFLARE_R2_ACCESS_KEY_ID=...
 CLOUDFLARE_R2_SECRET_ACCESS_KEY=...
 CLOUDFLARE_R2_BUCKET_NAME=biblioteca-de-zines-pb
 NEXT_PUBLIC_R2_PUBLIC_URL=https://assets.biblioteca-de-zines.com.br
+
+# Application/API configuration
+NEXT_PUBLIC_SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
 ```
 
 Never commit credentials. The old `biblioteca-de-zines` bucket is not part of the active processing path.
@@ -53,8 +60,10 @@ pnpm migrate:pdf-covers -- --only-id <zine_id> --apply
 Apply all eligible published-zine covers after reviewing the dry run:
 
 ```bash
-pnpm migrate:pdf-covers -- --apply
+pnpm migrate:pdf-covers -- --report /tmp/biblioteca-zines-monitor/resource-report.json --apply
 ```
+
+The default monitor report path is `/tmp/biblioteca-zines-monitor/resource-report.json`. Pass `--report` when the report was written elsewhere. Candidates with `inaccessible`, `invalid`, or `invalid-input` monitor outcomes are excluded and the command prints the exclusion count.
 
 The command downloads the current source, renders only the first page into an optimized WebP cover, and records the processed PDF source and processing status.
 
@@ -85,23 +94,53 @@ The route claims one leased job, processes one generation, and records completio
 
 The workflow supports repository dispatch, manual dispatch, and a scheduled fallback. The application can request an immediate repository dispatch when GitHub Actions credentials are configured.
 
+Production processing runs in `.github/workflows/process-pending-zines.yml` with Node 22, frozen pnpm dependencies, a limit of 10 jobs, and concurrency 2. The workflow requires `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CLOUDFLARE_R2_ACCOUNT_ID`, `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY`, `CLOUDFLARE_R2_BUCKET_NAME`, and `NEXT_PUBLIC_R2_PUBLIC_URL`. Repository dispatch additionally requires the GitHub token configured by the application deployment; no service-role or R2 secret is sent to the browser.
+
+The authenticated HTTP route additionally requires `CRON_SECRET`:
+
+```text
+GET /api/internal/process-zines
+Authorization: Bearer <CRON_SECRET>
+```
+
 ## Verification Queries
 
-Check a publication's current cover:
+The fields below have intentionally different meanings:
+
+- `cover_image`: active cover URL served by the catalogue.
+- `pdf_url`: current source PDF URL used for cover processing.
+- `processed_pdf_url`: processed-source marker for the PDF that produced the active generated cover; it is not the active cover URL.
+- `import_status`: cover/processing status; it is not proof that page derivatives exist.
+
+Check a publication's current cover and processed source:
 
 ```sql
-select id, pdf_url, processed_pdf_url, cover_image, import_status, is_published
+select
+  id,
+  cover_image as active_cover_url,
+  pdf_url as source_pdf_url,
+  processed_pdf_url as processed_source_marker,
+  import_status,
+  is_published
 from library_zines
 where id = <zine_id>;
 ```
 
-Future page-derivative verification:
+Publication queue page-generation verification:
 
 ```sql
 select generation_id, page_number, image_url
 from zine_pages
 where zine_id = <zine_id>
 order by generation_id, page_number;
+```
+
+For a cover-only run, record the `zine_pages` count before and after processing and confirm it is unchanged:
+
+```sql
+select count(*) as future_page_derivative_rows
+from zine_pages
+where zine_id = <zine_id>;
 ```
 
 ## Safe Reprocessing Rules
@@ -119,6 +158,19 @@ order by generation_id, page_number;
 - An empty cover uses the first PDF page as the default.
 - A PDF change regenerates a generated fallback cover.
 - A cover-only edit does not rerender the PDF.
+
+## Manual Verification Checklist
+
+Run these checks with a test publication before production migration and attach the output to the change record:
+
+1. Render one existing form-upload PDF locally with `pnpm generate:form-upload-cover`; confirm it writes only the requested local WebP and does not change Supabase or R2.
+2. Run one controlled published-zine queue job with `pnpm process:pending-zines -- --limit 1 --concurrency 1`; confirm the full page generation completes, `zine_pages` rows are active and ordered, and the generated cover is delivered from the configured public R2 domain.
+3. Republish an unchanged PDF and confirm the queue reuses the complete page generation and generated cover according to the page-generation lifecycle.
+4. Change the PDF URL and confirm the queue creates and activates a new page generation; retain the previous successful generation until replacement is complete.
+5. Remove a custom cover and confirm the cover workflow generates a fallback cover; before removal, confirm a valid custom cover remains unchanged.
+6. Run migration dry run with the reviewed monitor report, inspect exclusions and candidates, then apply one `--only-id` candidate before any all-candidate apply.
+7. Compare the active cover, source PDF URL, processed-source marker, R2 object metadata, and `zine_pages` state using the verification queries above.
+8. For explicit cover-only migration and diagnostic commands, confirm no command creates, updates, or deletes `zine_pages` rows or page-generation objects. Do not apply this expectation to the publication queue.
 
 ## Troubleshooting
 

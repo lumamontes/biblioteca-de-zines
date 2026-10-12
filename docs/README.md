@@ -45,6 +45,11 @@ registra o fluxo atual de derivados para a leitura via Google Drive.
 O [runbook de processamento de páginas](./runbooks/page-processing.md)
 documenta migrações, scripts, variáveis de ambiente, verificações e recuperação.
 
+O runbook distingue os comandos explícitos de migração e diagnóstico, que são
+**somente de capas**, do worker de publicações, que gera gerações completas de
+páginas para o leitor. Esses fluxos têm armazenamento, verificação e ciclo de vida
+separados.
+
 A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
 compara fontes brasileiras e internacionais para validar campos físicos, digitais,
 geográficos e de classificação.
