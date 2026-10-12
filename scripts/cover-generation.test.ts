@@ -104,13 +104,13 @@ test('cover storage accepts only generated cover URLs from the configured public
   );
 });
 
-test('migration selects missing and unreachable generated covers only', async () => {
+test('migration selects missing and unreachable generated covers while preserving custom covers', async () => {
   const previousPublicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
   process.env.NEXT_PUBLIC_R2_PUBLIC_URL = 'https://assets.example';
   try {
     const candidates = await selectCoverMigrationCandidates([
       createMigrationZine(1, '/zines.png'),
-      createMigrationZine(2, 'https://external.example/cover.jpg'),
+      createMigrationZine(2, 'https://drive.google.com/open?id=cover-2'),
       createMigrationZine(3, 'https://assets.example/zines/3/covers/old.webp'),
       createMigrationZine(4, 'https://assets.example/zines/4/covers/old.webp'),
     ], new Set([5]), async (url) => url !== 'https://assets.example/zines/4/covers/old.webp');
