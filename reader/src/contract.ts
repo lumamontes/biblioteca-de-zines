@@ -98,6 +98,7 @@ export type ReaderRendererOptions = {
   currentPage: number;
   wideViewport: boolean;
   onPageChange: (page: number) => void;
+  onRequestPage?: (page: number) => Promise<boolean>;
 };
 
 /** A renderer owns only its mount node; the reader shell owns the container. */
@@ -117,6 +118,7 @@ export type ReaderBoundary = {
   load(): Promise<ReaderStatus>;
   setMode(mode: ReaderMode): void;
   goTo(page: number): void;
+  preparePage(page: number): Promise<boolean>;
   next(): void;
   previous(): void;
   getVisiblePages(wideViewport: boolean): readonly ReaderPage[];

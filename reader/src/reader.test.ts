@@ -78,6 +78,19 @@ describe('framework-independent reader boundary', () => {
     expect(reader.getState()).toMatchObject({ status: 'fallback', reason: 'Source is not browser-readable.' });
   });
 
+  it('prepares an incoming page without advancing reader state', async () => {
+    const loadPage = vi.fn(async (index: number) => ({ url: `/page-${index + 1}.svg`, index }));
+    const reader = createReader({
+      ...input,
+      publication: { kind: 'image-pages', pages: Array.from({ length: 3 }, () => ({ url: 'page' })) },
+    }, { 'ordered-images': async () => ({ pageCount: 3, loadPage }) });
+
+    await reader.load();
+    expect(await reader.preparePage(1)).toBe(true);
+    expect(loadPage).toHaveBeenCalledWith(1);
+    expect(reader.getState()).toMatchObject({ status: 'ready', currentPage: 0 });
+  });
+
   it('publishes the visible page before warming an adjacent page', async () => {
     const loadPage = vi.fn(async (index: number) => ({ url: `/page-${index + 1}.svg`, index }));
     const reader = createReader(input, {
