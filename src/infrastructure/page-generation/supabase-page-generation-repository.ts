@@ -12,15 +12,25 @@ export function createSupabasePageGenerationRepository(
       const zineId = assertZineTarget(target);
       const { data, error } = await supabase
         .from('library_zines')
-        .select('active_page_generation, cover_image, import_status, is_published, pdf_url, processed_pdf_url')
+        .select('active_page_generation, cover_image, import_status, is_published, pdf_url, processed_pdf_url, total_pages')
         .eq('id', zineId)
         .single();
       if (error || !data) throw new Error(`Zine with ID ${zineId} not found`);
       if (data.is_published !== true || data.pdf_url !== sourceUrl) return false;
+      const { data: pages, error: pagesError } = await supabase
+        .from('zine_pages')
+        .select('page_number, width, height')
+        .eq('zine_id', zineId)
+        .eq('generation_id', data.active_page_generation)
+        .order('page_number', { ascending: true });
+      if (pagesError) throw new Error(`Failed to verify active page generation: ${pagesError.message}`);
+      const completePages = Boolean(data.active_page_generation)
+        && pages.length === data.total_pages
+        && pages.every((page, index) => page.page_number === index + 1 && page.width && page.height);
       const complete = data.import_status === 'completed'
         && data.processed_pdf_url === sourceUrl
         && data.active_page_generation !== 'legacy'
-        && Boolean(data.active_page_generation);
+        && completePages;
       return !complete || isPlaceholderCover(data.cover_image);
     },
 

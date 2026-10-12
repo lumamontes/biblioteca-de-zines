@@ -13,6 +13,7 @@ export function createSupabaseProcessingJobStore(
       const { error } = await supabase.from('zine_processing_jobs').upsert({
         zine_id: zineId,
         status: 'pending',
+        attempt_count: 0,
         last_error: null,
         lease_until: null,
         next_attempt_at: new Date().toISOString(),
@@ -66,6 +67,7 @@ export function createSupabaseProcessingJobStore(
       if (zineError || !zine?.is_published || !zine.pdf_url) {
         await failJob(
           claimed.id,
+          claimed.attempt_count,
           !zine?.is_published
             ? 'Processing requires an approved public publication'
             : 'Published zine has no PDF URL',
@@ -93,19 +95,14 @@ export function createSupabaseProcessingJobStore(
       if (error) throw new Error(`Failed to complete processing job: ${error.message}`);
     },
 
-    async fail(jobId, errorMessage) {
-      await failJob(jobId, errorMessage);
+    async fail(jobId, attemptCount, errorMessage) {
+      await failJob(jobId, attemptCount, errorMessage);
     },
   };
 
-  async function failJob(jobId: number, errorMessage: string): Promise<void> {
-    const { data: job } = await supabase
-      .from('zine_processing_jobs')
-      .select('attempt_count')
-      .eq('id', jobId)
-      .single();
-    const exhausted = (job?.attempt_count ?? maxAttempts) >= maxAttempts;
-    const nextAttempt = new Date(Date.now() + 2 ** (job?.attempt_count ?? 1) * 60_000).toISOString();
+  async function failJob(jobId: number, attemptCount: number, errorMessage: string): Promise<void> {
+    const exhausted = attemptCount >= maxAttempts;
+    const nextAttempt = new Date(Date.now() + 2 ** attemptCount * 60_000).toISOString();
     const { error } = await supabase
       .from('zine_processing_jobs')
       .update({
@@ -115,7 +112,9 @@ export function createSupabaseProcessingJobStore(
         next_attempt_at: nextAttempt,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', jobId);
+      .eq('id', jobId)
+      .eq('status', 'processing')
+      .eq('attempt_count', attemptCount);
     if (error) throw new Error(`Failed to record processing failure: ${error.message}`);
   }
 }

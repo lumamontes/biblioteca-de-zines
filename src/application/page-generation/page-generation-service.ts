@@ -109,7 +109,14 @@ async function discardGeneration(
   target: AssetTarget,
   generationId: string,
 ): Promise<void> {
-  await storage.deleteGeneration(target, generationId).catch((cleanupError) => {
-    console.error(`Failed to remove page generation ${generationId}:`, cleanupError);
-  });
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      await storage.deleteGeneration(target, generationId);
+      return;
+    } catch (cleanupError) {
+      if (attempt === 3) {
+        console.error(`Failed to remove page generation ${generationId}:`, cleanupError);
+      }
+    }
+  }
 }

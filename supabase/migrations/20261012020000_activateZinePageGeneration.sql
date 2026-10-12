@@ -61,7 +61,9 @@ BEGIN
 
   use_cover := p_cover_image IS NOT NULL AND (
     current_zine.cover_image IS NULL
-    OR current_zine.cover_image LIKE '%/zines.png'
+    OR btrim(current_zine.cover_image) = ''
+    OR lower(current_zine.cover_image) LIKE '%/zines.png'
+    OR lower(current_zine.cover_image) LIKE '%/home-gif.gif'
     OR current_zine.cover_image LIKE '%/zines/' || p_zine_id || '/covers/%'
   );
 
