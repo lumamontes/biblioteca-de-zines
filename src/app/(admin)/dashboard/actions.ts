@@ -3,28 +3,23 @@
 import { revalidatePath } from "next/cache";
 import { editUploadSchema } from "@/schemas/edit-upload";
 import { createClient } from "@/utils/supabase/server";
-import {
-  publishZineFromUpload,
-  republishZine,
-  unpublishZine as unpublishPublishedZine,
-  updateUploadAndPublishedZine,
-} from "@/application/zine-publication-service";
+import { createSupabaseZinePublicationService } from '@/infrastructure/publication/supabase-zine-publication-dependencies';
 
 export async function unpublishZine(zineId: number) {
   const supabase = await createClient();
-  await unpublishPublishedZine(supabase, zineId);
+  await createSupabaseZinePublicationService(supabase).unpublishZine(zineId);
   revalidatePath("/dashboard");
 }
 
 export async function updatePublishedZine(zineId: number) {
   const supabase = await createClient();
-  await republishZine(supabase, zineId);
+  await createSupabaseZinePublicationService(supabase).republishZine(zineId);
   revalidatePath("/dashboard");
 }
 
 export async function publishZine(uploadId: number) {
   const supabase = await createClient();
-  await publishZineFromUpload(supabase, uploadId);
+  await createSupabaseZinePublicationService(supabase).publishZineFromUpload(uploadId);
   revalidatePath("/dashboard");
 }
 
@@ -32,7 +27,17 @@ export async function updateUpload(uploadId: number, data: unknown) {
   try {
     const validatedData = editUploadSchema.parse(data);
     const supabase = await createClient();
-    await updateUploadAndPublishedZine(supabase, uploadId, validatedData);
+    await createSupabaseZinePublicationService(supabase).updateUploadAndPublishedZine(uploadId, {
+      slug: validatedData.slug,
+      title: validatedData.title,
+      description: validatedData.description,
+      collectionTitle: validatedData.collection_title,
+      authors: validatedData.authors,
+      pdfUrl: validatedData.pdf_url,
+      coverImage: validatedData.cover_image,
+      publishedYear: validatedData.published_year,
+      categories: validatedData.categories,
+    });
     revalidatePath("/dashboard");
     return { success: true, message: "Upload atualizado com sucesso!" };
   } catch (error) {

@@ -22,6 +22,7 @@ Use lightweight application-service boundaries for new work:
 - `src/infrastructure/` contains persistence, storage, source acquisition, and rendering adapters.
 - `src/components/` contains UI and form concerns.
 - `scripts/` contains explicit CLI entry points that call application services.
+- Keep reusable types and interfaces in dedicated `*-types.ts` or `*-contracts.ts` files next to their boundary. Service implementation files should contain orchestration and behavior, not the contracts they expose.
 
 Prefer the smallest boundary that makes a workflow readable. Do not introduce full DDD ceremony, aggregates, factories, or value objects without a concrete domain need.
 
