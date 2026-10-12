@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto';
-import type { AssetStorage, AssetTarget } from './asset-storage';
+import type { AssetStorage, AssetTarget } from '@/application/asset-storage';
 import type { SourceDocument } from '@/domain/source-document';
 import type {
   CoverGenerationRepository,
   CoverGenerationState,
   CoverOptimizer,
   FirstPageRenderer,
-} from '@/application/cover-generation-types';
+} from '@/application/cover-generation/cover-generation-types';
 
 
 export async function createCoverGeneration(

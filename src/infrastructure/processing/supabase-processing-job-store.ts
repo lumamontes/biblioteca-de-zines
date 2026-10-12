@@ -1,6 +1,6 @@
 import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { ProcessingJobStore } from '@/application/processing-job-types';
+import type { ProcessingJobStore } from '@/application/processing/processing-job-types';
 
 const leaseDurationMs = 15 * 60_000;
 const maxAttempts = 3;

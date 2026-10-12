@@ -1,13 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
-import { createCoverGeneration } from '../src/application/cover-generation-service';
-import { selectCoverMigrationCandidates } from '../src/application/cover-migration-service';
-import { isCompleteGeneratedCover } from '../src/application/cover-generation-policy';
+import { createCoverGeneration } from '../src/application/cover-generation/cover-generation-service';
+import { selectCoverMigrationCandidates } from '../src/application/cover-generation/cover-migration-service';
+import { isCompleteGeneratedCover } from '../src/application/cover-generation/cover-generation-policy';
 import { optimizeCoverImage } from '../src/infrastructure/cover-generation/cover-image-optimizer';
 import { generateGenerationKey } from '../src/infrastructure/storage/r2-storage-service';
 import type { AssetStorage } from '../src/application/asset-storage';
-import type { CoverGenerationRepository } from '../src/application/cover-generation-types';
+import type { CoverGenerationRepository } from '../src/application/cover-generation/cover-generation-types';
 
 test('cover generation produces a bounded WebP and publishes it after upload', async () => {
   const source = await createImage(2400, 1800);

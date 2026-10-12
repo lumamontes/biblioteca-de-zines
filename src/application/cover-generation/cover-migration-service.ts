@@ -1,5 +1,5 @@
 import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
-import type { CoverMigrationZine } from '@/application/cover-migration-types';
+import type { CoverMigrationZine } from '@/application/cover-generation/cover-migration-types';
 
 export async function selectCoverMigrationCandidates(
   zines: CoverMigrationZine[],

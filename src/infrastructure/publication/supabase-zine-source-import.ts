@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
 import { enqueueZineProcessing } from '@/infrastructure/processing/enqueue-zine-processing';
 import { dispatchZineProcessing } from '@/infrastructure/processing/zine-processing-dispatch-service';
-import { createZineSourceImportService } from '@/application/zine-source-import-service';
+import { createZineSourceImportService } from '@/application/source-import/zine-source-import-service';
 
 export function createSupabaseZineSourceImportService(
   supabase: SupabaseClient<Database>,

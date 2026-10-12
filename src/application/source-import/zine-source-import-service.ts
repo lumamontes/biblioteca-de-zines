@@ -1,7 +1,7 @@
 import type {
   ZineProcessingRequester,
   ZineSourceRepository,
-} from '@/application/zine-source-import-types';
+} from '@/application/source-import/zine-source-import-types';
 
 export function createZineSourceImportService(deps: {
   zines: ZineSourceRepository;

@@ -1,6 +1,6 @@
 import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { CoverGenerationRepository } from '@/application/cover-generation-types';
+import type { CoverGenerationRepository } from '@/application/cover-generation/cover-generation-types';
 import type { AssetTarget } from '@/application/asset-storage';
 import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
 

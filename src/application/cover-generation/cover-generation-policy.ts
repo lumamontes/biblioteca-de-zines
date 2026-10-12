@@ -1,5 +1,5 @@
 import { isGeneratedCover } from '@/utils/cover-image';
-import type { CoverGenerationRecord } from '@/application/cover-generation-types';
+import type { CoverGenerationRecord } from '@/application/cover-generation/cover-generation-types';
 
 export function isCompleteGeneratedCover(
   record: CoverGenerationRecord,

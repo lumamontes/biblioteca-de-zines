@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseProcessingJobStore } from '@/infrastructure/processing/supabase-processing-job-store';
 import { createAdminClient } from '@/utils/supabase/admin';
-import { processClaimedZine } from '@/application/process-claimed-zine';
+import { processClaimedZine } from '@/application/processing/process-claimed-zine';
 import { createCoverGenerationFromUrl } from '@/infrastructure/cover-generation/cover-import-service';
 
 export const runtime = 'nodejs';

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { createAdminClient } from '../src/utils/supabase/admin';
 import { createSupabaseProcessingJobStore } from '../src/infrastructure/processing/supabase-processing-job-store';
-import { processClaimedZine } from '../src/application/process-claimed-zine';
+import { processClaimedZine } from '../src/application/processing/process-claimed-zine';
 import { createCoverGenerationFromUrl } from '../src/infrastructure/cover-generation/cover-import-service';
 
 const limit = getNumberArgument('--limit', 10);

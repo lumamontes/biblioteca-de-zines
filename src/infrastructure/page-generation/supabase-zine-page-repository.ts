@@ -1,6 +1,6 @@
 import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { PageGenerationRepository } from '@/application/page-generation-types';
+import type { PageGenerationRepository } from '@/application/page-generation/page-generation-types';
 import type { AssetTarget } from '@/application/asset-storage';
 
 export function createSupabaseZinePageRepository(

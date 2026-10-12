@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../src/types/database.types';
-import { selectCoverMigrationCandidates } from '../src/application/cover-migration-service';
+import { selectCoverMigrationCandidates } from '../src/application/cover-generation/cover-migration-service';
 import { isReachableImage } from '../src/infrastructure/cover-generation/cover-reference-validator';
 
 type MonitorReport = {

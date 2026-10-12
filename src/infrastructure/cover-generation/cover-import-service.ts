@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createCoverGeneration } from '@/application/cover-generation-service';
+import { createCoverGeneration } from '@/application/cover-generation/cover-generation-service';
 import { extractFirstPageFromPdf } from '@/infrastructure/rendering/pdf-service';
 import { createR2AssetStorage } from '@/infrastructure/storage/r2-storage-service';
 import { optimizeCoverImage } from './cover-image-optimizer';

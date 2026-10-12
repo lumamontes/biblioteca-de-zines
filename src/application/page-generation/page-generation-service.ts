@@ -7,7 +7,7 @@ import type { SourceDocument } from '@/domain/source-document';
 import type {
   PageGenerationRepository,
   PageGenerationState,
-} from '@/application/page-generation-types';
+} from '@/application/page-generation/page-generation-types';
 
 export async function createPageGeneration(
   loadSource: () => Promise<SourceDocument>,

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
-import { createZinePublicationService } from '@/application/zine-publication-service';
+import { createZinePublicationService } from '@/application/publication/zine-publication-service';
 import { syncAuthorsToZine } from '@/infrastructure/publication/supabase-author-sync';
 import { createSupabaseZinePublicationRepository } from '@/infrastructure/publication/supabase-zine-publication-repository';
 import { enqueueZineProcessing } from '@/infrastructure/processing/enqueue-zine-processing';

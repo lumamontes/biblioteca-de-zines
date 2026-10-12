@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
-import type { PublicationAuthor } from '@/application/zine-publication-types';
+import type { PublicationAuthor } from '@/application/publication/zine-publication-types';
 
 export async function syncAuthorsToZine(
   supabase: SupabaseClient<Database>,

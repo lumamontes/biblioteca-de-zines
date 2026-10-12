@@ -1,15 +1,15 @@
 import { generateSlug } from '@/utils/slug';
 import { parseTags } from '@/utils/utils';
 import { isPlaceholderCover } from '@/utils/cover-image';
-import { isCompleteGeneratedCover } from '@/application/cover-generation-policy';
-import { needsGeneratedCover, resolvePublishedCover } from '@/application/cover-publication-policy';
+import { isCompleteGeneratedCover } from '@/application/cover-generation/cover-generation-policy';
+import { needsGeneratedCover, resolvePublishedCover } from '@/application/publication/cover-publication-policy';
 import type {
   PublicationRecord,
   PublicationUpload,
   UpdateUploadInput,
   UploadUpdate,
   ZinePublicationDependencies,
-} from '@/application/zine-publication-types';
+} from '@/application/publication/zine-publication-types';
 
 export function createZinePublicationService(deps: ZinePublicationDependencies) {
   return {

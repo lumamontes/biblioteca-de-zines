@@ -5,6 +5,7 @@
 
 import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, HeadObjectCommand } from '@aws-sdk/client-s3';
 import type { AssetStorage } from '@/application/asset-storage';
+import { coverObjectKey } from '@/infrastructure/storage/r2-cover-reference';
 
 // Initialize S3 client for R2
 function getR2Client(): S3Client {
@@ -76,19 +77,15 @@ export function createR2AssetStorage(): AssetStorage {
       )));
     },
     async deleteCover(target, coverUrl) {
-      const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/$/, '');
       const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
-      if (!publicUrl || !bucketName || !coverUrl.startsWith(`${publicUrl}/zines/${target.id}/covers/`)) return;
-      const key = coverUrl.slice(`${publicUrl}/`.length);
-      if (!/^zines\/\d+\/covers\/[^/]+\.webp$/.test(key)) return;
+      const key = coverObjectKey(process.env.NEXT_PUBLIC_R2_PUBLIC_URL, target, coverUrl);
+      if (!bucketName || !key) return;
       await client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: key }));
     },
     async isCoverAvailable(target, coverUrl) {
-      const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/$/, '');
       const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
-      if (!publicUrl || !bucketName || !coverUrl.startsWith(`${publicUrl}/zines/${target.id}/covers/`)) return false;
-      const key = coverUrl.slice(`${publicUrl}/`.length);
-      if (!/^zines\/\d+\/covers\/[^/]+\.webp$/.test(key)) return false;
+      const key = coverObjectKey(process.env.NEXT_PUBLIC_R2_PUBLIC_URL, target, coverUrl);
+      if (!bucketName || !key) return false;
       try {
         await client.send(new HeadObjectCommand({ Bucket: bucketName, Key: key }));
         return true;

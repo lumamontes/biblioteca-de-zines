@@ -6,7 +6,7 @@ import type {
   PublicationRepository,
   PublicationUpload,
   PublicationUpdate,
-} from '@/application/zine-publication-types';
+} from '@/application/publication/zine-publication-types';
 
 type ZineDatabaseClient = SupabaseClient<Database>;
 type UploadRow = Tables<'form_uploads'>;
