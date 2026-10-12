@@ -1,4 +1,5 @@
 import PDFViewer from "@/components/pdf-viewer";
+import { PublicReader } from "@/components/public-reader";
 import CategoryBadgeWithLink from "@/components/zine-card/category-badge-with-link";
 import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
@@ -8,6 +9,7 @@ import { siteConfig } from "@/app/config/site";
 import Link from "next/link";
 import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/structured-data";
 import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
+import { getPublicReader } from "@/composition/server/public-reader";
 
 export async function generateMetadata({
   params,
@@ -50,6 +52,7 @@ export default async function ZinePreview({
   }
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
+  const reader = await getPublicReader(slug);
   const categories = getZineCategories(preview.tags);
 
   const breadcrumbItems = [
@@ -83,8 +86,8 @@ export default async function ZinePreview({
         <CategoryBadgeWithLink categories={categories} />
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
-          <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
-            <PDFViewer url={previewUrl} />
+          <div className="bg-neutral-500 w-full min-h-screen max-w-xl mx-auto overflow-hidden p-4">
+            {reader ? <PublicReader reader={reader} /> : <PDFViewer url={previewUrl} />}
           </div>
         </div>
       </BreadcrumbWrapper>
