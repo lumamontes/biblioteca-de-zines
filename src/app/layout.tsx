@@ -5,6 +5,7 @@ import { PropsWithChildren } from "react";
 import { siteConfig } from "./config/site";
 import { Toaster } from "sonner";
 import { OrganizationStructuredData } from "@/components/seo/structured-data";
+import { Analytics } from "@vercel/analytics/next";
 
 const azeret = Azeret_Mono({ 
   subsets: ["latin"],
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           duration={Infinity}
           closeButton
         />
+        <Analytics />
       </body>
     </html>
   );
