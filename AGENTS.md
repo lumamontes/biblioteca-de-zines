@@ -20,6 +20,7 @@ Use lightweight application-service boundaries for new work:
 - `src/application/` contains use cases when a workflow spans multiple domain operations.
 - `src/domain/` contains business rules and types that do not depend on Next.js, Supabase, R2, or Google Drive.
 - `src/infrastructure/` contains persistence, storage, source acquisition, and rendering adapters.
+- `src/composition/` contains thin runtime-specific object-graph construction. `src/composition/server/` may create request-scoped clients and select concrete infrastructure adapters; `src/composition/cli/` may assemble worker dependencies. Actions, routes, and scripts call these factories instead of assembling vendor adapters themselves.
 - `src/components/` contains UI and form concerns.
 - `scripts/` contains explicit CLI entry points that call application services.
 - Keep reusable types and interfaces in dedicated `*-types.ts` or `*-contracts.ts` files next to their boundary. Service implementation files should contain orchestration and behavior, not the contracts they expose.
