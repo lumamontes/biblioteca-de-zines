@@ -127,7 +127,7 @@ export function createPageTurnRenderer(settings: PageTurnSettings = {}): ReaderR
       maxHeight: 720,
       startPage: currentPage,
       showCover: true,
-      usePortrait: true,
+      usePortrait: !options.wideViewport,
       useMouseEvents: true,
       mobileScrollSupport: true,
       swipeDistance: 30,
