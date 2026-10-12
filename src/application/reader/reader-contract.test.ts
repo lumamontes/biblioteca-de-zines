@@ -177,3 +177,22 @@ test('switches to the PDF fallback when renderer initialization fails', () => {
     reason: 'reader-failure',
   });
 });
+
+test('keeps the PDF fallback available when renderer cleanup fails', () => {
+  const renderer: ReaderRenderer = {
+    mount: () => {},
+    next: () => {},
+    previous: () => {},
+    goTo: () => {},
+    destroy: () => {
+      throw new Error('cleanup failed');
+    },
+  };
+  const manifest = createPageManifest({ generationId: 'generation-1', pageCount: 1, pages: [page(1)] });
+  const session = createReaderSession({ manifest, fallback: { url: '/publication.pdf', label: 'Open PDF' } }, renderer);
+
+  session.mount({});
+  session.useFallback('reader-failure');
+
+  assert.equal(session.getState().status, 'fallback');
+});

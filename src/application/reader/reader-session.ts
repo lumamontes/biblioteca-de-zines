@@ -11,6 +11,7 @@ import type {
 export type { ReaderFallback, ReaderFallbackState, ReaderRenderer, ReaderRenderTarget, ReaderSession, ReaderSessionState } from './reader-contracts';
 
 type ReaderSessionInput = {
+  /** The caller selects the active complete generation; the session never selects one. */
   manifest?: ReaderPageManifest;
   fallback: ReaderFallback;
 };
@@ -45,6 +46,8 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
     if (destroyed || state.status === 'fallback') return;
     try {
       if (mounted) renderer.destroy();
+    } catch {
+      // Adapter cleanup must not prevent the explicit PDF fallback.
     } finally {
       mounted = false;
       publish({ status: 'fallback', fallback: input.fallback, reason });
@@ -81,8 +84,15 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
     useFallback,
     destroy: () => {
       if (destroyed) return;
-      if (mounted) renderer.destroy();
-      mounted = false;
+      if (mounted) {
+        try {
+          renderer.destroy();
+        } catch {
+          // Cleanup is best effort; the session still becomes unusable.
+        } finally {
+          mounted = false;
+        }
+      }
       destroyed = true;
       listeners.clear();
     },

@@ -6,6 +6,7 @@ export type ReaderPageImage = {
   height: number;
 };
 
+/** A complete manifest already selected from the publication's active generation. */
 export type ReaderPageManifest = {
   generationId: string;
   pageCount: number;
