@@ -11,8 +11,6 @@ import { parseUploadAuthors, flattenAuthors } from "@/utils/authors";
 import { Author } from "@/schemas/apply-zine";
 import { dispatchZineProcessing } from "@/services/zine-processing-dispatch-service";
 import { enqueueZineProcessing } from "@/services/enqueue-zine-processing";
-import { promoteFormUploadPageGeneration } from "@/services/supabase-zine-page-repository";
-import { createAdminClient } from "@/utils/supabase/admin";
 
 /** Creates/finds each author and links them to the zine (does not remove stale links). */
 async function syncZineAuthors(
@@ -80,12 +78,25 @@ export async function unpublishZine(zineId: number) {
 
 export async function updatePublishedZine(zineId: number) {
   const supabase = await createClient();
+  const { data: zine } = await supabase
+    .from("library_zines")
+    .select("pdf_url, processed_pdf_url, import_status, active_page_generation")
+    .eq("id", zineId)
+    .single();
+
   const { error } = await supabase
     .from("library_zines")
     .update({ is_published: true })
     .eq("id", zineId);
 
   if (error) throw new Error(`Erro ao republicar a zine: ${error.message}`);
+
+  if (zine?.pdf_url && (zine.pdf_url !== zine.processed_pdf_url
+    || zine.import_status !== "completed"
+    || zine.active_page_generation === "legacy")) {
+    await enqueueZineProcessing(zineId);
+    await dispatchZineProcessing();
+  }
 
   revalidatePath("/dashboard");
 }
@@ -113,11 +124,12 @@ export async function publishZine(uploadId: number) {
 
   const { data: existingZine } = await supabase
     .from("library_zines")
-    .select("id, tags, source_upload_id")
+    .select("id, tags, source_upload_id, pdf_url, processed_pdf_url, import_status, active_page_generation")
     .eq("slug", slug)
     .single();
 
   let zineId;
+  let shouldProcess = true;
   if (!existingZine) {
     const { data: newZine, error: insertError } = await supabase
       .from("library_zines")
@@ -145,6 +157,13 @@ export async function publishZine(uploadId: number) {
     zineId = newZine.id;
   } else {
     zineId = existingZine.id;
+    shouldProcess = Boolean(
+      upload.pdf_url
+      && (existingZine.pdf_url !== upload.pdf_url
+        || existingZine.pdf_url !== existingZine.processed_pdf_url
+        || existingZine.import_status !== "completed"
+        || existingZine.active_page_generation === "legacy"),
+    );
 
     const existingTags = parseTags(existingZine.tags);
     const newTags = parseTags(upload.tags);
@@ -176,13 +195,10 @@ export async function publishZine(uploadId: number) {
     .update({ is_published: true })
     .eq("id", uploadId);
 
-  if (upload.pdf_url) {
+  if (upload.pdf_url && shouldProcess) {
     try {
-      const promoted = await promoteFormUploadPageGeneration(createAdminClient(), uploadId, zineId);
-      if (!promoted) {
-        await enqueueZineProcessing(zineId);
-        await dispatchZineProcessing();
-      }
+      await enqueueZineProcessing(zineId);
+      await dispatchZineProcessing();
     } catch (error) {
       console.error("Erro ao enfileirar processamento da zine:", error);
     }
@@ -200,6 +216,24 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
       categories: validatedData.categories || [],
     };
     const { author_name, author_url } = flattenAuthors(validatedData.authors);
+    const nextPdfUrl = validatedData.pdf_url || null;
+    const { data: currentUpload, error: currentUploadError } = await supabase
+      .from("form_uploads")
+      .select("pdf_url")
+      .eq("id", uploadId)
+      .single();
+    if (currentUploadError) {
+      throw new Error(`Erro ao buscar upload atual: ${currentUploadError.message}`);
+    }
+
+    const { data: publishedZine } = validatedData.slug
+      ? await supabase
+        .from("library_zines")
+        .select("id, pdf_url, processed_pdf_url, import_status, active_page_generation")
+        .eq("slug", validatedData.slug)
+        .single()
+      : { data: null };
+    const pdfChanged = currentUpload.pdf_url !== nextPdfUrl;
 
     const { error } = await supabase
       .from("form_uploads")
@@ -209,7 +243,7 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
         collection_title: validatedData.collection_title || null,
         author_name,
         author_url,
-        pdf_url: validatedData.pdf_url || null,
+        pdf_url: nextPdfUrl,
         cover_image: validatedData.cover_image || null,
         published_year: validatedData.published_year || null,
         tags: tags,
@@ -228,6 +262,7 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
           cover_image: validatedData.cover_image || null,
           year: validatedData.published_year || null,
           tags: tags,
+          ...(pdfChanged && nextPdfUrl ? { import_status: "pending" } : {}),
         })
         .eq("slug", validatedData.slug);
 
@@ -235,19 +270,21 @@ export async function updateUpload(uploadId: number, data: EditUploadFormData) {
           throw new Error(`Erro ao atualizar upload: ${error.message}`);
         }
 
-        if (validatedData.pdf_url) {
-          const { data: publishedZine } = await supabase
-            .from("library_zines")
-            .select("id")
-            .eq("slug", validatedData.slug)
-            .single();
-          if (publishedZine) {
-            try {
-              await enqueueZineProcessing(publishedZine.id);
-              await dispatchZineProcessing();
-            } catch (dispatchError) {
-              console.error("Erro ao enfileirar processamento da zine:", dispatchError);
-            }
+        const shouldProcessPublished = Boolean(
+          publishedZine
+          && nextPdfUrl
+          && (pdfChanged
+            || publishedZine.pdf_url !== nextPdfUrl
+            || publishedZine.pdf_url !== publishedZine.processed_pdf_url
+            || publishedZine.import_status !== "completed"
+            || publishedZine.active_page_generation === "legacy"),
+        );
+        if (shouldProcessPublished && publishedZine) {
+          try {
+            await enqueueZineProcessing(publishedZine.id);
+            await dispatchZineProcessing();
+          } catch (dispatchError) {
+            console.error("Erro ao enfileirar processamento da zine:", dispatchError);
           }
         }
       }

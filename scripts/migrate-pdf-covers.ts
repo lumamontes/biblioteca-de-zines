@@ -11,7 +11,6 @@ type MonitorReport = {
 const reportPath = getArgument('--report') ?? '/tmp/biblioteca-zines-monitor/resource-report.json';
 const apply = process.argv.includes('--apply');
 const onlyId = getArgument('--only-id');
-const formUploadId = getArgument('--form-upload-id');
 
 async function main(): Promise<void> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -21,15 +20,6 @@ async function main(): Promise<void> {
   }
 
   const supabase = createClient<Database>(supabaseUrl, serviceRoleKey);
-  if (formUploadId) {
-    const parsedFormUploadId = Number(formUploadId);
-    if (!Number.isInteger(parsedFormUploadId) || parsedFormUploadId <= 0) {
-      throw new Error('--form-upload-id must be a positive integer');
-    }
-    await processFormUpload(supabase, parsedFormUploadId);
-    return;
-  }
-
   const report = JSON.parse(await readFile(reportPath, 'utf8')) as MonitorReport;
   const excludedIds = new Set(
     (report.results ?? [])
@@ -40,7 +30,7 @@ async function main(): Promise<void> {
 
   const { data: zines, error } = await supabase
     .from('library_zines')
-    .select('id, title, pdf_url, cover_image, import_status, total_pages')
+    .select('id, title, pdf_url, processed_pdf_url, cover_image, import_status, total_pages')
     .eq('is_published', true)
     .not('pdf_url', 'is', null);
 
@@ -49,7 +39,10 @@ async function main(): Promise<void> {
   const candidates = (zines ?? []).filter((zine) => {
     if (onlyId && zine.id !== Number(onlyId)) return false;
     if (excludedIds.has(zine.id)) return false;
-    return zine.import_status !== 'completed' || !zine.total_pages || isPlaceholderCover(zine.cover_image);
+    return zine.pdf_url !== zine.processed_pdf_url
+      || zine.import_status !== 'completed'
+      || !zine.total_pages
+      || isPlaceholderCover(zine.cover_image);
   });
 
   console.log(`${apply ? 'Applying' : 'Dry run'} PDF migration for ${candidates.length} zines`);
@@ -69,29 +62,6 @@ async function main(): Promise<void> {
         console.error(`  failed (${zine.id}):`, migrationError);
       }
     }
-  }
-}
-
-async function processFormUpload(
-  supabase: ReturnType<typeof createClient<Database>>,
-  formUploadId: number,
-): Promise<void> {
-  const { data: upload, error } = await supabase
-    .from('form_uploads')
-    .select('id, title, pdf_url')
-    .eq('id', formUploadId)
-    .single();
-  if (error || !upload) throw new Error(`Form upload with ID ${formUploadId} not found`);
-
-  console.log(`${apply ? 'Applying' : 'Dry run'} form-upload page migration for 1 submission`);
-  console.log(`[${apply ? 'process' : 'would process'}] ${upload.id}: ${upload.title}`);
-  if (apply && !upload.pdf_url) {
-    throw new Error(`Form upload ${formUploadId} has no PDF URL`);
-  }
-  if (apply && upload.pdf_url) {
-    const { createFormUploadPageGenerationFromUrl } = await import('../src/services/form-upload-generation-service');
-    await createFormUploadPageGenerationFromUrl(upload.id, upload.pdf_url, supabase);
-    console.log(`  completed (${upload.id})`);
   }
 }
 

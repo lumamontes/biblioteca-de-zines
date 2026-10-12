@@ -2,7 +2,7 @@ export type AssetKind = 'page' | 'cover';
 
 export type AssetTarget = {
   id: number;
-  kind: 'form-upload' | 'zine';
+  kind: 'zine';
 };
 
 export type AssetUpload = {

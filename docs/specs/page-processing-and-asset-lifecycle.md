@@ -4,7 +4,7 @@ This specification defines how Biblioteca de Zines turns submitted PDF sources i
 
 ## Status
 
-The generation-aware rendering, form-upload staging schema, queue types, and local processing commands exist. The two-bucket copy path, explicit rejected/withdrawn states, automated retention cleanup, and automatic worker workflow remain implementation work. This document describes the target contract those components must satisfy.
+The generation-aware rendering, queue types, and local processing commands exist. The process-on-publication path, processed-source marker, automated legacy cleanup, and automatic worker workflow remain implementation work. This document describes the target contract those components must satisfy.
 
 ## Scope
 
@@ -17,7 +17,7 @@ The submitted PDF URL remains the source reference. R2 objects are derivatives, 
 | Relation | Role | Visibility |
 | --- | --- | --- |
 | `form_uploads` | Intake/submission record | Private workflow data |
-| `form_upload_pages` | Processing generations for a submission | Private staging derivatives |
+| `form_upload_pages` | Legacy processing generations for a submission | Not written by the active workflow |
 | `library_zines` | Catalogue/publication record | Public only when `is_published = true` |
 | `zine_pages` | Page generations associated with a catalogue publication | Public delivery derivatives |
 | `zine_processing_jobs` | Retryable queue for published-zine processing | Backend-only operational data |
@@ -28,7 +28,7 @@ There is no separate `library_zine_pages` table. `zine_pages.zine_id` is the pub
 
 ```mermaid
 erDiagram
-    form_uploads ||--o{ form_upload_pages : stages
+    form_uploads ||--o{ form_upload_pages : legacy_stages
     form_uploads ||--o| library_zines : becomes
     library_zines ||--o{ zine_pages : publishes
     library_zines ||--o{ zine_processing_jobs : queues
@@ -36,16 +36,15 @@ erDiagram
 
 ## Storage Boundaries
 
-The target architecture uses two R2 buckets:
+The active architecture uses one public delivery bucket:
 
 | Bucket | Expected name | Purpose | Public access |
 | --- | --- | --- | --- |
-| Private processing | `biblioteca-de-zines` | Unpublished submission generations | Disabled |
 | Public delivery | `biblioteca-de-zines-pb` | Published zine generations | Custom domain only |
 
-The public bucket is served through `assets.biblioteca-de-zines.com.br`. The private bucket must not receive an R2.dev public URL or public custom domain.
+The bucket is served through `assets.biblioteca-de-zines.com.br`. `form_uploads` do not create R2 derivatives while they remain submissions.
 
-The application selects the bucket from the asset target. A `form-upload` target writes to private storage; a `zine` target writes to public storage.
+The application processes only `zine` targets. The R2 bucket configured for processing is the public delivery bucket.
 
 ## Generation Rules
 
@@ -58,10 +57,10 @@ The application selects the bucket from the asset target. A `form-upload` target
 
 ## Source URL Rules
 
-The exact source string is the processing identity check:
+The exact source string is stored on the publication and is the processing identity check:
 
 ```text
-form_uploads.pdf_url === form_uploads.processed_pdf_url
+library_zines.pdf_url === library_zines.processed_pdf_url
 ```
 
 - If the values match and the generation is complete, reuse the generation.
@@ -70,41 +69,34 @@ form_uploads.pdf_url === form_uploads.processed_pdf_url
 - If the source URL is unchanged but a maintainer explicitly requests force processing, create a new generation.
 - Metadata-only edits do not trigger PDF processing.
 
-The same comparison applies when a linked `library_zines.pdf_url` is edited. The system must compare the previous value before saving the new value so unchanged URLs do not enqueue unnecessary work.
+When a linked `library_zines.pdf_url` is edited, the system compares it with `processed_pdf_url` before deciding whether to enqueue work. `processed_pdf_url` changes only after a complete public generation succeeds.
 
 ## Processing and Publication Flow
 
 ```mermaid
 flowchart TD
-    A[Submission in form_uploads] --> B{PDF URL changed?}
-    B -- No --> C{Complete private generation exists?}
-    B -- Yes --> D[Create new generation from current PDF]
-    C -- Yes --> E[Keep/reuse private generation]
-    C -- No --> D
-    D --> F[Write pages and fallback cover to private bucket]
-    F --> G[Set processed_pdf_url and active_page_generation]
-    E --> H{Publish submission?}
-    G --> H
-    H -- No --> I[Remain private and await review]
-    H -- Yes, URLs match --> J[Copy complete generation to public bucket]
-    H -- Yes, URLs differ --> K[Regenerate current PDF into public bucket]
-    J --> L[Verify public objects and database rows]
-    K --> L
-    L --> M[Activate public generation]
-    M --> N[Delete private generation]
+    A[Submission in form_uploads] --> B[Edit intake metadata or PDF URL]
+    B --> C[No page processing while unconverted]
+    C --> D{Convert to library_zines?}
+    D -- No --> E[Remain intake-only]
+    D -- Yes --> F{Complete active public generation for same PDF?}
+    F -- Yes --> G[Reuse active public generation]
+    F -- No --> H[Create new public generation from current PDF]
+    H --> I[Write pages and fallback cover to public bucket]
+    I --> J[Activate complete generation]
 ```
 
-### First publication
+### Publication
 
-- Matching `pdf_url` and `processed_pdf_url`: copy the complete private generation to the public bucket.
-- Different or missing URLs: do not copy stale private pages; process the current PDF directly into a new public generation.
+- A submission has no page generation while it remains a `form_upload`.
+- On publication, process the current PDF directly into the public bucket unless a complete active generation already exists for the exact same URL.
 - Update `zine_pages`, `library_zines.active_page_generation`, `total_pages`, and the public cover URL only after the public generation is complete.
 
 ### Editing a submission
 
 - Metadata-only changes update the submission and linked publication without processing.
-- A changed PDF URL invalidates reuse of the prior processed generation.
-- An unpublished submission may process the new PDF privately when explicitly requested; otherwise publication processes the current source.
+- A changed PDF URL on an unconverted submission requires no page work; publication uses the latest URL.
+- A changed PDF URL on a published publication invalidates reuse of the prior public generation.
 - A published submission with a changed PDF URL queues a new public generation.
 - The previous public generation remains active until the replacement succeeds.
 
@@ -130,18 +122,14 @@ flowchart TD
 ## Cleanup and Retention
 
 - Failed partial generations are deleted immediately.
-- Private generations are deleted after a successful public copy or public regeneration is verified.
 - Public generations remain available through ordinary unpublish/republish cycles.
 - When a new public generation replaces an old one, delete the old public generation only after the new database pointer and page rows are committed.
-- Rejected or withdrawn submissions retain private derivatives for 30 days.
-- After 30 days, delete private generation objects and private page rows, but retain submission metadata for audit/history.
-- Do not use `is_published = false` as a cleanup predicate; pending, rejected, withdrawn, and unpublished publication states are different concepts.
-
-Explicit rejected/withdrawn state and a retention deadline are required before automated 30-day cleanup is enabled.
+- Rejected or withdrawn submissions create no derivatives and require no derivative cleanup.
+- Do not use `is_published = false` as a processing predicate; a submission is processed only when converted into a publication.
 
 ## Cost Policy
 
-R2 Standard storage is inexpensive for page derivatives, and R2 egress is free. Reprocessing has additional runtime, source-download, failure, and latency costs. The system therefore avoids reprocessing when a complete generation is valid and retains public generations for normal republishing.
+R2 Standard storage is inexpensive for page derivatives, and R2 egress is free. Processing only at publication avoids storing private derivatives for submissions that may never be published. Reprocessing has additional runtime, source-download, failure, and latency costs, so a complete active public generation is reused when its source URL is unchanged.
 
 Current R2 pricing reference: [Cloudflare R2 pricing](https://developers.cloudflare.com/r2/pricing/).
 
@@ -150,21 +138,23 @@ Current R2 pricing reference: [Cloudflare R2 pricing](https://developers.cloudfl
 | Component | Responsibility |
 | --- | --- |
 | `page-generation-module.ts` | Provider-neutral generation orchestration |
-| `form-upload-generation-service.ts` | Submission-side generation entry point |
 | `zine-import-service.ts` | Publication-side generation entry point |
 | `source-download-service.ts` | Direct and Google Drive source acquisition |
 | `pdf-service.ts` | PDF page rendering and canvas integration |
 | `asset-storage.ts` | Provider-neutral storage contract |
 | `r2-storage-service.ts` | R2 upload, copy, and cleanup adapter |
-| `supabase-form-upload-page-repository.ts` | Private staging persistence |
-| `supabase-zine-page-repository.ts` | Public publication persistence and promotion |
+| `supabase-zine-page-repository.ts` | Public publication persistence |
 | `processing-job-module.ts` | Provider-neutral processing job contract |
 | `supabase-processing-job-store.ts` | Queue, lease, retry, and failure persistence |
 | `process-claimed-zine.ts` | Claimed-job execution and failure recording |
 | `enqueue-zine-processing.ts` | Enqueues a publication for processing |
 | `zine-processing-dispatch-service.ts` | Requests asynchronous worker dispatch |
-| `scripts/migrate-pdf-covers.ts` | Explicit migration and form-upload processing |
+| `scripts/migrate-pdf-covers.ts` | Explicit published-zine migration |
 | `scripts/process-pending-zines.ts` | Local queue worker |
 | `src/app/api/internal/process-zines/route.ts` | Authenticated HTTP worker entry point |
 
 The dispatch service currently targets `.github/workflows/process-pending-zines.yml`, but no checked-in workflow currently exists. That worker integration must be completed or the dispatch path must be changed before it is considered production-ready.
+
+## Legacy Schema
+
+The applied migration `20261011010000_addFormUploadPageProcessing.sql` created `form_upload_pages` and form-upload processing columns before the process-on-publication decision. Applied migrations are not edited. The active code no longer writes those tables or columns; they remain legacy schema until a separately planned cleanup migration is approved.

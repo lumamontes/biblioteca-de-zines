@@ -4,20 +4,19 @@ This runbook covers local migrations, queue processing, verification, and recove
 
 ## Storage Configuration
 
-The target production configuration uses:
+The production configuration uses one public delivery bucket:
 
 ```env
 CLOUDFLARE_R2_ACCOUNT_ID=...
 CLOUDFLARE_R2_ACCESS_KEY_ID=...
 CLOUDFLARE_R2_SECRET_ACCESS_KEY=...
-CLOUDFLARE_R2_BUCKET_NAME=biblioteca-de-zines
-CLOUDFLARE_R2_PUBLIC_BUCKET_NAME=biblioteca-de-zines-pb
+CLOUDFLARE_R2_BUCKET_NAME=biblioteca-de-zines-pb
 NEXT_PUBLIC_R2_PUBLIC_URL=https://assets.biblioteca-de-zines.com.br
 ```
 
-Never commit credentials. The private bucket must not have an R2.dev public URL or public custom domain.
+Never commit credentials. The old `biblioteca-de-zines` bucket is not part of the active processing path.
 
-The two-bucket adapter and public-copy path are currently being implemented. Until that work is complete, do not change the existing bucket URL configuration or manually publish generated objects.
+`form_uploads` do not create page derivatives. Processing starts when a submission becomes a `library_zine`.
 
 ## Database Migrations
 
@@ -31,27 +30,28 @@ Relevant migrations:
 
 - `20251226002136_addZinePagesAndImportFields.sql`: legacy zine page/import fields.
 - `20261011000000_addZineProcessingJobs.sql`: generation-aware publication pages and processing queue.
-- `20261011010000_addFormUploadPageProcessing.sql`: form-upload processing state and private staging pages.
+- `20261011010000_addFormUploadPageProcessing.sql`: legacy form-upload processing state and staging pages; the active code no longer writes them.
+- `20261011020000_addProcessedZineSource.sql`: records the PDF URL used by the active public generation.
 
 Never edit an applied migration. Add a new timestamped migration for every later schema change.
 
-## Explicit Form-Upload Processing
+## Explicit Published-Zine Processing
 
-Dry run one submission:
+Dry run one published zine:
 
 ```bash
-pnpm migrate:pdf-covers -- --form-upload-id 1084
+pnpm migrate:pdf-covers -- --only-id <zine_id>
 ```
 
 Apply processing:
 
 ```bash
-pnpm migrate:pdf-covers -- --form-upload-id 1084 --apply
+pnpm migrate:pdf-covers -- --only-id <zine_id> --apply
 ```
 
-The command downloads the current source, renders pages, writes the private generation, and records `processed_pdf_url`, `active_page_generation`, `total_pages`, and `processing_status`.
+The command downloads the current source, renders pages into the public bucket, and records `active_page_generation`, `total_pages`, and `import_status`.
 
-The command is dry-run by default. `--only-id` applies to published `library_zines`; use `--form-upload-id` for submissions.
+The command is dry-run by default. `--only-id` applies to published `library_zines`.
 
 ## Published-Zine Queue Processing
 
@@ -74,26 +74,20 @@ The dispatch service currently references `.github/workflows/process-pending-zin
 
 ## Verification Queries
 
-Check a submission:
+Check a publication:
 
 ```sql
-select
-  id,
-  pdf_url,
-  processed_pdf_url,
-  processing_status,
-  active_page_generation,
-  total_pages
-from form_uploads
-where id = 1084;
+select id, pdf_url, processed_pdf_url, active_page_generation, total_pages, import_status, is_published
+from library_zines
+where id = <zine_id>;
 ```
 
-Check staged pages:
+Check publication pages:
 
 ```sql
 select generation_id, page_number, image_url
-from form_upload_pages
-where form_upload_id = 1084
+from zine_pages
+where zine_id = <zine_id>
 order by generation_id, page_number;
 ```
 
@@ -107,12 +101,11 @@ where id = <zine_id>;
 
 ## Safe Reprocessing Rules
 
-- Same source URL and complete generation: reuse; do not rerender.
+- Same source URL and complete active generation: reuse; do not rerender.
 - Changed source URL: create a new generation.
-- Missing processed source URL: regenerate.
+- Missing or incomplete active generation: regenerate.
 - Metadata-only edit: do not process.
 - Keep the current successful generation until its replacement is verified.
-- Delete old private objects after successful public promotion.
 - Delete old public objects only after the new public generation is active.
 
 ## Cover Verification

@@ -158,6 +158,7 @@ export type Database = {
           import_status: "pending" | "processing" | "completed" | "failed" | null
           is_published: boolean | null
           pdf_url: string | null
+          processed_pdf_url: string | null
           active_page_generation: string
           source_upload_id: number | null
           slug: string | null
@@ -177,6 +178,7 @@ export type Database = {
           import_status?: "pending" | "processing" | "completed" | "failed" | null
           is_published?: boolean | null
           pdf_url?: string | null
+          processed_pdf_url?: string | null
           active_page_generation?: string
           source_upload_id?: number | null
           slug?: string | null
@@ -195,6 +197,7 @@ export type Database = {
           import_status?: "pending" | "processing" | "completed" | "failed" | null
           is_published?: boolean | null
           pdf_url?: string | null
+          processed_pdf_url?: string | null
           active_page_generation?: string
           source_upload_id?: number | null
           slug?: string | null

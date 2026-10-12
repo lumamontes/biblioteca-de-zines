@@ -2,63 +2,6 @@ import type { Database } from '@/types/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { PageGenerationRepository } from './page-generation-module';
 import type { AssetTarget } from './asset-storage';
-import { isPlaceholderCover } from '@/utils/cover-image';
-
-export async function promoteFormUploadPageGeneration(
-  supabase: SupabaseClient<Database>,
-  formUploadId: number,
-  zineId: number,
-): Promise<boolean> {
-  const { data: upload, error: uploadError } = await supabase
-    .from('form_uploads')
-    .select('active_page_generation, cover_image, pdf_url, processed_pdf_url, total_pages')
-    .eq('id', formUploadId)
-    .single();
-  if (uploadError || !upload?.active_page_generation || upload.pdf_url !== upload.processed_pdf_url) {
-    return false;
-  }
-
-  const { data: pages, error: pagesError } = await supabase
-    .from('form_upload_pages')
-    .select('generation_id, image_url, page_number')
-    .eq('form_upload_id', formUploadId)
-    .eq('generation_id', upload.active_page_generation)
-    .order('page_number', { ascending: true });
-  if (pagesError || !pages?.length || pages.length !== upload.total_pages) return false;
-
-  const { data: zine, error: zineError } = await supabase
-    .from('library_zines')
-    .select('cover_image')
-    .eq('id', zineId)
-    .single();
-  if (zineError || !zine) return false;
-
-  const { error: insertError } = await supabase.from('zine_pages').upsert(
-    pages.map((page) => ({
-      generation_id: page.generation_id,
-      image_url: page.image_url,
-      page_number: page.page_number,
-      zine_id: zineId,
-    })),
-    { onConflict: 'zine_id,generation_id,page_number' },
-  );
-  if (insertError) throw new Error(`Failed to promote form-upload pages: ${insertError.message}`);
-
-  const { error: updateError } = await supabase
-    .from('library_zines')
-    .update({
-      ...(isPlaceholderCover(zine.cover_image) && upload.cover_image
-        ? { cover_image: upload.cover_image }
-        : {}),
-      active_page_generation: upload.active_page_generation,
-      import_status: 'completed',
-      total_pages: upload.total_pages,
-    })
-    .eq('id', zineId);
-  if (updateError) throw new Error(`Failed to promote form-upload generation: ${updateError.message}`);
-
-  return true;
-}
 
 export function createSupabaseZinePageRepository(
   supabase: SupabaseClient<Database>,
@@ -105,6 +48,7 @@ export function createSupabaseZinePageRepository(
           ...(generation.coverImage ? { cover_image: generation.coverImage } : {}),
           active_page_generation: generation.generationId,
           import_status: 'completed',
+          processed_pdf_url: generation.sourceUrl ?? null,
           total_pages: generation.totalPages,
         })
         .eq('id', zineId);

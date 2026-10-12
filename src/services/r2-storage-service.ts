@@ -27,7 +27,7 @@ function getR2Client(): S3Client {
 }
 
 function generateGenerationKey(
-  target: { id: number; kind: 'form-upload' | 'zine' },
+  target: { id: number; kind: 'zine' },
   generationId: string,
   kind: 'page' | 'cover',
   extension: string,
@@ -35,8 +35,7 @@ function generateGenerationKey(
 ): string {
   const ext = extension.startsWith('.') ? extension.slice(1) : extension;
   const name = kind === 'cover' ? 'cover' : `page-${pageNumber}`;
-  const namespace = target.kind === 'zine' ? 'zines' : 'form-uploads';
-  return `${namespace}/${target.id}/generations/${generationId}/${name}.${ext}`;
+  return `zines/${target.id}/generations/${generationId}/${name}.${ext}`;
 }
 
 export function createR2AssetStorage(): AssetStorage {
@@ -65,8 +64,7 @@ export function createR2AssetStorage(): AssetStorage {
       return `${publicUrl.replace(/\/$/, '')}/${key}`;
     },
     async deleteGeneration(target, generationId) {
-      const namespace = target.kind === 'zine' ? 'zines' : 'form-uploads';
-      await deleteR2Prefix(client, `${namespace}/${target.id}/generations/${generationId}/`);
+      await deleteR2Prefix(client, `zines/${target.id}/generations/${generationId}/`);
     },
   };
 }

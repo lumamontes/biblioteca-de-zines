@@ -5,6 +5,7 @@
  */
 
 import sharp from 'sharp';
+import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { createCanvas, DOMMatrix, DOMPoint } = require('@napi-rs/canvas');
@@ -56,29 +57,29 @@ class ProjectCanvasFactory {
   }
 }
 
-// Import pdfjs-dist - using require to avoid ESM issues in Next.js
-let pdfjsLib: PdfJsLibrary;
-try {
-  // Try legacy build first (better for Node.js)
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  pdfjsLib = require('pdfjs-dist/legacy/build/pdf.mjs');
-} catch {
-  // Fallback to regular build
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  pdfjsLib = require('pdfjs-dist');
-}
-
 // Polyfill browser APIs for Node.js
 if (typeof window === 'undefined') {
   // Use the same geometry types as the canvas implementation used for rendering.
   global.DOMMatrix = DOMMatrix;
   global.DOMPoint = DOMPoint;
 
-  // Use the installed worker in Node. A CDN URL makes pdfjs try to import it as
-  // a browser worker, which fails for local file URLs on macOS.
-  pdfjsLib.GlobalWorkerOptions.workerSrc = pathToFileURL(
-    require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs'),
-  ).href;
+}
+
+let pdfjsLibPromise: Promise<PdfJsLibrary> | undefined;
+
+async function getPdfJsLibrary(): Promise<PdfJsLibrary> {
+  pdfjsLibPromise ??= import('pdfjs-dist/legacy/build/pdf.mjs').then((module) => {
+    const pdfjsLib = module as unknown as PdfJsLibrary;
+    if (typeof window === 'undefined') {
+      const nodeRequire = createRequire(`${process.cwd()}/package.json`);
+      const workerModule = ['pdfjs-dist', 'legacy', 'build', 'pdf.worker.mjs'].join('/');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = pathToFileURL(
+        nodeRequire.resolve(workerModule),
+      ).href;
+    }
+    return pdfjsLib;
+  });
+  return pdfjsLibPromise;
 }
 
 /**
@@ -102,6 +103,7 @@ export async function forEachPageFromPdf(
   options: { maxPages?: number } = {},
 ): Promise<number> {
   try {
+    const pdfjsLib = await getPdfJsLibrary();
     // Convert Buffer to Uint8Array as required by pdfjs-dist
     const uint8Array = new Uint8Array(pdfBuffer);
     

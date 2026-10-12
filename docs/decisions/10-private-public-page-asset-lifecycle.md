@@ -1,5 +1,7 @@
 # Private and Public Page Asset Lifecycle
 
+**Superseded by [11-process-pages-at-publication](./11-process-pages-at-publication.md)**
+
 ## Context
 
 Biblioteca processes submitted PDFs into page and cover derivatives before or during publication. Submissions are private review material, while published zines need stable public delivery URLs. The same submission may be edited, published, unpublished, republished, rejected, or withdrawn.

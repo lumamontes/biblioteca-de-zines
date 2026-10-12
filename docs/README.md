@@ -33,7 +33,7 @@ A [especificação de processamento de páginas e ciclo de vida de assets](./spe
 define os buckets privados e públicos, gerações, reprocessamento de PDFs, capas,
 publicação e limpeza.
 
-A [decisão sobre o ciclo de vida de assets](./decisions/10-private-public-page-asset-lifecycle.md)
+A [decisão sobre processar páginas na publicação](./decisions/11-process-pages-at-publication.md)
 registra a decisão arquitetural e as alternativas consideradas.
 
 O [runbook de processamento de páginas](./runbooks/page-processing.md)
