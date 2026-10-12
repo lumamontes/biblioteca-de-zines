@@ -29,6 +29,26 @@ test('returns the validated active generation for a public publication', async (
   assert.equal(result.fallback.url, 'https://drive.example/zine.pdf');
 });
 
+test('filters previous generations and returns active pages in order', async () => {
+  const result = await getPublicReaderPublication(repository({
+    activePageGeneration: 'generation-2',
+    importStatus: 'completed',
+    pages: [
+      { ...page, generationId: 'generation-1' },
+      { ...page, generationId: 'generation-2', pageNumber: 2, imageUrl: 'https://assets.example/page-2.png' },
+      { ...page, generationId: 'generation-2' },
+    ],
+    totalPages: 2,
+  }), 'test-zine');
+
+  assert.equal(result?.status, 'ready');
+  if (result?.status !== 'ready') return;
+  assert.deepEqual(result.manifest.pages.map(({ generationId, pageNumber }) => ({ generationId, pageNumber })), [
+    { generationId: 'generation-2', pageNumber: 1 },
+    { generationId: 'generation-2', pageNumber: 2 },
+  ]);
+});
+
 test('returns the PDF fallback when the publication has no active generation', async () => {
   const result = await getPublicReaderPublication(repository({
     activePageGeneration: 'legacy',

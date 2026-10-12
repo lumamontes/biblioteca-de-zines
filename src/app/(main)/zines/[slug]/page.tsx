@@ -57,6 +57,13 @@ export default async function ZinePreview({
     reason: 'page-generation-unavailable' as const,
     status: 'fallback' as const,
   } : null);
+  if (!reader) {
+    return (
+      <h3 className="flex items-center justify-center border border-black px-6 py-3 text-base">
+        Zine não encontrada!
+      </h3>
+    );
+  }
   const categories = getZineCategories(preview.tags);
 
   const breadcrumbItems = [

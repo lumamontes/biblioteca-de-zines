@@ -27,6 +27,7 @@ export function PublicReader({ reader }: PublicReaderProps) {
   const [state, setState] = useState<ReaderSessionState>(() => initialState(reader));
 
   useEffect(() => {
+    setState(initialState(reader));
     if (reader.status !== 'ready' || !targetRef.current) return undefined;
     const session = createReaderSession({ fallback: reader.fallback, manifest: reader.manifest }, createPublicReaderRenderer());
     sessionRef.current = session;
