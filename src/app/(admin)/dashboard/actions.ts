@@ -6,17 +6,13 @@ import { createClient } from "@/utils/supabase/server";
 import {
   publishZineFromUpload,
   republishZine,
+  unpublishZine as unpublishPublishedZine,
   updateUploadAndPublishedZine,
 } from "@/services/zine-publication-service";
 
 export async function unpublishZine(zineId: number) {
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("library_zines")
-    .update({ is_published: false })
-    .eq("id", zineId);
-
-  if (error) throw new Error(`Erro ao despublicar a zine: ${error.message}`);
+  await unpublishPublishedZine(supabase, zineId);
   revalidatePath("/dashboard");
 }
 

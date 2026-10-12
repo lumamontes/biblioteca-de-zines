@@ -15,6 +15,17 @@ import {
 
 type ZineDatabaseClient = SupabaseClient<Database>;
 
+export async function unpublishZine(
+  supabase: ZineDatabaseClient,
+  zineId: number,
+): Promise<void> {
+  const { error } = await supabase
+    .from('library_zines')
+    .update({ is_published: false })
+    .eq('id', zineId);
+  if (error) throw new Error(`Erro ao despublicar a zine: ${error.message}`);
+}
+
 export async function republishZine(
   supabase: ZineDatabaseClient,
   zineId: number,
