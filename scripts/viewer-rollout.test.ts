@@ -46,10 +46,12 @@ test('requires a configured beta token when tester gating is enabled', () => {
     READER_BETA_ENABLED: 'true',
     READER_BETA_TOKENS: 'tester-1',
     READER_EMBED_ENABLED: 'true',
+    READER_VIEWER_ENABLED: 'true',
   });
 
   assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'embed'), false);
   assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'embed', 'tester-1'), true);
+  assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'reader'), true);
 });
 
 test('keeps both surfaces unavailable until the beta gate is explicitly enabled', () => {

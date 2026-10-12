@@ -38,6 +38,7 @@ export function PublicReader({ reader, viewerUrl }: PublicReaderProps) {
       >
         <iframe
           className="h-[75vh] min-h-[32rem] w-full border-0"
+          allowFullScreen
           loading="lazy"
           src={viewerUrl}
           title={`Leitor de ${reader.publication.title}`}

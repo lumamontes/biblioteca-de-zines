@@ -2,6 +2,8 @@
 
 The BookReader viewer is disabled unless the rollout environment explicitly enables it. The same deployment may serve the main Biblioteca application and the viewer origin, but the viewer is loaded in an iframe and the vendor runtime remains confined to that document.
 
+The viewer host must route to the dedicated `/viewer/v1/:slug` entrypoint, while the public embed host/routes use `/embed/v1/:slug`. These are replaceable viewer surfaces, not new catalogue or persistence services. The core application origin remains responsible for the public-reader API.
+
 ## Controls
 
 Set these environment values for a beta deployment:

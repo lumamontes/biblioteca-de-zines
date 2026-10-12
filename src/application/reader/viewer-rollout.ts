@@ -36,7 +36,9 @@ export function isViewerPublicationAllowed(
   if (surface === 'reader' && !config.enabled) return false;
   if (surface === 'embed' && !config.embedEnabled) return false;
   const publicationAllowed = config.allowAllPublications || config.betaSlugs.includes(slug);
-  const testerAllowed = config.betaTokens.length === 0 || Boolean(betaToken && config.betaTokens.includes(betaToken));
+  const testerAllowed = surface !== 'embed'
+    || config.betaTokens.length === 0
+    || Boolean(betaToken && config.betaTokens.includes(betaToken));
   return publicationAllowed && testerAllowed;
 }
 
