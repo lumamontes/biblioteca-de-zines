@@ -20,18 +20,20 @@ const page = (pageNumber: number, generationId = 'generation-1') => ({
 test('accepts a complete ordered page manifest from one generation', () => {
   const manifest = createPageManifest({
     generationId: 'generation-1',
+    pageCount: 2,
     pages: [page(1), page(2)],
   });
 
   assert.deepEqual(manifest, {
     generationId: 'generation-1',
+    pageCount: 2,
     pages: [page(1), page(2)],
   });
 });
 
 test('rejects an empty page manifest', () => {
   assert.throws(
-    () => createPageManifest({ generationId: 'generation-1', pages: [] }),
+    () => createPageManifest({ generationId: 'generation-1', pageCount: 0, pages: [] }),
     (error: unknown) => error instanceof InvalidPageManifestError && error.issues.includes('empty'),
   );
 });
@@ -40,6 +42,7 @@ test('rejects duplicate, skipped, mixed-generation, and dimensionless pages', ()
   assert.throws(
     () => createPageManifest({
       generationId: 'generation-1',
+      pageCount: 3,
       pages: [
         page(1),
         { ...page(1, 'generation-2'), width: 0 },
@@ -56,7 +59,7 @@ test('rejects duplicate, skipped, mixed-generation, and dimensionless pages', ()
 });
 
 test('delegates mounted reader operations and publishes page changes through a fake adapter', () => {
-  const manifest = createPageManifest({ generationId: 'generation-1', pages: [page(1), page(2)] });
+  const manifest = createPageManifest({ generationId: 'generation-1', pageCount: 2, pages: [page(1), page(2)] });
   const calls: string[] = [];
   let onPageChanged = (_pageNumber: number) => {};
   const renderer: ReaderRenderer = {
@@ -109,7 +112,7 @@ test('uses the explicit PDF fallback without mounting a renderer when no manifes
 });
 
 test('destroys a mounted renderer when the session switches to the PDF fallback', () => {
-  const manifest = createPageManifest({ generationId: 'generation-1', pages: [page(1)] });
+  const manifest = createPageManifest({ generationId: 'generation-1', pageCount: 1, pages: [page(1)] });
   const calls: string[] = [];
   const renderer: ReaderRenderer = {
     mount: () => calls.push('mount'),
@@ -126,4 +129,51 @@ test('destroys a mounted renderer when the session switches to the PDF fallback'
 
   assert.deepEqual(calls, ['mount', 'destroy']);
   assert.equal(session.getState().status, 'fallback');
+});
+
+test('falls back instead of mounting an incomplete generation at the session boundary', () => {
+  const calls: string[] = [];
+  const renderer: ReaderRenderer = {
+    mount: () => calls.push('mount'),
+    next: () => calls.push('next'),
+    previous: () => calls.push('previous'),
+    goTo: () => calls.push('go-to'),
+    destroy: () => calls.push('destroy'),
+  };
+  const session = createReaderSession({
+    manifest: { generationId: 'generation-1', pageCount: 2, pages: [page(1)] },
+    fallback: { url: '/publication.pdf', label: 'Open PDF' },
+  }, renderer);
+
+  session.mount({});
+
+  assert.deepEqual(calls, []);
+  const state = session.getState();
+  assert.equal(state.status, 'fallback');
+  assert.equal(state.reason, 'page-generation-unavailable');
+});
+
+test('switches to the PDF fallback when renderer initialization fails', () => {
+  const calls: string[] = [];
+  const renderer: ReaderRenderer = {
+    mount: () => {
+      calls.push('mount');
+      throw new Error('renderer failed');
+    },
+    next: () => calls.push('next'),
+    previous: () => calls.push('previous'),
+    goTo: () => calls.push('go-to'),
+    destroy: () => calls.push('destroy'),
+  };
+  const manifest = createPageManifest({ generationId: 'generation-1', pageCount: 1, pages: [page(1)] });
+  const session = createReaderSession({ manifest, fallback: { url: '/publication.pdf', label: 'Open PDF' } }, renderer);
+
+  session.mount({});
+
+  assert.deepEqual(calls, ['mount', 'destroy']);
+  assert.deepEqual(session.getState(), {
+    status: 'fallback',
+    fallback: { url: '/publication.pdf', label: 'Open PDF' },
+    reason: 'reader-failure',
+  });
 });

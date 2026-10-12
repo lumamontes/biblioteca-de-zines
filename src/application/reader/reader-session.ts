@@ -1,48 +1,14 @@
-import type { ReaderPageManifest } from '../../domain/reader/page-manifest';
-
-export type ReaderRenderTarget = unknown;
-
-export type ReaderFallback = {
-  url: string;
-  label: string;
-};
-
-export type ReaderReadyState = {
-  status: 'ready';
-  manifest: ReaderPageManifest;
-  currentPage: number;
-};
-
-export type ReaderFallbackState = {
-  status: 'fallback';
-  fallback: ReaderFallback;
-  reason: 'page-generation-unavailable' | 'reader-failure' | 'user-selected';
-};
-
-export type ReaderSessionState = ReaderReadyState | ReaderFallbackState;
-
-export type ReaderRenderer = {
-  mount: (
-    target: ReaderRenderTarget,
-    manifest: ReaderPageManifest,
-    onPageChanged: (pageNumber: number) => void,
-  ) => void;
-  next: () => void;
-  previous: () => void;
-  goTo: (pageNumber: number) => void;
-  destroy: () => void;
-};
-
-export type ReaderSession = {
-  getState: () => ReaderSessionState;
-  subscribe: (listener: (state: ReaderSessionState) => void) => () => void;
-  mount: (target: ReaderRenderTarget) => void;
-  next: () => void;
-  previous: () => void;
-  goTo: (pageNumber: number) => void;
-  useFallback: (reason?: ReaderFallbackState['reason']) => void;
-  destroy: () => void;
-};
+import { createPageManifest } from '../../domain/reader/page-manifest';
+import type { ReaderPageManifest } from '../../domain/reader/page-manifest-types';
+import type {
+  ReaderFallback,
+  ReaderFallbackState,
+  ReaderRenderer,
+  ReaderRenderTarget,
+  ReaderSession,
+  ReaderSessionState,
+} from './reader-contracts';
+export type { ReaderFallback, ReaderFallbackState, ReaderRenderer, ReaderRenderTarget, ReaderSession, ReaderSessionState } from './reader-contracts';
 
 type ReaderSessionInput = {
   manifest?: ReaderPageManifest;
@@ -50,8 +16,14 @@ type ReaderSessionInput = {
 };
 
 export function createReaderSession(input: ReaderSessionInput, renderer: ReaderRenderer): ReaderSession {
-  let state: ReaderSessionState = input.manifest
-    ? { status: 'ready', manifest: input.manifest, currentPage: input.manifest.pages[0].pageNumber }
+  let manifest: ReaderPageManifest | undefined;
+  try {
+    if (input.manifest) manifest = createPageManifest(input.manifest);
+  } catch {
+    manifest = undefined;
+  }
+  let state: ReaderSessionState = manifest
+    ? { status: 'ready', manifest, currentPage: manifest.pages[0].pageNumber }
     : { status: 'fallback', fallback: input.fallback, reason: 'page-generation-unavailable' };
   let mounted = false;
   let destroyed = false;
@@ -69,6 +41,25 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
     publish({ ...state, currentPage: pageNumber });
   };
 
+  const useFallback = (reason: ReaderFallbackState['reason'] = 'user-selected') => {
+    if (destroyed || state.status === 'fallback') return;
+    try {
+      if (mounted) renderer.destroy();
+    } finally {
+      mounted = false;
+      publish({ status: 'fallback', fallback: input.fallback, reason });
+    }
+  };
+
+  const runRenderer = (operation: () => void) => {
+    if (!mounted || state.status !== 'ready') return;
+    try {
+      operation();
+    } catch {
+      useFallback('reader-failure');
+    }
+  };
+
   return {
     getState: () => state,
     subscribe: (listener) => {
@@ -77,24 +68,17 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
     },
     mount: (target) => {
       if (destroyed || mounted || state.status !== 'ready') return;
-      renderer.mount(target, state.manifest, onPageChanged);
       mounted = true;
+      try {
+        renderer.mount(target, state.manifest, onPageChanged);
+      } catch {
+        useFallback('reader-failure');
+      }
     },
-    next: () => {
-      if (mounted && state.status === 'ready') renderer.next();
-    },
-    previous: () => {
-      if (mounted && state.status === 'ready') renderer.previous();
-    },
-    goTo: (pageNumber) => {
-      if (mounted && state.status === 'ready') renderer.goTo(pageNumber);
-    },
-    useFallback: (reason = 'user-selected') => {
-      if (destroyed || state.status === 'fallback') return;
-      if (mounted) renderer.destroy();
-      mounted = false;
-      publish({ status: 'fallback', fallback: input.fallback, reason });
-    },
+    next: () => runRenderer(() => renderer.next()),
+    previous: () => runRenderer(() => renderer.previous()),
+    goTo: (pageNumber) => runRenderer(() => renderer.goTo(pageNumber)),
+    useFallback,
     destroy: () => {
       if (destroyed) return;
       if (mounted) renderer.destroy();

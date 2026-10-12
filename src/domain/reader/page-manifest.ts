@@ -1,25 +1,5 @@
-export type ReaderPageImage = {
-  generationId: string;
-  pageNumber: number;
-  imageUrl: string;
-  width: number;
-  height: number;
-};
-
-export type ReaderPageManifest = {
-  generationId: string;
-  pages: readonly ReaderPageImage[];
-};
-
-export type PageManifestIssue =
-  | 'empty'
-  | 'invalid-generation'
-  | 'invalid-page-number'
-  | 'duplicate-page-number'
-  | 'page-sequence'
-  | 'mixed-generation'
-  | 'invalid-url'
-  | 'invalid-dimensions';
+import type { PageManifestIssue, ReaderPageManifest } from './page-manifest-types';
+export type { PageManifestIssue, ReaderPageImage, ReaderPageManifest } from './page-manifest-types';
 
 export class InvalidPageManifestError extends Error {
   readonly issues: readonly PageManifestIssue[];
@@ -34,7 +14,9 @@ export class InvalidPageManifestError extends Error {
 export function createPageManifest(input: ReaderPageManifest): ReaderPageManifest {
   const issues = new Set<PageManifestIssue>();
   if (!input.generationId.trim()) issues.add('invalid-generation');
+  if (!Number.isInteger(input.pageCount) || input.pageCount < 1) issues.add('invalid-page-count');
   if (input.pages.length === 0) issues.add('empty');
+  if (input.pages.length !== input.pageCount) issues.add('incomplete-generation');
 
   const pageNumbers = new Set<number>();
   input.pages.forEach((page, index) => {

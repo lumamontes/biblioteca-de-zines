@@ -6,10 +6,8 @@ export type {
   PageManifestIssue,
   ReaderPageImage,
   ReaderPageManifest,
-} from '../../domain/reader/page-manifest';
-export {
-  createReaderSession,
-} from './reader-session';
+} from '../../domain/reader/page-manifest-types';
+export { createReaderSession } from './reader-session';
 export type {
   ReaderFallback,
   ReaderFallbackState,
@@ -18,4 +16,4 @@ export type {
   ReaderRenderer,
   ReaderSession,
   ReaderSessionState,
-} from './reader-session';
+} from './reader-contracts';
