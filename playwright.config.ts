@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const playwrightPort = process.env.PLAYWRIGHT_PORT ?? '4175';
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -18,10 +20,16 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://127.0.0.1:3000',
+    baseURL: `http://127.0.0.1:${playwrightPort}`,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+  },
+
+  webServer: {
+    command: `pnpm exec next dev --turbopack --port ${playwrightPort}`,
+    url: `http://127.0.0.1:${playwrightPort}`,
+    reuseExistingServer: false,
   },
 
   projects: [

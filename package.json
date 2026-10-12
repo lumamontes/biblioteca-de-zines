@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "node --test scripts/*.test.mjs",
+    "test:e2e": "playwright test",
     "test:cover": "tsx --test scripts/cover-generation.test.ts",
-    "test:application": "tsx --test scripts/cover-generation.test.ts scripts/page-generation.test.ts scripts/page-delivery.test.ts scripts/public-reader.test.ts scripts/public-reader-api.test.ts scripts/publication-service.test.ts scripts/submission-service.test.ts scripts/processing.test.ts scripts/bookreader-adapter.test.ts scripts/reader-performance.test.ts scripts/viewer-access.test.ts scripts/viewer-cors.test.ts scripts/viewer-events.test.ts scripts/viewer-rollout.test.ts scripts/viewer-security.test.ts scripts/viewer-traffic-guard.test.ts src/application/reader/reader-contract.test.ts",
+    "test:application": "tsx --test scripts/cover-generation.test.ts scripts/page-generation.test.ts scripts/page-delivery.test.ts scripts/public-reader.test.ts scripts/public-reader-api.test.ts scripts/publication-service.test.ts scripts/submission-service.test.ts scripts/processing.test.ts scripts/bookreader-adapter.test.ts scripts/reader-performance.test.ts scripts/viewer-access.test.ts scripts/viewer-cors.test.ts scripts/viewer-events.test.ts scripts/viewer-reader-response.test.ts scripts/viewer-reader-service.test.ts scripts/viewer-rollout.test.ts scripts/viewer-security.test.ts scripts/viewer-traffic-guard.test.ts src/application/reader/reader-contract.test.ts",
     "test:inventory": "node --test scripts/archive-inventory.test.mjs",
     "archive:inventory": "node scripts/archive-inventory.mjs",
     "reading:derivative-spike": "node scripts/reading-derivative-spike.mjs",
@@ -22,7 +23,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1130.0",
     "@hookform/resolvers": "3.3.4",
-    "@internetarchive/bookreader": "5.0.0-87",
     "@mailchimp/mailchimp_marketing": "^3.0.80",
     "@napi-rs/canvas": "^1.0.11",
     "@notion-render/bookmark-plugin": "^0.0.2",

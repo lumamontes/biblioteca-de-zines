@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { serializePublicReaderResult } from '@/application/reader/public-reader-api';
-import {
-  createViewerRolloutConfig,
-} from '@/application/reader/viewer-rollout';
-import { getPublicReader } from '@/composition/server/public-reader';
+import { createViewerRolloutConfig } from '@/application/reader/viewer-rollout';
+import { getViewerReader } from '@/composition/server/public-reader';
+import { createViewerReaderHttpResponse } from '@/app/api/public-reader/viewer-reader-response';
 import { getViewerTrafficGuard } from '@/composition/server/viewer-traffic';
 import { createReaderResponseHeaders } from '@/infrastructure/storage/cache-policy';
 import { createViewerPreflightHeaders } from '@/application/reader/viewer-cors';
-import { resolveViewerAccess } from '@/application/reader/viewer-access';
 
 export async function GET(
   request: NextRequest,
@@ -25,20 +22,10 @@ export async function GET(
     return response({ error: 'Too many requests' }, 429, origin, rollout.viewerOrigin, traffic.remaining);
   }
 
-  const reader = await getPublicReader(slug);
-  if (!reader) {
-    report('not-found', slug);
-    return response({ error: 'Publication not found' }, 404, origin, rollout.viewerOrigin, traffic.remaining);
-  }
-
-  const access = resolveViewerAccess(reader, slug, rollout, surface, betaToken);
-  if (!access.allowed) {
-    report('unavailable', access.canonicalSlug);
-    return response({ error: 'Reader unavailable' }, 404, origin, rollout.viewerOrigin, traffic.remaining);
-  }
-
-  report(reader.status, slug);
-  return response(serializePublicReaderResult(reader), 200, origin, rollout.viewerOrigin, traffic.remaining);
+  const result = await getViewerReader(slug, rollout, surface, betaToken);
+  report(result.status === 'available' ? result.reader.status : result.status, slug);
+  const http = createViewerReaderHttpResponse(result);
+  return response(http.body, http.status, origin, rollout.viewerOrigin, traffic.remaining);
 }
 
 export async function OPTIONS(request: NextRequest) {

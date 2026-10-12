@@ -14,9 +14,6 @@ importers:
       '@hookform/resolvers':
         specifier: 3.3.4
         version: 3.3.4(react-hook-form@7.60.0(react@19.0.0))
-      '@internetarchive/bookreader':
-        specifier: 5.0.0-87
-        version: 5.0.0-87
       '@mailchimp/mailchimp_marketing':
         specifier: ^3.0.80
         version: 3.0.80
@@ -692,102 +689,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@internetarchive/bookreader@5.0.0-87':
-    resolution: {integrity: sha512-iFGhrbiDlvMHq50BOZm2b8wGDVd7fjz3SndXqf0bgEzjcg56wQ1ll4m/xAfbpBPaza4A7fFQFiGT1DA290iF7g==}
-
-  '@internetarchive/field-parsers@0.1.4':
-    resolution: {integrity: sha512-J5nhMsIU91eXnfoApa6SE0PffPbwK1Cd3YTLX/HjgayzMbXVkQvfebfVKSaoPmzHRRttbtY3Sg9FjviCwBq6qg==}
-
-  '@internetarchive/field-parsers@1.2.1':
-    resolution: {integrity: sha512-4Dx1EBuiAbmYgBPwXFyJdUE+DV9VwwY7kx6qoEGfmRBNjCjgf+hS8Rdoe0GRVc9/6IqrKUJJPRZKMF7vc2G1XQ==}
-
-  '@internetarchive/ia-activity-indicator@0.0.4':
-    resolution: {integrity: sha512-nJFs3uAnPyDLqtkEVV4vMD1dli+eOyovd5rY/un9nOahu2elTHOHrIfNH0YvBkLXR7C9GVCeI9H8BD8BXq+rhg==}
-
-  '@internetarchive/ia-activity-indicator@1.0.0':
-    resolution: {integrity: sha512-vBwWGDBb/vzB+jxwLFeOjzmwXWD+UjAqvQFTszwQ31hEMBBY0U+jgSgMDznt/3pb1e8ZcqtzsHRTvpKkzhoZsg==}
-
-  '@internetarchive/ia-item-navigator@2.3.1':
-    resolution: {integrity: sha512-Z1LCBCbKwkWIkZRdCRu+f3tC1rRMm4eb9bSjBmpX1UheQuMdd6Q6Z53k3Me1/QFr2JoNVINt9kyQ/uyt/c1v3Q==}
-
-  '@internetarchive/iaux-item-metadata@1.5.0':
-    resolution: {integrity: sha512-p1wK181a2qrHsSaL+yc6WG3JNbNlD+8g3wFKIIKzbT9ipfmsYnqjOlc8JlQT5OcXXMq4EYYCw21Agi//n9gaTw==}
-
-  '@internetarchive/icon-bookmark@1.4.1':
-    resolution: {integrity: sha512-ExWqSsAyfP6IzxqD1zg7HFiUECK1eElHJIXTQ2b0mNtkk5vEsSBphc16XQWxnz4hLHQlq69wdEce17PAEEFwgQ==}
-
-  '@internetarchive/icon-close@1.4.1':
-    resolution: {integrity: sha512-nN1rGfScGssGFpfEew4azsrsMyUJtkDWqUDlckJi31PtyQnbZqUmZ07UO3Aw+wZIo3cU1MHxb5VxDy3Rmr8QGA==}
-
-  '@internetarchive/icon-collapse-sidebar@1.4.1':
-    resolution: {integrity: sha512-bh+jEPmQ6VIsfp+oZ/Dv1KUoU7r7hm+gxGY4HOW2k+/XTknycGHLIjKg4LNAedOdFkbcYRWtVogskX5pj5qfcA==}
-
-  '@internetarchive/icon-dl@1.4.1':
-    resolution: {integrity: sha512-oumFvJE1FPpe0Aa4kaIyVlgYQDG9xH190vfm1Tc116RP1YAo7iat6BC3m6sI0yPtdKKlxVPIVjZVOBYe1C6ifQ==}
-
-  '@internetarchive/icon-edit-pencil@1.4.1':
-    resolution: {integrity: sha512-9I8VQ5r1ATutAycQWzFy4uAJVbZmlQwtFVL8t/sRuZyIQPS1A7AX5LswnJ2Aozsy5E961cJZJen5ZPxTMycFTg==}
-
-  '@internetarchive/icon-ellipses@1.4.1':
-    resolution: {integrity: sha512-5ptRqmg8wUbuU7tlEWnfwHs+lDNk9E6xhFW1KXkwUcm9CMJNnqel92dj8J12WXPBFnmSYCK7arLCXG4bMOC8dA==}
-
-  '@internetarchive/icon-email@1.4.1':
-    resolution: {integrity: sha512-1kn/CSyhQdKpI6s/F7C+ayWOSj0ZVUtdG+aeMnE08/IY8AJs8qpDYK9dYGOJyKD2HpvNw8anrNs2rMN9dAuFJg==}
-
-  '@internetarchive/icon-facebook@1.4.1':
-    resolution: {integrity: sha512-guyLQ9Ee1/vOlB1x7lOfHa36oEmD3AV+yA1eSFAcHhaqlRxFAxmiKfGtzpkuIDAJmrek6L8YRJfQ89PM5QoJRQ==}
-
-  '@internetarchive/icon-ia-logo@1.4.1':
-    resolution: {integrity: sha512-fq52nj/8VW9A2AU/50ZmYJZMZwkL+6MQWjEIrG3qFvd9ADy9uENSAxuWdBl26Mt226rPs7Fs1LMilnEc7DY6ng==}
-
-  '@internetarchive/icon-link@1.4.1':
-    resolution: {integrity: sha512-MCo5I57ChAl9+36kXQk5twL2juXLJa0VBpuLuu0Tro/r4AQpj1+Q9aubsgXU8F0NTFn+sBvlnjdyhLFWNcZa9A==}
-
-  '@internetarchive/icon-magnify-minus@1.4.1':
-    resolution: {integrity: sha512-tZysWN5srctIwiGu90Lwv588CYlUfK/9VSaeDrDxScnWHFxU+z7ENg98DVujC3N3tKWAwRSGlkRqRAAXZn5+CA==}
-
-  '@internetarchive/icon-magnify-plus@1.4.1':
-    resolution: {integrity: sha512-8m3CfOUe28RKHpsOUSkjOc8b8DC+tBx/f7Z/Exd0f39soYfJwsh/9pcs5Tz3qpKyaN5E5e6/xFTjtaTebxslXw==}
-
-  '@internetarchive/icon-pinterest@1.4.1':
-    resolution: {integrity: sha512-T8izdi1BRs8AqAGgFWxp8T8IlPn2GoMt4v9qxv0gTPBaUlrafUzjU63MvqbDjUM7sF6IkUcntKp/UKbkzjOXLg==}
-
-  '@internetarchive/icon-search@1.4.1':
-    resolution: {integrity: sha512-vCjbgij4awtbBCQUxhcGPZBfD7d847tJDm6E1fMSKwMEVxQmlBkLIlStF6qB7TX8mBmIYMQXt3fQiIlukj2xfg==}
-
-  '@internetarchive/icon-share@1.4.1':
-    resolution: {integrity: sha512-IWJFmjR82cUSTcPRTOe2688CBcQl/bs+dCjwZdLyjmOzMsQylFNTGEWpE69k4w4pxU6JJMRmHXrxDpRhceFQOw==}
-
-  '@internetarchive/icon-toc@1.4.1':
-    resolution: {integrity: sha512-w86FgEFQ67zN6qmw36jCAT8wkW2dMkILJzxFgkN2bT3QvQNognV9lW7ftbYwOiCTaFa5W2M8YfLkcAWDWNIoEg==}
-
-  '@internetarchive/icon-tumblr@1.4.1':
-    resolution: {integrity: sha512-G6I2OswviJASDfn/7IzfKEY+ykGMO/nFw6dtIYIdxP8VazQZluyDD2ED2hIwyVAlZ3XmPe3MNrtRkwqX0R69mA==}
-
-  '@internetarchive/icon-twitter@1.4.1':
-    resolution: {integrity: sha512-74tpsB+VS42S5TRdH5Q92dMIwcdealrrIqPzvjSfokMV1ZG+hOocpafg2xLnAAlkk0FRuf55TUZk5CZT7G4pfQ==}
-
-  '@internetarchive/icon-user@1.4.1':
-    resolution: {integrity: sha512-xRlpX954+lLKjC++A+jpIutptHCmVMwLZI/WqOoAQoKfnCNKKvJ6Wcdq4bM/qUDt44Oj2VgP/gM6hSdWyljzEA==}
-
-  '@internetarchive/icon-visual-adjustment@1.4.1':
-    resolution: {integrity: sha512-xqX1LSpEJfjDScTtiRz92ZPzM0LIC1MTPNk12nLBQXAeudrOk4gq2+od8vOI50y3RmrM/Fn7qP2KTB/1fUWSBg==}
-
-  '@internetarchive/metadata-service@1.1.1':
-    resolution: {integrity: sha512-76Jr4kSkTwZFPCQJVkYGf9vsFZw4JuxIZKFiZdavEBt2mKoLw0bkX6LQBJ31LxJfy6fZWUjAGcK9D9AjIwhZ6A==}
-
-  '@internetarchive/modal-manager@0.2.12':
-    resolution: {integrity: sha512-9n6fx8kz0TSUCSroemEzznuNtMiTchfVzXkbvueTRLOjNXFMePUl5dmQ376KRcfJZSCBdbMKIgsT383C9I95Tw==}
-
-  '@internetarchive/modal-manager@2.0.6':
-    resolution: {integrity: sha512-PDEXz005tgjhKxrJLnd1sn8wn3DceEQqDluDhcn8+gxxhFKX714jyicKlbgvHzQOLtJYTdJjnNdmiyziF7ZIVA==}
-
-  '@internetarchive/result-type@0.0.1':
-    resolution: {integrity: sha512-sWahff5oP1xAK1CwAu1/5GTG2RXsdx/sQKn4SSOWH0r0vU2QoX9kAom/jSXeBsmgK0IjTc+9Ty9407SMORi+nQ==}
-
-  '@internetarchive/shared-resize-observer@0.2.0':
-    resolution: {integrity: sha512-E5Jh6rX03usPkihB/lnGpoL3qedE84NLRHxuAEGrlwC0zyQ7xTr6NNQWwKBDzG1OBcCrUJXIWaQuJdjqo+og1Q==}
-
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
@@ -809,12 +710,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
-
-  '@lit-labs/ssr-dom-shim@1.6.0':
-    resolution: {integrity: sha512-VHb0ALPMTlgKjM6yIxxoQNnpKyUKLD04VzeQdsiXkMqkvYlAHxq9glGLmgbb889/1GsohSOAjvQYoiBppXFqrQ==}
-
-  '@lit/reactive-element@1.6.3':
-    resolution: {integrity: sha512-QuTgnG52Poic7uM1AN5yJ09QMe0O28e10XzSvWDz02TJiiKee4stsiownEIadWm8nYzyDAyT+gKzUoZmiWQtsQ==}
 
   '@mailchimp/mailchimp_marketing@3.0.80':
     resolution: {integrity: sha512-Cgz0xPb+1DUjmrl5whAsmqfAChBko+Wf4/PLQE4RvwfPlcq2agfHr1QFiXEhZ8e+GQwQ3hZQn9iLGXwIXwxUCg==}
@@ -1103,9 +998,6 @@ packages:
 
   '@types/react@19.0.7':
     resolution: {integrity: sha512-MoFsEJKkAtZCrC1r6CM8U22GzhG7u2Wir8ons/aCKH6MBdD1ibV24zOSSkdZVUKqN5i396zG5VKLYZ3yaUZdLA==}
-
-  '@types/trusted-types@2.0.7':
-    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
   '@types/ws@8.5.13':
     resolution: {integrity: sha512-osM/gWBTPKgHV8XkTunnegTRIsvF6owmf5w+JtAfOw472dptdm0dlGv4xCt6GwQRcC2XVOvvRE/0bAoQcL2QkA==}
@@ -2053,18 +1945,6 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  lit-element@3.3.3:
-    resolution: {integrity: sha512-XbeRxmTHubXENkV4h8RIPyr8lXc+Ff28rkcQzw3G6up2xg5E8Zu1IgOWIwBLEQsu3cOVFqdYwiVi0hv0SlpqUA==}
-
-  lit-html@1.4.1:
-    resolution: {integrity: sha512-B9btcSgPYb1q4oSOb/PrOT6Z/H+r6xuNzfH4lFli/AWhYwdtrgQkQWBbIc6mdnf6E2IL3gDXdkkqNktpU0OZQA==}
-
-  lit-html@2.8.0:
-    resolution: {integrity: sha512-o9t+MQM3P4y7M7yNzqAyjp7z+mQGa4NS4CxiyLqFPyFWyc4O+nodLrkrxSaCTrla6M5YOLaT3RpbbqjszB5g3Q==}
-
-  lit@2.8.0:
-    resolution: {integrity: sha512-4Sc3OFX9QHOJaHbmTMk28SYgVxLN3ePDjg7hofEft2zWlehFL3LiAuapWc4U/kYwMYJSh2hTCPZ6/LIC7ii0MA==}
-
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
@@ -2646,10 +2526,6 @@ packages:
   thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
 
-  throttle-debounce@5.0.2:
-    resolution: {integrity: sha512-B71/4oyj61iNH0KeCamLuE2rmKuTO5byTOSVwECM5FA7TiAiAW+UqTKZ9ERueC4qvgSttUhdmq1mXC3kJqGX7A==}
-    engines: {node: '>=12.22'}
-
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
@@ -2696,9 +2572,6 @@ packages:
   typed-array-length@1.0.7:
     resolution: {integrity: sha512-3KS2b+kL7fsuk/eJZ7EQdnEmQoaho/r6KUef7hxvltNA5DR8NAUM+8wJMbJyZ4G9/7i3v5zPBIMN5aybAh2/Jg==}
     engines: {node: '>= 0.4'}
-
-  typescript-memoize@1.1.1:
-    resolution: {integrity: sha512-GQ90TcKpIH4XxYTI2F98yEQYZgjNMOGPpOgdjIBhaLaWji5HPWlRnZ4AeA1hfBxtY7bCGDJsqDDHk/KaHOl5bA==}
 
   typescript@5.7.3:
     resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
@@ -3290,164 +3163,6 @@ snapshots:
   '@img/sharp-win32-x64@0.35.4':
     optional: true
 
-  '@internetarchive/bookreader@5.0.0-87':
-    dependencies:
-      '@internetarchive/ia-activity-indicator': 0.0.4
-      '@internetarchive/ia-item-navigator': 2.3.1
-      '@internetarchive/icon-bookmark': 1.4.1
-      '@internetarchive/icon-dl': 1.4.1
-      '@internetarchive/icon-edit-pencil': 1.4.1
-      '@internetarchive/icon-magnify-minus': 1.4.1
-      '@internetarchive/icon-magnify-plus': 1.4.1
-      '@internetarchive/icon-search': 1.4.1
-      '@internetarchive/icon-toc': 1.4.1
-      '@internetarchive/icon-visual-adjustment': 1.4.1
-      '@internetarchive/modal-manager': 0.2.12
-      '@internetarchive/shared-resize-observer': 0.2.0
-      lit: 2.8.0
-
-  '@internetarchive/field-parsers@0.1.4': {}
-
-  '@internetarchive/field-parsers@1.2.1': {}
-
-  '@internetarchive/ia-activity-indicator@0.0.4':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/ia-activity-indicator@1.0.0':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/ia-item-navigator@2.3.1':
-    dependencies:
-      '@internetarchive/icon-collapse-sidebar': 1.4.1
-      '@internetarchive/icon-ellipses': 1.4.1
-      '@internetarchive/icon-email': 1.4.1
-      '@internetarchive/icon-facebook': 1.4.1
-      '@internetarchive/icon-link': 1.4.1
-      '@internetarchive/icon-pinterest': 1.4.1
-      '@internetarchive/icon-share': 1.4.1
-      '@internetarchive/icon-tumblr': 1.4.1
-      '@internetarchive/icon-twitter': 1.4.1
-      '@internetarchive/icon-visual-adjustment': 1.4.1
-      '@internetarchive/metadata-service': 1.1.1
-      '@internetarchive/modal-manager': 2.0.6
-      '@internetarchive/shared-resize-observer': 0.2.0
-      lit: 2.8.0
-
-  '@internetarchive/iaux-item-metadata@1.5.0':
-    dependencies:
-      '@internetarchive/field-parsers': 1.2.1
-      typescript-memoize: 1.1.1
-
-  '@internetarchive/icon-bookmark@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-close@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-collapse-sidebar@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-dl@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-edit-pencil@1.4.1':
-    dependencies:
-      lit-html: 1.4.1
-
-  '@internetarchive/icon-ellipses@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-email@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-facebook@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-ia-logo@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-link@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-magnify-minus@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-magnify-plus@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-pinterest@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-search@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-share@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-toc@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-tumblr@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-twitter@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-user@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/icon-visual-adjustment@1.4.1':
-    dependencies:
-      lit: 2.8.0
-
-  '@internetarchive/metadata-service@1.1.1':
-    dependencies:
-      '@internetarchive/field-parsers': 0.1.4
-      '@internetarchive/iaux-item-metadata': 1.5.0
-      '@internetarchive/result-type': 0.0.1
-      typescript-memoize: 1.1.1
-
-  '@internetarchive/modal-manager@0.2.12':
-    dependencies:
-      '@internetarchive/ia-activity-indicator': 0.0.4
-      '@internetarchive/icon-close': 1.4.1
-      '@internetarchive/icon-ia-logo': 1.4.1
-      '@internetarchive/icon-user': 1.4.1
-      lit: 2.8.0
-      throttle-debounce: 5.0.2
-
-  '@internetarchive/modal-manager@2.0.6':
-    dependencies:
-      '@internetarchive/ia-activity-indicator': 1.0.0
-      '@internetarchive/icon-close': 1.4.1
-      '@internetarchive/icon-user': 1.4.1
-      lit: 2.8.0
-      throttle-debounce: 5.0.2
-
-  '@internetarchive/result-type@0.0.1': {}
-
-  '@internetarchive/shared-resize-observer@0.2.0': {}
-
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -3473,12 +3188,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
-
-  '@lit-labs/ssr-dom-shim@1.6.0': {}
-
-  '@lit/reactive-element@1.6.3':
-    dependencies:
-      '@lit-labs/ssr-dom-shim': 1.6.0
 
   '@mailchimp/mailchimp_marketing@3.0.80':
     dependencies:
@@ -3746,8 +3455,6 @@ snapshots:
   '@types/react@19.0.7':
     dependencies:
       csstype: 3.1.3
-
-  '@types/trusted-types@2.0.7': {}
 
   '@types/ws@8.5.13':
     dependencies:
@@ -4920,24 +4627,6 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
-  lit-element@3.3.3:
-    dependencies:
-      '@lit-labs/ssr-dom-shim': 1.6.0
-      '@lit/reactive-element': 1.6.3
-      lit-html: 2.8.0
-
-  lit-html@1.4.1: {}
-
-  lit-html@2.8.0:
-    dependencies:
-      '@types/trusted-types': 2.0.7
-
-  lit@2.8.0:
-    dependencies:
-      '@lit/reactive-element': 1.6.3
-      lit-element: 3.3.3
-      lit-html: 2.8.0
-
   locate-path@6.0.0:
     dependencies:
       p-locate: 5.0.0
@@ -5622,8 +5311,6 @@ snapshots:
     dependencies:
       any-promise: 1.3.0
 
-  throttle-debounce@5.0.2: {}
-
   to-regex-range@5.0.1:
     dependencies:
       is-number: 7.0.0
@@ -5687,8 +5374,6 @@ snapshots:
       is-typed-array: 1.1.15
       possible-typed-array-names: 1.0.0
       reflect.getprototypeof: 1.0.10
-
-  typescript-memoize@1.1.1: {}
 
   typescript@5.7.3: {}
 

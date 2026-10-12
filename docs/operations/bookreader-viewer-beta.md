@@ -4,6 +4,12 @@ The BookReader viewer is disabled unless the rollout environment explicitly enab
 
 The viewer host must route to the dedicated `/viewer/v1/:slug` entrypoint, while the public embed host/routes use `/embed/v1/:slug`. These are replaceable viewer surfaces, not new catalogue or persistence services. The core application origin remains responsible for the public-reader API.
 
+Withdrawn or otherwise inaccessible publications return an unavailable response and do not expose a PDF fallback. A PDF fallback is provided only after the public access decision succeeds.
+
+## Deployment
+
+The viewer is deployed by the same Next.js application as the catalogue; it does not require a second catalogue or backend service. Run `pnpm build` and deploy the resulting application normally, then point `viewer.biblioteca-de-zines.com.br` at that deployment. Set `NEXT_PUBLIC_READER_API_ORIGIN` to the core Biblioteca origin in the viewer deployment and set `READER_VIEWER_ORIGIN` to the viewer origin in the API deployment. The versioned viewer and embed routes remain independently replaceable within this shared deployment.
+
 ## Controls
 
 Set these environment values for a beta deployment:

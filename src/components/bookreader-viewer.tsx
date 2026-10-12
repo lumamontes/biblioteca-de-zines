@@ -84,10 +84,7 @@ export function BookReaderViewer({ apiOrigin = '', betaToken, branding = false, 
         }
       } catch {
         if (!disposed) {
-          setFallback(availableFallback ?? {
-            label: 'Abrir a publicação',
-            url: `${apiOrigin}/zines/${encodeURIComponent(slug)}`,
-          });
+          setFallback(availableFallback);
           setStatus('fallback');
           reportViewerEvent(apiOrigin, { slug, surface, type: 'fallback' });
         }
