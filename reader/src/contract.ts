@@ -5,6 +5,8 @@ export type PublicationRepresentation =
 export type ImagePage = {
   url: string;
   alt?: string;
+  width?: number;
+  height?: number;
 };
 
 /** Page images are delivery derivatives, never claims about the retained original. */
