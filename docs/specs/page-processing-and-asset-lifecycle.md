@@ -4,7 +4,7 @@ This specification defines how Biblioteca de Zines turns submitted PDF sources i
 
 ## Status
 
-The full page-generation contract is preserved for future reader work. The current operational workflow is the cover-only contract in `cover-only-generation-and-migration.md`; queue and processed-source infrastructure are shared.
+The full page-generation contract is the operational publication workflow. The cover-only contract in `cover-only-generation-and-migration.md` remains available for explicit migration and diagnostic commands; queue and processed-source infrastructure are shared.
 
 ## Scope
 

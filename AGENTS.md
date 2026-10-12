@@ -27,7 +27,7 @@ Use lightweight application-service boundaries for new work:
 
 Prefer the smallest boundary that makes a workflow readable. Do not introduce full DDD ceremony, aggregates, factories, or value objects without a concrete domain need.
 
-Current cover processing is a cover-only application workflow. Keep reusable PDF rendering primitives separate from the cover workflow so future full PDF-to-image page generation can be added without making page derivatives part of the current reader.
+Cover migration and diagnostic processing remain cover-only. The publication worker separately runs asynchronous full PDF-to-image page generation, with reusable PDF rendering primitives kept independent from both workflows.
 
 ### Reader implementation guardrails
 

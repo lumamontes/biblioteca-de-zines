@@ -158,6 +158,7 @@ async function needsPublicationProcessing(
 function needsPageProcessing(zine: PublicationRecord, pdfUrl: string): boolean {
   return Boolean(pdfUrl)
     && (zine.pdfUrl !== pdfUrl
+      || zine.processedPdfUrl !== pdfUrl
       || !zine.activePageGeneration
       || zine.activePageGeneration === 'legacy'
       || zine.importStatus !== 'completed');

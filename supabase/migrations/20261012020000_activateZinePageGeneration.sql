@@ -20,6 +20,35 @@ DECLARE
   current_zine library_zines%ROWTYPE;
   use_cover BOOLEAN;
 BEGIN
+  IF p_pages IS NULL
+    OR jsonb_typeof(p_pages) <> 'array'
+    OR jsonb_array_length(p_pages) = 0
+    OR p_generation_id = ''
+    OR EXISTS (
+      SELECT 1
+      FROM jsonb_array_elements(p_pages) AS page
+      WHERE NULLIF(page->>'page_number', '') IS NULL
+        OR NULLIF(page->>'image_url', '') IS NULL
+        OR NULLIF(page->>'width', '') IS NULL
+        OR NULLIF(page->>'height', '') IS NULL
+        OR (page->>'width')::INTEGER < 1
+        OR (page->>'height')::INTEGER < 1
+    )
+    OR (SELECT COUNT(DISTINCT (page->>'page_number')::INTEGER) FROM jsonb_array_elements(p_pages) AS page)
+       <> jsonb_array_length(p_pages)
+    OR EXISTS (
+      SELECT 1
+      FROM generate_series(1, jsonb_array_length(p_pages)) AS expected(page_number)
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM jsonb_array_elements(p_pages) AS page
+        WHERE (page->>'page_number')::INTEGER = expected.page_number
+      )
+    )
+  THEN
+    RAISE EXCEPTION 'Invalid page generation payload';
+  END IF;
+
   SELECT * INTO current_zine
   FROM library_zines
   WHERE id = p_zine_id
@@ -60,5 +89,8 @@ BEGIN
   RETURN QUERY SELECT TRUE, use_cover, current_zine.active_page_generation;
 END;
 $$;
+
+REVOKE ALL ON FUNCTION public.activate_zine_page_generation(INTEGER, TEXT, TEXT, TEXT, JSONB) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.activate_zine_page_generation(INTEGER, TEXT, TEXT, TEXT, JSONB) TO service_role;
 
 COMMIT;
