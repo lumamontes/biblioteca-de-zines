@@ -7,6 +7,7 @@ import { createCoverProcessor } from '../src/infrastructure/cover-generation/cov
 const job: ProcessingJob = {
   attemptCount: 1,
   id: 10,
+  isPublished: true,
   pdfUrl: 'https://example.com/zine.pdf',
   title: 'Test zine',
   zineId: 42,

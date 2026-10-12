@@ -217,24 +217,30 @@ export type Database = {
         Row: {
           created_at: string | null
           generation_id: string
+          height: number | null
           id: number
           image_url: string
           page_number: number
+          width: number | null
           zine_id: number
         }
         Insert: {
           created_at?: string | null
           generation_id?: string
+          height?: number | null
           id?: number
           image_url: string
           page_number: number
+          width?: number | null
           zine_id: number
         }
         Update: {
           created_at?: string | null
+          height?: number | null
           id?: number
           image_url?: string
           page_number?: number
+          width?: number | null
           zine_id?: number
         }
         Relationships: [

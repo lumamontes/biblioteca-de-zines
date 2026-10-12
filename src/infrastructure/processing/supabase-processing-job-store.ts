@@ -60,17 +60,23 @@ export function createSupabaseProcessingJobStore(
 
       const { data: zine, error: zineError } = await supabase
         .from('library_zines')
-        .select('id, title, pdf_url')
+        .select('id, title, pdf_url, is_published')
         .eq('id', claimed.zine_id)
         .single();
-      if (zineError || !zine?.pdf_url) {
-        await failJob(claimed.id, 'Published zine has no PDF URL');
+      if (zineError || !zine?.is_published || !zine.pdf_url) {
+        await failJob(
+          claimed.id,
+          !zine?.is_published
+            ? 'Processing requires an approved public publication'
+            : 'Published zine has no PDF URL',
+        );
         return null;
       }
 
       return {
         attemptCount: claimed.attempt_count,
         id: claimed.id,
+        isPublished: zine.is_published,
         pdfUrl: zine.pdf_url,
         title: zine.title,
         zineId: zine.id,

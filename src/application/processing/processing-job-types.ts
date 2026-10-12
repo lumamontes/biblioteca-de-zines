@@ -1,6 +1,7 @@
 export type ProcessingJob = {
   attemptCount: number;
   id: number;
+  isPublished: boolean;
   pdfUrl: string;
   title: string;
   zineId: number;

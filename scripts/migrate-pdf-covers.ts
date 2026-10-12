@@ -62,6 +62,7 @@ async function main(): Promise<void> {
         })({
           attemptCount: 0,
           id: zine.id,
+          isPublished: true,
           pdfUrl: zine.pdf_url,
           title: zine.title,
           zineId: zine.id,

@@ -77,6 +77,9 @@ export function createR2AssetStorage(): AssetStorage {
         deleteCoverObject(client, target, `${generationId}.${extension}`)
       )));
     },
+    deletePageGeneration(target, generationId) {
+      return deleteR2Prefix(client, `zines/${target.id}/generations/${generationId}/`);
+    },
     async deleteCover(target, coverUrl) {
       const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
       const key = coverObjectKey(process.env.NEXT_PUBLIC_R2_PUBLIC_URL, target, coverUrl);
