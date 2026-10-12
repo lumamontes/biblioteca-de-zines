@@ -4,6 +4,7 @@ import type { SourceDocument } from '@/domain/source-document';
 import type {
   PageGenerationRepository,
   PageGenerationStorage,
+  CoverRenderer,
   PageRenderer,
   StoredPage,
 } from '@/application/page-generation/page-generation-types';
@@ -15,10 +16,13 @@ export async function createPageGeneration(
   storage: PageGenerationStorage,
   target: AssetTarget,
   sourceUrl: string,
-  options: { createGenerationId?: () => string } = {},
+  options: { createCover?: CoverRenderer; createGenerationId?: () => string } = {},
 ): Promise<void> {
   const generationId = options.createGenerationId?.() ?? randomUUID();
   const pages: StoredPage[] = [];
+  let firstPage: Parameters<CoverRenderer>[0] | undefined;
+
+  if (!await repository.isProcessable(target, sourceUrl)) return;
 
   try {
     await repository.markProcessing(target);
@@ -26,22 +30,35 @@ export async function createPageGeneration(
     if (!isPdf(source)) throw new Error(`Unsupported page-generation source file type: ${source.mimeType}`);
     const renderedPageCount = await renderPages(source, async (page) => {
       validateRenderedPage(page);
+      firstPage ??= page;
       const imageUrl = await storage.uploadPage({ ...page, generationId, target });
-      pages.push({
+      const storedPage = {
         contentType: page.contentType,
         generationId,
         height: page.height,
         imageUrl,
         pageNumber: page.pageNumber,
         width: page.width,
-      });
+      };
+      if (!await storage.isPageAvailable(target, storedPage)) {
+        throw new Error(`Uploaded page ${page.pageNumber} is not available`);
+      }
+      pages.push(storedPage);
     });
 
     validateCompleteGeneration(pages, renderedPageCount);
-    const result = await repository.activate({ generationId, pages, sourceUrl, target });
+    const coverImage = firstPage && options.createCover
+      ? await options.createCover(firstPage).then((cover) => storage.uploadCover({ ...cover, generationId, target }))
+      : undefined;
+    const result = await repository.activate({ generationId, pages, sourceUrl, target, coverImage });
     if (!result.activated) {
       await discardGeneration(storage, target, generationId);
       return;
+    }
+    if (coverImage && result.coverImageUsed === false) {
+      await storage.deleteCover(target, generationId).catch((cleanupError) => {
+        console.error(`Failed to remove unused generated cover ${generationId}:`, cleanupError);
+      });
     }
     if (result.previousGenerationId) {
       await discardGeneration(storage, target, result.previousGenerationId);

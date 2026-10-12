@@ -63,6 +63,25 @@ test('failed or partial generations are marked failed and deleted', async () => 
   assert.deepEqual(events, ['processing', 'upload:1', 'failed', 'delete:generation-1']);
 });
 
+test('fails when an uploaded page is not present in storage', async () => {
+  const events: string[] = [];
+
+  await assert.rejects(() => createPageGeneration(
+    async () => ({ buffer: Buffer.from('%PDF source'), mimeType: 'application/pdf' }),
+    async (_source, onPage) => {
+      await onPage(page(1, 1200, 1800));
+      return 1;
+    },
+    createRepository(events),
+    createStorage(events, false),
+    target,
+    'https://example.com/zine.pdf',
+    { createGenerationId: () => 'generation-1' },
+  ), /not available/);
+
+  assert.deepEqual(events, ['processing', 'upload:1', 'failed', 'delete:generation-1']);
+});
+
 test('does not replace the active generation when activation loses a race', async () => {
   const events: string[] = [];
   const repository = createRepository(events, false);
@@ -102,6 +121,27 @@ test('does not process an unpublished processing job', async () => {
   }), /approved public publication/);
 });
 
+test('does not download a publication that changed or became private before processing', async () => {
+  const events: string[] = [];
+  const processor = createPageProcessor({
+    downloadSource: async () => { throw new Error('must not download'); },
+    renderPages: async () => { throw new Error('must not render'); },
+    repository: createRepository(events, true, false),
+    storage: createStorage(events),
+  });
+
+  await processor({
+    attemptCount: 1,
+    id: 10,
+    isPublished: true,
+    pdfUrl: 'https://example.com/changed.pdf',
+    title: 'Changed publication',
+    zineId: 42,
+  });
+
+  assert.deepEqual(events, []);
+});
+
 function page(pageNumber: number, width: number, height: number): RenderedPage {
   return {
     data: Buffer.from(`page-${pageNumber}`),
@@ -112,8 +152,11 @@ function page(pageNumber: number, width: number, height: number): RenderedPage {
   };
 }
 
-function createRepository(events: string[], activated = true): PageGenerationRepository {
+function createRepository(events: string[], activated = true, processable = true): PageGenerationRepository {
   return {
+    async isProcessable() {
+      return processable;
+    },
     async markProcessing() {
       events.push('processing');
     },
@@ -127,14 +170,21 @@ function createRepository(events: string[], activated = true): PageGenerationRep
   };
 }
 
-function createStorage(events: string[]): PageGenerationStorage & { uploaded: RenderedPage[] } {
+function createStorage(events: string[], available = true): PageGenerationStorage & { uploaded: RenderedPage[] } {
   const uploaded: RenderedPage[] = [];
   return {
     uploaded,
+    async deleteCover() {},
     async uploadPage(asset) {
       uploaded.push(asset);
       events.push(`upload:${asset.pageNumber}`);
       return `https://assets.example/page-${asset.pageNumber}.webp`;
+    },
+    async uploadCover() {
+      return 'https://assets.example/cover.webp';
+    },
+    async isPageAvailable() {
+      return available;
     },
     async deleteGeneration(_target, generationId) {
       events.push(`delete:${generationId}`);

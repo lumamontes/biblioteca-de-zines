@@ -13,6 +13,7 @@ export function createPageProcessor(dependencies: PageProcessorDependencies): Pr
       dependencies.storage,
       { id: job.zineId, kind: 'zine' },
       job.pdfUrl,
+      { createCover: dependencies.createCover },
     );
   };
 }

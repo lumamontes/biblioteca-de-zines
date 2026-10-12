@@ -4,7 +4,11 @@ import { createR2AssetStorage } from '@/infrastructure/storage/r2-storage-servic
 export function createR2PageGenerationStorage(): PageGenerationStorage {
   const storage = createR2AssetStorage();
   return {
-    deleteGeneration: storage.deletePageGeneration,
+    deleteCover: storage.deleteGeneratedCover,
+    deleteGeneration: storage.deleteGeneration,
+    isPageAvailable(target, page) {
+      return storage.isPageAvailable(target, page.generationId, page.pageNumber, page.imageUrl);
+    },
     uploadPage(page) {
       return storage.upload({
         contentType: page.contentType,
@@ -15,6 +19,15 @@ export function createR2PageGenerationStorage(): PageGenerationStorage {
         pageNumber: page.pageNumber,
         target: page.target,
         width: page.width,
+      });
+    },
+    uploadCover(cover) {
+      return storage.upload({
+        contentType: cover.contentType,
+        data: cover.data,
+        generationId: cover.generationId,
+        kind: 'cover',
+        target: cover.target,
       });
     },
   };

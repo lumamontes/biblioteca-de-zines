@@ -80,6 +80,13 @@ export function createR2AssetStorage(): AssetStorage {
     deletePageGeneration(target, generationId) {
       return deleteR2Prefix(client, `zines/${target.id}/generations/${generationId}/`);
     },
+    async deleteGeneratedCover(target, generationId) {
+      const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+      if (!bucketName) throw new Error('CLOUDFLARE_R2_BUCKET_NAME is not configured');
+      await Promise.all(['webp', 'png', 'jpg'].map((extension) => (
+        deleteCoverObject(client, target, `${generationId}.${extension}`)
+      )));
+    },
     async deleteCover(target, coverUrl) {
       const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
       const key = coverObjectKey(process.env.NEXT_PUBLIC_R2_PUBLIC_URL, target, coverUrl);
@@ -90,6 +97,21 @@ export function createR2AssetStorage(): AssetStorage {
       const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
       const key = coverObjectKey(process.env.NEXT_PUBLIC_R2_PUBLIC_URL, target, coverUrl);
       if (!bucketName || !key) return false;
+      try {
+        await client.send(new HeadObjectCommand({ Bucket: bucketName, Key: key }));
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    async isPageAvailable(target, generationId, pageNumber, pageUrl) {
+      const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+      const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+      if (!bucketName || !publicUrl) return false;
+      const key = ['webp', 'png', 'jpg']
+        .map((extension) => generateGenerationKey(target, generationId, 'page', extension, pageNumber))
+        .find((candidate) => `${publicUrl.replace(/\/$/, '')}/${candidate}` === pageUrl);
+      if (!key) return false;
       try {
         await client.send(new HeadObjectCommand({ Bucket: bucketName, Key: key }));
         return true;
