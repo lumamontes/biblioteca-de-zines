@@ -45,6 +45,14 @@ async function main() {
       url: plan.manifestUrl,
     },
     pages: { adjacent, first, repeat: revisit },
+    requestPlan: {
+      adjacentPageRequests: adjacent.length,
+      initialPageRequests: 1,
+      revisitPageRequests: 1,
+      derivativeBandwidthBytes: first.bytes + adjacent.reduce((total, page) => total + page.bytes, 0),
+      revisitResponseBytes: revisit.bytes,
+      revisitCacheControl: revisit.cacheControl,
+    },
   };
   const output = process.env.READER_PERFORMANCE_OUTPUT;
   if (output) await writeFile(output, `${JSON.stringify(result, null, 2)}\n`);

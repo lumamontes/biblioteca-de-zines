@@ -52,6 +52,25 @@ pnpm exec playwright test e2e/reader/viewer-isolation.spec.ts --project=chromium
 
 Use the public-reader request logs for surface, origin, status, rate-limit, and metadata-size metrics. Use storage/CDN delivery metrics and the delivery probe for derivative bandwidth; client metadata size is not a derivative bandwidth measurement.
 
+The browser/device run must be recorded as JSON using the evidence shape consumed by the release gate. The evaluator requires one record for every cohort/device pair, exactly one initial page request, no more than two adjacent-page requests, and no unexplained failures:
+
+```json
+{
+  "deployment": { "url": "https://viewer.example", "commit": "<commit>" },
+  "evidence": [],
+  "abuseReview": { "complete": false, "reference": "" },
+  "legalReview": { "complete": false, "reference": "" }
+}
+```
+
+Run the release gate after attaching the live records:
+
+```bash
+pnpm reader:beta:evaluate /path/to/reader-beta-evidence.json
+```
+
+The command exits non-zero for `pause` or `rollback`. A `rollback` decision is forced when fallback preservation is false or an abuse signal is recorded. The evaluator is deliberately separate from the request path; it cannot enable a rollout or delete page generations.
+
 ## Reliability Matrix
 
 Before expansion, exercise and attach evidence for:
@@ -99,3 +118,5 @@ Fill this section with deployment-specific evidence before requesting expansion:
 - Abuse/bandwidth review: pending
 - Legal/source-distribution review: pending
 - Final decision and approver: pending
+
+The rollout configuration must also pass the application readiness check before enabling beta. Selected-publication beta requires HTTPS and at least one explicit slug; `READER_BETA_ALLOW_ALL` remains an intentional override, not a default.

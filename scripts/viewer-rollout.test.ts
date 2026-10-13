@@ -4,6 +4,7 @@ import {
   createViewerRolloutConfig,
   createViewerUrl,
   isViewerPublicationAllowed,
+  validateViewerRolloutConfig,
 } from '../src/application/reader/viewer-rollout';
 
 test('parses disabled viewer rollout by default', () => {
@@ -71,4 +72,20 @@ test('fails closed when beta is enabled without a publication allowlist', () => 
   });
 
   assert.equal(isViewerPublicationAllowed(config, 'public-zine', 'embed'), false);
+});
+
+test('validates selected-publication rollout configuration before enabling beta', () => {
+  const config = createViewerRolloutConfig({
+    READER_BETA_ENABLED: 'true',
+    READER_VIEWER_ORIGIN: 'http://viewer.example',
+  });
+  const readiness = validateViewerRolloutConfig(config);
+  assert.equal(readiness.ready, false);
+  assert.ok(readiness.issues.includes('viewer origin must use HTTPS'));
+  assert.ok(readiness.issues.includes('selected-publication beta requires at least one beta slug'));
+});
+
+test('rejects malformed HTTPS viewer origins', () => {
+  const config = createViewerRolloutConfig({ READER_VIEWER_ORIGIN: 'https://' });
+  assert.equal(validateViewerRolloutConfig(config).ready, false);
 });

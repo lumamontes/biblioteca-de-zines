@@ -46,6 +46,7 @@ Before enabling a beta publication:
 6. Confirm a publication outside `READER_BETA_SLUGS` receives the unavailable state.
 7. If tester tokens are configured, confirm an embed without a valid token receives the unavailable state.
 8. Confirm the main application does not request BookReader assets until the viewer iframe is opened.
+9. Validate the rollout configuration through the application readiness check; do not enable selected beta with an empty slug allowlist or an HTTP viewer origin.
 
 ## Monitoring
 
@@ -74,5 +75,7 @@ Set `READER_BETA_TOKEN` when the beta requires tester-token access and `READER_P
 5. Preserve failure and bandwidth evidence for the follow-up decision.
 
 General public exposure requires performance evidence, abuse review, and legal/source-distribution review for the AGPL-3.0 Internet Archive BookReader dependency.
+
+The operational release gate is `pnpm reader:beta:evaluate <evidence.json>`. Keep its input and output with the private deployment evidence, not in the public repository. A passing gate records `expand`; incomplete evidence records `pause`, and lost fallback or an abuse signal records `rollback`.
 
 The current traffic guard is a bounded best-effort process-local safeguard. Production deployment should add a trusted-platform/shared rate limiter before broad public exposure; the in-process guard must not be treated as a distributed quota system. Metadata response size is reported separately from derivative bandwidth; use the delivery probe and storage/CDN metrics for derivative bandwidth.

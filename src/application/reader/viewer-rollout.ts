@@ -1,3 +1,7 @@
+import type { ViewerRolloutReadiness } from './viewer-rollout-types';
+
+export type { ViewerRolloutReadiness } from './viewer-rollout-types';
+
 export type ViewerRolloutConfig = {
   allowAllPublications: boolean;
   betaEnabled: boolean;
@@ -24,6 +28,23 @@ export function createViewerRolloutConfig(env: Record<string, string | undefined
       .filter(Boolean),
     viewerOrigin: env.READER_VIEWER_ORIGIN ?? 'https://viewer.biblioteca-de-zines.com.br',
   };
+}
+
+export function validateViewerRolloutConfig(config: ViewerRolloutConfig): ViewerRolloutReadiness {
+  const issues: string[] = [];
+  try {
+    const origin = new URL(config.viewerOrigin);
+    if (origin.protocol !== 'https:' || !origin.hostname) issues.push('viewer origin must use HTTPS');
+  } catch {
+    issues.push('viewer origin must use HTTPS');
+  }
+  if (config.betaEnabled && !config.allowAllPublications && config.betaSlugs.length === 0) {
+    issues.push('selected-publication beta requires at least one beta slug');
+  }
+  if (config.allowAllPublications && !config.betaEnabled) {
+    issues.push('allow-all cannot be active while the master beta gate is disabled');
+  }
+  return { issues, ready: issues.length === 0 };
 }
 
 export function isViewerPublicationAllowed(

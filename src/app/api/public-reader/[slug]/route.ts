@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createViewerRolloutConfig } from '@/application/reader/viewer-rollout';
+import { createViewerRolloutConfig, validateViewerRolloutConfig } from '@/application/reader/viewer-rollout';
 import { getViewerReader } from '@/composition/server/public-reader';
 import { createViewerReaderHttpResponse } from '@/app/api/public-reader/viewer-reader-response';
 import { getViewerTrafficGuard } from '@/composition/server/viewer-traffic';
@@ -16,6 +16,10 @@ export async function GET(
   const origin = request.headers.get('origin');
   const surface = request.nextUrl.searchParams.get('surface') === 'reader' ? 'reader' : 'embed';
   const betaToken = request.headers.get('x-reader-beta-token') ?? undefined;
+  const readiness = validateViewerRolloutConfig(rollout);
+  if (!readiness.ready) {
+    return response({ error: 'Viewer rollout is unavailable' }, 503, origin, rollout.viewerOrigin);
+  }
   const key = request.headers.get('x-real-ip') || origin || 'anonymous';
   const traffic = getViewerTrafficGuard().check(key);
 
