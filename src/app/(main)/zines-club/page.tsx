@@ -41,7 +41,7 @@ const monthlyThemes = [
     instagramLink: "https://www.instagram.com/p/DYC9hFMkQ2V/?img_index=1"
   },
   {
-    month: "Junho e Julho 2026",
+    month: "Setembro e Outubro 2026",
     theme: "Arquivo",
     status: "atual",
     instagramLink: "https://www.instagram.com/p/DdMFob5ICn-/?img_index=1"
