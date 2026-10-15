@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+**/.next/
 /out/
 
 # production
@@ -50,3 +51,5 @@ node_modules/
 # archived zine PDFs (scripts/archive-zine-pdfs.mjs) — never commit downloaded content
 /archive/
 *.pdf
+
+.turbo

@@ -1,6 +1,6 @@
 # Page Processing Runbook
 
-This runbook covers local cover migrations, queue processing, verification, and recovery. Full page derivatives are a future capability.
+This runbook covers local page-generation backfills, queue processing, verification, and recovery.
 
 ## Storage Configuration
 
@@ -33,10 +33,23 @@ Relevant migrations:
 - `20261011010000_addFormUploadPageProcessing.sql`: historical form-upload processing state and staging pages.
 - `20261012000000_removeLegacyFormUploadPages.sql`: removes the unused form-upload processing state and staging table.
 - `20261011020000_addProcessedZineSource.sql`: records the PDF URL used by the active public generation.
+- `20261012010000_addZinePageDimensions.sql`: stores the dimensions required by the reader manifest.
+- `20261012020000_activateZinePageGeneration.sql`: validates and atomically activates a complete generation.
+- `20261012030000_removeLegacyFormUploadPages.sql`: removes the superseded intake-side page staging model.
 
 Never edit an applied migration. Add a new timestamped migration for every later schema change.
 
 ## Explicit Published-Zine Processing
+
+Full page-generation backfill is dry-run by default:
+
+```bash
+pnpm migrate:pdf-pages -- --only-id <zine_id>
+pnpm migrate:pdf-pages -- --only-id <zine_id> --apply
+pnpm migrate:pdf-pages -- --apply --report /path/to/resource-report.json
+```
+
+Only published zines with a PDF and no complete active generation are candidates. Known inaccessible or invalid PDF resources from the monitor report are excluded. A failed candidate does not stop subsequent candidates, and failed partial generations are removed before the command exits non-zero.
 
 Dry run one published zine:
 
