@@ -45,6 +45,15 @@ test('translates navigation through the isolated BookReader adapter', async ({ p
   await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderEvents)).toContain('next');
 });
 
+test('forwards viewport resize events to BookReader', async ({ page }) => {
+  await mockBookReaderAssets(page);
+  await page.goto('/viewer/v1/zine');
+  await expect(page.locator('.reader__canvas')).toBeVisible();
+
+  await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+  await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderEvents)).toContain('resize');
+});
+
 test('preserves the PDF fallback when BookReader initialization fails', async ({ page }) => {
   await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.js', (route) => route.fulfill({
     contentType: 'application/javascript',
@@ -93,6 +102,7 @@ async function mockBookReaderAssets(page: import('@playwright/test').Page) {
         this.next = function() { window.__bibliotecaBookReaderEvents.push('next'); this.pageChanged?.(2); };
         this.prev = function() {};
         this.jumpToPage = function() {};
+        this.resize = function() { window.__bibliotecaBookReaderEvents.push('resize'); };
         window.__bibliotecaBookReaderInstances.push(this);
       };`,
   }));

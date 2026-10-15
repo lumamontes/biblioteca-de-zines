@@ -23,6 +23,7 @@ test('translates the manifest, navigation, page changes, and cleanup', () => {
     jumpToPage: (page) => { events.push(`jump:${page}`); },
     next: () => { events.push('next'); },
     prev: () => { events.push('prev'); },
+    resize: () => { events.push('resize'); },
     unbind: (event) => { events.push(`unbind:${event}`); },
   };
   const Factory: BookReaderFactory = class { constructor(value) { options = value as typeof options; return instance; } };

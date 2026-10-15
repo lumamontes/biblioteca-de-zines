@@ -1,6 +1,6 @@
 import type { ReaderPageManifest, ReaderRenderer } from '@biblioteca/reader-contracts';
 
-export type BookReaderInstance = { init: () => void; bind: (event: string, callback: (...args: unknown[]) => void) => void; unbind?: (event: string) => void; next: () => void; prev: () => void; jumpToPage: (page: number) => void; destroy?: () => void };
+export type BookReaderInstance = { init: () => void; bind: (event: string, callback: (...args: unknown[]) => void) => void; unbind?: (event: string) => void; next: () => void; prev: () => void; jumpToPage: (page: number) => void; resize?: () => void; destroy?: () => void };
 export type BookReaderFactory = new (options: unknown) => BookReaderInstance;
 type BookReader = BookReaderInstance;
 type Target = HTMLDivElement & { id: string };
@@ -29,6 +29,7 @@ export async function loadBookReaderRuntime(): Promise<void> {
 export function createBookReaderRenderer(factory?: BookReaderFactory): ReaderRenderer {
   let instance: BookReader | undefined;
   let target: Target | undefined;
+  let resizeHandler: (() => void) | undefined;
   return {
     mount(container, manifest, onPageChanged, onError) {
       cleanupInstance();
@@ -39,6 +40,10 @@ export function createBookReaderRenderer(factory?: BookReaderFactory): ReaderRen
       instance = new Constructor({ el: `#${target.id}`, ui: 'responsive', showToolbar: true, data: manifest.pages.map((page) => [{ pageNum: page.pageNumber, uri: page.imageUrl, width: page.width, height: page.height }]) });
       instance.bind('pageChanged', (...args) => onPageChanged(Number(args[0])));
       instance.bind('error', () => onError?.());
+      if (typeof window !== 'undefined' && instance.resize) {
+        resizeHandler = () => instance?.resize?.();
+        window.addEventListener('resize', resizeHandler);
+      }
       try { instance.init(); } catch (error) { onError?.(); cleanupInstance(); throw error; }
     },
     next: () => instance?.next(),
@@ -48,6 +53,8 @@ export function createBookReaderRenderer(factory?: BookReaderFactory): ReaderRen
   };
 
   function cleanupInstance() {
+    if (resizeHandler && typeof window !== 'undefined') window.removeEventListener('resize', resizeHandler);
+    resizeHandler = undefined;
     instance?.unbind?.('pageChanged');
     instance?.unbind?.('error');
     instance?.destroy?.();
