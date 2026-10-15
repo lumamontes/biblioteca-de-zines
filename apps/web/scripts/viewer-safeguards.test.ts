@@ -3,6 +3,8 @@ import test from 'node:test';
 import { isViewerEvent } from '@/application/reader/viewer-events';
 import { resolveViewerAccess } from '@/application/reader/viewer-access';
 import { createViewerRolloutConfig, validateViewerRolloutConfig } from '@/application/reader/viewer-rollout';
+import { createViewerPreflightHeaders } from '@/application/reader/viewer-cors';
+import { getViewerReader } from '@/application/reader/viewer-reader-service';
 import { createViewerTrafficGuard } from '@/infrastructure/reader/viewer-traffic-guard';
 import { IMMUTABLE_DERIVATIVE_CACHE_CONTROL } from '@/infrastructure/storage/cache-policy';
 import { evaluateViewerBeta, parseBetaEvaluationInput } from '@/application/reader/beta-evaluation';
@@ -18,6 +20,42 @@ test('uses the canonical publication slug and keeps surfaces independently gated
   const config = createViewerRolloutConfig({ READER_BETA_ENABLED: 'true', READER_BETA_SLUGS: 'canonical-zine', READER_EMBED_ENABLED: 'true' });
   assert.equal(resolveViewerAccess(ready, 'old-zine', config, 'embed').allowed, true);
   assert.equal(resolveViewerAccess(ready, 'old-zine', config, 'reader').allowed, false);
+});
+
+test('returns only the canonical, access-filtered reader response for an alias', async () => {
+  const config = createViewerRolloutConfig({
+    READER_BETA_ALLOW_ALL: 'false',
+    READER_BETA_ENABLED: 'true',
+    READER_BETA_SLUGS: 'canonical-zine',
+    READER_VIEWER_ENABLED: 'true',
+  });
+  const result = await getViewerReader({
+    findPublicBySlug: async () => ({
+      activePageGeneration: 'generation-1',
+      id: 42,
+      importStatus: 'completed',
+      pages: [{ generationId: 'generation-1', pageNumber: 1, imageUrl: '/page.webp', width: 100, height: 150 }],
+      pdfUrl: '/zine.pdf',
+      slug: 'canonical-zine',
+      title: 'Canonical Zine',
+      totalPages: 1,
+    }),
+  }, 'old-zine', config, 'reader');
+
+  assert.equal(result.status, 'available');
+  if (result.status === 'available') {
+    assert.equal(result.reader.status, 'ready');
+    assert.equal(result.reader.publication.slug, 'canonical-zine');
+    assert.deepEqual(Object.keys(result.reader).sort(), ['fallback', 'manifest', 'publication', 'status']);
+  }
+});
+
+test('only the configured viewer origin receives CORS permission', () => {
+  const allowed = createViewerPreflightHeaders('https://viewer.example.test', 'https://viewer.example.test');
+  const denied = createViewerPreflightHeaders('https://attacker.example.test', 'https://viewer.example.test');
+  assert.equal(allowed.get('Access-Control-Allow-Origin'), 'https://viewer.example.test');
+  assert.equal(denied.has('Access-Control-Allow-Origin'), false);
+  assert.equal(allowed.get('Access-Control-Allow-Headers'), 'Content-Type, X-Reader-Beta-Token');
 });
 
 test('rejects unsafe rollout configuration and preserves immutable derivative policy', () => {
