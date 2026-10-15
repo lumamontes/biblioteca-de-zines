@@ -8,7 +8,8 @@ import { siteConfig } from "@/app/config/site";
 import Link from "next/link";
 import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/structured-data";
 import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
-import { getPublicReader } from "@/composition/server/public-reader";
+import { createViewerRolloutConfig } from "@/application/reader/viewer-rollout";
+import { getViewerReader } from "@/composition/server/public-reader";
 import { createPublicViewerUrl } from "@/application/reader/viewer-link";
 
 export async function generateMetadata({
@@ -52,8 +53,9 @@ export default async function ZinePreview({
   }
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
-  const reader = await getPublicReader(slug).catch(() => null);
-  const viewerUrl = reader?.status === "ready"
+  const reader = await getViewerReader(slug, createViewerRolloutConfig(process.env), "reader").catch(() => null);
+  const readerReady = reader?.status === "available" && reader.reader.status === "ready";
+  const viewerUrl = readerReady
     ? createPublicViewerUrl(process.env.READER_VIEWER_ORIGIN, slug)
     : null;
   const categories = getZineCategories(preview.tags);
@@ -89,7 +91,7 @@ export default async function ZinePreview({
         <CategoryBadgeWithLink categories={categories} />
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
-          {viewerUrl && reader?.status === "ready" && (
+          {viewerUrl && readerReady && reader.status === "available" && reader.reader.status === "ready" && (
             <section className="w-full max-w-xl border border-black bg-white p-4 text-center">
               <p className="text-sm">Esta zine está disponível para leitura em páginas.</p>
               <a
@@ -98,7 +100,7 @@ export default async function ZinePreview({
                 rel="noreferrer"
                 target="_blank"
               >
-                Abrir leitor de páginas ({reader.manifest.pageCount} páginas)
+                 Abrir leitor de páginas ({reader.reader.manifest.pageCount} páginas)
               </a>
             </section>
           )}
