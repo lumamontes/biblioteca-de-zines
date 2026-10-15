@@ -115,6 +115,11 @@ function getKnownSiteTitle(domain: string, url: string): string {
     'dropsdejogos.uai.com.br': 'Biblioteca de Zines reúne obras indie do BR para ler de graça',
     'hqpop.com.br': 'Descubra a Biblioteca Brasileira de Zines: A Nova Casa da Arte Independente',
   };
+
+  if (domain === 'g1.globo.com') {
+    if (url.includes('/2026/05/28/')) return 'HQ e plataforma de zines produzidas por amapaenses são destaque em prêmio nacional';
+    if (url.includes('/2026/10/14/')) return 'Biblioteca virtual reúne mais de 300 zines gratuitos e amplia acesso à produção independente no AP';
+  }
   
   return knownTitles[domain] || `Menção na mídia - ${domain}`;
 }
@@ -125,6 +130,7 @@ function getKnownSiteDescription(domain: string): string {
     'youtube.com': 'Conteúdo em vídeo sobre a Biblioteca de Zines',
     'dropsdejogos.uai.com.br': 'Reportagem sobre zines brasileiros independentes',
     'hqpop.com.br': 'Artigo sobre a nova casa da arte independente brasileira',
+    'g1.globo.com': 'Reportagem do g1 sobre a Biblioteca de Zines e a produção independente no Amapá',
   };
   
   return knownDescriptions[domain] || `Conteúdo sobre a Biblioteca de Zines em ${domain}`;

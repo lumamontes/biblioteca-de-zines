@@ -30,6 +30,8 @@ const PUBLICATION_LINKS = [
   // "https://www.youtube.com/live/woWFBtIE_Gs",
   "https://dropsdejogos.uai.com.br/noticias/indie/biblioteca-de-zines-reune-obras-indie-do-br-para-ler-de-graca/",
   "https://hqpop.com.br/descubra-a-biblioteca-brasileira-de-zines-a-nova-casa-da-arte-independente/",
+  "https://g1.globo.com/ap/amapa/noticia/2026/05/28/hq-e-plataforma-de-zines-produzidas-por-amapaenses-sao-destaque-em-premio-nacional.ghtml",
+  "https://g1.globo.com/ap/amapa/noticia/2026/10/14/biblioteca-virtual-reune-mais-de-300-zines-gratuitos-e-amplia-acesso-a-producao-independente-no-ap.ghtml",
   // "https://www.youtube.com/watch?v=ytK3c0utVE8"
 ];
 
