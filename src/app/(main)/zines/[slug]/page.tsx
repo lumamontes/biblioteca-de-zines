@@ -1,4 +1,4 @@
-import PDFViewer from "@/components/pdf-viewer";
+import VisualPublicationReader from "@/components/visual-publication-reader";
 import CategoryBadgeWithLink from "@/components/zine-card/category-badge-with-link";
 import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
@@ -84,7 +84,13 @@ export default async function ZinePreview({
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
           <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
-            <PDFViewer url={previewUrl} />
+            <VisualPublicationReader
+              title={preview.title}
+              creator={joinAuthors(preview.library_zines_authors)}
+              description={preview.description || undefined}
+              externalPdfUrl={preview.pdf_url || previewUrl}
+              standardViewerUrl={previewUrl}
+            />
           </div>
         </div>
       </BreadcrumbWrapper>
