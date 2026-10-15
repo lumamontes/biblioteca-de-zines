@@ -29,7 +29,7 @@ export function createSupabaseZinePublicationRepository(
     async findBySlug(slug) {
       const { data, error } = await supabase
         .from('library_zines')
-        .select('id, tags, source_upload_id, cover_image, pdf_url, import_status, processed_pdf_url')
+        .select('id, tags, source_upload_id, cover_image, active_page_generation, pdf_url, import_status, processed_pdf_url, total_pages')
         .eq('slug', slug)
         .single();
       if (error && error.code !== 'PGRST116') throw new Error(`Erro ao buscar zine: ${error.message}`);
@@ -39,7 +39,7 @@ export function createSupabaseZinePublicationRepository(
     async findById(zineId) {
       const { data, error } = await supabase
         .from('library_zines')
-        .select('id, tags, source_upload_id, cover_image, pdf_url, import_status, processed_pdf_url')
+        .select('id, tags, source_upload_id, cover_image, active_page_generation, pdf_url, import_status, processed_pdf_url, total_pages')
         .eq('id', zineId)
         .single();
       if (error && error.code !== 'PGRST116') throw new Error(`Erro ao buscar zine: ${error.message}`);
@@ -115,21 +115,24 @@ function toPublicationUpload(row: UploadRow): PublicationUpload {
 }
 
 function toPublicationRecord(
-  row: Pick<PublicationRow, 'id' | 'tags' | 'source_upload_id' | 'cover_image' | 'pdf_url' | 'import_status' | 'processed_pdf_url'>,
+  row: Pick<PublicationRow, 'id' | 'tags' | 'source_upload_id' | 'cover_image' | 'active_page_generation' | 'pdf_url' | 'import_status' | 'processed_pdf_url' | 'total_pages'>,
 ): PublicationRecord {
   return {
     id: row.id,
     tags: row.tags,
     sourceUploadId: row.source_upload_id,
     coverImage: row.cover_image,
+    activePageGeneration: row.active_page_generation,
     pdfUrl: row.pdf_url,
     importStatus: row.import_status,
     processedPdfUrl: row.processed_pdf_url,
+    totalPages: row.total_pages,
   };
 }
 
 function toPublicationUpdate(input: PublicationUpdate) {
   return {
+    ...(input.activePageGeneration !== undefined ? { active_page_generation: input.activePageGeneration } : {}),
     ...(input.title !== undefined ? { title: input.title } : {}),
     ...(input.description !== undefined ? { description: input.description } : {}),
     ...(input.collectionTitle !== undefined ? { collection_title: input.collectionTitle } : {}),
@@ -138,5 +141,7 @@ function toPublicationUpdate(input: PublicationUpdate) {
     ...(input.tags !== undefined ? { tags: input.tags as Json } : {}),
     ...(input.publishedYear !== undefined ? { year: input.publishedYear } : {}),
     ...(input.importStatus !== undefined ? { import_status: input.importStatus } : {}),
+    ...(input.processedPdfUrl !== undefined ? { processed_pdf_url: input.processedPdfUrl } : {}),
+    ...(input.totalPages !== undefined ? { total_pages: input.totalPages } : {}),
   };
 }

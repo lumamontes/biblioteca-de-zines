@@ -1,7 +1,22 @@
 import type { NextConfig } from "next";
+import { createViewerSecurityHeaders } from "./src/infrastructure/reader/viewer-security";
+
+const viewerOrigin = process.env.READER_VIEWER_ORIGIN ?? "https://viewer.biblioteca-de-zines.com.br";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@napi-rs/canvas", "pdfjs-dist"],
+  async headers() {
+    return [
+      {
+        source: "/embed/v1/:path*",
+        headers: createViewerSecurityHeaders("embed"),
+      },
+      {
+        source: "/viewer/v1/:path*",
+        headers: createViewerSecurityHeaders("viewer", viewerOrigin),
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

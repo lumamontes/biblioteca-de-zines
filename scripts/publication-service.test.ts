@@ -48,7 +48,7 @@ test('cover policy requests generation only for incomplete fallback covers', () 
   }), false);
 });
 
-test('publication service queues a missing cover and preserves a custom cover', async () => {
+test('publication service queues page generation and preserves a custom cover', async () => {
   const upload = createUpload(null);
   const created: PublicationRecord = {
     id: 12,
@@ -76,6 +76,7 @@ test('publication service queues a missing cover and preserves a custom cover', 
     ...created,
     coverImage: 'https://example.com/custom.jpg',
     importStatus: 'completed',
+    activePageGeneration: 'generation-1',
   });
   const customQueued: number[] = [];
   const customService = createZinePublicationModule({
@@ -86,7 +87,7 @@ test('publication service queues a missing cover and preserves a custom cover', 
   });
 
   await customService.publishZineFromUpload(7);
-  assert.deepEqual(customQueued, []);
+  assert.deepEqual(customQueued, [12]);
 });
 
 function createUpload(coverImage: string | null): PublicationUpload {

@@ -11,11 +11,11 @@ export async function processClaimedZine(
 ): Promise<'completed' | 'failed'> {
   try {
     await processor(job);
-    await jobs.complete(job.id);
+    await jobs.complete(job.id, job.attemptCount);
     return 'completed';
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown processing error';
-    await jobs.fail(job.id, message);
+    await jobs.fail(job.id, job.attemptCount, message);
     console.error(`Failed to process ${job.zineId} (${job.title}):`, error);
     return 'failed';
   }

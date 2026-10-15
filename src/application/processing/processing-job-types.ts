@@ -1,6 +1,7 @@
 export type ProcessingJob = {
   attemptCount: number;
   id: number;
+  isPublished: boolean;
   pdfUrl: string;
   title: string;
   zineId: number;
@@ -8,9 +9,9 @@ export type ProcessingJob = {
 
 export interface ProcessingJobStore {
   claimNext(): Promise<ProcessingJob | null>;
-  complete(jobId: number): Promise<void>;
+  complete(jobId: number, attemptCount: number): Promise<void>;
   enqueue(zineId: number): Promise<void>;
-  fail(jobId: number, errorMessage: string): Promise<void>;
+  fail(jobId: number, attemptCount: number, errorMessage: string): Promise<void>;
 }
 
 export type ProcessingProcessor = (job: ProcessingJob) => Promise<void>;

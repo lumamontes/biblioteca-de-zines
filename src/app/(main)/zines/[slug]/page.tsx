@@ -1,4 +1,5 @@
 import PDFViewer from "@/components/pdf-viewer";
+import { PublicReader } from "@/components/public-reader";
 import CategoryBadgeWithLink from "@/components/zine-card/category-badge-with-link";
 import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
@@ -8,6 +9,8 @@ import { siteConfig } from "@/app/config/site";
 import Link from "next/link";
 import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/structured-data";
 import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
+import { getPublicReader } from "@/composition/server/public-reader";
+import { createViewerRolloutConfig, createViewerUrl, isViewerPublicationAllowed } from "@/application/reader/viewer-rollout";
 
 export async function generateMetadata({
   params,
@@ -50,6 +53,23 @@ export default async function ZinePreview({
   }
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
+  const reader = await getPublicReader(slug).catch(() => preview.pdf_url ? {
+    fallback: { label: 'Abrir o PDF original', url: preview.pdf_url },
+    reason: 'page-generation-unavailable' as const,
+    status: 'fallback' as const,
+  } : null);
+  if (!reader) {
+    return (
+      <h3 className="flex items-center justify-center border border-black px-6 py-3 text-base">
+        Zine não encontrada!
+      </h3>
+    );
+  }
+  const rollout = createViewerRolloutConfig(process.env);
+  const viewerSlug = reader.status === 'ready' ? reader.publication.slug : slug;
+  const viewerUrl = isViewerPublicationAllowed(rollout, viewerSlug, 'reader')
+    ? createViewerUrl(rollout, viewerSlug, false, 'reader')
+    : undefined;
   const categories = getZineCategories(preview.tags);
 
   const breadcrumbItems = [
@@ -83,8 +103,8 @@ export default async function ZinePreview({
         <CategoryBadgeWithLink categories={categories} />
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
-          <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
-            <PDFViewer url={previewUrl} />
+          <div className="bg-neutral-500 w-full min-h-screen max-w-xl mx-auto overflow-hidden p-4">
+            {reader ? <PublicReader reader={reader} viewerUrl={viewerUrl} /> : <PDFViewer url={previewUrl} />}
           </div>
         </div>
       </BreadcrumbWrapper>

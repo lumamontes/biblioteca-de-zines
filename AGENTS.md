@@ -27,4 +27,21 @@ Use lightweight application-service boundaries for new work:
 
 Prefer the smallest boundary that makes a workflow readable. Do not introduce full DDD ceremony, aggregates, factories, or value objects without a concrete domain need.
 
-Current cover processing is a cover-only application workflow. Keep reusable PDF rendering primitives separate from the cover workflow so future full PDF-to-image page generation can be added without making page derivatives part of the current reader.
+Cover migration and diagnostic processing remain cover-only. The publication worker separately runs asynchronous full PDF-to-image page generation, with reusable PDF rendering primitives kept independent from both workflows.
+
+### Reader implementation guardrails
+
+The public reader is a Biblioteca application feature, not a reusable reader package. Internet Archive BookReader is an infrastructure adapter behind a Biblioteca-owned, provider-neutral reader seam.
+
+- Keep domain and application code free of BookReader, Internet Archive, jQuery, DOM, React, PDF.js, R2, Supabase, and Next.js dependencies.
+- Keep publication concepts, access policy, page derivatives, and active generations independent of the rendering adapter.
+- Use `zine_pages` as the publication page relation; do not introduce a parallel page table or manifest persistence model.
+- The reader consumes only a complete active page generation. It must not select generations, process PDFs, or decide publication access.
+- PDF-to-page processing is asynchronous and publication-triggered; never render a PDF during a reader request.
+- Keep the original PDF as an explicit fallback/download representation.
+- Put BookReader lifecycle, vendor assets, DOM integration, and event translation in its adapter.
+- Let composition select the concrete adapter; routes and UI must not instantiate BookReader directly.
+- Ticket #147 exposes the access-filtered active manifest and explicit fallback; the concrete renderer/adapter lifecycle is ticket #148 and must remain outside the application reader data path.
+- Test application behavior with fake reader/page adapters. Vendor/browser tests belong at the adapter seam.
+- Every implementation ticket must identify its architectural layer, dependencies, and replacement seam.
+- Do not add generic abstractions or vendor-shaped concepts without a concrete responsibility and a testable interface.

@@ -213,28 +213,60 @@ export type Database = {
           },
         ]
       }
+      zine_slug_aliases: {
+        Row: {
+          created_at: string | null
+          slug: string
+          zine_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          slug: string
+          zine_id: number
+        }
+        Update: {
+          created_at?: string | null
+          slug?: string
+          zine_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zine_slug_aliases_zine_id_fkey"
+            columns: ["zine_id"]
+            isOneToOne: false
+            referencedRelation: "library_zines"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       zine_pages: {
         Row: {
           created_at: string | null
           generation_id: string
+          height: number | null
           id: number
           image_url: string
           page_number: number
+          width: number | null
           zine_id: number
         }
         Insert: {
           created_at?: string | null
           generation_id?: string
+          height?: number | null
           id?: number
           image_url: string
           page_number: number
+          width?: number | null
           zine_id: number
         }
         Update: {
           created_at?: string | null
+          height?: number | null
           id?: number
           image_url?: string
           page_number?: number
+          width?: number | null
           zine_id?: number
         }
         Relationships: [
@@ -341,7 +373,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      activate_zine_page_generation: {
+        Args: {
+          p_cover_image: string | null
+          p_generation_id: string
+          p_pages: Json
+          p_source_url: string
+          p_zine_id: number
+        }
+        Returns: {
+          activated: boolean
+          cover_image_used: boolean
+          previous_generation_id: string | null
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

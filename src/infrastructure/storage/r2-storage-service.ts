@@ -7,6 +7,7 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, 
 import type { AssetStorage } from '@/application/asset-storage';
 import type { CoverAssetStore } from '@/application/cover-generation/cover-generation-types';
 import { coverObjectKey } from '@/infrastructure/storage/r2-cover-reference';
+import { IMMUTABLE_DERIVATIVE_CACHE_CONTROL } from '@/infrastructure/storage/cache-policy';
 
 // Initialize S3 client for R2
 function getR2Client(): S3Client {
@@ -62,17 +63,24 @@ export function createR2AssetStorage(): AssetStorage {
       const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
       if (!bucketName || !publicUrl) throw new Error('R2 bucket and public URL are required');
 
-       await client.send(new PutObjectCommand({
-         Bucket: bucketName,
-         Key: key,
-         Body: asset.data,
-         ContentType: asset.contentType,
-         CacheControl: 'public, max-age=31536000, immutable',
-       }));
+      await client.send(createPutObjectCommand({
+        body: asset.data,
+        bucket: bucketName,
+        cacheControl: IMMUTABLE_DERIVATIVE_CACHE_CONTROL,
+        contentType: asset.contentType,
+        key,
+      }));
       return `${publicUrl.replace(/\/$/, '')}/${key}`;
     },
     async deleteGeneration(target, generationId) {
       await deleteR2Prefix(client, `zines/${target.id}/generations/${generationId}/`);
+      await Promise.all(['webp', 'png', 'jpg'].map((extension) => (
+        deleteCoverObject(client, target, `${generationId}.${extension}`)
+      )));
+    },
+    async deleteGeneratedCover(target, generationId) {
+      const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+      if (!bucketName) throw new Error('CLOUDFLARE_R2_BUCKET_NAME is not configured');
       await Promise.all(['webp', 'png', 'jpg'].map((extension) => (
         deleteCoverObject(client, target, `${generationId}.${extension}`)
       )));
@@ -94,7 +102,38 @@ export function createR2AssetStorage(): AssetStorage {
         return false;
       }
     },
+    async isPageAvailable(target, generationId, pageNumber, pageUrl) {
+      const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+      const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+      if (!bucketName || !publicUrl) return false;
+      const key = ['webp', 'png', 'jpg']
+        .map((extension) => generateGenerationKey(target, generationId, 'page', extension, pageNumber))
+        .find((candidate) => `${publicUrl.replace(/\/$/, '')}/${candidate}` === pageUrl);
+      if (!key) return false;
+      try {
+        await client.send(new HeadObjectCommand({ Bucket: bucketName, Key: key }));
+        return true;
+      } catch {
+        return false;
+      }
+    },
   };
+}
+
+export function createPutObjectCommand(input: {
+  body: Buffer;
+  bucket: string;
+  cacheControl: string;
+  contentType: string;
+  key: string;
+}) {
+  return new PutObjectCommand({
+    Bucket: input.bucket,
+    Body: input.body,
+    CacheControl: input.cacheControl,
+    ContentType: input.contentType,
+    Key: input.key,
+  });
 }
 
 export function createR2CoverAssetStore(): CoverAssetStore {

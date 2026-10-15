@@ -7,6 +7,7 @@ import { createCoverProcessor } from '../src/infrastructure/cover-generation/cov
 const job: ProcessingJob = {
   attemptCount: 1,
   id: 10,
+  isPublished: true,
   pdfUrl: 'https://example.com/zine.pdf',
   title: 'Test zine',
   zineId: 42,
@@ -34,7 +35,7 @@ test('processing records a failure and does not complete the job', async () => {
     claimNext: async () => job,
     enqueue: async () => {},
     complete: async () => { events.push('complete'); },
-    fail: async (jobId, message) => { events.push(`fail:${jobId}:${message}`); },
+    fail: async (jobId, _attemptCount, message) => { events.push(`fail:${jobId}:${message}`); },
   }, async () => {
     throw new Error('render failed');
   });
