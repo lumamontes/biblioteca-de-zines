@@ -12,6 +12,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter biblioteca-zines dev",
+    "dev:all": "pnpm exec turbo dev --parallel",
     "build": "pnpm --filter biblioteca-zines build",
     "start": "pnpm --filter biblioteca-zines start",
     "lint": "pnpm --filter biblioteca-zines lint",
@@ -21,8 +22,8 @@
     "test:inventory": "pnpm --filter biblioteca-zines test:inventory",
     "archive:inventory": "pnpm --filter biblioteca-zines archive:inventory",
     "reading:derivative-spike": "pnpm --filter biblioteca-zines reading:derivative-spike",
-  "reading:derivative-benchmark": "pnpm --filter biblioteca-zines reading:derivative-benchmark",
-  "reader:performance-benchmark": "pnpm --filter biblioteca-zines reader:performance-benchmark",
+    "reading:derivative-benchmark": "pnpm --filter biblioteca-zines reading:derivative-benchmark",
+    "reader:performance-benchmark": "pnpm --filter biblioteca-zines reader:performance-benchmark",
     "migrate:pdf-covers": "pnpm --filter biblioteca-zines migrate:pdf-covers",
     "migrate:pdf-pages": "pnpm --filter biblioteca-zines migrate:pdf-pages",
     "generate:form-upload-cover": "pnpm --filter biblioteca-zines generate:form-upload-cover",

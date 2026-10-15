@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack -p 4100",
     "build": "next build",
     "start": "next start",
     "check-types": "tsc --noEmit",
@@ -18,7 +18,6 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.49.1",
     "@playwright/test": "1.49.1",
     "@types/node": "^20",
     "@types/react": "^19",
