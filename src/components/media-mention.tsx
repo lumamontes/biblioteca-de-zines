@@ -35,7 +35,7 @@ async function extractMetadata(url: string): Promise<MediaMetadata> {
   const fallbackMetadata: MediaMetadata = {
     title: getKnownSiteTitle(domain, url),
     description: getKnownSiteDescription(domain),
-    image: '',
+    image: getKnownSiteImage(domain),
     domain,
     favicon,
     siteName: getKnownSiteName(domain)
@@ -94,9 +94,13 @@ async function extractMetadata(url: string): Promise<MediaMetadata> {
       fallbackMetadata.siteName;
 
     return {
-      title: ogTitle.trim().replace(/\s+/g, ' ') || fallbackMetadata.title,
-      description: ogDescription.trim().replace(/\s+/g, ' ') || fallbackMetadata.description,
-      image: ogImage,
+      title: domain === 'instagram.com'
+        ? fallbackMetadata.title
+        : ogTitle.trim().replace(/\s+/g, ' ') || fallbackMetadata.title,
+      description: domain === 'instagram.com'
+        ? fallbackMetadata.description
+        : ogDescription.trim().replace(/\s+/g, ' ') || fallbackMetadata.description,
+      image: ogImage || fallbackMetadata.image,
       domain,
       favicon,
       siteName: ogSiteName.trim() || fallbackMetadata.siteName
@@ -134,6 +138,11 @@ function getKnownSiteDescription(domain: string): string {
   };
   
   return knownDescriptions[domain] || `Conteúdo sobre a Biblioteca de Zines em ${domain}`;
+}
+
+function getKnownSiteImage(domain: string): string {
+  if (domain === 'hqpop.com.br') return 'https://hqpop.com.br/wp-content/uploads/2025/01/hqpop_bibliotecadezines_2401.jpg';
+  return '';
 }
 
 function getKnownSiteName(domain: string): string {
