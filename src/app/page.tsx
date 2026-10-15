@@ -164,7 +164,7 @@ export default async function HomePage() {
                 #ClubeDeZines
               </h2>
               <p>
-                Um clubinho online para decidir temas e criar zines. Os temas são mensais e os objetivos da iniciativa são comunidade e incentivar a criatividade. Tudo é aberto a sua interpretação!
+                Um clubinho online para criar zines a partir de temas coletivos. Agora as edições duram dois meses: a edição atual é sobre <strong>Arquivo</strong>, e tudo é aberto à sua interpretação!
               </p>
           </div>
           <Image 
