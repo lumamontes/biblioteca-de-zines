@@ -69,9 +69,8 @@ export function Reader({ slug, surface, branding = false }: { slug: string; surf
     return () => { disposed = true; cleanup(); };
   }, [slug, surface]);
 
-  if (state === 'loading') return <main className={branding ? 'reader reader--branded' : 'reader'}><p className="reader__loading">Carregando leitor...</p></main>;
   if (state === 'fallback') return <Fallback branding={branding} fallback={fallback} title={data?.publication.title ?? slug} />;
-  return <main className={branding ? 'reader reader--branded' : 'reader'}><div aria-label={`Leitor de ${data?.publication.title ?? slug}`} className="reader__canvas" ref={target} /></main>;
+  return <main className={branding ? 'reader reader--branded' : 'reader'}>{state === 'loading' && <p className="reader__loading">Carregando leitor...</p>}<div aria-label={`Leitor de ${data?.publication.title ?? slug}`} className="reader__canvas" ref={target} /></main>;
 }
 
 function collectPerformanceMetrics(apiOrigin: string): Record<string, number | string> {
