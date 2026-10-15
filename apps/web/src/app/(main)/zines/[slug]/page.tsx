@@ -54,9 +54,9 @@ export default async function ZinePreview({
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
   const reader = await getViewerReader(slug, createViewerRolloutConfig(process.env), "reader").catch(() => null);
-  const readerReady = reader?.status === "available" && reader.reader.status === "ready";
-  const viewerUrl = readerReady
-    ? createPublicViewerUrl(process.env.READER_VIEWER_ORIGIN, slug)
+  const readyReader = reader?.status === "available" && reader.reader.status === "ready" ? reader.reader : null;
+  const viewerUrl = readyReader
+    ? createPublicViewerUrl(process.env.READER_VIEWER_ORIGIN, readyReader.publication.slug)
     : null;
   const categories = getZineCategories(preview.tags);
 
@@ -91,7 +91,7 @@ export default async function ZinePreview({
         <CategoryBadgeWithLink categories={categories} />
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
-          {viewerUrl && readerReady && reader.status === "available" && reader.reader.status === "ready" && (
+          {viewerUrl && readyReader && (
             <section className="w-full max-w-xl border border-black bg-white p-4 text-center">
               <p className="text-sm">Esta zine está disponível para leitura em páginas.</p>
               <a
@@ -100,7 +100,7 @@ export default async function ZinePreview({
                 rel="noreferrer"
                 target="_blank"
               >
-                 Abrir leitor de páginas ({reader.reader.manifest.pageCount} páginas)
+                Abrir leitor de páginas ({readyReader.manifest.pageCount} páginas)
               </a>
             </section>
           )}
