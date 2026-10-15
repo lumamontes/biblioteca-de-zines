@@ -114,7 +114,7 @@ async function extractMetadata(url: string): Promise<MediaMetadata> {
 
 function getKnownSiteTitle(domain: string, url: string): string {
   const knownTitles: Record<string, string> = {
-    'instagram.com': 'Post sobre Biblioteca de Zines',
+    'instagram.com': 'O Norte em Quadrinhos entrevista Luana Góes sobre a Biblioteca Brasileira de Zines',
     'youtube.com': url.includes('/live/') ? 'Live sobre Biblioteca de Zines' : 'Vídeo sobre Biblioteca de Zines',
     'dropsdejogos.uai.com.br': 'Biblioteca de Zines reúne obras indie do BR para ler de graça',
     'hqpop.com.br': 'Descubra a Biblioteca Brasileira de Zines: A Nova Casa da Arte Independente',
