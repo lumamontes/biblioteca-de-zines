@@ -9,10 +9,10 @@ The public-reader API is the server-side authority for rollout:
 ```env
 READER_VIEWER_ENABLED=true
 READER_EMBED_ENABLED=false
-READER_BETA_PUBLICATION_SLUGS=selected-slug,another-slug
+READER_BETA_SLUGS=selected-slug,another-slug
 ```
 
-`READER_VIEWER_ENABLED` and `READER_EMBED_ENABLED` are independent kill switches. `READER_BETA_PUBLICATION_SLUGS` restricts both surfaces when set. Disabling either surface returns an unavailable response and does not delete page generations or the PDF fallback.
+`READER_VIEWER_ENABLED` and `READER_EMBED_ENABLED` are independent kill switches. `READER_BETA_SLUGS` restricts both surfaces when set. Disabling either surface returns an unavailable response and does not delete page generations or the PDF fallback.
 
 ## Recovery
 
