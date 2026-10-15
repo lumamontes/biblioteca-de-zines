@@ -31,8 +31,20 @@ const monthlyThemes = [
   { 
     month: "Fevereiro 2026", 
     theme: "Colagem", 
-    status: "atual",
+    status: "passado",
     instagramLink: "https://www.instagram.com/p/DUNxvVbkRuI/?igsh=MWl0b2E0dHdycXZnbQ=="
+  },
+  {
+    month: "Abril e Maio 2026",
+    theme: "Carimbo",
+    status: "passado",
+    instagramLink: "https://www.instagram.com/p/DYC9hFMkQ2V/?img_index=1"
+  },
+  {
+    month: "Setembro e Outubro 2026",
+    theme: "Arquivo",
+    status: "atual",
+    instagramLink: "https://www.instagram.com/p/DdMFob5ICn-/?img_index=1"
   },
 ];
 
@@ -60,10 +72,10 @@ export default async function ZinesClub() {
             📚✍️ Uma iniciativa para estimular criatividade e comunidade!
           </p>
           <p className="text-sm mb-4 text-gray-600 font-mono">
-            O clubinho virtual da Biblioteca de Zines está de volta! Cada mês temos um tema novo votado pela comunidade para criar zines na sua interpretação e formato preferido.
+            O Clube de Zines está de volta! Agora cada edição dura dois meses, para todo mundo ter mais tempo de criar e experimentar.
           </p>
           <p className="text-sm mb-6 text-gray-600 font-mono">
-            Faça zines, compartilhe com <span className="bg-gray-100 px-1">#ClubeDeZines</span> e envie para o nosso acervo digital! 💫
+            A edição atual convida você a interpretar o tema <strong>Arquivo</strong>: álbuns de família, documentos históricos, registros, catálogos ou qualquer outra ideia. Faça do seu jeito, compartilhe com <span className="bg-gray-100 px-1">#ClubeDeZines</span> e envie para o nosso acervo digital! 💫
           </p>
         </div>
       </section>
@@ -111,7 +123,7 @@ export default async function ZinesClub() {
           <div className="flex gap-4">
             <span className="text-gray-400">01.</span>
             <div>
-              <strong>Crie</strong> um zine baseado no tema do mês na sua interpretação preferida
+              <strong>Crie</strong> um zine baseado no tema da edição, na sua interpretação e formato preferidos
             </div>
           </div>
           <div className="flex gap-4">
@@ -129,7 +141,7 @@ export default async function ZinesClub() {
           <div className="flex gap-4">
             <span className="text-gray-400">04.</span>
             <div>
-              <strong>Participe</strong> das discussões no nosso <Link href="https://t.me/+-irW84jni8ExYWFh" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">grupo do Telegram</Link>
+              <strong>Participe</strong> das discussões no nosso <Link href="https://t.me/+-irW84jni8ExYWFh" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">grupo do Telegram</Link>. Em breve, a comunidade também estará no WhatsApp.
             </div>
           </div>
         </div>
