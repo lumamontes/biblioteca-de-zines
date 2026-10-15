@@ -7,6 +7,7 @@ export type ViewerRolloutConfig = {
   embedEnabled: boolean;
   betaSlugs: readonly string[];
   betaTokens: readonly string[];
+  allowInsecureLocalOrigin: boolean;
   viewerOrigin: string;
 };
 
@@ -18,6 +19,7 @@ export function createViewerRolloutConfig(env: Record<string, string | undefined
     embedEnabled: env.READER_EMBED_ENABLED === 'true',
     betaSlugs: (env.READER_BETA_SLUGS ?? '').split(',').map((slug) => slug.trim()).filter(Boolean),
     betaTokens: (env.READER_BETA_TOKENS ?? '').split(',').map((token) => token.trim()).filter(Boolean),
+    allowInsecureLocalOrigin: env.NODE_ENV === 'development',
     viewerOrigin: env.READER_VIEWER_ORIGIN ?? 'https://viewer.biblioteca-de-zines.com.br',
   };
 }
@@ -26,7 +28,10 @@ export function validateViewerRolloutConfig(config: ViewerRolloutConfig): Viewer
   const issues: string[] = [];
   try {
     const origin = new URL(config.viewerOrigin);
-    if (origin.protocol !== 'https:' || !origin.hostname) issues.push('viewer origin must use HTTPS');
+    const localOrigin = origin.hostname === 'localhost' || origin.hostname === '127.0.0.1';
+    if ((!config.allowInsecureLocalOrigin && origin.protocol !== 'https:') || !origin.hostname || (origin.protocol !== 'https:' && !localOrigin)) {
+      issues.push('viewer origin must use HTTPS');
+    }
   } catch {
     issues.push('viewer origin must use HTTPS');
   }

@@ -64,6 +64,13 @@ test('rejects unsafe rollout configuration and preserves immutable derivative po
   assert.equal(IMMUTABLE_DERIVATIVE_CACHE_CONTROL, 'public, max-age=31536000, immutable');
 });
 
+test('allows an insecure origin only for local development', () => {
+  const local = createViewerRolloutConfig({ NODE_ENV: 'development', READER_VIEWER_ORIGIN: 'http://127.0.0.1:4100' });
+  const production = createViewerRolloutConfig({ NODE_ENV: 'production', READER_VIEWER_ORIGIN: 'http://127.0.0.1:4100' });
+  assert.equal(validateViewerRolloutConfig(local).ready, true);
+  assert.equal(validateViewerRolloutConfig(production).ready, false);
+});
+
 test('accepts only bounded public-reader telemetry', () => {
   assert.equal(isViewerEvent({ slug: 'zine', surface: 'embed', type: 'ready' }), true);
   assert.equal(isViewerEvent({
