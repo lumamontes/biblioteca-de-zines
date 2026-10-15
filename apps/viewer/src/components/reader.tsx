@@ -16,7 +16,7 @@ export function Reader({ slug, surface, branding = false }: { slug: string; surf
     let disposed = false;
     let cleanup = () => {};
     const startedAt = performance.now();
-    const report = (type: 'fallback' | 'page-error' | 'page-load' | 'ready', extras: Record<string, number> = {}) => {
+    const report = (type: 'fallback' | 'page-error' | 'page-load' | 'ready', extras: Record<string, number | string> = {}) => {
       void fetch(`${apiOrigin.replace(/\/$/, '')}/api/public-reader/events`, {
         body: JSON.stringify({
           durationMs: Math.max(0, Math.round(performance.now() - startedAt)),
@@ -58,7 +58,7 @@ export function Reader({ slug, surface, branding = false }: { slug: string; surf
         session.mount(target.current);
         setState(session.getState().status);
         report('page-load', { metadataBytes: Number(response.headers.get('content-length')) || 0 });
-        report('ready');
+        report('ready', collectPerformanceMetrics(apiOrigin));
         cleanup = () => { unsubscribe(); session.destroy(); };
       } catch {
         report('page-error');
@@ -72,6 +72,31 @@ export function Reader({ slug, surface, branding = false }: { slug: string; surf
   if (state === 'loading') return <main className={branding ? 'reader reader--branded' : 'reader'}><p className="reader__loading">Carregando leitor...</p></main>;
   if (state === 'fallback') return <Fallback branding={branding} fallback={fallback} title={data?.publication.title ?? slug} />;
   return <main className={branding ? 'reader reader--branded' : 'reader'}><div aria-label={`Leitor de ${data?.publication.title ?? slug}`} className="reader__canvas" ref={target} /></main>;
+}
+
+function collectPerformanceMetrics(apiOrigin: string): Record<string, number | string> {
+  const entries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+  const apiEntries = entries.filter((entry) => entry.name.startsWith(apiOrigin));
+  const bundleBytes = entries
+    .filter((entry) => entry.name.includes('cdn.jsdelivr.net') && entry.name.endsWith('.js'))
+    .reduce((total, entry) => total + (entry.transferSize || entry.encodedBodySize || 0), 0);
+  const derivativeEntries = entries.filter((entry) => /\.(?:webp|jpg|jpeg|png)(?:\?|$)/i.test(entry.name));
+  const derivativeBandwidthBytes = derivativeEntries.reduce(
+    (total, entry) => total + (entry.transferSize || entry.encodedBodySize || 0),
+    0,
+  );
+  const cacheBehavior = derivativeEntries.length === 0
+    ? 'unknown'
+    : derivativeEntries.some((entry) => entry.transferSize === 0) ? 'hit' : 'miss';
+  const memory = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize;
+
+  return {
+    requestCount: apiEntries.length + derivativeEntries.length,
+    bundleBytes,
+    derivativeBandwidthBytes,
+    cacheBehavior,
+    ...(memory === undefined ? {} : { memoryBytes: memory }),
+  };
 }
 
 function Fallback({ branding, fallback, title }: { branding: boolean; fallback: { label: string; url: string }; title: string }) {

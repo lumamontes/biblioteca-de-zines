@@ -16,6 +16,11 @@ export async function POST(request: NextRequest) {
     slug: event.slug, surface: event.surface, type: event.type,
     ...(event.metadataBytes === undefined ? {} : { metadataBytes: event.metadataBytes }),
     ...(event.durationMs === undefined ? {} : { durationMs: event.durationMs }),
+    ...(event.requestCount === undefined ? {} : { requestCount: event.requestCount }),
+    ...(event.cacheBehavior === undefined ? {} : { cacheBehavior: event.cacheBehavior }),
+    ...(event.bundleBytes === undefined ? {} : { bundleBytes: event.bundleBytes }),
+    ...(event.derivativeBandwidthBytes === undefined ? {} : { derivativeBandwidthBytes: event.derivativeBandwidthBytes }),
+    ...(event.memoryBytes === undefined ? {} : { memoryBytes: event.memoryBytes }),
   }));
   return new NextResponse(null, { status: 204 });
 }

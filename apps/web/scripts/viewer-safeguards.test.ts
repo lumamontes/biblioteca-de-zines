@@ -66,8 +66,13 @@ test('rejects unsafe rollout configuration and preserves immutable derivative po
 
 test('accepts only bounded public-reader telemetry', () => {
   assert.equal(isViewerEvent({ slug: 'zine', surface: 'embed', type: 'ready' }), true);
+  assert.equal(isViewerEvent({
+    slug: 'zine', surface: 'embed', type: 'ready', requestCount: 4,
+    cacheBehavior: 'hit', bundleBytes: 100, derivativeBandwidthBytes: 200, memoryBytes: 300,
+  }), true);
   assert.equal(isViewerEvent({ slug: 'zine', surface: 'embed', type: 'request-database' }), false);
   assert.equal(isViewerEvent({ slug: 'zine', surface: 'embed', type: 'page-load', durationMs: -1 }), false);
+  assert.equal(isViewerEvent({ slug: 'zine', surface: 'embed', type: 'ready', memoryBytes: 10_000_000_001 }), false);
 });
 
 test('limits traffic per key and resets after the window', () => {
