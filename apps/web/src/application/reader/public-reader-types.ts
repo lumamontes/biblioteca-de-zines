@@ -14,6 +14,6 @@ export type PublicReaderPublicationRecord = {
 export interface PublicReaderRepository { findPublicBySlug(slug: string): Promise<PublicReaderPublicationRecord | null>; }
 export type PublicReaderFallbackReason = 'incomplete-page-generation' | 'page-generation-failed' | 'page-generation-unavailable' | 'source-unavailable';
 export type PublicReaderPublication = Pick<PublicReaderPublicationRecord, 'id' | 'slug' | 'title'>;
-export type PublicReaderFallback = { fallback: ReaderFallback; publication: PublicReaderPublication; reason: PublicReaderFallbackReason; status: 'fallback' };
+export type PublicReaderFallback = { fallback: ReaderFallback; publication?: PublicReaderPublication; reason: PublicReaderFallbackReason; status: 'fallback' };
 export type PublicReaderReady = { fallback: ReaderFallback; manifest: ReaderPageManifest; publication: PublicReaderPublication; status: 'ready' };
 export type PublicReaderResult = PublicReaderFallback | PublicReaderReady;

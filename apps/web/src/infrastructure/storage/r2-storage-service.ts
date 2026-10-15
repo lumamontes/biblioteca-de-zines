@@ -7,6 +7,7 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, 
 import type { AssetStorage } from '@/application/asset-storage';
 import type { CoverAssetStore } from '@/application/cover-generation/cover-generation-types';
 import { coverObjectKey } from '@/infrastructure/storage/r2-cover-reference';
+import { IMMUTABLE_DERIVATIVE_CACHE_CONTROL } from '@/infrastructure/storage/cache-policy';
 
 // Initialize S3 client for R2
 function getR2Client(): S3Client {
@@ -67,7 +68,7 @@ export function createR2AssetStorage(): AssetStorage {
          Key: key,
          Body: asset.data,
          ContentType: asset.contentType,
-         CacheControl: 'public, max-age=31536000, immutable',
+         CacheControl: IMMUTABLE_DERIVATIVE_CACHE_CONTROL,
        }));
       return `${publicUrl.replace(/\/$/, '')}/${key}`;
     },

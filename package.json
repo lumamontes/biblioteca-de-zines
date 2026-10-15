@@ -11,21 +11,21 @@
     ]
   },
   "scripts": {
-    "dev": "pnpm --filter web dev",
-    "build": "pnpm --filter web build",
-    "start": "pnpm --filter web start",
-    "lint": "pnpm --filter web lint",
-    "test": "pnpm --filter web test",
-    "test:cover": "pnpm --filter web test:cover",
-    "test:application": "pnpm --filter web test:application",
-    "test:inventory": "pnpm --filter web test:inventory",
-    "archive:inventory": "pnpm --filter web archive:inventory",
-    "reading:derivative-spike": "pnpm --filter web reading:derivative-spike",
-    "reading:derivative-benchmark": "pnpm --filter web reading:derivative-benchmark",
-  "migrate:pdf-covers": "pnpm --filter web migrate:pdf-covers",
-  "migrate:pdf-pages": "pnpm --filter web migrate:pdf-pages",
-    "generate:form-upload-cover": "pnpm --filter web generate:form-upload-cover",
-    "process:pending-zines": "pnpm --filter web process:pending-zines"
+    "dev": "pnpm --filter biblioteca-zines dev",
+    "build": "pnpm --filter biblioteca-zines build",
+    "start": "pnpm --filter biblioteca-zines start",
+    "lint": "pnpm --filter biblioteca-zines lint",
+    "test": "pnpm --filter biblioteca-zines test",
+    "test:cover": "pnpm --filter biblioteca-zines test:cover",
+    "test:application": "pnpm --filter biblioteca-zines test:application",
+    "test:inventory": "pnpm --filter biblioteca-zines test:inventory",
+    "archive:inventory": "pnpm --filter biblioteca-zines archive:inventory",
+    "reading:derivative-spike": "pnpm --filter biblioteca-zines reading:derivative-spike",
+    "reading:derivative-benchmark": "pnpm --filter biblioteca-zines reading:derivative-benchmark",
+    "migrate:pdf-covers": "pnpm --filter biblioteca-zines migrate:pdf-covers",
+    "migrate:pdf-pages": "pnpm --filter biblioteca-zines migrate:pdf-pages",
+    "generate:form-upload-cover": "pnpm --filter biblioteca-zines generate:form-upload-cover",
+    "process:pending-zines": "pnpm --filter biblioteca-zines process:pending-zines"
   },
   "devDependencies": {
     "turbo": "^2.11.7"
