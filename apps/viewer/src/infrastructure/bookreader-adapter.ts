@@ -1,6 +1,8 @@
 import type { ReaderPageManifest, ReaderRenderer } from '@biblioteca/reader-contracts';
 
-type BookReader = { init: () => void; bind: (event: string, callback: (...args: unknown[]) => void) => void; next: () => void; prev: () => void; jumpToPage: (page: number) => void; destroy?: () => void };
+export type BookReaderInstance = { init: () => void; bind: (event: string, callback: (...args: unknown[]) => void) => void; unbind?: (event: string) => void; next: () => void; prev: () => void; jumpToPage: (page: number) => void; destroy?: () => void };
+export type BookReaderFactory = new (options: unknown) => BookReaderInstance;
+type BookReader = BookReaderInstance;
 type Target = HTMLDivElement & { id: string };
 const BOOKREADER_CDN = 'https://cdn.jsdelivr.net/npm/@internetarchive/bookreader@5.0.0-87/BookReader';
 let runtimePromise: Promise<void> | undefined;
@@ -24,25 +26,33 @@ export async function loadBookReaderRuntime(): Promise<void> {
   }
 }
 
-export function createBookReaderRenderer(): ReaderRenderer {
+export function createBookReaderRenderer(factory?: BookReaderFactory): ReaderRenderer {
   let instance: BookReader | undefined;
   let target: Target | undefined;
   return {
     mount(container, manifest, onPageChanged, onError) {
+      cleanupInstance();
       target = container as Target;
       target.id ||= `bookreader-${Math.random().toString(36).slice(2)}`;
-      const Constructor = window.BookReader;
+      const Constructor = factory ?? window.BookReader;
       if (!Constructor) throw new Error('BookReader runtime is unavailable');
       instance = new Constructor({ el: `#${target.id}`, ui: 'responsive', showToolbar: true, data: manifest.pages.map((page) => [{ pageNum: page.pageNumber, uri: page.imageUrl, width: page.width, height: page.height }]) });
       instance.bind('pageChanged', (...args) => onPageChanged(Number(args[0])));
       instance.bind('error', () => onError?.());
-      try { instance.init(); } catch (error) { onError?.(); throw error; }
+      try { instance.init(); } catch (error) { onError?.(); cleanupInstance(); throw error; }
     },
     next: () => instance?.next(),
     previous: () => instance?.prev(),
     goTo: (page) => instance?.jumpToPage(page),
-    destroy: () => { instance?.destroy?.(); instance = undefined; if (target) target.replaceChildren(); },
+    destroy: () => { cleanupInstance(); if (target) target.replaceChildren(); },
   };
+
+  function cleanupInstance() {
+    instance?.unbind?.('pageChanged');
+    instance?.unbind?.('error');
+    instance?.destroy?.();
+    instance = undefined;
+  }
 }
 
 function loadAsset(url: string, kind: 'script' | 'style'): Promise<void> {

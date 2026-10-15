@@ -15,6 +15,22 @@ export function Reader({ slug, surface, branding = false }: { slug: string; surf
   useEffect(() => {
     let disposed = false;
     let cleanup = () => {};
+    const startedAt = performance.now();
+    const report = (type: 'fallback' | 'page-error' | 'page-load' | 'ready', extras: Record<string, number> = {}) => {
+      void fetch(`${apiOrigin.replace(/\/$/, '')}/api/public-reader/events`, {
+        body: JSON.stringify({
+          durationMs: Math.max(0, Math.round(performance.now() - startedAt)),
+          slug,
+          surface,
+          type,
+          ...extras,
+        }),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+        credentials: 'omit',
+        keepalive: true,
+      }).catch(() => undefined);
+    };
     async function load() {
       try {
         const controller = new AbortController();
@@ -28,7 +44,11 @@ export function Reader({ slug, surface, branding = false }: { slug: string; surf
         const parsed = parsePublicReaderResponse(await response.json());
         if (disposed) return;
         setFallback(parsed.fallback);
-        if (parsed.status === 'fallback') { setState('fallback'); return; }
+        if (parsed.status === 'fallback') {
+          report('fallback', { metadataBytes: Number(response.headers.get('content-length')) || 0 });
+          setState('fallback');
+          return;
+        }
         setData(parsed);
         await loadBookReaderRuntime();
         if (disposed) return;
@@ -37,8 +57,11 @@ export function Reader({ slug, surface, branding = false }: { slug: string; surf
         if (!target.current) return;
         session.mount(target.current);
         setState(session.getState().status);
+        report('page-load', { metadataBytes: Number(response.headers.get('content-length')) || 0 });
+        report('ready');
         cleanup = () => { unsubscribe(); session.destroy(); };
       } catch {
+        report('page-error');
         if (!disposed) setState('fallback');
       }
     }
