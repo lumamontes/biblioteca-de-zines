@@ -15,16 +15,16 @@ export function createCoverProcessor(
   return async (job: ProcessingJob) => {
     let sourceObservationId: number | undefined;
     const loadSource = async () => {
+      let source: Awaited<ReturnType<CoverProcessorDependencies['downloadSource']>>;
       try {
-        const source = await dependencies.downloadSource(job.pdfUrl);
-        sourceObservationId = dependencies.recordSourceObservation
-          ? await dependencies.recordSourceObservation(job, source)
-          : undefined;
-        return source;
+        source = await dependencies.downloadSource(job.pdfUrl);
       } catch (error) {
-        if (dependencies.recordSourceObservation) await dependencies.recordSourceObservation(job, undefined, error instanceof Error ? error.message : 'Source download failed');
+        await recordObservation(job, undefined, error instanceof Error ? error.message : 'Source download failed');
         throw error;
       }
+
+      sourceObservationId = await recordObservation(job, source);
+      return source;
     };
     await createCoverGeneration(
       loadSource,
@@ -37,4 +37,18 @@ export function createCoverProcessor(
       { ...options, sourceObservationId: () => sourceObservationId, recordDerivative: dependencies.recordDerivative },
     );
   };
+
+  async function recordObservation(
+    job: ProcessingJob,
+    source?: Awaited<ReturnType<CoverProcessorDependencies['downloadSource']>>,
+    failureReason?: string,
+  ): Promise<number | undefined> {
+    if (!dependencies.recordSourceObservation) return undefined;
+    try {
+      return await dependencies.recordSourceObservation(job, source, failureReason);
+    } catch (error) {
+      console.error(`Failed to record source observation for ${job.zineId}:`, error);
+      return undefined;
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import { extractFileIdFromUrl, downloadFile } from './google-drive-service';
 import { SourceAcquisitionError, type SourceDocument } from '@/domain/source-document';
 import { detectFileTypeFromBuffer as detectType } from '@/utils/file-type-detection';
+import { filenameFromContentDisposition, parseByteSize } from './acquisition-metadata';
 
 export async function downloadSource(url: string): Promise<SourceDocument> {
   if (url.includes('drive.google.com')) {
@@ -35,15 +36,4 @@ export async function downloadSource(url: string): Promise<SourceDocument> {
       detectedMediaType,
     },
   };
-}
-
-function filenameFromContentDisposition(value: string | null): string | null {
-  if (!value) return null;
-  const match = value.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
-  return match ? decodeURIComponent(match[1] ?? match[2]) : null;
-}
-
-function parseByteSize(value: string | null): number | null {
-  if (!value || !/^\d+$/.test(value)) return null;
-  return Number(value);
 }

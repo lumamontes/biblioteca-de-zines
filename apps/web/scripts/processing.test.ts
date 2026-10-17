@@ -92,6 +92,31 @@ test('cover processor wires the processing job into the cover workflow', async (
   ]);
 });
 
+test('cover processor continues when source observation recording fails', async () => {
+  const events: string[] = [];
+  const processor = createCoverProcessor({
+    downloadSource: async () => { events.push('download'); return { buffer: Buffer.from('%PDF source'), mimeType: 'application/pdf' }; },
+    recordSourceObservation: async () => { events.push('observe'); throw new Error('metadata store unavailable'); },
+    repository: {
+      getState: async () => ({ coverImage: null }),
+      markFailed: async () => {},
+      markProcessing: async () => { events.push('processing'); },
+      publish: async () => { events.push('publish'); return true; },
+    },
+    storage: {
+      storeCover: async () => { events.push('store'); return 'https://assets.example/cover.webp'; },
+      discardGeneration: async () => {},
+      removeCover: async () => {},
+      isAvailable: async () => true,
+    },
+    renderFirstPage: async () => Buffer.from('rendered'),
+    optimizeCover: async () => Buffer.from('optimized'),
+  });
+
+  await processor(job);
+  assert.deepEqual(events, ['processing', 'download', 'observe', 'store', 'publish']);
+});
+
 test('page processing records observations before derivatives and ignores optional recorder failures', async () => {
   const events: string[] = [];
   const processor = createPageProcessor({

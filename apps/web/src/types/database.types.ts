@@ -11,7 +11,6 @@ export type Database = {
     Tables: {
       authors: {
         Row: {
-          asset_identity: string
           bio: string | null
           created_at: string | null
           id: number
