@@ -36,61 +36,63 @@ export default function FilteredZines({ initialZines, initialTotalCount, categor
   }, [filters.categories, updateFilter]);
 
   return (
-    <div className="space-y-6  mx-4">
-      <section aria-labelledby="sort-heading">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <FilterButton
-            isActive={filters.orderBy === "recent"}
-            onClick={() => updateFilter('orderBy', "recent")}
-            aria-label="Ordenar por mais recentes"
-          >
-            Mais recentes
-          </FilterButton>
+    <div className="space-y-6">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-12 space-y-6">
+        <section aria-labelledby="sort-heading">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <FilterButton
+              isActive={filters.orderBy === "recent"}
+              onClick={() => updateFilter('orderBy', "recent")}
+              aria-label="Ordenar por mais recentes"
+            >
+              Mais recentes
+            </FilterButton>
 
-          <FilterButton
-            isActive={filters.orderBy === "all"}
-            onClick={() => updateFilter('orderBy', "all")}
-            aria-label="Mostrar todos os zines"
-          >
-            Todas
-          </FilterButton>
-        </div>
-      </section>
+            <FilterButton
+              isActive={filters.orderBy === "all"}
+              onClick={() => updateFilter('orderBy', "all")}
+              aria-label="Mostrar todos os zines"
+            >
+              Todas
+            </FilterButton>
+          </div>
+        </section>
 
-      {/* Search and Filters */}
-      <section aria-labelledby="filters-heading">
-        <h2 id="filters-heading" className="sr-only">
-          Filtros de busca
-        </h2>
-        <div className="space-y-4">
-          <SearchInput
-            onSearch={(search) => updateFilter('search', search)}
-            defaultValue={filters.search}
-          />
+        {/* Search and Filters */}
+        <section aria-labelledby="filters-heading">
+          <h2 id="filters-heading" className="sr-only">
+            Filtros de busca
+          </h2>
+          <div className="space-y-4">
+            <SearchInput
+              onSearch={(search) => updateFilter('search', search)}
+              defaultValue={filters.search}
+            />
 
-          <FiltersGrid
-            availableYears={availableYears}
-            selectedYears={filters.publishedYears}
-            onYearsChange={(years) => updateFilter('publishedYears', years)}
-            categories={categories}
-            selectedCategories={filters.categories}
-            onCategoriesChange={(categories) => updateFilter('categories', categories)}
-          />
+            <FiltersGrid
+              availableYears={availableYears}
+              selectedYears={filters.publishedYears}
+              onYearsChange={(years) => updateFilter('publishedYears', years)}
+              categories={categories}
+              selectedCategories={filters.categories}
+              onCategoriesChange={(categories) => updateFilter('categories', categories)}
+            />
 
-          {hasActiveFilters && (
-            <div className="flex justify-start">
-              <button
-                type="button"
-                onClick={clearAllFilters}
-                className="text-sm underline decoration-2 underline-offset-2 transition-colors duration-200"
-                aria-label="Limpar todos os filtros aplicados"
-              >
-                Limpar todos os filtros
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+            {hasActiveFilters && (
+              <div className="flex justify-start">
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="text-sm underline decoration-2 underline-offset-2 transition-colors duration-200"
+                  aria-label="Limpar todos os filtros aplicados"
+                >
+                  Limpar todos os filtros
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
 
       {/* Results */}
       <section aria-labelledby="results-heading">

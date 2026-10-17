@@ -167,7 +167,7 @@ export async function MediaMention({ url, type }: MediaMentionProps) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex-shrink-0 w-80 group"
+      className="w-full max-w-sm group"
     >
       <div className="bg-white border-2 border-neutral-100 rounded-lg overflow-hidden">
         {/* Image */}

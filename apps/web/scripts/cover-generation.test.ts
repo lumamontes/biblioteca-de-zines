@@ -185,15 +185,9 @@ function createStorage(calls: string[]): CoverAssetStore & { uploaded: Array<{ d
   };
 }
 
-function createMigrationZine(id: number, cover_image: string): {
-  cover_image: string;
-  id: number;
-  import_status: string;
-  pdf_url: string;
-  processed_pdf_url: string;
-  title: string;
-} {
+function createMigrationZine(id: number, cover_image: string) {
   return {
+    active_page_generation: null,
     cover_image,
     id,
     import_status: 'completed',

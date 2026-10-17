@@ -33,7 +33,7 @@ It does not:
 | Private contact | A non-public channel used to communicate with a submitter or rights holder. | `form_uploads.author_email`; privacy and retention policy are not modeled. |
 | Submission | An intake record and context provided to the Biblioteca for review. | `form_uploads`; no formal link to the resulting catalogue row. |
 | File asset/version | A specific source or delivery file with its own bytes, URL, format, checksum, or version history. | `pdf_url`, local archive observations, and external URLs; no asset/version entity. |
-| Derivative | A representation produced from another file, such as a preview, reading copy, or page image. | Not currently represented in the public reading flow. Planned `zine_pages` data is unused. |
+| Derivative | A representation produced from another file, such as a preview, reading copy, or page image. | `zine_pages` and immutable page generations support the viewer release planned for the monorepo. |
 | Processing event | Optional evidence of an action such as review, publication, import, validation, correction, or removal. It does not imply event sourcing or a required audit log. | Timestamps and `import_status` provide partial signals; current profile needs state snapshots, not event history. |
 | Access policy | Separate decisions about discovery, reading, downloading, preservation, replication, and reuse. | Mostly collapsed into `is_published` and external URL reachability. |
 
@@ -104,7 +104,7 @@ These dimensions must not be collapsed into one `published` boolean:
 | `form_uploads.cover_image`, `author_name`, `author_url` | Submission-side asset and creator context | Preserve as intake values; map to catalogue fields only through the publication review step. |
 | `pdf_url`, `cover_image` | External source references | Keep for current operation; do not label them originals or managed storage. |
 | `is_published` | Public editorial visibility | Keep for compatibility; do not use it for processing, file availability, or rights. |
-| `import_status`, `total_pages`, `zine_pages` | Planned page derivative processing | Defer or retire after an explicit decision; these are not used by the current reader. |
+| `import_status`, `total_pages`, `zine_pages` | Target viewer page-generation state and delivery manifest | Keep for asynchronous generation, activation, reader delivery, and recovery. |
 | Local archive manifest | Fixity and observation evidence | Keep private and separate from public catalogue identity. |
 
 ## Access Profile
@@ -114,7 +114,7 @@ The profile treats these capabilities separately:
 | Capability | Current behavior | Provisional requirement |
 | --- | --- | --- |
 | Public discovery | Published `library_zines` records appear in catalogue, search, and author pages. | A record may be discoverable without implying download, preservation, or reuse permission. |
-| Reading | Public detail pages embed the external PDF preview. | Reading copy and source file must be distinguishable when they differ. |
+| Reading | The target viewer uses an active page manifest with the external PDF as fallback; production currently uses the external preview flow. | Reading derivatives, fallback PDF, and source file must remain distinguishable when they differ. |
 | Downloading | Depends on the external PDF provider's URL and permissions. | Download policy must be explicit and independently reviewable. |
 | Preservation | Local inventory observes selected files; source custody is not established. | Retention, authorization, checksum, redundancy, and recovery need separate evidence. |
 | Replication | No independent production replica or restore process is established. | Replication status must be recorded independently from publication. |

@@ -19,7 +19,12 @@ export async function createCoverGeneration(
   sourceUrl: string,
   renderFirstPage: FirstPageRenderer,
   optimizeCover: CoverOptimizer,
-  options: { replaceExternalCover?: boolean; sourceObservationId?: number | (() => number | undefined); recordDerivative?: CoverDerivativeRecorder } = {},
+  options: {
+    replaceExternalCover?: boolean;
+    sourceType?: 'pdf' | 'image';
+    sourceObservationId?: number | (() => number | undefined);
+    recordDerivative?: CoverDerivativeRecorder;
+  } = {},
 ): Promise<void> {
   const generationId = randomUUID();
   let state: CoverGenerationState | undefined;
@@ -28,7 +33,9 @@ export async function createCoverGeneration(
     state = await repository.getState(target);
     await repository.markProcessing(target);
     const source = await loadSource();
-    if (!isPdf(source)) throw new Error(`Unsupported cover source file type: ${source.mimeType}`);
+    if (options.sourceType !== 'image' && !isPdf(source)) {
+      throw new Error(`Unsupported cover source file type: ${source.mimeType}`);
+    }
     const page = await renderFirstPage(source);
 
     const cover = await optimizeCover(page);

@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { pipe } from "composable-functions";
 import { Tables } from "@/types/database.types";
 import { getCategories } from "@/services/categories-service";
+import Link from "next/link";
 
 const hasFormDataInStorage = (): boolean => {
   const formData = get('apply-zine-form-data', { 
@@ -191,6 +192,16 @@ function ApplyZineForm() {
             onContactEmailChange={additionalInfoForm.setContactEmail}
             disabled={isPending}
           />
+
+          <InfoBox>
+            <p>
+              <strong>Como o arquivo será processado:</strong>{' '}
+              após a publicação, baixaremos o PDF enviado e processaremos todas as suas páginas para criar as imagens usadas no leitor com navegação página a página. Também será gerada uma capa a partir da primeira página quando você não enviar uma imagem de capa. Esses arquivos processados serão armazenados para disponibilizar a zine no acervo.{' '}
+              <Link href="/zines/submission-guide" className="underline underline-offset-2">
+                Leia o guia completo sobre processamento, preservação e direitos.
+              </Link>
+            </p>
+          </InfoBox>
 
           <div className="pt-4 space-y-4">
             <div className="flex flex-col md:flex-row gap-4">

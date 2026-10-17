@@ -6,6 +6,7 @@ import { isGeneratedCover, isPlaceholderCover } from '@/utils/cover-image';
 
 export function createSupabaseZineCoverRepository(
   supabase: SupabaseClient<Database>,
+  options: { repairOnly?: boolean } = {},
 ): CoverGenerationRepository {
   return {
     async getState(target) {
@@ -20,10 +21,12 @@ export function createSupabaseZineCoverRepository(
     },
 
     async markProcessing(target) {
+      if (options.repairOnly) return;
       await updateStatus(assertZineTarget(target), 'processing');
     },
 
     async markFailed(target) {
+      if (options.repairOnly) return;
       await updateStatus(assertZineTarget(target), 'failed');
     },
 
@@ -48,13 +51,16 @@ export function createSupabaseZineCoverRepository(
         return false;
       }
 
-      const { error } = await supabase
-        .from('library_zines')
-        .update({
-          cover_image: generation.coverImage,
-          import_status: 'completed',
-          processed_pdf_url: generation.sourceUrl,
-        })
+    const update = options.repairOnly
+      ? { cover_image: generation.coverImage }
+      : {
+        cover_image: generation.coverImage,
+        import_status: 'completed' as const,
+        processed_pdf_url: generation.sourceUrl,
+      };
+    const { error } = await supabase
+      .from('library_zines')
+      .update(update)
         .eq('id', zineId)
         .eq('pdf_url', generation.sourceUrl)
         .select('id')

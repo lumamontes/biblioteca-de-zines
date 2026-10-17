@@ -19,6 +19,9 @@ export default {
           darkblue: "#2326D0"
         }
       },
+      maxWidth: {
+        '8xl': '1536px',
+      },
       animation: {
         'marquee': 'marquee-left 40s linear infinite',
         'marquee-slow': 'marquee-left 60s linear infinite',

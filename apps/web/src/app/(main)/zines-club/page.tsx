@@ -69,13 +69,13 @@ export default async function ZinesClub() {
         </h1>
         <div className="prose max-w-none text-center">
           <p className="text-sm mb-4 text-gray-600 font-mono">
-            📚✍️ Uma iniciativa para estimular criatividade e comunidade!
+             Uma iniciativa para estimular criatividade e comunidade!
           </p>
           <p className="text-sm mb-4 text-gray-600 font-mono">
-            O Clube de Zines está de volta! Agora cada edição dura dois meses, para todo mundo ter mais tempo de criar e experimentar.
+             O Clube de Zines é um espaço para criar zines a partir de temas coletivos, experimentar diferentes formatos e compartilhar interpretações.
           </p>
           <p className="text-sm mb-6 text-gray-600 font-mono">
-            A edição atual convida você a interpretar o tema <strong>Arquivo</strong>: álbuns de família, documentos históricos, registros, catálogos ou qualquer outra ideia. Faça do seu jeito, compartilhe com <span className="bg-gray-100 px-1">#ClubeDeZines</span> e envie para o nosso acervo digital! 💫
+             Faça do seu jeito, compartilhe com <span className="bg-gray-100 px-1">#ClubeDeZines</span> e envie para o nosso acervo digital! 💫
           </p>
         </div>
       </section>
@@ -135,7 +135,7 @@ export default async function ZinesClub() {
           <div className="flex gap-4">
             <span className="text-gray-400">03.</span>
             <div>
-              <strong>Envie</strong> para o acervo da biblioteca
+                <strong>Envie</strong> para o <Link href="/zines/apply" className="text-blue-600 hover:underline">acervo da biblioteca</Link>
             </div>
           </div>
           <div className="flex gap-4">
@@ -151,7 +151,6 @@ export default async function ZinesClub() {
           <div className="space-y-1">
             <p><Link href="https://t.me/+-irW84jni8ExYWFh" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Grupo do Telegram</Link> (discussões, WIPs, etc.)</p>
             <p> <Link href="https://open.substack.com/pub/bibliotecadezines/p/colecao-do-clube-de-zines-1?r=53s7hh&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Newsletter</Link> com resumo dos primeiros meses</p>
-            <p> Site: www.biblioteca-de-zines.com.br</p>
           </div>
         </div>
         

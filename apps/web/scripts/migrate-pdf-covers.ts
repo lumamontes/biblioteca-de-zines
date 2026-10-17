@@ -16,7 +16,7 @@ async function main(): Promise<void> {
 
   const { data: zines, error } = await supabase
     .from('library_zines')
-    .select('id, title, pdf_url, processed_pdf_url, cover_image, import_status')
+    .select('id, title, pdf_url, processed_pdf_url, cover_image, import_status, active_page_generation')
     .eq('is_published', true)
     .not('pdf_url', 'is', null);
 

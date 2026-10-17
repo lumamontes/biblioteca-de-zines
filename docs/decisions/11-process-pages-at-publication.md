@@ -1,52 +1,67 @@
-# Process Pages at Publication
+# Processar páginas na publicação
 
-Status: superseded for the current reader by [Cover-Only Processing at Publication](./12-cover-only-processing-at-publication.md).
+**Decisão histórica. O caminho atual do reader está documentado em [14-viewer-release-and-page-derivatives](./14-viewer-release-and-page-derivatives.md).**
 
-## Context
+## Contexto
 
-Submissions in `form_uploads` are intake records awaiting review. Pre-processing those records creates private derivatives for material that may never be published and adds a second storage lifecycle. The current reader uses Google Drive preview; the current catalogue need is a public fallback cover, while full page assets remain future work.
+Submissões em `form_uploads` são registros de entrada que aguardam revisão.
+Processar essas submissões antes da publicação criaria derivados privados para
+materiais que talvez nunca entrassem no acervo, além de adicionar um segundo
+ciclo de armazenamento.
 
-## Decision
+Ao mesmo tempo, uma publicação aprovada precisa de uma representação estável
+para leitura, com páginas ordenadas, fallback e possibilidade de reprocessamento
+quando o PDF muda.
 
-Process PDFs only after a submission becomes a `library_zine`, writing a first-page cover derivative directly to the public delivery bucket.
+## Decisão
 
-- `form_uploads` stores submission metadata and the current source URL only.
-- `form_uploads` does not create derivatives.
-- Publication reads the current PDF URL and creates a cover generation when no valid active generated cover exists for that exact URL.
-- A changed PDF URL creates a new cover generation when the current cover is a generated fallback; it does not replace a valid external cover.
-- A matching complete generated cover is reused during republish.
-- Metadata-only edits do not trigger processing.
-- A missing custom cover uses the first PDF page as the default WebP cover.
-- The cleanup migration removes the unused form-upload processing columns and `form_upload_pages`; form uploads remain intake records only.
+Decidimos processar o PDF somente depois que uma submissão se tornar uma
+publicação aprovada, criando uma geração completa de páginas e capa.
 
-See the [page-processing and asset-lifecycle specification](../specs/page-processing-and-asset-lifecycle.md) for the complete lifecycle and the [runbook](../runbooks/page-processing.md) for operations.
+- Submissões não publicadas não criam derivados públicos.
+- A publicação usa o PDF atualmente associado ao registro.
+- Uma geração completa precisa ser armazenada antes de ser ativada.
+- A geração ativa só muda depois que todas as páginas necessárias forem
+  processadas com sucesso.
+- Uma geração anterior continua ativa enquanto a substituta está sendo criada.
+- A mesma fonte pode ser reutilizada quando a geração estiver completa e o PDF
+  não tiver mudado.
 
-## Alternatives Considered
+## Alternativas Consideradas
 
-### Pre-process submissions in a private bucket
+### Processar durante a submissão
 
-Rejected because most submissions may never become publications, and the current workflow has no requirement to preview generated pages during review.
+Seria possível mostrar previews mais cedo, mas criaria storage e limpeza para
+materiais que podem ser rejeitados ou nunca publicados.
 
-### Two buckets with private-to-public promotion
+### Processar somente quando alguém abrir o reader
 
-Rejected for the current workflow because it adds copying, private-generation cleanup, and a second source of lifecycle state without a current product benefit.
+Reduziria o processamento inicial, mas deixaria a primeira leitura lenta,
+complicaria concorrência e dificultaria controlar falhas e retries.
 
-### One private bucket with signed public delivery URLs
+### Processar somente a capa
 
-Deferred. This remains an option if published assets later need restricted access, but it would require a different reader delivery model.
+Foi usado como uma etapa intermediária para melhorar o catálogo antes do
+viewer. Não atende à navegação página a página do reader e hoje é mantido apenas
+para compatibilidade e migração legada.
 
-## Consequences
+## Justificativa
 
-Positive consequences:
+Processar na publicação equilibra custo, privacidade e experiência de leitura.
+Evita criar derivados para submissões não aprovadas e permite que o viewer
+receba um manifest completo, estável e cacheável.
 
-- Unpublished submissions create no derivative storage or cleanup obligations.
-- A PDF edited before publication is naturally handled by reading the latest URL at publication.
-- Republish can reuse the existing public generation when the URL is unchanged.
-- The active storage path is simpler and easier to operate.
+## Consequências
 
-Tradeoffs:
+- A publicação pode esperar o processamento assíncrono da geração.
+- Falhas individuais precisam permitir retry e ser visíveis para a manutenção.
+- O reader ganha páginas ordenadas, navegação própria e fallback para o PDF.
+- Uma alteração no PDF precisa criar uma nova geração.
+- A estratégia cover-only deixa de ser o fluxo principal e permanece como
+  compatibilidade histórica.
 
-- Reviewers cannot preview generated cover derivatives before publication.
-- Publication waits for first-page rendering when a generated cover is missing or stale.
-- Cover replacement uses immutable generation IDs and safe activation.
-- Full page generation remains a future workflow using the preserved PDF rendering primitives.
+## Links
+
+- [Processamento de páginas e ciclo de vida de assets](../specs/page-processing-and-asset-lifecycle.md)
+- [Release do viewer e derivados de páginas](./14-viewer-release-and-page-derivatives.md)
+- [Runbook de processamento de páginas](../runbooks/page-processing.md)
