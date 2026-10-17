@@ -5,7 +5,7 @@ and migration shape.
 
 ## Goal
 
-Create a private, append-only record of what Biblioteca observes when it
+Create a private record of what Biblioteca observes when it
 acquires or inspects a source file. The first use is PDF sources submitted by
 URL or associated with a publication, but the model must not make a URL or PDF
 the definition of a publication.
@@ -26,8 +26,11 @@ the public catalogue.
 
 One row represents one timestamped observation of one acquired source/file
 asset. A later acquisition or re-extraction creates another row rather than
-silently replacing the previous observation. The latest successful observation
-can be selected for operational use, but history remains available.
+silently replacing the previous observation by application convention. The
+latest successful observation can be selected for operational use, while prior
+observations remain available for comparison. The database does not enforce
+immutability; corrections to an observation are an operational maintenance
+decision.
 
 The observation may be linked to a `library_zines` publication, a `form_uploads`
 submission, or only a source reference when the relationship is not yet
@@ -122,7 +125,9 @@ catalogue metadata through this table.
    inference, or automatic catalogue rewriting in the first version.
 5. A derived cover, page image, or reading copy receives its own asset identity
    and links back to the observed source; it does not overwrite the source row.
-6. Re-running a new extractor version creates a new observation.
+6. Re-running a new extractor version creates a new observation. Application
+   workflows should prefer preserving the previous observation instead of
+   overwriting it.
 
 ## Preservation Alignment
 
