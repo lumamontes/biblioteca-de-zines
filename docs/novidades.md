@@ -19,7 +19,9 @@ continuam em `/publicacoes`.
 
 - Notícias e marcos podem ter uma data do acontecimento e uma data editorial.
 - Novidades usam a data em que a atualização foi publicada.
-- A visão técnica usa a data em que a mudança foi incorporada ao produto.
+- A visão técnica usa a data em que a mudança foi incorporada à `main`, que é o
+  marco de publicação em produção. Mudanças ainda não incorporadas aparecem em
+  `Não publicado`.
 
 ## Contribuições
 

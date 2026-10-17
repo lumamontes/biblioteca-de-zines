@@ -1,11 +1,14 @@
-import { getBlogArticles } from "@/services/blog-service";
 import Link from "next/link";
 import type { Metadata } from "next";
 import BlogArticleCard from "@/components/blog/blog-article-card";
+import { PublicUpdate } from "@/components/updates/public-update";
+import { getPublicUpdates } from "@/content/updates";
+import { getBlogArticles } from "@/services/blog-service";
 
 export const metadata: Metadata = {
   title: "Publicações | Biblioteca de Zines",
-  description: "Artigos e posts da Biblioteca de Zines no Substack.",
+  description:
+    "Novidades da Biblioteca de Zines e artigos publicados no Substack.",
 };
 
 function formatDate(dateString: string): string {
@@ -29,53 +32,70 @@ function truncateText(text: string, maxLength = 150): string {
   return `${text.substring(0, maxLength).trim()}...`;
 }
 
-export default async function PublicacoesPage() {
-  const articles = await getBlogArticles();
+export default async function PublicationsPage() {
+  const [articles, updates] = await Promise.all([
+    getBlogArticles(),
+    Promise.resolve(getPublicUpdates()),
+  ]);
 
   return (
-    <div className="min-h-screen bg-white">
-      <section className="mx-auto max-w-4xl px-4 py-12">
-        <h1 className="mb-6 text-center text-3xl font-mono">Publicações</h1>
-        <p className="text-center text-sm text-gray-600 font-mono">
-          Artigos e posts da Biblioteca de Zines. Leia mais no{" "}
-          <Link
-            href="https://bibliotecadezines.substack.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            Substack
-          </Link>
-          .
-        </p>
-      </section>
-
-      {articles.length > 0 ? (
-        <section className="mx-auto grid max-w-6xl grid-cols-1 gap-8 border-t border-gray-200 px-4 py-12 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((article) => (
-            <BlogArticleCard
-              key={article.link}
-              article={article}
-              formattedDate={formatDate(article.pubDate)}
-              description={truncateText(stripHtml(article.description || ""))}
-            />
-          ))}
-        </section>
-      ) : (
-        <section className="mx-auto max-w-4xl border-t border-gray-200 px-4 py-12 text-center">
-          <p className="mb-6 font-mono text-gray-600">
-            Nenhuma publicação disponível no momento.
+    <main className="min-h-screen bg-white px-4 py-8 md:py-12">
+      <div className="mx-auto max-w-screen-md">
+        <header className="mb-12">
+          <h1 className="mb-4 text-3xl font-bold">Publicações</h1>
+          <p className="max-w-2xl leading-relaxed text-neutral-700">
+            Novidades da Biblioteca, relatos de atividades e textos publicados
+            no nosso Substack.
           </p>
-          <Link
-            href="https://bibliotecadezines.substack.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block border border-black px-6 py-2 font-mono text-sm transition-colors hover:bg-black hover:text-white"
-          >
-            Visitar Substack
-          </Link>
+        </header>
+
+        <section aria-labelledby="updates-heading">
+          <h2 id="updates-heading" className="mb-6 text-2xl font-bold">
+            Novidades da Biblioteca
+          </h2>
+          <div>
+            {updates.map((update) => (
+              <PublicUpdate key={update.slug} update={update} />
+            ))}
+          </div>
         </section>
-      )}
-    </div>
+
+        <section
+          aria-labelledby="articles-heading"
+          className="mt-16 border-t border-neutral-200 pt-10"
+        >
+          <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+            <h2 id="articles-heading" className="text-2xl font-bold">
+              Textos
+            </h2>
+            <Link
+              href="https://bibliotecadezines.substack.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm underline"
+            >
+              Abrir Substack
+            </Link>
+          </div>
+
+          {articles.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {articles.map((article) => (
+                <BlogArticleCard
+                  key={article.link}
+                  article={article}
+                  formattedDate={formatDate(article.pubDate)}
+                  description={truncateText(stripHtml(article.description || ""))}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-neutral-600">
+              Nenhum texto disponível no momento.
+            </p>
+          )}
+        </section>
+      </div>
+    </main>
   );
 }

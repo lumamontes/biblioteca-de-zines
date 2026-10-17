@@ -49,11 +49,14 @@ export default async function AuthorsPage() {
         <p>Não há autores publicados no momento.</p>
       ) : (
         <>
-          <nav aria-label="Navegar por letra" className="mb-10 flex flex-wrap gap-2">
+          <nav
+            aria-label="Navegar por letra"
+            className="sticky top-[60px] z-20 -mx-4 mb-10 flex flex-wrap gap-2 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur-sm"
+          >
             {authorGroups.map(([initial]) => (
               <a
                 key={initial}
-                href={`#letter-${initial}`}
+                href={`#${initial}`}
                 className="border border-black px-3 py-1 text-sm font-medium transition hover:bg-neutral-100"
               >
                 {initial}
@@ -63,7 +66,7 @@ export default async function AuthorsPage() {
 
           <div className="space-y-10">
             {authorGroups.map(([initial, groupedAuthors]) => (
-              <section key={initial} id={`letter-${initial}`} className="scroll-mt-6">
+              <section key={initial} id={initial} className="scroll-mt-24">
                 <h2 className="mb-4 border-b border-black pb-2 text-2xl font-bold">{initial}</h2>
                 <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {groupedAuthors.map((author) => (
