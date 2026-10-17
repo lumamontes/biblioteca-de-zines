@@ -10,3 +10,9 @@ test('source metadata migration enforces append-only writes while retaining inse
   assert.match(migration, /ON DELETE RESTRICT/);
   assert.doesNotMatch(migration, /REVOKE INSERT/);
 });
+
+test('source metadata migration accepts extractor and derivative text statuses', async () => {
+  const migration = await readFile(new URL('../supabase/migrations/20261017000000_addSourceMetadata.sql', import.meta.url), 'utf8');
+  assert.match(migration, /text_layer_status[\s\S]*'unknown'[\s\S]*'not_applicable'/);
+  assert.match(migration, /extraction_status[\s\S]*'not_applicable'/);
+});
