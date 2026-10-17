@@ -6,6 +6,7 @@
 
 import { detectFileTypeFromBuffer } from '@/utils/file-type-detection';
 import { SourceAcquisitionError, type SourceDocument } from '@/domain/source-document';
+import { filenameFromContentDisposition, parseByteSize } from './acquisition-metadata';
 
 /**
  * Extract file ID from Google Drive URL
@@ -82,15 +83,4 @@ export async function downloadFile(fileId: string): Promise<SourceDocument> {
       detectedMediaType,
     },
   };
-}
-
-function filenameFromContentDisposition(value: string | null): string | null {
-  if (!value) return null;
-  const match = value.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
-  return match ? decodeURIComponent(match[1] ?? match[2]) : null;
-}
-
-function parseByteSize(value: string | null): number | null {
-  if (!value || !/^\d+$/.test(value)) return null;
-  return Number(value);
 }
