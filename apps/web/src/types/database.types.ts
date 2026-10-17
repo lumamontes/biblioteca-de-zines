@@ -356,7 +356,7 @@ export type Database = {
           source_reference: string | null
           source_size_bytes: number | null
           source_uri: string | null
-          status: "acquired" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
+          status: "observed" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
           storage_key: string | null
           text_layer_status: string | null
           uncertainty_status: string | null
@@ -395,7 +395,7 @@ export type Database = {
           source_reference?: string | null
           source_size_bytes?: number | null
           source_uri?: string | null
-          status: "acquired" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
+          status: "observed" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
           storage_key?: string | null
           text_layer_status?: string | null
           uncertainty_status?: string | null
@@ -434,7 +434,7 @@ export type Database = {
           source_reference?: string | null
           source_size_bytes?: number | null
           source_uri?: string | null
-          status?: "acquired" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
+          status?: "observed" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
           storage_key?: string | null
           text_layer_status?: string | null
           uncertainty_status?: string | null
