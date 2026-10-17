@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import { AUTHOR_LINK_METADATA_CACHE_TAG, type LinkMetadata } from "./link-metadata-types";
 
-const MAX_RESPONSE_BYTES = 512 * 1024;
+const MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
 const MAX_REDIRECTS = 3;
 // Author links are stable; refresh previews monthly instead of fetching on normal page visits.
 const METADATA_CACHE_SECONDS = 60 * 60 * 24 * 30;
