@@ -225,3 +225,23 @@ _Avoid_: Calling every PDF an original
 **Access state**:
 The current condition of one access dimension, such as public, restricted, unknown, or not established.
 _Avoid_: Treating one access state as the answer for every use
+
+## Editorial and project updates
+
+**External publication**: A text published through the Biblioteca's Substack and presented on the site as an external publication.
+_Avoid_: Treating every public text as a project update
+
+**News item**: A public editorial record about a Biblioteca activity, event, workshop, presentation, retrospective, collaboration, or other meaningful community milestone.
+_Avoid_: Treating a news item as a technical release note
+
+**Public update**: A user-facing explanation of a notable change to the Biblioteca website or project, written in accessible Portuguese and optionally including media.
+_Avoid_: Treating a public update as a copy of a pull request
+
+**Technical update**: A concise record of a notable project change for contributors, categorized in Portuguese and linked to one or more pull requests.
+_Avoid_: Treating a technical update as an uncurated commit log
+
+**Novidade**: The shared public concept for a news item or public update. The site exposes technical updates through the nerds view of the same novelty timeline.
+_Avoid_: Treating news and product updates as identical editorial records
+
+**Editorial source**: The original publication or platform URL from which an adapted public record was prepared, retained for provenance and attribution.
+_Avoid_: Treating public availability on another platform as automatic authorization for every reuse

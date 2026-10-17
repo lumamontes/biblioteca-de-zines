@@ -44,8 +44,13 @@ export default function Header() {
             </Link>
           </li>
           <li>
-            <Link href="/blog" className="hover:underline">
-              Blog
+            <Link href="/publicacoes" className="hover:underline">
+              Publicações
+            </Link>
+          </li>
+          <li>
+            <Link href="/novidades" className="hover:underline">
+              Novidades
             </Link>
           </li>
           <li>
@@ -87,11 +92,20 @@ export default function Header() {
             </li>
             <li>
               <Link
-                href="/blog"
+                href="/publicacoes"
                 className="hover:underline"
                 onClick={toggleMenu}
               >
-                Blog
+                Publicações
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/novidades"
+                className="hover:underline"
+                onClick={toggleMenu}
+              >
+                Novidades
               </Link>
             </li>
             <li>
