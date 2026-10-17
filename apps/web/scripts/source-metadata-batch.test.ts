@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runSourceMetadataBatch } from '../src/application/source-metadata/run-source-metadata-batch';
+import { observeSourceMetadataSource } from '../src/application/source-metadata/observe-source-metadata-source';
 import type { SourceMetadataBatchSource } from '../src/application/source-metadata/source-metadata-batch-types';
 import type { SourceMetadataObservation } from '../src/application/source-metadata/source-metadata-types';
 
@@ -87,4 +88,36 @@ test('supports limiting a batch without changing source order', async () => {
 
   assert.deepEqual(seen, ['publication:1']);
   assert.equal(results.results.length, 1);
+});
+
+test('continues after failed acquisition and records unknown text status', async () => {
+  const sources = [
+    { sourceId: 'publication:missing', publicationId: 1, submissionId: null, sourceUri: 'missing' },
+    { sourceId: 'publication:unknown-text', publicationId: 2, submissionId: null, sourceUri: 'unknown-text' },
+  ];
+  const recorded: SourceMetadataObservation[] = [];
+  const dependencies = {
+    listSources: async () => sources,
+    observe: (source: SourceMetadataBatchSource) => observeSourceMetadataSource(source, {
+      repository: { findLatestFixity: async () => null },
+      download: async (sourceUri: string) => {
+        if (sourceUri === 'missing') throw new Error('connection timed out');
+        return { buffer: Buffer.from('%PDF-1.4 fixture'), mimeType: 'application/pdf' };
+      },
+      inspect: async () => ({
+        tool: 'fixture',
+        metadata: { title: null, author: null, subject: null, creator: null, producer: null, creationDate: null, modificationDate: null },
+        pages: [{ width: 612, height: 792, text: { status: 'unknown' as const, extracted: false } }],
+      }),
+      clock: () => new Date('2026-10-17T12:00:00.000Z'),
+    }),
+    record: async (item: SourceMetadataObservation) => { recorded.push(item); return recorded.length; },
+  };
+
+  const result = await runSourceMetadataBatch(dependencies);
+
+  assert.deepEqual(result.results.map(({ status }) => status), ['unreachable', 'observed']);
+  assert.equal(recorded[0]?.textLayerStatus, 'not_applicable');
+  assert.equal(recorded[1]?.textLayerStatus, 'unknown');
+  assert.equal(recorded.length, 2);
 });

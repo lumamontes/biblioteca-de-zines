@@ -40,7 +40,8 @@ export function createSupabaseSourceMetadataRepository(
         extraction_status: observation.textExtractionStatus === 'succeeded'
           ? 'completed'
           : observation.textExtractionStatus === 'partial' ? 'partial'
-            : observation.textExtractionStatus === 'failed' ? 'failed' : 'not_attempted',
+            : observation.textExtractionStatus === 'failed' ? 'failed'
+              : observation.textExtractionStatus === 'not_applicable' ? 'not_applicable' : 'not_attempted',
         embedded_metadata: toJson(observation.embeddedMetadata),
         fixity_algorithm: observation.fixity?.algorithm,
         fixity_digest: observation.fixity?.digest,

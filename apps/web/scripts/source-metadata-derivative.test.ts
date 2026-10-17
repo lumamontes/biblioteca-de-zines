@@ -18,5 +18,7 @@ test('records a derivative identity linked to its source observation', async () 
   assert.equal(recorded.assetKind, 'derivative');
   assert.equal(recorded.sourceObservationId, 1);
   assert.equal(recorded.sourceUri, null);
+  assert.equal(recorded.textLayerStatus, 'not_applicable');
+  assert.equal(recorded.textExtractionStatus, 'not_applicable');
   assert.match(recorded.provenanceNote, /not an original/);
 });

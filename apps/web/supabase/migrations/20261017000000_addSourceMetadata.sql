@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS public.source_metadata (
   pdf_page_count INTEGER CHECK (pdf_page_count IS NULL OR pdf_page_count >= 0),
   page_observations JSONB,
   text_layer_status TEXT
-    CHECK (text_layer_status IS NULL OR text_layer_status IN ('present', 'absent', 'partial', 'not_checked', 'failed')),
+    CHECK (text_layer_status IS NULL OR text_layer_status IN ('present', 'absent', 'partial', 'unknown', 'not_applicable', 'not_checked', 'failed')),
   extraction_status TEXT
-    CHECK (extraction_status IS NULL OR extraction_status IN ('completed', 'partial', 'failed', 'not_attempted')),
+    CHECK (extraction_status IS NULL OR extraction_status IN ('completed', 'partial', 'failed', 'not_attempted', 'not_applicable')),
 
   embedded_metadata JSONB,
   fixity_algorithm TEXT,
