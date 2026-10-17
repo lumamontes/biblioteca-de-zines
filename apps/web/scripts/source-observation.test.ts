@@ -35,7 +35,7 @@ test('extracts a versioned PDF observation without changing catalogue fields', a
   ]);
   assert.deepEqual(outcome.observation.pdf.embeddedMetadata, { ...inspection.metadata, tool: 'test-pdf-inspector 1', extractedAt: observedAt.toISOString() });
   assert.deepEqual(outcome.observation.pdf.textLayer, { status: 'present', pagesWithText: 1, pagesWithoutText: 1, pagesNotChecked: 0 });
-  assert.deepEqual(outcome.observation.pdf.textExtraction, { status: 'complete', extractedPages: 2, failedPages: 0 });
+   assert.deepEqual(outcome.observation.pdf.textExtraction, { status: 'complete', extractedPages: 2, failedPages: 0, unknownPages: 0 });
   assert.equal(outcome.observation.fixity.digest, createHash('sha256').update(buffer).digest('hex'));
   assert.equal(outcome.observation.fixity.context, 'acquisition');
   assert.equal(outcome.observation.provenance.visibility, 'internal');
@@ -45,7 +45,8 @@ test('returns typed failures for unavailable and non-PDF sources', async () => {
   const unavailable = await extractSourceObservation({ acquisition: { status: 'unreachable', failureReason: 'timeout' } }, async () => inspection, () => observedAt);
   assert.deepEqual(unavailable, {
     version: 1, status: 'failed', observedAt: observedAt.toISOString(), extractorVersion: 'pdf-source-observation/v1',
-    reason: 'unreachable', message: 'timeout', fixity: null,
+     reason: 'unreachable', message: 'timeout', fixity: null, detectedMediaType: null,
+     formatIdentification: 'not_attempted', formatIdentifier: null,
   });
 
   const notPdf = await extractSourceObservation({ source: { buffer: Buffer.from('not a PDF'), mimeType: 'text/plain' } }, async () => inspection, () => observedAt);
@@ -62,4 +63,24 @@ test('keeps PDF inspection failures distinct from invalid signatures', async () 
   }, () => observedAt);
   assert.equal(outcome.status, 'failed');
   if (outcome.status === 'failed') assert.equal(outcome.reason, 'extraction_failed');
+});
+
+test('preserves unknown and partial text extraction and compares prior fixity', async () => {
+  const buffer = Buffer.from('%PDF-1.7 source bytes');
+  const digest = createHash('sha256').update(buffer).digest('hex');
+  const outcome = await extractSourceObservation({ source: { buffer, mimeType: 'application/pdf' } }, async () => ({
+    ...inspection,
+    pages: [
+      { width: 612, height: 792, text: { status: 'present' as const, extracted: true } },
+      { width: 612, height: 792, text: { status: 'unknown' as const, extracted: false } },
+    ],
+  }), () => observedAt, { algorithm: 'sha-256', digest, context: 'acquisition' });
+
+  assert.equal(outcome.status, 'observed');
+  if (outcome.status !== 'observed') return;
+  assert.equal(outcome.observation.pdf.textLayer.status, 'present');
+  assert.deepEqual(outcome.observation.pdf.textExtraction, { status: 'partial', extractedPages: 1, failedPages: 0, unknownPages: 1 });
+  assert.equal(outcome.observation.fixity.checkStatus, 'matched');
+  assert.match(outcome.observation.fixity.comparisonDetail ?? '', /matched/);
+  assert.equal(outcome.observation.provenance.uncertaintyStatus, 'partial');
 });

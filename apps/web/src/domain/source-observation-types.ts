@@ -55,6 +55,7 @@ export type TextExtractionObservation = {
   status: 'complete' | 'partial' | 'failed' | 'not_attempted';
   extractedPages: number;
   failedPages: number;
+  unknownPages: number;
 };
 
 export type FixityObservation = {
@@ -62,8 +63,8 @@ export type FixityObservation = {
   digest: string;
   context: 'acquisition' | 'validation' | 'storage-check' | 'delivery';
   calculatedAt: string;
-  checkStatus: 'not_compared';
-  comparisonDetail: null;
+  checkStatus: 'not_compared' | 'matched' | 'mismatch';
+  comparisonDetail: string | null;
 };
 
 export type SourceObservation = {
@@ -87,6 +88,8 @@ export type SourceObservation = {
   };
   provenance: {
     note: string;
+    valueProvenance: Record<string, 'source-supplied' | 'system-observed' | 'tool-produced'>;
+    uncertaintyStatus: 'complete' | 'partial' | 'failed' | 'unknown';
     visibility: 'internal';
   };
 };
@@ -105,6 +108,9 @@ export type SourceObservationOutcome =
       reason: SourceObservationFailureReason;
       message: string;
       fixity: FixityObservation | null;
+      detectedMediaType: string | null;
+      formatIdentification: 'identified' | 'unidentified' | 'not_attempted';
+      formatIdentifier: string | null;
     };
 
 export type PdfInspection = {
@@ -118,3 +124,5 @@ export type PdfInspection = {
 };
 
 export type PdfSourceInspector = (buffer: Buffer) => Promise<PdfInspection>;
+
+export type PriorFixity = { algorithm: string; digest: string; context: string };

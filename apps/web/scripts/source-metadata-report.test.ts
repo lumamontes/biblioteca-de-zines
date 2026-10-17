@@ -11,7 +11,7 @@ const observation = (overrides: Partial<SourceMetadataObservation> = {}): Source
   formatIdentifier: 'application/pdf', storageReference: null, pageCount: 1, pages: [], textLayerStatus: 'present',
   textExtractionStatus: 'succeeded', embeddedMetadata: null, fixity: {
     algorithm: 'sha-256', digest: 'digest', context: 'acquisition', calculatedAt: '2026-01-01', checkStatus: 'not_compared', comparisonDetail: null,
-  }, provenanceNote: null, visibility: 'internal', ...overrides,
+   }, provenanceNote: null, valueProvenance: {}, uncertaintyStatus: 'complete', visibility: 'internal', ...overrides,
 });
 
 test('reports duplicate fixity, failed sources, missing text, and metadata conflicts', () => {

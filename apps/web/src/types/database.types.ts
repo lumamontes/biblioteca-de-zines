@@ -327,6 +327,7 @@ export type Database = {
       }
       source_metadata: {
         Row: {
+          observation_id: string
           acquired_at: string | null
           acquisition_method: string | null
           asset_kind: "source" | "reading-copy" | "preview" | "derivative"
@@ -366,6 +367,7 @@ export type Database = {
           pdf_page_count: number | null
         }
         Insert: {
+          observation_id: string
           acquired_at?: string | null
           acquisition_method?: string | null
           asset_kind?: "source" | "reading-copy" | "preview" | "derivative"
@@ -405,6 +407,7 @@ export type Database = {
           pdf_page_count?: number | null
         }
         Update: {
+          observation_id?: string
           acquired_at?: string | null
           acquisition_method?: string | null
           asset_kind?: "source" | "reading-copy" | "preview" | "derivative"

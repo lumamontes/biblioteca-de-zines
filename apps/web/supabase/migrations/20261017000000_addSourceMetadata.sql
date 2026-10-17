@@ -2,6 +2,7 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.source_metadata (
   id BIGSERIAL PRIMARY KEY,
+  observation_id TEXT NOT NULL UNIQUE,
   library_zine_id INTEGER REFERENCES public.library_zines(id) ON DELETE SET NULL,
   form_upload_id INTEGER REFERENCES public.form_uploads(id) ON DELETE SET NULL,
   source_reference TEXT,
@@ -33,7 +34,7 @@ CREATE TABLE IF NOT EXISTS public.source_metadata (
   text_layer_status TEXT
     CHECK (text_layer_status IS NULL OR text_layer_status IN ('present', 'absent', 'partial', 'not_checked', 'failed')),
   extraction_status TEXT
-    CHECK (extraction_status IS NULL OR extraction_status IN ('completed', 'failed', 'not_attempted')),
+    CHECK (extraction_status IS NULL OR extraction_status IN ('completed', 'partial', 'failed', 'not_attempted')),
 
   embedded_metadata JSONB,
   fixity_algorithm TEXT,

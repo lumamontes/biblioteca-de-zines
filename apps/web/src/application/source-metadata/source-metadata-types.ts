@@ -61,12 +61,12 @@ export interface SourceMetadataObservation {
   pageCount: number | null;
   pages: PdfPageGeometry[];
   textLayerStatus: 'present' | 'absent' | 'partial' | 'unknown' | 'not_applicable';
-  textExtractionStatus: 'succeeded' | 'failed' | 'not_attempted' | 'not_applicable';
+  textExtractionStatus: 'succeeded' | 'partial' | 'failed' | 'not_attempted' | 'not_applicable';
   embeddedMetadata: PdfEmbeddedMetadata | null;
   fixity: SourceFixityObservation | null;
   provenanceNote: string | null;
-  valueProvenance?: Record<string, unknown> | null;
-  uncertaintyStatus?: string | null;
+  valueProvenance: Record<string, unknown>;
+  uncertaintyStatus: 'complete' | 'partial' | 'failed' | 'unknown';
   visibility: 'internal';
 }
 
@@ -83,4 +83,5 @@ export type SourceMetadataExtractor = (
 
 export interface SourceMetadataRepository {
   create(observation: SourceMetadataObservation): Promise<number>;
+  findLatestFixity(sourceUri: string): Promise<{ algorithm: string; digest: string; context: string } | null>;
 }

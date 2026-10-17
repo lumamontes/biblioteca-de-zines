@@ -6,6 +6,7 @@ import type {
   SourceObservation,
   SourceObservationInput,
   SourceObservationOutcome,
+  PriorFixity,
 } from './source-observation-types';
 import {
   SOURCE_OBSERVATION_EXTRACTOR_VERSION,
@@ -18,17 +19,18 @@ export async function extractSourceObservation(
   input: SourceObservationInput,
   inspectPdf: PdfSourceInspector,
   clock: () => Date = now,
+  priorFixity?: PriorFixity | null,
 ): Promise<SourceObservationOutcome> {
   const observedAt = clock();
   if (!input.source || input.acquisition?.status === 'unreachable') {
-    return failed('unreachable', input.acquisition?.failureReason ?? 'The source could not be acquired', observedAt, null);
+    return failed('unreachable', input.acquisition?.failureReason ?? 'The source could not be acquired', observedAt, null, null, 'not_attempted', null);
   }
 
   const { buffer, mimeType } = input.source;
-  const fixity = createFixity(buffer, observedAt);
+  const fixity = createFixity(buffer, observedAt, priorFixity);
   const detected = detectFileTypeFromBuffer(buffer).mimeType;
   if (detected !== 'application/pdf') {
-    return failed('not_pdf', `The source was identified as ${detected}`, observedAt, fixity);
+    return failed('not_pdf', `The source was identified as ${detected}`, observedAt, fixity, detected, 'identified', detected);
   }
 
   try {
@@ -44,6 +46,7 @@ export async function extractSourceObservation(
     const pagesWithoutText = textPages.filter((page) => page.text.status === 'absent').length;
     const extractedPages = inspection.pages.filter((page) => page.text.extracted).length;
     const failedPages = inspection.pages.filter((page) => !page.text.extracted && page.text.status !== 'unknown').length;
+    const unknownPages = inspection.pages.filter((page) => page.text.status === 'unknown').length;
 
     const observation: SourceObservation = {
       observationVersion: SOURCE_OBSERVATION_VERSION,
@@ -68,12 +71,21 @@ export async function extractSourceObservation(
           pagesNotChecked: inspection.pages.length - textPages.length,
         },
         textExtraction: {
-          status: inspection.pages.length === 0 ? 'not_attempted' : failedPages > 0 ? extractedPages > 0 ? 'partial' : 'failed' : 'complete',
+          status: inspection.pages.length === 0 ? 'not_attempted' : failedPages > 0 ? extractedPages > 0 ? 'partial' : 'failed' : unknownPages > 0 ? extractedPages > 0 ? 'partial' : 'not_attempted' : 'complete',
           extractedPages,
           failedPages,
+          unknownPages,
         },
       },
-      provenance: { note: 'Observed from acquired source bytes; values are not catalogue metadata.', visibility: 'internal' },
+      provenance: {
+        note: 'Observed from acquired source bytes; values are not catalogue metadata.',
+        valueProvenance: {
+          sourceUri: 'source-supplied', acquisition: 'source-supplied', mediaTypeDeclared: 'source-supplied',
+          mediaTypeDetected: 'system-observed', formatIdentification: 'system-observed', pdf: 'tool-produced', fixity: 'system-observed',
+        },
+        uncertaintyStatus: failedPages > 0 || unknownPages > 0 ? 'partial' : 'complete',
+        visibility: 'internal',
+      },
     };
     return { version: SOURCE_OBSERVATION_VERSION, status: 'observed', observation };
   } catch (error) {
@@ -82,7 +94,7 @@ export async function extractSourceObservation(
       : error instanceof Error && error.name === 'InvalidPDFException'
         ? 'invalid_pdf'
         : 'extraction_failed';
-    return failed(reason, error instanceof Error ? error.message : 'PDF inspection failed', observedAt, fixity);
+    return failed(reason, error instanceof Error ? error.message : 'PDF inspection failed', observedAt, fixity, detected, 'identified', 'application/pdf');
   }
 }
 
@@ -90,14 +102,15 @@ function orientation(width: number, height: number): 'portrait' | 'landscape' | 
   return width === height ? 'square' : width > height ? 'landscape' : 'portrait';
 }
 
-function createFixity(buffer: Buffer, calculatedAt: Date): FixityObservation {
+function createFixity(buffer: Buffer, calculatedAt: Date, prior: PriorFixity | null | undefined): FixityObservation {
+  const digest = createHash('sha256').update(buffer).digest('hex');
   return {
     algorithm: 'SHA-256',
-    digest: createHash('sha256').update(buffer).digest('hex'),
+    digest,
     context: 'acquisition',
     calculatedAt: calculatedAt.toISOString(),
-    checkStatus: 'not_compared',
-    comparisonDetail: null,
+    checkStatus: prior?.algorithm.toLowerCase() === 'sha-256' ? prior.digest === digest ? 'matched' : 'mismatch' : 'not_compared',
+    comparisonDetail: prior ? `Compared with ${prior.context} digest ${prior.digest}: ${prior.digest === digest ? 'matched' : 'mismatch'}` : null,
   };
 }
 
@@ -106,6 +119,9 @@ function failed(
   message: string,
   observedAt: Date,
   fixity: FixityObservation | null,
+  detectedMediaType: string | null,
+  formatIdentification: 'identified' | 'unidentified' | 'not_attempted',
+  formatIdentifier: string | null,
 ): SourceObservationOutcome {
-  return { version: SOURCE_OBSERVATION_VERSION, status: 'failed', observedAt: observedAt.toISOString(), extractorVersion: SOURCE_OBSERVATION_EXTRACTOR_VERSION, reason, message, fixity };
+  return { version: SOURCE_OBSERVATION_VERSION, status: 'failed', observedAt: observedAt.toISOString(), extractorVersion: SOURCE_OBSERVATION_EXTRACTOR_VERSION, reason, message, fixity, detectedMediaType, formatIdentification, formatIdentifier };
 }

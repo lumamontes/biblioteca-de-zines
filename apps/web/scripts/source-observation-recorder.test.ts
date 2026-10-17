@@ -15,7 +15,7 @@ test('persists a source observation without turning recorder failures into proce
       metadata: { title: null, author: null, subject: null, creator: null, producer: null, creationDate: null, modificationDate: null },
       pages: [{ width: 612, height: 792, text: { status: 'absent', extracted: true } }],
     }),
-    repository: { create: async (observation) => { records.push(observation); return 1; } },
+    repository: { create: async (observation) => { records.push(observation); return 1; }, findLatestFixity: async () => null },
     clock: () => new Date('2026-10-17T12:00:00.000Z'),
   });
 
@@ -33,7 +33,7 @@ test('records an unreachable source as a failed observation', async () => {
     acquisition: { method: 'http', status: 'unreachable', failureReason: 'timeout' },
   }, {
     inspectPdf: async () => { throw new Error('not called'); },
-    repository: { create: async (observation) => { status = observation.status; return 1; } },
+    repository: { create: async (observation) => { status = observation.status; return 1; }, findLatestFixity: async () => null },
     clock: () => new Date('2026-10-17T12:00:00.000Z'),
   });
 
