@@ -32,6 +32,7 @@ function createFallbackMetadata(url: string): LinkMetadata {
   const domain = normalizeHostname(parsedUrl.hostname);
 
   return {
+    hasPreview: false,
     title: getKnownSiteTitle(domain, url),
     description: getKnownSiteDescription(domain),
     image: getKnownSiteImage(domain),
@@ -123,15 +124,17 @@ export async function readLinkMetadata(url: string): Promise<LinkMetadata> {
     const description =
       getMetaContent($, "og:description", "twitter:description") ||
       $("meta[name=description]").attr("content") ||
-      fallbackMetadata.description;
+      "";
     const image = getMetaContent($, "og:image", "og:image:secure_url", "twitter:image");
     const siteName = getMetaContent($, "og:site_name") || fallbackMetadata.siteName;
     const absoluteImage = image ? new URL(image, fetched.url).href : fallbackMetadata.image;
+    const hasPreview = Boolean(title.trim() || description.trim() || image);
 
     return {
       ...fallbackMetadata,
+      hasPreview,
       title: normalizeText(title) || fallbackMetadata.title,
-      description: normalizeText(description) || fallbackMetadata.description,
+      description: normalizeText(description),
       image: absoluteImage,
       siteName: normalizeText(siteName) || fallbackMetadata.siteName,
     };

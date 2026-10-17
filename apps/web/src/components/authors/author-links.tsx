@@ -1,5 +1,5 @@
 import { parseAuthorLinks } from "./author-link-classifier";
-import { ExternalLink } from "./external-link";
+import { AuthorLinkPreview } from "./author-link-preview";
 import { SocialMediaLink } from "./social-media-link";
 
 interface AuthorLinksProps {
@@ -20,7 +20,7 @@ export function AuthorLinks({ value }: AuthorLinksProps) {
         return link.kind === "social" ? (
           <SocialMediaLink key={key} href={link.href} platform={link.platform} />
         ) : (
-          <ExternalLink key={key} href={link.href} />
+          <AuthorLinkPreview key={key} href={link.href} />
         );
       })}
     </div>

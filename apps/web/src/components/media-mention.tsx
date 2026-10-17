@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { readLinkMetadata } from "@/infrastructure/source-acquisition/link-metadata-reader";
+import type { LinkMetadata } from "@/infrastructure/source-acquisition/link-metadata-types";
 
 interface MediaMentionProps {
   url: string;
@@ -20,6 +21,14 @@ const PLACEHOLDER_COVER_IMAGE = "/instagramPlaceholder.jpg";
 
 export async function MediaMention({ url, type }: MediaMentionProps) {
   const metadata = await readLinkMetadata(url);
+  return <MediaMentionCard url={url} type={type} metadata={metadata} />;
+}
+
+export function MediaMentionCard({
+  url,
+  type,
+  metadata,
+}: MediaMentionProps & { metadata: LinkMetadata }) {
   const typeIcon = getTypeIcon(type, metadata.domain);
 
   return (
