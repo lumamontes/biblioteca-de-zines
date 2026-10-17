@@ -9,7 +9,7 @@ export function UpdatesHeader({ technical }: { technical: boolean }) {
       <p className="max-w-2xl leading-relaxed text-neutral-700">
         {technical
           ? "O changelog técnico da Biblioteca: cada entrada registra uma mudança relevante e aponta para sua origem no código."
-          : "Uma linha do tempo das coisas que a Biblioteca construiu, aprendeu e compartilhou com a comunidade."}
+          : "Uma linha do tempo das novidades publicadas no site: mudanças, atividades e coisas que compartilhamos com a comunidade."}
       </p>
       <nav aria-label="Visão das novidades" className="mt-6 flex flex-wrap gap-4 text-sm">
         <Link href="/novidades" className={!technical ? "font-bold underline" : "underline"}>

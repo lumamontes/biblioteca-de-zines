@@ -7,7 +7,8 @@ import { UpdatesHeader } from "@/components/updates/updates-header";
 
 export const metadata: Metadata = {
   title: "Novidades | Biblioteca de Zines",
-  description: "Acompanhe a história da Biblioteca de Zines e as mudanças do projeto.",
+  description:
+    "Acompanhe as novidades publicadas no site da Biblioteca de Zines.",
 };
 
 export default async function UpdatesPage({
