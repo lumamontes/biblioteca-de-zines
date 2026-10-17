@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.source_metadata (
   acquisition_method TEXT,
   acquired_at TIMESTAMPTZ,
   status TEXT NOT NULL
-    CHECK (status IN ('acquired', 'unreachable', 'not_pdf', 'invalid_pdf', 'protected', 'extraction_failed')),
+    CHECK (status IN ('observed', 'unreachable', 'not_pdf', 'invalid_pdf', 'protected', 'extraction_failed')),
   failure_reason TEXT,
   source_filename TEXT,
   source_size_bytes BIGINT CHECK (source_size_bytes IS NULL OR source_size_bytes >= 0),

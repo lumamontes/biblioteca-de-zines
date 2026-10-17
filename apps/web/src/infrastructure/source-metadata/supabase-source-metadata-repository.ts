@@ -10,9 +10,9 @@ export function createSupabaseSourceMetadataRepository(
   return {
     async create(observation) {
       const insert: SourceMetadataInsert = {
-        library_zine_id: observation.libraryZineId,
-        form_upload_id: observation.formUploadId,
-        source_reference: observation.sourceReference,
+        library_zine_id: observation.publicationId,
+        form_upload_id: observation.submissionId,
+        source_reference: observation.sourceUri,
         asset_kind: observation.assetKind,
         observed_at: observation.observedAt,
         extractor_version: observation.extractorVersion,
@@ -22,7 +22,7 @@ export function createSupabaseSourceMetadataRepository(
         status: observation.status,
         failure_reason: observation.failureReason,
         source_filename: observation.sourceFilename,
-        source_size_bytes: observation.sourceSizeBytes,
+        source_size_bytes: observation.sourceSize,
         http_status: observation.httpStatus,
         redirect_outcome: observation.redirectOutcome,
         received_byte_size: observation.receivedByteSize,
@@ -30,22 +30,24 @@ export function createSupabaseSourceMetadataRepository(
         detected_media_type: observation.detectedMediaType,
         format_identification_status: observation.formatIdentificationStatus,
         format_identifier: observation.formatIdentifier,
-        storage_key: observation.storageKey,
-        pdf_page_count: observation.pdfPageCount,
-        page_observations: toJson(observation.pageObservations),
+        storage_key: observation.storageReference,
+        pdf_page_count: observation.pageCount,
+        page_observations: toJson(observation.pages),
         text_layer_status: observation.textLayerStatus,
-        extraction_status: observation.extractionStatus,
+        extraction_status: observation.textExtractionStatus === 'succeeded'
+          ? 'completed'
+          : observation.textExtractionStatus === 'failed' ? 'failed' : 'not_attempted',
         embedded_metadata: toJson(observation.embeddedMetadata),
-        fixity_algorithm: observation.fixityAlgorithm,
-        fixity_digest: observation.fixityDigest,
-        fixity_context: observation.fixityContext,
-        fixity_calculated_at: observation.fixityCalculatedAt,
-        fixity_check_status: observation.fixityCheckStatus,
-        fixity_comparison_detail: observation.fixityComparisonDetail,
+        fixity_algorithm: observation.fixity?.algorithm,
+        fixity_digest: observation.fixity?.digest,
+        fixity_context: observation.fixity?.context,
+        fixity_calculated_at: observation.fixity?.calculatedAt,
+        fixity_check_status: observation.fixity?.checkStatus,
+        fixity_comparison_detail: observation.fixity?.comparisonDetail,
         provenance_note: observation.provenanceNote,
         value_provenance: toJson(observation.valueProvenance),
         uncertainty_status: observation.uncertaintyStatus,
-        visibility_state: observation.visibilityState,
+        visibility_state: observation.visibility,
       };
 
       const { data, error } = await supabase.from('source_metadata').insert(insert).select('id').single();
