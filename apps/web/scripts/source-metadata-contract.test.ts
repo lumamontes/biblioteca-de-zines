@@ -194,5 +194,7 @@ const baseObservation: SourceMetadataObservation = {
     comparisonDetail: null,
   },
   provenanceNote: 'system-observed contract fixture',
+  valueProvenance: { fixity: 'system-observed' },
+  uncertaintyStatus: 'complete',
   visibility: 'internal',
 };

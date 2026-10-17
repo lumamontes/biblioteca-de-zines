@@ -10,6 +10,7 @@ export function createSupabaseSourceMetadataRepository(
   return {
     async create(observation) {
       const insert: SourceMetadataInsert = {
+        observation_id: observation.observationId,
         library_zine_id: observation.publicationId,
         form_upload_id: observation.submissionId,
         source_reference: observation.sourceUri,
@@ -36,7 +37,8 @@ export function createSupabaseSourceMetadataRepository(
         text_layer_status: observation.textLayerStatus,
         extraction_status: observation.textExtractionStatus === 'succeeded'
           ? 'completed'
-          : observation.textExtractionStatus === 'failed' ? 'failed' : 'not_attempted',
+          : observation.textExtractionStatus === 'partial' ? 'partial'
+            : observation.textExtractionStatus === 'failed' ? 'failed' : 'not_attempted',
         embedded_metadata: toJson(observation.embeddedMetadata),
         fixity_algorithm: observation.fixity?.algorithm,
         fixity_digest: observation.fixity?.digest,
@@ -53,6 +55,16 @@ export function createSupabaseSourceMetadataRepository(
       const { data, error } = await supabase.from('source_metadata').insert(insert).select('id').single();
       if (error || !data) throw new Error(`Failed to record source metadata: ${error?.message ?? 'no row returned'}`);
       return data.id;
+    },
+    async findLatestFixity(sourceUri) {
+      const { data, error } = await supabase.from('source_metadata')
+        .select('fixity_algorithm, fixity_digest, fixity_context')
+        .eq('source_uri', sourceUri).not('fixity_digest', 'is', null)
+        .order('observed_at', { ascending: false }).limit(1).maybeSingle();
+      if (error) throw new Error(`Failed to read prior source fixity: ${error.message}`);
+      return data?.fixity_digest && data.fixity_algorithm && data.fixity_context
+        ? { algorithm: data.fixity_algorithm, digest: data.fixity_digest, context: data.fixity_context }
+        : null;
     },
   };
 }

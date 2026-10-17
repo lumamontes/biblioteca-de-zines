@@ -34,6 +34,8 @@ function observation(status: SourceMetadataObservation['status'], version: strin
     embeddedMetadata: null,
     fixity: null,
     provenanceNote: null,
+    valueProvenance: {},
+    uncertaintyStatus: 'unknown',
     visibility: 'internal',
   };
 }
@@ -58,7 +60,7 @@ test('records every source, including failures, and appends extractor reruns', a
   version = 'pdf-source-observation/v2';
   const second = await runSourceMetadataBatch(dependencies);
 
-  assert.deepEqual(first.map(({ status }) => status), ['observed', 'unreachable']);
+  assert.deepEqual(first.results.map(({ status }) => status), ['observed', 'unreachable']);
   assert.deepEqual(recorded.slice(2).map(({ extractorVersion, status }) => `${extractorVersion}-${status}`), [
     'pdf-source-observation/v2-observed', 'pdf-source-observation/v2-unreachable',
   ]);
@@ -82,5 +84,5 @@ test('supports limiting a batch without changing source order', async () => {
   }, { limit: 1 });
 
   assert.deepEqual(seen, ['publication:1']);
-  assert.equal(results.length, 1);
+  assert.equal(results.results.length, 1);
 });

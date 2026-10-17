@@ -5,6 +5,7 @@ export type SourceMetadataBatchSource = {
   publicationId: number | null;
   submissionId: number | null;
   sourceUri: string;
+  catalogue?: { title: string | null; author: string | null };
 };
 
 export type SourceMetadataBatchResult = {
@@ -17,4 +18,9 @@ export type SourceMetadataBatchDependencies = {
   listSources: () => Promise<SourceMetadataBatchSource[]>;
   observe: (source: SourceMetadataBatchSource) => Promise<SourceMetadataObservation>;
   record: (observation: SourceMetadataObservation) => Promise<number>;
+};
+
+export type SourceMetadataBatchRun = {
+  results: SourceMetadataBatchResult[];
+  report: import('./source-metadata-report-types').SourceMetadataReport;
 };

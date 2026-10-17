@@ -5,8 +5,9 @@ import { createSourceMetadataBatchDependencies } from '../src/composition/cli/cr
 const limit = getNumberArgument('--limit');
 
 async function main(): Promise<void> {
-  const results = await runSourceMetadataBatch(createSourceMetadataBatchDependencies(), { limit });
-  console.table(results);
+  const run = await runSourceMetadataBatch(createSourceMetadataBatchDependencies(), { limit });
+  console.table(run.results);
+  console.log(JSON.stringify(run.report, null, 2));
 }
 
 function getNumberArgument(name: string): number | undefined {
