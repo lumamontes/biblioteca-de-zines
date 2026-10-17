@@ -5,7 +5,7 @@ import type { PageDerivativeRecorder } from '@/application/page-generation/page-
 
 export type PageProcessorDependencies = {
   downloadSource: (sourceUrl: string) => Promise<SourceDocument>;
-  recordSourceObservation?: (job: ProcessingJob, source?: SourceDocument, failureReason?: string) => Promise<number>;
+  recordSourceObservation?: (job: ProcessingJob, source?: SourceDocument, failureReason?: string, acquisition?: SourceDocument['acquisition']) => Promise<number>;
   recordDerivatives?: PageDerivativeRecorder;
   createCover?: CoverRenderer;
   renderPages: PageRenderer;

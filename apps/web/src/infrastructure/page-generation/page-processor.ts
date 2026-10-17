@@ -1,5 +1,6 @@
 import type { ProcessingJob, ProcessingProcessor } from '@/application/processing/processing-job-types';
 import type { SourceDocument } from '@/domain/source-document';
+import { SourceAcquisitionError } from '@/domain/source-document';
 import { createPageGeneration } from '@/application/page-generation/page-generation-service';
 import type { PageProcessorDependencies } from './page-processor-types';
 
@@ -13,7 +14,12 @@ export function createPageProcessor(dependencies: PageProcessorDependencies): Pr
         sourceObservationId = await recordObservation(job, source);
         return source;
       } catch (error) {
-        await recordObservation(job, undefined, error instanceof Error ? error.message : 'Source download failed');
+        await recordObservation(
+          job,
+          undefined,
+          error instanceof Error ? error.message : 'Source download failed',
+          error instanceof SourceAcquisitionError ? error.acquisition : undefined,
+        );
         throw error;
       }
     };
@@ -23,10 +29,10 @@ export function createPageProcessor(dependencies: PageProcessorDependencies): Pr
     );
   };
 
-  async function recordObservation(job: ProcessingJob, source?: SourceDocument, failureReason?: string): Promise<number> {
+  async function recordObservation(job: ProcessingJob, source?: SourceDocument, failureReason?: string, acquisition?: SourceDocument['acquisition']): Promise<number> {
     if (!dependencies.recordSourceObservation) return -1;
     try {
-      return await dependencies.recordSourceObservation(job, source, failureReason);
+      return await dependencies.recordSourceObservation(job, source, failureReason, acquisition);
     } catch (error) {
       console.error(`Failed to record source observation for ${job.zineId}:`, error);
       return -1;
