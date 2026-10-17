@@ -154,7 +154,7 @@ export default async function HomePage() {
           </div>
       </div>
 
-      <div className="py-16 bg-zine-green">
+      <div className="py-16 bg-zine-yellow">
         <div className="max-w-6xl mx-auto px-4 md:px-12 text-center">
           <h2 className="text-3xl md:text-4xl mb-4">Acompanhe a Biblioteca</h2>
           <p className="mb-8">Textos, novidades e tudo que está acontecendo por aqui.</p>
