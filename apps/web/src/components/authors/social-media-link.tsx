@@ -1,10 +1,21 @@
 import {
+  Code2,
+  Cloud,
   Facebook,
+  Gamepad2,
   Github,
+  GitBranch,
+  Globe,
   Instagram,
   Linkedin,
   type LucideIcon,
   Mail,
+  MessageCircle,
+  Music,
+  Network,
+  Podcast,
+  Coffee,
+  X,
   Youtube,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,11 +27,24 @@ interface SocialMediaLinkProps {
 }
 
 const SOCIAL_MEDIA: Record<SocialPlatform, { label: string; Icon: LucideIcon }> = {
+  bandcamp: { label: "Ver Bandcamp", Icon: Music },
+  bluesky: { label: "Ver Bluesky", Icon: Cloud },
+  codeberg: { label: "Ver Codeberg", Icon: GitBranch },
+  devto: { label: "Ver DEV Community", Icon: Code2 },
   facebook: { label: "Ver Facebook", Icon: Facebook },
   github: { label: "Ver GitHub", Icon: Github },
+  gitlab: { label: "Ver GitLab", Icon: GitBranch },
   instagram: { label: "Ver Instagram", Icon: Instagram },
+  itchio: { label: "Ver itch.io", Icon: Gamepad2 },
+  "ko-fi": { label: "Ver Ko-fi", Icon: Coffee },
+  linktree: { label: "Ver Linktree", Icon: Network },
   linkedin: { label: "Ver LinkedIn", Icon: Linkedin },
+  mastodon: { label: "Ver Mastodon", Icon: MessageCircle },
+  medium: { label: "Ver Medium", Icon: Globe },
+  patreon: { label: "Ver Patreon", Icon: Podcast },
+  sourcehut: { label: "Ver SourceHut", Icon: GitBranch },
   substack: { label: "Ver Substack", Icon: Mail },
+  twitter: { label: "Ver X", Icon: X },
   youtube: { label: "Ver YouTube", Icon: Youtube },
 };
 

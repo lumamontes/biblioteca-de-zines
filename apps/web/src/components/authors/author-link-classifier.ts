@@ -1,11 +1,24 @@
 import type { ClassifiedAuthorLink, SocialPlatform } from "./author-link-types";
 
 const SOCIAL_HOSTNAMES: Readonly<Record<string, SocialPlatform>> = {
+  "bandcamp.com": "bandcamp",
+  "bsky.app": "bluesky",
+  "codeberg.org": "codeberg",
+  "dev.to": "devto",
   "facebook.com": "facebook",
   "github.com": "github",
+  "gitlab.com": "gitlab",
   "instagram.com": "instagram",
+  "itch.io": "itchio",
+  "ko-fi.com": "ko-fi",
+  "linktr.ee": "linktree",
   "linkedin.com": "linkedin",
+  "medium.com": "medium",
+  "patreon.com": "patreon",
+  "sourcehut.org": "sourcehut",
   "substack.com": "substack",
+  "twitter.com": "twitter",
+  "x.com": "twitter",
   "youtube.com": "youtube",
   "youtu.be": "youtube",
 };
@@ -18,7 +31,9 @@ export function classifyAuthorLink(href: string): ClassifiedAuthorLink {
   try {
     const url = new URL(href);
     const hostname = removeWww(url.hostname);
-    const platform = SOCIAL_HOSTNAMES[hostname];
+    const platform = hostname.includes("mastodon")
+      ? "mastodon"
+      : SOCIAL_HOSTNAMES[hostname];
 
     if (platform) return { kind: "social", platform, href };
 
