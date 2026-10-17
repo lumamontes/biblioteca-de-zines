@@ -20,7 +20,7 @@ export function AuthorLinks({ value }: AuthorLinksProps) {
         return link.kind === "social" ? (
           <SocialMediaLink key={key} href={link.href} platform={link.platform} />
         ) : (
-          <LinkPreview key={key} href={link.href} hostname={link.hostname} />
+          <LinkPreview key={key} href={link.href} />
         );
       })}
     </div>
