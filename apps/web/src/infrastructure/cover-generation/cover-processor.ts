@@ -13,15 +13,28 @@ export function createCoverProcessor(
   options: CoverProcessorOptions = {},
 ): ProcessingProcessor {
   return async (job: ProcessingJob) => {
+    let sourceObservationId: number | undefined;
+    const loadSource = async () => {
+      try {
+        const source = await dependencies.downloadSource(job.pdfUrl);
+        sourceObservationId = dependencies.recordSourceObservation
+          ? await dependencies.recordSourceObservation(job, source)
+          : undefined;
+        return source;
+      } catch (error) {
+        if (dependencies.recordSourceObservation) await dependencies.recordSourceObservation(job, undefined, error instanceof Error ? error.message : 'Source download failed');
+        throw error;
+      }
+    };
     await createCoverGeneration(
-      () => dependencies.downloadSource(job.pdfUrl),
+      loadSource,
       { id: job.zineId, kind: 'zine' },
       dependencies.repository,
       dependencies.storage,
       job.pdfUrl,
       dependencies.renderFirstPage,
       dependencies.optimizeCover,
-      options,
+      { ...options, sourceObservationId: () => sourceObservationId, recordDerivative: dependencies.recordDerivative },
     );
   };
 }

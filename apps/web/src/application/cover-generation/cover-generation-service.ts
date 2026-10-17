@@ -7,6 +7,7 @@ import type {
   CoverGenerationState,
   CoverOptimizer,
   FirstPageRenderer,
+  CoverDerivativeRecorder,
 } from '@/application/cover-generation/cover-generation-types';
 
 
@@ -18,7 +19,7 @@ export async function createCoverGeneration(
   sourceUrl: string,
   renderFirstPage: FirstPageRenderer,
   optimizeCover: CoverOptimizer,
-  options: { replaceExternalCover?: boolean } = {},
+  options: { replaceExternalCover?: boolean; sourceObservationId?: number | (() => number | undefined); recordDerivative?: CoverDerivativeRecorder } = {},
 ): Promise<void> {
   const generationId = randomUUID();
   let state: CoverGenerationState | undefined;
@@ -47,6 +48,12 @@ export async function createCoverGeneration(
     if (!activated) {
       await storage.discardGeneration(target, generationId);
       return;
+    }
+    const sourceObservationId = typeof options.sourceObservationId === 'function' ? options.sourceObservationId() : options.sourceObservationId;
+    if (sourceObservationId !== undefined && sourceObservationId >= 0 && options.recordDerivative) {
+      await options.recordDerivative({ sourceObservationId, assetIdentity: coverImage, storageReference: coverImage, generationId }).catch((error) => {
+        console.error('Failed to record generated cover observation:', error);
+      });
     }
     if (state.coverImage) {
       await storage.removeCover(target, state.coverImage).catch((cleanupError) => {

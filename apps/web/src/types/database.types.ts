@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       authors: {
         Row: {
+          asset_identity: string
           bio: string | null
           created_at: string | null
           id: number
@@ -327,7 +328,9 @@ export type Database = {
       }
       source_metadata: {
         Row: {
+          asset_identity: string
           observation_id: string
+          source_observation_id: number | null
           acquired_at: string | null
           acquisition_method: string | null
           asset_kind: "source" | "reading-copy" | "preview" | "derivative"
@@ -367,7 +370,9 @@ export type Database = {
           pdf_page_count: number | null
         }
         Insert: {
+          asset_identity: string
           observation_id: string
+          source_observation_id?: number | null
           acquired_at?: string | null
           acquisition_method?: string | null
           asset_kind?: "source" | "reading-copy" | "preview" | "derivative"
@@ -407,7 +412,9 @@ export type Database = {
           pdf_page_count?: number | null
         }
         Update: {
+          asset_identity?: string
           observation_id?: string
+          source_observation_id?: number | null
           acquired_at?: string | null
           acquisition_method?: string | null
           asset_kind?: "source" | "reading-copy" | "preview" | "derivative"
@@ -447,6 +454,13 @@ export type Database = {
           pdf_page_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "source_metadata_source_observation_fkey"
+            columns: ["source_observation_id"]
+            isOneToOne: false
+            referencedRelation: "source_metadata"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "source_metadata_form_upload_id_fkey"
             columns: ["form_upload_id"]

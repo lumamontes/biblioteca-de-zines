@@ -46,6 +46,11 @@ export type PageActivationResult = {
   previousGenerationId?: string;
 };
 
+export type PageDerivativeRecorder = (input: {
+  sourceObservationId: number;
+  assets: Array<{ assetIdentity: string; storageReference: string; mediaType: string; byteSize: number | null; assetKind: 'preview' | 'derivative' }>;
+}) => Promise<void>;
+
 export interface PageGenerationRepository {
   activate(generation: PageGeneration): Promise<PageActivationResult>;
   isProcessable(target: AssetTarget, sourceUrl: string): Promise<boolean>;

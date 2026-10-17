@@ -6,10 +6,11 @@ import type { PageProcessorDependencies } from './page-processor-types';
 export function createPageProcessor(dependencies: PageProcessorDependencies): ProcessingProcessor {
   return async (job: ProcessingJob) => {
     if (!job.isPublished) throw new Error('Page processing requires an approved public publication');
+    let sourceObservationId: number | undefined;
     const loadSource = async (): Promise<SourceDocument> => {
       try {
         const source = await dependencies.downloadSource(job.pdfUrl);
-        await recordObservation(job, source);
+        sourceObservationId = await recordObservation(job, source);
         return source;
       } catch (error) {
         await recordObservation(job, undefined, error instanceof Error ? error.message : 'Source download failed');
@@ -18,16 +19,17 @@ export function createPageProcessor(dependencies: PageProcessorDependencies): Pr
     };
     await createPageGeneration(
       loadSource, dependencies.renderPages, dependencies.repository,
-      dependencies.storage, { id: job.zineId, kind: 'zine' }, job.pdfUrl, { createCover: dependencies.createCover },
+      dependencies.storage, { id: job.zineId, kind: 'zine' }, job.pdfUrl, { createCover: dependencies.createCover, sourceObservationId: () => sourceObservationId, recordDerivatives: dependencies.recordDerivatives },
     );
   };
 
-  async function recordObservation(job: ProcessingJob, source?: SourceDocument, failureReason?: string) {
-    if (!dependencies.recordSourceObservation) return;
+  async function recordObservation(job: ProcessingJob, source?: SourceDocument, failureReason?: string): Promise<number> {
+    if (!dependencies.recordSourceObservation) return -1;
     try {
-      await dependencies.recordSourceObservation(job, source, failureReason);
+      return await dependencies.recordSourceObservation(job, source, failureReason);
     } catch (error) {
       console.error(`Failed to record source observation for ${job.zineId}:`, error);
+      return -1;
     }
   }
 }
