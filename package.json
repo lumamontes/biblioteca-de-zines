@@ -27,7 +27,8 @@
     "migrate:pdf-covers": "pnpm --filter biblioteca-zines migrate:pdf-covers",
     "migrate:pdf-pages": "pnpm --filter biblioteca-zines migrate:pdf-pages",
     "generate:form-upload-cover": "pnpm --filter biblioteca-zines generate:form-upload-cover",
-    "process:pending-zines": "pnpm --filter biblioteca-zines process:pending-zines"
+    "process:pending-zines": "pnpm --filter biblioteca-zines process:pending-zines",
+    "observe:source-metadata": "pnpm --filter biblioteca-zines observe:source-metadata"
   },
   "devDependencies": {
     "turbo": "^2.11.7"

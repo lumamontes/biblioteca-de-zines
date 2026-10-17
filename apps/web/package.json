@@ -19,6 +19,7 @@
     "migrate:pdf-pages": "node --import ./scripts/load-env.mjs --import tsx scripts/migrate-pdf-pages.ts",
     "generate:form-upload-cover": "node --import ./scripts/load-env.mjs --import tsx scripts/generate-form-upload-cover.ts",
     "process:pending-zines": "node --import ./scripts/load-env.mjs --import tsx scripts/process-pending-zines.ts",
+    "observe:source-metadata": "node --import ./scripts/load-env.mjs --import tsx scripts/observe-source-metadata.ts",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
