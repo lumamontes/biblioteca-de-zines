@@ -58,7 +58,7 @@ export default function AuthorForm({
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-1">
-            Redes sociais (opcional)
+            Links relevantes (ex.: redes sociais)
           </label>
           <div className="space-y-2">
             {author.socialLinks.length === 0 ? (
@@ -68,7 +68,7 @@ export default function AuthorForm({
                   type="url"
                   value=""
                   onChange={(e) => onUpdateSocialLink(authorIndex, 0, e.target.value)}
-                  placeholder="https://instagram.com/usuario"
+                  placeholder="https://exemplo.com/seu-link"
                   className="min-w-0 flex-1"
                   disabled={disabled}
                 />
@@ -81,7 +81,7 @@ export default function AuthorForm({
                     type="url"
                     value={link}
                     onChange={(e) => onUpdateSocialLink(authorIndex, linkIndex, e.target.value)}
-                    placeholder="https://instagram.com/usuario"
+                    placeholder="https://exemplo.com/seu-link"
                      className="min-w-0 flex-1"
                     disabled={disabled}
                   />
@@ -106,7 +106,7 @@ export default function AuthorForm({
               onClick={() => onAddSocialLink(authorIndex)}
               disabled={disabled}
             >
-              + Adicionar Link Social
+              + Adicionar Link
             </ActionButton>
           </div>
         </div>

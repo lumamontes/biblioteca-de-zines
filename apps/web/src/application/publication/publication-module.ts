@@ -115,6 +115,7 @@ export function createZinePublicationModule(deps: ZinePublicationDependencies) {
        });
 
        if (coverNeedsGeneration || pageNeedsGeneration) await deps.processing.request(publishedZine.id);
+       await deps.authors.sync(publishedZine.id, input.authors);
     },
   };
 }

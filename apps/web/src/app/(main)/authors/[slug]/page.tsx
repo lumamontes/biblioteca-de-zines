@@ -1,7 +1,7 @@
 import { createAuthorReader } from '@/composition/server/author-reader';
 import { ZineGridServer } from "@/components/zines/zine-grid-server";
+import { AuthorLinks } from "@/components/authors/author-links";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getAuthorMetadata } from "@/utils/metadata";
 import { getThumbnailUrl } from "@/utils/assets";
 import { AuthorStructuredData, BreadcrumbStructuredData } from "@/components/seo/structured-data";
@@ -67,18 +67,7 @@ export default async function AuthorPage({
           <p className="text-lg mb-4 max-w-3xl">{author.bio}</p>
         )}
 
-        {author.url && (
-          <div className="mb-4">
-            <Link
-              href={author.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-black border border-black rounded-md hover:bg-neutral-100 transition-colors"
-            >
-              Visitar site do autor
-            </Link>
-          </div>
-        )}
+        <AuthorLinks value={author.url} />
       </section>
 
       <section>

@@ -17,11 +17,11 @@ export async function syncAuthorsToZine(
 
     const { data: existingAuthor } = await supabase
       .from('authors')
-      .select('id')
+      .select('id, url')
       .eq('name', name)
       .single();
-    let authorId = existingAuthor?.id;
-    if (!authorId) {
+    let authorId: number;
+    if (!existingAuthor) {
       const { data: newAuthor, error } = await supabase
         .from('authors')
         .insert([{ name, url }])
@@ -29,6 +29,16 @@ export async function syncAuthorsToZine(
         .single();
       if (error || !newAuthor) throw new Error(`Erro ao criar autor: ${error?.message}`);
       authorId = newAuthor.id;
+    } else {
+      authorId = existingAuthor.id;
+      const nextUrl = mergeAuthorLinks(existingAuthor.url, url);
+      if (nextUrl !== existingAuthor.url) {
+        const { error } = await supabase
+          .from('authors')
+          .update({ url: nextUrl })
+          .eq('id', authorId);
+        if (error) throw new Error(`Erro ao atualizar autor: ${error.message}`);
+      }
     }
 
     const { data: relation } = await supabase
@@ -44,4 +54,17 @@ export async function syncAuthorsToZine(
       if (error) throw new Error(`Erro ao associar autor: ${error.message}`);
     }
   }
+}
+
+function mergeAuthorLinks(existing: string | null, incoming: string | null) {
+  const links = [...splitAuthorLinks(existing), ...splitAuthorLinks(incoming)];
+  const uniqueLinks = Array.from(new Set(links));
+  return uniqueLinks.length > 0 ? uniqueLinks.join(', ') : null;
+}
+
+function splitAuthorLinks(value: string | null) {
+  return (value || '')
+    .split(/,\s+(?=https?:\/\/)/i)
+    .map((link) => link.trim())
+    .filter(Boolean);
 }
