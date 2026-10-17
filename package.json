@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter biblioteca-zines dev",
-    "dev:all": "pnpm exec turbo dev --parallel",
+    "dev:all": "pnpm exec turbo dev",
     "build": "pnpm --filter biblioteca-zines build",
     "start": "pnpm --filter biblioteca-zines start",
     "lint": "pnpm --filter biblioteca-zines lint",
