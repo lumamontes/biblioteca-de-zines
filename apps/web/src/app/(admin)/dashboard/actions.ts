@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { editUploadSchema } from "@/schemas/edit-upload";
 import { createPublicationModule } from '@/composition/server/publication-module';
+import { AUTHOR_LINK_METADATA_CACHE_TAG } from '@/infrastructure/source-acquisition/link-metadata-types';
 
 export async function unpublishZine(zineId: number) {
   await (await createPublicationModule()).unpublishZine(zineId);
@@ -17,6 +19,7 @@ export async function updatePublishedZine(zineId: number) {
 export async function publishZine(uploadId: number) {
   await (await createPublicationModule()).publishZineFromUpload(uploadId);
   revalidatePath("/dashboard");
+  revalidateTag(AUTHOR_LINK_METADATA_CACHE_TAG);
 }
 
 export async function updateUpload(uploadId: number, data: unknown) {
@@ -34,6 +37,7 @@ export async function updateUpload(uploadId: number, data: unknown) {
       categories: validatedData.categories,
     });
     revalidatePath("/dashboard");
+    revalidateTag(AUTHOR_LINK_METADATA_CACHE_TAG);
     return { success: true, message: "Upload atualizado com sucesso!" };
   } catch (error) {
     if (error instanceof Error) return { success: false, message: error.message };

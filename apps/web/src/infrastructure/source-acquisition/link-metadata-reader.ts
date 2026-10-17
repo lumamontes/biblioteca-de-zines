@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import type { LinkMetadata } from "./link-metadata-types";
+import { AUTHOR_LINK_METADATA_CACHE_TAG, type LinkMetadata } from "./link-metadata-types";
 
 const MAX_RESPONSE_BYTES = 512 * 1024;
 const MAX_REDIRECTS = 3;
@@ -86,7 +86,10 @@ async function fetchMetadataHtml(url: string) {
         Accept: "text/html,application/xhtml+xml",
         "User-Agent": "BibliotecaDeZinesLinkPreview/1.0",
       },
-      next: { revalidate: METADATA_CACHE_SECONDS },
+      next: {
+        revalidate: METADATA_CACHE_SECONDS,
+        tags: [AUTHOR_LINK_METADATA_CACHE_TAG],
+      },
       signal: AbortSignal.timeout(3000),
       redirect: "manual",
     });
