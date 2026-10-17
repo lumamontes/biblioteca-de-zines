@@ -26,7 +26,7 @@ export function createSourceMetadataBatchDependencies() {
         acquiredAt,
         filename: source.sourceUri.split('/').pop()?.split('?')[0] ?? null,
         declaredSize: null,
-        httpStatus: null,
+        httpStatus: null as number | null,
         redirectOutcome: null,
         declaredMediaType: null as string | null,
       };
