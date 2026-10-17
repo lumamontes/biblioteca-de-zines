@@ -53,12 +53,17 @@ export default async function AuthorPage({
     { name: "Autores", url: `${siteConfig.url}/authors` },
     { name: author.name, url: `${siteConfig.url}/authors/${slug}`, current: true }
   ];
+  const navigationBreadcrumbItems = [
+    { name: "Início", url: "/" },
+    { name: "Autores", url: "/authors" },
+    { name: author.name, url: `/authors/${slug}`, current: true }
+  ];
 
   return (
     <>
       <AuthorStructuredData author={author} zines={zines} />
       <BreadcrumbStructuredData items={breadcrumbItems} />
-      <BreadcrumbWrapper items={breadcrumbItems}>
+      <BreadcrumbWrapper items={navigationBreadcrumbItems}>
         <div className="container mx-auto px-4 py-8 max-w-6xl">
         <section className="mb-8">
           <h1 className="text-3xl font-bold mb-4">{author.name}</h1>
