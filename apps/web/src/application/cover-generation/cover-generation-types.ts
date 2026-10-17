@@ -36,6 +36,13 @@ export type CoverGenerationDependencies = {
   optimizeCover: CoverOptimizer;
 };
 
+export type CoverDerivativeRecorder = (input: {
+  sourceObservationId: number;
+  assetIdentity: string;
+  storageReference: string;
+  generationId: string;
+}) => Promise<void>;
+
 export type CoverAsset = {
   data: Buffer;
   generationId: string;

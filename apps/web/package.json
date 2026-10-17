@@ -9,7 +9,7 @@
     "lint": "next lint",
     "test": "node --test scripts/*.test.mjs",
     "test:cover": "tsx --test scripts/cover-generation.test.ts",
-    "test:application": "tsx --test scripts/cover-generation.test.ts scripts/cover-migration.test.ts scripts/page-generation.test.ts scripts/publication-service.test.ts scripts/submission-service.test.ts scripts/processing.test.ts scripts/reader-contract.test.ts scripts/public-reader.test.ts scripts/public-reader-api.test.ts scripts/reader-performance.test.ts scripts/viewer-link.test.ts scripts/viewer-safeguards.test.ts",
+    "test:application": "tsx --test scripts/cover-generation.test.ts scripts/cover-migration.test.ts scripts/page-generation.test.ts scripts/publication-service.test.ts scripts/submission-service.test.ts scripts/processing.test.ts scripts/reader-contract.test.ts scripts/public-reader.test.ts scripts/public-reader-api.test.ts scripts/reader-performance.test.ts scripts/viewer-link.test.ts scripts/viewer-safeguards.test.ts scripts/source-observation.test.ts scripts/source-observation-recorder.test.ts scripts/source-metadata-contract.test.ts scripts/source-metadata-report.test.ts scripts/source-metadata-batch.test.ts scripts/source-metadata-database.test.ts scripts/source-metadata-observation-id.test.ts scripts/source-acquisition.test.ts scripts/source-metadata-derivative.test.ts",
     "test:inventory": "node --test scripts/archive-inventory.test.mjs",
     "archive:inventory": "node --import ./scripts/load-env.mjs scripts/archive-inventory.mjs",
     "reading:derivative-spike": "node --import ./scripts/load-env.mjs scripts/reading-derivative-spike.mjs",
@@ -19,6 +19,7 @@
     "migrate:pdf-pages": "node --import ./scripts/load-env.mjs --import tsx scripts/migrate-pdf-pages.ts",
     "generate:form-upload-cover": "node --import ./scripts/load-env.mjs --import tsx scripts/generate-form-upload-cover.ts",
     "process:pending-zines": "node --import ./scripts/load-env.mjs --import tsx scripts/process-pending-zines.ts",
+    "observe:source-metadata": "node --import ./scripts/load-env.mjs --import tsx scripts/observe-source-metadata.ts",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {

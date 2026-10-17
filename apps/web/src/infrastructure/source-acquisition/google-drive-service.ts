@@ -5,6 +5,8 @@
  */
 
 import { detectFileTypeFromBuffer } from '@/utils/file-type-detection';
+import { SourceAcquisitionError, type SourceDocument } from '@/domain/source-document';
+import { filenameFromContentDisposition, parseByteSize } from './acquisition-metadata';
 
 /**
  * Extract file ID from Google Drive URL
@@ -33,7 +35,7 @@ export function getDirectDownloadUrl(fileId: string): string {
  * Download file from Google Drive and return buffer with MIME type
  * Handles large files and detects content type from response headers
  */
-export async function downloadFile(fileId: string): Promise<{ buffer: Buffer; mimeType: string }> {
+export async function downloadFile(fileId: string): Promise<SourceDocument> {
   const downloadUrl = getDirectDownloadUrl(fileId);
   
   // For large files, Google Drive may redirect to a virus scan warning
@@ -57,17 +59,28 @@ export async function downloadFile(fileId: string): Promise<{ buffer: Buffer; mi
   }
 
   if (!response.ok) {
-    throw new Error(`Failed to download file from Google Drive: ${response.status} ${response.statusText}`);
+    throw new SourceAcquisitionError(`Failed to download file from Google Drive: ${response.status} ${response.statusText}`, {
+      acquiredAt: new Date().toISOString(), filename: filenameFromContentDisposition(response.headers.get('content-disposition')),
+      declaredSize: parseByteSize(response.headers.get('content-length')), receivedByteSize: null, httpStatus: response.status,
+      redirectOutcome: response.redirected ? 'redirected' : 'not_redirected', declaredMediaType: response.headers.get('content-type'), detectedMediaType: 'application/octet-stream',
+    });
   }
 
   const buffer = Buffer.from(await response.arrayBuffer());
-  let mimeType = response.headers.get('content-type') || 'application/octet-stream';
-
-  // If we got application/octet-stream, try to detect from file content
-  if (mimeType === 'application/octet-stream' || !mimeType) {
-    const detected = detectFileTypeFromBuffer(buffer);
-    mimeType = detected.mimeType;
-  }
-
-  return { buffer, mimeType };
+  const declaredMediaType = response.headers.get('content-type');
+  const detectedMediaType = detectFileTypeFromBuffer(buffer).mimeType;
+  return {
+    buffer,
+    mimeType: declaredMediaType ?? detectedMediaType,
+    acquisition: {
+      acquiredAt: new Date().toISOString(),
+      filename: filenameFromContentDisposition(response.headers.get('content-disposition')),
+      declaredSize: parseByteSize(response.headers.get('content-length')),
+      receivedByteSize: buffer.byteLength,
+      httpStatus: response.status,
+      redirectOutcome: response.redirected ? 'redirected' : 'not_redirected',
+      declaredMediaType,
+      detectedMediaType,
+    },
+  };
 }
