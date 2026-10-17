@@ -24,7 +24,7 @@ export function ChangelogEntryView({ entry }: { entry: ChangelogEntry }) {
               href={reference.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline"
+              className="font-medium text-blue-700 underline decoration-blue-300 underline-offset-2 hover:bg-blue-50 hover:text-blue-900"
             >
               {reference.label}
             </Link>

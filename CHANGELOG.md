@@ -14,6 +14,31 @@ mudança entrou em `main`. Mudanças ainda não incorporadas ficam em `Unrelease
 
 ### Adicionado
 
+- **Histórico editorial e changelog técnico**: a Biblioteca passa a ter uma
+  linha do tempo pública para eventos e marcos do projeto, além de uma visão
+  para pessoas interessadas na implementação. A visão técnica é renderizada
+  diretamente deste arquivo, mantém as mudanças agrupadas pela unidade de
+  trabalho que elas explicam e separa o que ainda não foi publicado. [commit 594a1f3](https://github.com/lumamontes/biblioteca-de-zines/commit/594a1f36dcd993c6ba206a1e8cae68d5c77927de)
+
+- **Scaffold do futuro leitor isolado**: o monorepo passa a reservar um espaço
+  próprio para uma aplicação de leitura, enquanto o catálogo continua em
+  `apps/web`. Esta etapa organiza workspaces e fronteiras para que o runtime do
+  BookReader possa ser desenvolvido separadamente; ela não significa que o
+  viewer já esteja disponível em produção. A decisão arquitetural, incluindo os
+  limites entre as aplicações e os contratos compartilhados, está registrada no
+  ADR 14. [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [ADR 14](docs/decisions/14-monorepo.md)
+
+- **Descoberta de autorias e links de apoio**: páginas de autorias passam a
+  reconhecer mais plataformas, distinguir links de financiamento, mostrar
+  previews quando há metadados disponíveis e organizar a lista por inicial.
+  Isso torna mais fácil encontrar o trabalho de uma pessoa e seguir para a
+  plataforma correta, sem tratar todos os links externos como se fossem iguais.
+  [commit 6956df8](https://github.com/lumamontes/biblioteca-de-zines/commit/6956df8) [commit 526e729](https://github.com/lumamontes/biblioteca-de-zines/commit/526e729) [commit 4247fc1](https://github.com/lumamontes/biblioteca-de-zines/commit/4247fc1) [commit c196083](https://github.com/lumamontes/biblioteca-de-zines/commit/c196083) [commit 7ebbec2](https://github.com/lumamontes/biblioteca-de-zines/commit/7ebbec2) [commit c3dcc17](https://github.com/lumamontes/biblioteca-de-zines/commit/c3dcc17)
+
+## 2026-10-17
+
+### Adicionado
+
 - **Observações de metadados das fontes**: ao adquirir um arquivo, a Biblioteca
   passa a registrar separadamente o que veio da fonte e o que foi observado pelo
   sistema. Para PDFs, isso inclui tipo declarado e detectado, identificação do
@@ -24,42 +49,24 @@ mudança entrou em `main`. Mudanças ainda não incorporadas ficam em `Unrelease
   simplesmente ausentes. As observações permanecem internas e não substituem
   automaticamente os metadados editoriais do catálogo. [PR #167](https://github.com/lumamontes/biblioteca-de-zines/pull/167) [commit 2a5894c](https://github.com/lumamontes/biblioteca-de-zines/commit/2a5894c) [commit d8684aa](https://github.com/lumamontes/biblioteca-de-zines/commit/d8684aa)
 
-- **Histórico editorial e changelog técnico**: a Biblioteca passa a ter uma
-  linha do tempo pública para eventos e marcos do projeto, além de uma visão
-  para pessoas interessadas na implementação. A visão técnica é renderizada
-  diretamente deste arquivo, mantém as mudanças agrupadas pela unidade de
-  trabalho que elas explicam e separa o que ainda não foi publicado. [commit 594a1f3](https://github.com/lumamontes/biblioteca-de-zines/commit/594a1f36dcd993c6ba206a1e8cae68d5c77927de)
-
-- **Leitor separado do site principal**: o leitor passa a ter um espaço próprio
-  no monorepo, enquanto o catálogo continua em `apps/web`. Essa separação deixa
-  o runtime legado do BookReader, seus estilos e listeners fora do bundle
-  principal, sem criar um segundo repositório; contratos compartilhados podem
-  continuar evoluindo entre as duas aplicações. [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [commit 3338ad1](https://github.com/lumamontes/biblioteca-de-zines/commit/3338ad1) [commit 366985b](https://github.com/lumamontes/biblioteca-de-zines/commit/366985b) [commit da053f6](https://github.com/lumamontes/biblioteca-de-zines/commit/da053f6) [commit 3d351a4](https://github.com/lumamontes/biblioteca-de-zines/commit/3d351a4)
-
-- **Descoberta de autorias e links de apoio**: páginas de autorias passam a
-  reconhecer mais plataformas, distinguir links de financiamento, mostrar
-  previews quando há metadados disponíveis e organizar a lista por inicial.
-  Isso torna mais fácil encontrar o trabalho de uma pessoa e seguir para a
-  plataforma correta, sem tratar todos os links externos como se fossem iguais.
-  [commit 6956df8](https://github.com/lumamontes/biblioteca-de-zines/commit/6956df8) [commit 526e729](https://github.com/lumamontes/biblioteca-de-zines/commit/526e729) [commit 4247fc1](https://github.com/lumamontes/biblioteca-de-zines/commit/4247fc1) [commit c196083](https://github.com/lumamontes/biblioteca-de-zines/commit/c196083) [commit 7ebbec2](https://github.com/lumamontes/biblioteca-de-zines/commit/7ebbec2) [commit c3dcc17](https://github.com/lumamontes/biblioteca-de-zines/commit/c3dcc17)
-
 ## 2026-10-12
 
 ### Adicionado
 
-- **Geração de páginas para o leitor**: publicações aprovadas podem gerar uma
+- **Geração de derivados de páginas**: publicações aprovadas podem gerar uma
   cópia de leitura com todas as páginas do PDF, além da capa derivada. O fluxo
   executa de forma assíncrona, pode ser repetido com segurança, registra o
   estado do processamento, tenta novamente operações recuperáveis e só expõe a
-  geração depois que ela está completa. [PR #134](https://github.com/lumamontes/biblioteca-de-zines/pull/134) [PR #143](https://github.com/lumamontes/biblioteca-de-zines/pull/143)
+  geração depois que ela está completa. Esta é a infraestrutura de processamento
+  publicada; não é uma afirmação de que o novo viewer já está disponível. [PR #134](https://github.com/lumamontes/biblioteca-de-zines/pull/134) [PR #143](https://github.com/lumamontes/biblioteca-de-zines/pull/143)
 
 ### Descontinuado
 
 - **Processamento somente da capa como fluxo principal**: gerar apenas uma capa
   WebP a partir da primeira página deixa de ser a estratégia principal para
   novas publicações. O comportamento continua disponível para compatibilidade e
-  migração de capas antigas, enquanto o leitor usa gerações completas de
-  páginas. [ADR 12](docs/decisions/12-cover-only-processing-at-publication.md)
+  migração de capas antigas, enquanto a infraestrutura nova usa gerações
+  completas de páginas. [ADR 12](docs/decisions/12-cover-only-processing-at-publication.md)
 
 ## 2026-09-23
 

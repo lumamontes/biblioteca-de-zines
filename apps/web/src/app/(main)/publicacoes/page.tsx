@@ -73,7 +73,7 @@ export default async function PublicationsPage() {
                 </Link>
               </div>
               {articles.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {articles.map((article) => (
                     <BlogArticleCard
                       key={article.link}
