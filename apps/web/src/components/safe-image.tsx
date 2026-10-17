@@ -21,17 +21,25 @@ export default function SafeImage({
     setCurrentSrc(src);
   }, [src]);
 
+  const handleError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    if (currentSrc !== fallbackSrc) setCurrentSrc(fallbackSrc);
+    onError?.(event);
+  };
+
+  const referrerPolicy = currentSrc.startsWith("https://drive.google.com/thumbnail?")
+    ? "no-referrer"
+    : props.referrerPolicy;
+
   return (
-    // External catalogue URLs cannot be safely optimized by next/image.
+    // External catalogue URLs should be loaded directly, without leaking the
+    // page URL to providers that may reject local development referrers.
     // eslint-disable-next-line @next/next/no-img-element
     <img
       {...props}
       src={currentSrc}
       alt={alt}
-      onError={(event) => {
-        if (currentSrc !== fallbackSrc) setCurrentSrc(fallbackSrc);
-        onError?.(event);
-      }}
+      referrerPolicy={referrerPolicy}
+      onError={handleError}
     />
   );
 }
