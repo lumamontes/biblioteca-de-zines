@@ -1,7 +1,7 @@
 import { extractSourceObservation } from '@/domain/source-observation';
 import type { SourceDocument } from '@/domain/source-document';
-import type { FixityObservation, PdfSourceInspector } from '@/domain/source-observation-types';
-import type { SourceMetadataObservation, SourceMetadataRepository } from './source-metadata-types';
+import type { PdfSourceInspector } from '@/domain/source-observation-types';
+import type { SourceMetadataRepository } from './source-metadata-types';
 import { mapSourceObservation } from './source-metadata-observation-mapper';
 import type { SourceMetadataBatchSource } from './source-metadata-batch-types';
 import type { SourceMetadataAcquisition } from './source-metadata-contracts';

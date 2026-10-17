@@ -1,7 +1,6 @@
 import { Zine } from "@/@types/zine";
 import { createClient } from "@/utils/supabase/server";
 import { createClient as createBrowser } from "@/utils/supabase/client";
-import { PostgrestResponse } from "@supabase/supabase-js";
 import { getZineCategories } from "@/utils/utils";
 
 export const getPublishedZines = async (
@@ -13,7 +12,7 @@ export const getPublishedZines = async (
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const { data, error, count }: PostgrestResponse<Zine> = await supabase
+  const { data, error, count } = await supabase
     .from("library_zines")
     .select(
       '*, library_zines_authors (authors (id, name, url, slug))',
@@ -30,7 +29,7 @@ export const getPublishedZines = async (
   }
 
   return {
-    zines: data ?? [],
+    zines: (data ?? []) as Zine[],
     totalCount: count ?? 0
   };
 };
@@ -55,7 +54,7 @@ export const getRandomZine = async (): Promise<Zine | null> => {
 
   const randomOffset = Math.floor(Math.random() * count);
 
-  const { data, error }: PostgrestResponse<Zine> = await supabase
+  const { data, error } = await supabase
     .from("library_zines")
     .select(
       '*, library_zines_authors (authors (id, name, url, slug))'
@@ -70,19 +69,19 @@ export const getRandomZine = async (): Promise<Zine | null> => {
     throw new Error(error.message);
   }
 
-  return data && data.length > 0 ? data[0] : null;
+  return data && data.length > 0 ? (data[0] as Zine) : null;
 }
 
 export const getZinesWithSpecificTag = async (tag: string): Promise<Zine[]> => {
   const supabase = await createClient();
 
-  const { data, error }: PostgrestResponse<Zine> = await supabase.rpc('fetch_zines_by_category', { cat: tag });
+  const { data, error } = await supabase.rpc('fetch_zines_by_category', { cat: tag });
   if (error) {
     console.error("Error fetching zines with specific tag:", error.message);
     throw new Error(error.message);
   }
 
-  return data ?? [];
+  return (data ?? []) as Zine[];
 };
     
     
@@ -90,7 +89,7 @@ export const getZinesWithSpecificTag = async (tag: string): Promise<Zine[]> => {
 export const getAllZines = async (): Promise<Zine[]> => {
   const supabase = await createClient();
 
-  const { data, error }: PostgrestResponse<Zine> = await supabase
+  const { data, error } = await supabase
     .from("library_zines")
     .select(
       '*, library_zines_authors (authors (id, name, url, slug))'
@@ -101,7 +100,7 @@ export const getAllZines = async (): Promise<Zine[]> => {
     throw new Error(error.message);
   }
 
-  return data ?? [];
+  return (data ?? []) as Zine[];
 };
 
 export const getZineBySlug = async (slug: string): Promise<Zine | null> => {
