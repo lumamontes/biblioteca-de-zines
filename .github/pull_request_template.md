@@ -18,9 +18,24 @@
 
 `AAAA-MM-DD`
 
-## Resumo técnico
+## Entrada do changelog técnico
 
-<!-- Descreva a mudança para a visão “Novidades para nerds”. -->
+<!--
+Escreva como comunicação para uma pessoa, não como uma lista de commits.
+Explique em 2-4 frases:
+- o que mudou no comportamento ou na capacidade do sistema;
+- para quem isso importa e qual problema resolve;
+- limites, compatibilidade, migração ou comportamento de falha relevantes.
+Não cole o título do commit nem junte palavras como "contrato, persistência,
+extração" sem explicar a relação entre elas. Agrupe commits da mesma issue em
+uma entrada e inclua as referências que sustentam a mudança.
+-->
+
+**Título da mudança:**
+
+**Resumo para o changelog:**
+
+**Referências:**
 
 ## Impacto para pessoas usuárias
 

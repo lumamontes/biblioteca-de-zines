@@ -142,4 +142,7 @@ mudança entrou em `main`. Mudanças ainda não incorporadas ficam em `Unrelease
 ### Adicionado
 
 - **Estrutura inicial do projeto**: criação da aplicação Biblioteca de Zines e
-  da base sobre a qual o catálogo colaborativo seria desenvolvido. [commit b08b129](https://github.com/lumamontes/biblioteca-de-zines/commit/b08b129)
+  da base sobre a qual o catálogo colaborativo seria desenvolvido. Esse ponto
+  estabeleceu o primeiro lugar para reunir acervo, interface e futuras
+  contribuições em vez de manter o projeto apenas como uma ideia distribuída.
+  [commit b08b129](https://github.com/lumamontes/biblioteca-de-zines/commit/b08b129)

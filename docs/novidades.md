@@ -29,6 +29,23 @@ Todo PR deve usar o template em `.github/pull_request_template.md`. Mudanças
 com impacto perceptível para pessoas usuárias devem incluir uma entrada pública
 em `/novidades`; mudanças internas podem aparecer apenas na visão técnica.
 
+### Escrevendo uma entrada técnica
+
+O changelog é para pessoas, não para o histórico de commits. Uma entrada deve:
+
+- descrever a mudança observável, não repetir o título de um commit;
+- explicar o problema resolvido ou por que a mudança importa;
+- dizer o que acontece no fluxo normal e, quando relevante, em falhas,
+  migrações, compatibilidade ou limites;
+- agrupar commits que pertencem à mesma issue ou unidade de trabalho;
+- usar uma categoria do Keep a Changelog e uma referência verificável;
+- ter um título específico e um resumo em frases completas, nunca uma lista de
+  termos técnicos.
+
+Antes de abrir o PR, rode `pnpm test:changelog`. A validação rejeita entradas
+sem referência, curtas demais, sem frase completa ou com formato de lista de
+palavras.
+
 Quando uma publicação vier do Instagram ou de outra plataforma, preserve a URL
 original e os créditos disponíveis. Uma publicação pública em outra plataforma
 não deve ser tratada como prova automática de autorização para qualquer novo
