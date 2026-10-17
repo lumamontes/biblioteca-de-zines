@@ -474,13 +474,13 @@ The status values mean:
 | Rights | `rights`, rights/access evidence | Permission, restriction, or unresolved access claim | 0..many future | Creator/rights-holder/maintainer evidence; private or public by scope | Require evidence before non-default access claims |
 | Identifier | namespaced `identifier` | Local, external, or union-catalogue identifier | 0..many future | System or external catalogue source; visibility by identifier | Preserve namespace and source; do not equate with custody |
 | Asset | local observation | Local file evidence, checksum, validation, and path | 0..many | Inventory; private by default | Keep separate from catalogue identity |
-| Asset | derivative relation | Link between source, reading copy, preview, or page image | 0..many future | Processing evidence; visibility by access policy | Defer production modeling until authorized pilot |
+| Asset | derivative relation | Link between source, reading copy, preview, or page image | 0..many | Processing evidence; visibility by access policy | The viewer's active page generation is represented by `zine_pages`; richer asset/version modeling remains future work |
 | Editorial state | `is_published` | Public editorial visibility snapshot | 1 current | Maintainer decision; public query boundary | Keep for compatibility; do not overload with other states |
-| Processing state | `import_status`, `total_pages` | Existing page-import snapshot fields | 0..1 | Internal/legacy | Defer or retire; not current editorial review |
+| Processing state | `import_status`, `total_pages` | Active page-generation snapshot fields | 0..1 | Internal/operational | Keep separate from editorial review; generation completeness is validated with `active_page_generation` and `zine_pages` |
 | Submission | `created_at` | Intake timestamp | 0..1 | System; private/operational | Keep as provenance, not publication date |
 | Submission | `submission_batch_id` | Intake grouping/process reference | 0..1 | Submission tags; private/operational | Keep as process provenance; do not treat it as a collection/series |
 | Record history | `created_at`, `updated_at` | Intake or row-update timestamps | 0..1 | System; operational | Keep as snapshot/provenance timestamps; no event history required |
-| Derivative legacy | `zine_pages`, `import_status`, `total_pages` | Planned page derivative/import fields | 0..many / 0..1 | Internal/legacy; not public by default | Defer or retire until an authorized derivative workflow exists |
+| Derivative delivery | `zine_pages`, `active_page_generation`, `import_status`, `total_pages` | Active viewer page-generation and delivery fields | 0..many / 0..1 | Internal state plus public immutable delivery URLs | Keep for the viewer; richer asset/version and preservation evidence remain future work |
 
 ### Requiredness And Future Value Shapes
 
@@ -548,10 +548,10 @@ column; together they form the complete field-level contract.
 | `rights` | Optional metadata; required before non-default access claims | Rights source, statement/version, scope, and reviewer | What permission or restriction applies, and to which asset or use? |
 | `identifier` | Optional, repeatable | Namespace, value, and source system | Is it a local ID, external catalogue ID, URL, or another identifier? |
 | local observation | Optional evidence | Inventory run, path, checksum, and validator | Does it correspond to a catalogue asset, and with what confidence? |
-| derivative relation | Optional future relation | Source asset, transformation, run, and result | Which derivatives are authorized and publicly deliverable? |
+| derivative relation | Current page delivery relation; richer relations optional | Source asset, transformation, run, and result | Which additional derivatives are authorized and publicly deliverable? |
 | `is_published` | Required current state snapshot | Maintainer decision and review context | What separate discovery/reading/download policy accompanies it? |
-| `import_status`, `total_pages` | Optional legacy state | Processing action and result | Are these fields retired, or does an approved workflow still need them? |
-| `zine_pages` | Optional future derivative relation | Source asset, generation run, and result | Is page-level delivery authorized and operationally needed? |
+| `import_status`, `total_pages` | Current viewer processing state | Processing action and result | Which future processing states or history need to be added without conflating editorial review? |
+| `zine_pages` | Current viewer derivative relation | Source asset, generation run, and result | Which additional page-level access and preservation distinctions need community review? |
 | `created_at`, `updated_at` | System-generated when available | System timestamp and table source | None for meaning; do not use as publication date |
 | rights/access evidence | Optional but required before non-default access claims | Rights source, permission/restriction, scope, reviewer, and unresolved question | What may be public, readable, downloadable, preserved, replicated, or reused? |
 

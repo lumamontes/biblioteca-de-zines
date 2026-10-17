@@ -25,7 +25,7 @@ export function ZineGridServer({ zines }: ZineGridServerProps) {
   return (
     <div
       role="grid"
-      className="grid grid-cols-1 gap-6 px-4 py-8 sm:px-6 md:grid-cols-2 lg:grid-cols-3"
+      className="grid grid-cols-1 gap-6 px-4 py-8 sm:px-6 lg:px-12 md:grid-cols-2 lg:grid-cols-3"
       aria-live="polite"
       aria-label={`${zines.length} zines encontrados`}
     >
@@ -38,4 +38,3 @@ export function ZineGridServer({ zines }: ZineGridServerProps) {
     </div>
   );
 }
-

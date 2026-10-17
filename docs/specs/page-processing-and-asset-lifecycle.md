@@ -4,11 +4,20 @@ This specification defines how Biblioteca de Zines turns submitted PDF sources i
 
 ## Status
 
-The full page-generation contract is preserved for future reader work. The current operational workflow is the cover-only contract in `cover-only-generation-and-migration.md`; queue and processed-source infrastructure are shared.
+This is the active operational contract for the viewer release being prepared
+in the monorepo. It is not a description of the implantação atualmente em
+produção.
+The target viewer uses complete immutable page generations and a public page manifest.
+The historical cover-only contract remains in
+`cover-only-generation-and-migration.md` for legacy migration and fallback
+behavior only.
 
 ## Scope
 
-The system processes a submitted PDF into page and cover derivatives. A submission may be processed before review, converted into a catalogue publication, edited, published, unpublished, republished, rejected, or withdrawn.
+The system processes the PDF source of an approved public publication into page
+and cover derivatives. A submission remains intake-only until it becomes a
+catalogue publication; publication may then be edited, published, unpublished,
+republished, rejected, or withdrawn.
 
 The submitted PDF URL remains the source reference. R2 objects are derivatives, not the original file or proof of rights.
 
@@ -69,12 +78,18 @@ library_zines.pdf_url === library_zines.processed_pdf_url
 
 When a linked `library_zines.pdf_url` is edited, the system compares it with `processed_pdf_url` before deciding whether to enqueue work. `processed_pdf_url` changes only after a complete public generation succeeds.
 
+The source provider is intentionally not part of the processing contract. The
+acquisition adapter supports Google Drive links and generic HTTP(S) URLs, but
+the downloaded response must contain a valid PDF. An HTML reader page, a
+protected resource, an expired link, or a URL that blocks the worker is not a
+processable PDF source.
+
 ## Processing and Publication Flow
 
 ```mermaid
 flowchart TD
-    A[Submission in form_uploads] --> B[Edit intake metadata or PDF URL]
-    B --> C[No page processing while unconverted]
+    A[Submission in form_uploads] --> B[Review metadata or PDF URL]
+    B --> C[No public page processing while unconverted]
     C --> D{Convert to library_zines?}
     D -- No --> E[Remain intake-only]
     D -- Yes --> F{Complete active public generation for same PDF?}
@@ -117,6 +132,10 @@ flowchart TD
 - Adding or changing a custom cover does not require PDF processing.
 - Removing a custom cover returns to the first-page fallback when a valid page generation exists.
 
+The later direct-upload version may make the first page the only cover source for
+new uploads. That policy does not rewrite existing catalogue covers and is
+specified separately in `direct-upload-and-metadata-intake.md`.
+
 ## Cleanup and Retention
 
 - Failed partial generations are deleted immediately.
@@ -135,19 +154,18 @@ Current R2 pricing reference: [Cloudflare R2 pricing](https://developers.cloudfl
 
 | Component | Responsibility |
 | --- | --- |
-| `page-generation-module.ts` | Provider-neutral generation orchestration |
-| `zine-import-service.ts` | Publication-side generation entry point |
-| `source-download-service.ts` | Direct and Google Drive source acquisition |
-| `pdf-service.ts` | PDF page rendering and canvas integration |
-| `asset-storage.ts` | Provider-neutral storage contract |
-| `r2-storage-service.ts` | R2 upload, copy, and cleanup adapter |
-| `supabase-zine-page-repository.ts` | Public publication persistence |
-| `processing-job-module.ts` | Provider-neutral processing job contract |
-| `supabase-processing-job-store.ts` | Queue, lease, retry, and failure persistence |
-| `process-claimed-zine.ts` | Claimed-job execution and failure recording |
-| `enqueue-zine-processing.ts` | Enqueues a publication for processing |
-| `zine-processing-dispatch-service.ts` | Requests asynchronous worker dispatch |
-| `scripts/migrate-pdf-covers.ts` | Explicit published-zine migration |
+| `src/application/page-generation/` | Provider-neutral page-generation orchestration and contracts |
+| `src/infrastructure/page-generation/page-processor.ts` | Publication-side processing entry point |
+| `src/infrastructure/page-generation/pdf-page-renderer.ts` | PDF page rendering |
+| `src/infrastructure/page-generation/supabase-page-generation-repository.ts` | Generation validation and activation persistence |
+| `src/infrastructure/page-generation/r2-page-generation-storage.ts` | Immutable page and cover asset storage |
+| `src/infrastructure/source-acquisition/source-download-service.ts` | Direct and Google Drive source acquisition |
+| `src/infrastructure/processing/supabase-processing-job-store.ts` | Queue, lease, retry, and failure persistence |
+| `src/application/processing/process-claimed-zine.ts` | Claimed-job execution and failure recording |
+| `src/infrastructure/processing/enqueue-zine-processing.ts` | Enqueues a publication for processing |
+| `src/infrastructure/processing/zine-processing-dispatch-service.ts` | Requests asynchronous worker dispatch |
+| `scripts/migrate-pdf-pages.ts` | Explicit published-zine page-generation migration |
+| `scripts/migrate-pdf-covers.ts` | Legacy cover migration |
 | `scripts/process-pending-zines.ts` | Local queue worker |
 | `src/app/api/internal/process-zines/route.ts` | Authenticated HTTP worker entry point |
 

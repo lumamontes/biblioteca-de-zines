@@ -4,8 +4,36 @@ Bem-vinde à documentação da Biblioteca de Zines.
 
 Aqui estão reunidas todas as nossas decisões em formato de Architecture Decision Records (ADRs).
 
-Nossa documentação também inclui o [baseline do arquivo](./archive-baseline.md),
-que registra as conclusões públicas da primeira calibração do inventário.
+## Como ler esta documentação
+
+O [Digital Archive Care](./digital-archive-care.md) é a síntese principal do
+estado do projeto. Ele separa a produção atual, a próxima versão do monorepo e
+as pesquisas ou versões posteriores.
+
+As ADRs continuam sendo o registro histórico das decisões. Uma ADR pode
+descrever a produção atual, uma versão futura ou uma decisão já substituída; o
+status aparece logo abaixo do título quando necessário.
+
+### Produção atual
+
+O [baseline do arquivo](./archive-baseline.md) registra como a produção e o
+acervo eram observados antes do release do viewer. Ele é evidência histórica,
+não uma garantia de preservação.
+
+### Próxima versão do monorepo
+
+A [decisão sobre o release do viewer e derivados de páginas](./decisions/14-viewer-release-and-page-derivatives.md)
+é a referência atual para o monorepo que será publicado no próximo release.
+
+A [especificação de processamento de páginas e ciclo de vida de assets](./specs/page-processing-and-asset-lifecycle.md)
+documenta o comportamento operacional desse viewer: gerações completas,
+ativação, entrega, reprocessamento e limpeza.
+
+### Pesquisa e versões posteriores
+
+A [especificação de upload direto e intake de metadados](./specs/direct-upload-and-metadata-intake.md)
+documenta a versão posterior para upload de PDFs, extração de metadados,
+proveniência e revisão humana.
 
 O [perfil provisório de catálogo e acesso](./catalogue-access-profile.md)
 separa o modelo atual das decisões futuras de metadados, direitos e plataforma.
@@ -29,18 +57,15 @@ A [decisão sobre padrões abertos](./decisions/9-open-standards-as-crosswalks.m
 registra por que padrões externos são usados como lentes e crosswalks seletivos,
 sem substituir a semântica local da Biblioteca.
 
-A [especificação de processamento de páginas e ciclo de vida de assets](./specs/page-processing-and-asset-lifecycle.md)
-define o bucket público ativo, gerações, reprocessamento de PDFs, capas,
-publicação e limpeza futuras.
-
 A [especificação de geração e migração de capas](./specs/cover-only-generation-and-migration.md)
-define o fluxo atual de capas geradas a partir da primeira página do PDF.
+registra o fluxo histórico de capas e continua sendo referência apenas para
+migrações ou compatibilidade legada.
 
 A [decisão sobre processar páginas na publicação](./decisions/11-process-pages-at-publication.md)
 registra a decisão histórica e as alternativas consideradas.
 
 A [decisão sobre processamento somente de capas](./decisions/12-cover-only-processing-at-publication.md)
-registra o fluxo atual de derivados para a leitura via Google Drive.
+registra uma decisão histórica, supersedida pelo caminho do viewer.
 
 O [runbook de processamento de páginas](./runbooks/page-processing.md)
 documenta migrações, scripts, variáveis de ambiente, verificações e recuperação.

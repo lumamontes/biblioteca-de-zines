@@ -1,5 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
+import type { ProcessingJob } from '@/application/processing/processing-job-types';
+import { createCoverGeneration } from '@/application/cover-generation/cover-generation-service';
 import { createCoverProcessor } from '@/infrastructure/cover-generation/cover-processor';
 import type { CoverProcessorOptions } from '@/infrastructure/cover-generation/cover-processor-types';
 import { extractFirstPageFromPdf } from '@/infrastructure/rendering/pdf-service';
@@ -19,4 +21,23 @@ export function createZineCoverProcessor(
     renderFirstPage: (source) => extractFirstPageFromPdf(source.buffer),
     optimizeCover: optimizeCoverImage,
   }, options);
+}
+
+export function createZineCoverRepairProcessor(
+  supabase: SupabaseClient<Database>,
+  pageUrl: string,
+  options: CoverProcessorOptions = {},
+) {
+  return async (job: ProcessingJob) => {
+    await createCoverGeneration(
+      () => downloadSource(pageUrl),
+      { id: job.zineId, kind: 'zine' },
+      createSupabaseZineCoverRepository(supabase, { repairOnly: true }),
+      createR2CoverAssetStore(),
+      job.pdfUrl,
+      (source) => Promise.resolve(source.buffer),
+      optimizeCoverImage,
+      { ...options, sourceType: 'image' },
+    );
+  };
 }

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getRandomZine } from "@/services/zine-service";
 import { getThumbnailUrl } from "@/utils/assets";
-import Header from "@/components/header";
+import SiteHeader from "@/components/site-header";
 import { PostItZineInfo } from "@/components/ui/post-it";
 import { MediaMention } from "@/components/media-mention";
 import { WebsiteStructuredData } from "@/components/seo/structured-data";
@@ -51,11 +51,7 @@ export default async function HomePage() {
   return (
     <>
       <WebsiteStructuredData />
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 md:px-12">
-          <Header />
-        </div>
-      </div>
+      <SiteHeader />
 
       <div className="pt-20 flex min-h-screen items-center max-w-6xl mx-auto px-4 md:px-12 justify-between flex-col md:flex-row">
         <div className="w-full md:w-1/2 p-12 md:p-0">
@@ -92,19 +88,21 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="w-full md:w-1/2 flex items-center justify-end mt-10 md:mt-0 p-8 ">
+        <div className="w-full md:w-1/2 flex items-center justify-center md:justify-end mt-10 md:mt-0 p-8 ">
           {randomZine ? (
             <div className="relative group perspective-1000">
               <div className="relative transform hover:scale-105  transition-all duration-300 cursor-pointer group-hover:shadow-2xl">
                 <div className="bg-white p-3 shadow-xl border border-gray-200 transform rotate-1 hover:rotate-2 transition-transform duration-300">
-                  <SafeImage
-                    src={thumbnailUrl}
-                    alt={randomZine.title}
-                    width={280}
-                    height={350}
-                    loading="lazy"
-                    className="w-full h-auto object-cover"
-                  />
+                  <div className="relative aspect-[4/5] w-[300px] max-w-full overflow-hidden">
+                    <SafeImage
+                      src={thumbnailUrl}
+                      alt={randomZine.title}
+                      width={300}
+                      height={375}
+                      loading="eager"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </div>
                 </div>
                 
                   <PostItZineInfo
@@ -148,7 +146,7 @@ export default async function HomePage() {
           </div>
         </div>
           
-          <div className="max-w-6xl mx-auto px-4 md:px-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="max-w-6xl mx-auto px-4 md:px-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
             {PUBLICATION_LINKS.map((link) => (
               <MediaMention key={link} url={link} type={getMediaType(link)} />
             ))}
@@ -164,7 +162,7 @@ export default async function HomePage() {
                 #ClubeDeZines
               </h2>
               <p>
-                Um clubinho online para criar zines a partir de temas coletivos. Agora as edições duram dois meses: a edição atual é sobre <strong>Arquivo</strong>, e tudo é aberto à sua interpretação!
+                Um clubinho online para criar zines a partir de temas coletivos, e tudo é aberto à sua interpretação!
               </p>
           </div>
           <Image 

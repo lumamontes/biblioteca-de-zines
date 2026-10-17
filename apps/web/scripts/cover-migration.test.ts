@@ -57,6 +57,19 @@ test('already-correct generated covers are skipped on rerun', async () => {
   assert.deepEqual(summary, { completed: 0, failed: 0, selected: 0, skipped: 1 });
 });
 
+test('legacy cover migration repairs an unreachable external cover', async () => {
+  const brokenExternalCover = zine(1, 'https://drive.example/cover.jpg');
+  const summary = await runCoverMigration({
+    apply: true,
+    excludedIds: new Set(),
+    isReachableImage: async () => false,
+    processCandidate: async () => {},
+    zines: [brokenExternalCover],
+  });
+
+  assert.deepEqual(summary, { completed: 1, failed: 0, selected: 1, skipped: 0 });
+});
+
 test('excludes only known invalid monitor resources', () => {
   assert.deepEqual([...getExcludedCoverMigrationIds({
     results: [
@@ -80,6 +93,7 @@ test('scopes and validates explicit migration IDs', () => {
 
 function zine(id: number, cover_image: string): CoverMigrationZine {
   return {
+    active_page_generation: null,
     cover_image,
     id,
     import_status: 'pending',

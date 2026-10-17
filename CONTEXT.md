@@ -74,6 +74,10 @@ _Avoid_: Treating a role as a permanent identity category
 Facts about a file reference, local observation, derivative, or access condition that are kept distinct from the publication record.
 _Avoid_: Treating a URL as proof of custody or authorization
 
+**Source metadata observation**:
+A timestamped record of what Biblioteca observed about a specific acquired source or file asset, including acquisition evidence, technical properties, fixity, format identification, and extraction results. It is not the publication's authoritative metadata and does not by itself establish rights, authenticity, or preservation.
+_Avoid_: Treating extracted PDF metadata or a checksum as confirmed catalogue truth
+
 **Archive**:
 The collection of files and evidence retained for the continuity of the Biblioteca's catalogue and publications.
 _Avoid_: Backup, storage bucket
@@ -103,12 +107,20 @@ A file or representation produced from another publication file, such as a page 
 _Avoid_: Duplicate
 
 **Generated cover**:
-A web-ready derivative made from the first page of a PDF when a publication does not have a valid submitted cover image. It is a cover asset, not a replacement for the source PDF or the reader's PDF preview.
-_Avoid_: Treating the generated cover as a reading copy or as evidence that the PDF is preserved
+A web-ready derivative made from the first page of a PDF for catalogue delivery. It is part of a page generation when the viewer is active, or a standalone fallback for legacy cover migration. It is not a replacement for the source PDF or evidence that the PDF is preserved.
+_Avoid_: Treating the generated cover as a reading copy or as evidence of rights or custody
 
 **Cover-only processing**:
-The current processing workflow that downloads a publication's PDF, renders only its first page, optimizes that image, and stores it as the publication's cover derivative. Full PDF-to-image page generation is a reusable future capability, not part of the current cover workflow.
-_Avoid_: Calling cover-only processing page processing
+The historical compatibility workflow that downloads a publication's PDF, renders only its first page, optimizes that image, and stores it as the publication's cover derivative. It is not the active viewer processing path.
+_Avoid_: Calling legacy cover-only processing the current page-generation workflow
+
+**Page generation**:
+The target viewer workflow in the monorepo that downloads the PDF of an approved public publication, renders every page into immutable delivery derivatives, creates a cover fallback, and activates a complete ordered page manifest atomically. It is not yet the production workflow.
+_Avoid_: Treating page derivatives as the original file, rights evidence, or automatic permission to reuse the work
+
+**Direct-upload intake**:
+A deferred later-version workflow for private PDF uploads, technical inspection, editable metadata suggestions, and authorised-original handling. Uploading a file does not publish it or establish rights.
+_Avoid_: Treating extracted PDF metadata as confirmed catalogue truth
 
 ## Evidence and diagnosis
 

@@ -13,8 +13,9 @@ export async function selectCoverMigrationCandidates(
     const generatedCoverIsCurrent = isGeneratedCover(zine.cover_image, zine.id)
       && zine.processed_pdf_url === zine.pdf_url
       && zine.import_status === 'completed';
-    if (generatedCoverIsCurrent && await isReachableImage(zine.cover_image)) continue;
-    if (!isPlaceholderCover(zine.cover_image)
+    const coverIsReachable = zine.cover_image ? await isReachableImage(zine.cover_image) : false;
+    if (generatedCoverIsCurrent && coverIsReachable) continue;
+    if (coverIsReachable && !isPlaceholderCover(zine.cover_image)
       && !isGeneratedCover(zine.cover_image, zine.id)) continue;
 
     candidates.push(zine);
