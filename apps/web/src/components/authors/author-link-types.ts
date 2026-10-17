@@ -1,6 +1,9 @@
 export type SocialPlatform =
+  | "apoia-se"
   | "bandcamp"
   | "bluesky"
+  | "buy-me-a-coffee"
+  | "catarse"
   | "codeberg"
   | "devto"
   | "facebook"
@@ -13,10 +16,13 @@ export type SocialPlatform =
   | "linkedin"
   | "mastodon"
   | "medium"
+  | "open-collective"
   | "patreon"
+  | "paypal"
   | "sourcehut"
   | "substack"
   | "twitter"
+  | "vakinha"
   | "youtube";
 
 export type ClassifiedAuthorLink =

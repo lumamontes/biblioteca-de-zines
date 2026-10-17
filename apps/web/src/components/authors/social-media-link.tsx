@@ -27,8 +27,11 @@ interface SocialMediaLinkProps {
 }
 
 const SOCIAL_MEDIA: Record<SocialPlatform, { label: string; Icon: LucideIcon }> = {
+  "apoia-se": { label: "Apoiar no Apoia.se", Icon: Coffee },
   bandcamp: { label: "Ver Bandcamp", Icon: Music },
   bluesky: { label: "Ver Bluesky", Icon: Cloud },
+  "buy-me-a-coffee": { label: "Apoiar no Buy Me a Coffee", Icon: Coffee },
+  catarse: { label: "Apoiar no Catarse", Icon: Coffee },
   codeberg: { label: "Ver Codeberg", Icon: GitBranch },
   devto: { label: "Ver DEV Community", Icon: Code2 },
   facebook: { label: "Ver Facebook", Icon: Facebook },
@@ -41,10 +44,13 @@ const SOCIAL_MEDIA: Record<SocialPlatform, { label: string; Icon: LucideIcon }> 
   linkedin: { label: "Ver LinkedIn", Icon: Linkedin },
   mastodon: { label: "Ver Mastodon", Icon: MessageCircle },
   medium: { label: "Ver Medium", Icon: Globe },
+  "open-collective": { label: "Apoiar no Open Collective", Icon: Coffee },
   patreon: { label: "Ver Patreon", Icon: Podcast },
+  paypal: { label: "Apoiar pelo PayPal", Icon: Coffee },
   sourcehut: { label: "Ver SourceHut", Icon: GitBranch },
   substack: { label: "Ver Substack", Icon: Mail },
   twitter: { label: "Ver X", Icon: X },
+  vakinha: { label: "Apoiar na Vakinha", Icon: Coffee },
   youtube: { label: "Ver YouTube", Icon: Youtube },
 };
 

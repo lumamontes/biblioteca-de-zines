@@ -1,8 +1,11 @@
 import type { ClassifiedAuthorLink, SocialPlatform } from "./author-link-types";
 
 const SOCIAL_HOSTNAMES: Readonly<Record<string, SocialPlatform>> = {
+  "apoia.se": "apoia-se",
   "bandcamp.com": "bandcamp",
   "bsky.app": "bluesky",
+  "buymeacoffee.com": "buy-me-a-coffee",
+  "catarse.me": "catarse",
   "codeberg.org": "codeberg",
   "dev.to": "devto",
   "facebook.com": "facebook",
@@ -14,10 +17,13 @@ const SOCIAL_HOSTNAMES: Readonly<Record<string, SocialPlatform>> = {
   "linktr.ee": "linktree",
   "linkedin.com": "linkedin",
   "medium.com": "medium",
+  "opencollective.com": "open-collective",
   "patreon.com": "patreon",
+  "paypal.me": "paypal",
   "sourcehut.org": "sourcehut",
   "substack.com": "substack",
   "twitter.com": "twitter",
+  "vakinha.com.br": "vakinha",
   "x.com": "twitter",
   "youtube.com": "youtube",
   "youtu.be": "youtube",
