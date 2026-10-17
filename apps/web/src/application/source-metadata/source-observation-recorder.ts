@@ -4,6 +4,7 @@ import type { FixityObservation, PdfSourceInspector } from '@/domain/source-obse
 import type { SourceMetadataObservation, SourceMetadataRepository } from './source-metadata-types';
 import { mapSourceObservation } from './source-metadata-observation-mapper';
 import type { SourceMetadataBatchSource } from './source-metadata-batch-types';
+import type { SourceMetadataAcquisition } from './source-metadata-contracts';
 
 export type SourceObservationRecordingInput = {
   publicationId: number;
@@ -21,7 +22,7 @@ export type SourceObservationRecordingDependencies = {
 export async function recordSourceObservation(
   input: SourceObservationRecordingInput,
   dependencies: SourceObservationRecordingDependencies,
-): Promise<void> {
+): Promise<number> {
   const outcome = await extractSourceObservation(
     { source: input.source, sourceUri: input.sourceUri, acquisition: input.acquisition },
     dependencies.inspectPdf,
@@ -29,10 +30,13 @@ export async function recordSourceObservation(
     await dependencies.repository.findLatestFixity(input.sourceUri),
   );
   const source: SourceMetadataBatchSource = { sourceId: `publication:${input.publicationId}`, publicationId: input.publicationId, submissionId: null, sourceUri: input.sourceUri };
-  await dependencies.repository.create(mapSourceObservation(source, outcome, {
-    method: input.acquisition?.method ?? 'unknown', acquiredAt: outcome.status === 'observed' ? outcome.observation.observedAt : outcome.observedAt,
-    filename: input.acquisition?.filename ?? null, declaredSize: input.acquisition?.declaredSize ?? input.source?.buffer.byteLength ?? null,
+  const acquisition: SourceMetadataAcquisition = {
+    method: input.acquisition?.method ?? 'unknown', acquiredAt: input.acquisition?.acquiredAt ?? input.source?.acquisition?.acquiredAt ?? null,
+    filename: input.acquisition?.filename ?? input.source?.acquisition?.filename ?? null, declaredSize: input.acquisition?.declaredSize ?? input.source?.acquisition?.declaredSize ?? null,
+    receivedByteSize: input.acquisition?.receivedByteSize ?? input.source?.acquisition?.receivedByteSize ?? (input.source ? input.source.buffer.byteLength : null),
     httpStatus: input.acquisition?.httpStatus ?? null, redirectOutcome: input.acquisition?.redirectCount === undefined ? null : `${input.acquisition.redirectCount} redirect(s)`,
-    declaredMediaType: input.source?.mimeType ?? null,
-  }, 'Observed from approved-publication source processing; values are not catalogue metadata.'));
+    declaredMediaType: input.acquisition?.declaredMediaType ?? input.source?.acquisition?.declaredMediaType ?? null,
+    detectedMediaType: input.acquisition?.detectedMediaType ?? input.source?.acquisition?.detectedMediaType ?? null,
+  };
+  return dependencies.repository.create(mapSourceObservation(source, outcome, acquisition, 'Observed from approved-publication source processing; values are not catalogue metadata.'));
 }

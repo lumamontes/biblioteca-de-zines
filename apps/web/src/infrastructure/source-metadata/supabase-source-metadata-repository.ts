@@ -11,9 +11,11 @@ export function createSupabaseSourceMetadataRepository(
     async create(observation) {
       const insert: SourceMetadataInsert = {
         observation_id: observation.observationId,
+        asset_identity: observation.assetIdentity,
+        source_observation_id: observation.sourceObservationId,
         library_zine_id: observation.publicationId,
         form_upload_id: observation.submissionId,
-        source_reference: observation.sourceUri,
+        source_reference: observation.sourceUri ?? observation.assetIdentity,
         asset_kind: observation.assetKind,
         observed_at: observation.observedAt,
         extractor_version: observation.extractorVersion,

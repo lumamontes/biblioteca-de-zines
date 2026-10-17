@@ -1,16 +1,7 @@
 import type { SourceObservationOutcome } from '@/domain/source-observation-types';
 import type { SourceMetadataBatchSource } from './source-metadata-batch-types';
 import type { FixityContext, SourceMetadataObservation } from './source-metadata-types';
-
-export type SourceMetadataAcquisition = {
-  method: string;
-  acquiredAt: string;
-  filename: string | null;
-  declaredSize: number | null;
-  httpStatus: number | null;
-  redirectOutcome: string | null;
-  declaredMediaType: string | null;
-};
+import type { SourceMetadataAcquisition } from './source-metadata-contracts';
 
 export function mapSourceObservation(
   source: SourceMetadataBatchSource,
@@ -21,6 +12,8 @@ export function mapSourceObservation(
   const observedAt = outcome.status === 'observed' ? outcome.observation.observedAt : outcome.observedAt;
   const base = {
     observationId: `${source.sourceId}:${observedAt}`,
+    assetIdentity: `${source.sourceId}:${observedAt}`,
+    sourceObservationId: null,
     publicationId: source.publicationId,
     submissionId: source.submissionId,
     assetKind: 'source' as const,
@@ -42,9 +35,9 @@ export function mapSourceObservation(
       ...base,
       status: outcome.reason,
       failureReason: outcome.message,
-      receivedByteSize: acquisition.declaredSize,
+      receivedByteSize: acquisition.receivedByteSize,
       declaredMediaType: acquisition.declaredMediaType,
-      detectedMediaType: outcome.detectedMediaType,
+      detectedMediaType: acquisition.detectedMediaType ?? outcome.detectedMediaType,
       formatIdentificationStatus: outcome.formatIdentification,
       formatIdentifier: outcome.formatIdentifier,
       storageReference: null,
@@ -65,8 +58,8 @@ export function mapSourceObservation(
     status: 'observed',
     failureReason: null,
     receivedByteSize: observation.receivedByteSize,
-    declaredMediaType: observation.mediaTypeDeclared,
-    detectedMediaType: observation.mediaTypeDetected,
+    declaredMediaType: acquisition.declaredMediaType,
+    detectedMediaType: acquisition.detectedMediaType ?? observation.mediaTypeDetected,
     formatIdentificationStatus: observation.formatIdentification,
     formatIdentifier: observation.formatIdentifier,
     storageReference: null,

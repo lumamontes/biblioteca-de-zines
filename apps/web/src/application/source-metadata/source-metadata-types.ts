@@ -44,8 +44,10 @@ export interface SourceMetadataObservation {
   observedAt: string;
   extractorVersion: string;
   sourceUri: string | null;
+  assetIdentity: string;
+  sourceObservationId: number | null;
   acquisitionMethod: string;
-  acquiredAt: string;
+  acquiredAt: string | null;
   status: SourceObservationStatus;
   failureReason: string | null;
   sourceFilename: string | null;

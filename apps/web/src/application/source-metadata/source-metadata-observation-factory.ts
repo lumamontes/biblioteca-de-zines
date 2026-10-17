@@ -1,6 +1,7 @@
 import type { SourceMetadataBatchSource } from './source-metadata-batch-types';
 import type { SourceMetadataObservation } from './source-metadata-types';
-import { mapSourceObservation, type SourceMetadataAcquisition } from './source-metadata-observation-mapper';
+import { mapSourceObservation } from './source-metadata-observation-mapper';
+import type { SourceMetadataAcquisition } from './source-metadata-contracts';
 import type { SourceObservationOutcome } from '@/domain/source-observation-types';
 
 export function createSourceMetadataObservation(

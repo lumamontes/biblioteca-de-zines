@@ -4,7 +4,7 @@ import { createSourceMetadataReport } from '../src/application/source-metadata/c
 import type { SourceMetadataObservation } from '../src/application/source-metadata/source-metadata-types';
 
 const observation = (overrides: Partial<SourceMetadataObservation> = {}): SourceMetadataObservation => ({
-  observationId: 'one', publicationId: 1, submissionId: null, assetKind: 'source', observedAt: '2026-01-01',
+  observationId: 'one', assetIdentity: 'one', sourceObservationId: null, publicationId: 1, submissionId: null, assetKind: 'source', observedAt: '2026-01-01',
   extractorVersion: 'test', sourceUri: 'https://example.test/zine.pdf', acquisitionMethod: 'http', acquiredAt: '2026-01-01',
   status: 'observed', failureReason: null, sourceFilename: null, sourceSize: 1, httpStatus: 200, redirectOutcome: null,
   receivedByteSize: 1, declaredMediaType: 'application/pdf', detectedMediaType: 'application/pdf', formatIdentificationStatus: 'identified',

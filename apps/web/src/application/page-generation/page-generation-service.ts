@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { AssetTarget } from '@/application/asset-storage';
 import type { SourceDocument } from '@/domain/source-document';
-import type { CoverRenderer, PageGenerationRepository, PageGenerationStorage, PageRenderer, RenderedPage, StoredPage } from './page-generation-types';
+import type { CoverRenderer, PageGenerationRepository, PageGenerationStorage, PageRenderer, RenderedPage, StoredPage, PageDerivativeRecorder } from './page-generation-types';
 
 export async function createPageGeneration(
   loadSource: () => Promise<SourceDocument>,
@@ -10,7 +10,7 @@ export async function createPageGeneration(
   storage: PageGenerationStorage,
   target: AssetTarget,
   sourceUrl: string,
-  options: { createCover?: CoverRenderer; createGenerationId?: () => string } = {},
+  options: { createCover?: CoverRenderer; createGenerationId?: () => string; sourceObservationId?: number | (() => number | undefined); recordDerivatives?: PageDerivativeRecorder } = {},
 ): Promise<void> {
   const generationId = options.createGenerationId?.() ?? randomUUID();
   const pages: StoredPage[] = [];
@@ -45,6 +45,15 @@ export async function createPageGeneration(
     if (!result.activated) {
       await discardGeneration(storage, target, generationId);
       return;
+    }
+    const sourceObservationId = typeof options.sourceObservationId === 'function' ? options.sourceObservationId() : options.sourceObservationId;
+    if (sourceObservationId !== undefined && sourceObservationId >= 0 && options.recordDerivatives) {
+      await options.recordDerivatives({ sourceObservationId, assets: pages.map((page) => ({ assetIdentity: page.imageUrl, storageReference: page.imageUrl, mediaType: page.contentType, byteSize: null, assetKind: 'derivative' })) }).catch((error) => {
+        console.error('Failed to record generated page observations:', error);
+      });
+      if (coverImage) await options.recordDerivatives({ sourceObservationId, assets: [{ assetIdentity: coverImage, storageReference: coverImage, mediaType: 'image/webp', byteSize: null, assetKind: 'preview' }] }).catch((error) => {
+        console.error('Failed to record generated preview observation:', error);
+      });
     }
     if (coverImage && result.coverImageUsed === false) await storage.deleteCover(target, generationId).catch(() => undefined);
     if (result.previousGenerationId) await discardGeneration(storage, target, result.previousGenerationId);

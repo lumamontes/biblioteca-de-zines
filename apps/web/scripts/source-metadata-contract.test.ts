@@ -160,6 +160,8 @@ function failedObservation(
 
 const baseObservation: SourceMetadataObservation = {
   observationId: 'observation-1',
+  assetIdentity: 'observation-1',
+  sourceObservationId: null,
   publicationId: 42,
   submissionId: null,
   assetKind: 'source',

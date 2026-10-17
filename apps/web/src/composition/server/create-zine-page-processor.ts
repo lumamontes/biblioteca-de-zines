@@ -9,11 +9,12 @@ import { optimizeCoverImage } from '@/infrastructure/cover-generation/cover-imag
 import { inspectPdfSource } from '@/infrastructure/rendering/pdf-source-inspector';
 import { createSupabaseSourceMetadataRepository } from '@/infrastructure/source-metadata/supabase-source-metadata-repository';
 import { recordSourceObservation } from '@/application/source-metadata/source-observation-recorder';
+import { recordSourceMetadataDerivative } from '@/application/source-metadata/record-source-metadata-derivative';
 
 export function createZinePageProcessor(supabase: SupabaseClient<Database>) {
   return createPageProcessor({
     downloadSource,
-    recordSourceObservation: (job, source, failureReason) => recordSourceObservation({
+     recordSourceObservation: (job, source, failureReason) => recordSourceObservation({
       publicationId: job.zineId,
       sourceUri: job.pdfUrl,
       source,
@@ -22,7 +23,14 @@ export function createZinePageProcessor(supabase: SupabaseClient<Database>) {
         status: source ? 'acquired' : 'unreachable',
         failureReason,
       },
-    }, { inspectPdf: inspectPdfSource, repository: createSupabaseSourceMetadataRepository(supabase) }),
+     }, { inspectPdf: inspectPdfSource, repository: createSupabaseSourceMetadataRepository(supabase) }),
+     recordDerivatives: async ({ sourceObservationId, assets }) => {
+       const repository = createSupabaseSourceMetadataRepository(supabase);
+       for (const [index, asset] of assets.entries()) await recordSourceMetadataDerivative(repository, {
+         sourceObservationId, observationId: `${sourceObservationId}:derivative:${index}:${asset.assetIdentity}`,
+         ...asset, observedAt: new Date().toISOString(), provenanceNote: 'Generated derivative linked to the acquired source observation; not an original.',
+       });
+     },
     createCover: async (page) => ({ contentType: 'image/webp', data: await optimizeCoverImage(page.data) }),
     renderPages: renderPdfPages,
     repository: createSupabasePageGenerationRepository(supabase),

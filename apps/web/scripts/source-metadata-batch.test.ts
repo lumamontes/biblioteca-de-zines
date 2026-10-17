@@ -7,6 +7,8 @@ import type { SourceMetadataObservation } from '../src/application/source-metada
 function observation(status: SourceMetadataObservation['status'], version: string): SourceMetadataObservation {
   return {
     observationId: `${version}-${status}`,
+    assetIdentity: `${version}-${status}`,
+    sourceObservationId: null,
     publicationId: 1,
     submissionId: null,
     assetKind: 'source',

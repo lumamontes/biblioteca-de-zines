@@ -22,6 +22,11 @@ export type SourceObservationInput = {
     declaredSize?: number;
     httpStatus?: number;
     redirectCount?: number;
+    acquiredAt?: string;
+    receivedByteSize?: number;
+    declaredMediaType?: string;
+    detectedMediaType?: string;
+    redirectOutcome?: string;
   };
 };
 
@@ -74,7 +79,7 @@ export type SourceObservation = {
   sourceUri: string | null;
   acquisition: SourceObservationInput['acquisition'];
   receivedByteSize: number;
-  mediaTypeDeclared: string;
+  mediaTypeDeclared: string | null;
   mediaTypeDetected: string;
   formatIdentification: 'identified' | 'unidentified';
   formatIdentifier: 'application/pdf' | null;
