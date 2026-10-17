@@ -35,7 +35,7 @@ async function extractMetadata(url: string): Promise<MediaMetadata> {
   const fallbackMetadata: MediaMetadata = {
     title: getKnownSiteTitle(domain, url),
     description: getKnownSiteDescription(domain),
-    image: '',
+    image: getKnownSiteImage(domain),
     domain,
     favicon,
     siteName: getKnownSiteName(domain)
@@ -94,9 +94,13 @@ async function extractMetadata(url: string): Promise<MediaMetadata> {
       fallbackMetadata.siteName;
 
     return {
-      title: ogTitle.trim().replace(/\s+/g, ' ') || fallbackMetadata.title,
-      description: ogDescription.trim().replace(/\s+/g, ' ') || fallbackMetadata.description,
-      image: ogImage,
+      title: domain === 'instagram.com'
+        ? fallbackMetadata.title
+        : ogTitle.trim().replace(/\s+/g, ' ') || fallbackMetadata.title,
+      description: domain === 'instagram.com'
+        ? fallbackMetadata.description
+        : ogDescription.trim().replace(/\s+/g, ' ') || fallbackMetadata.description,
+      image: ogImage || fallbackMetadata.image,
       domain,
       favicon,
       siteName: ogSiteName.trim() || fallbackMetadata.siteName
@@ -110,11 +114,16 @@ async function extractMetadata(url: string): Promise<MediaMetadata> {
 
 function getKnownSiteTitle(domain: string, url: string): string {
   const knownTitles: Record<string, string> = {
-    'instagram.com': 'Post sobre Biblioteca de Zines',
+    'instagram.com': 'O Norte em Quadrinhos entrevista Luana Góes sobre a Biblioteca Brasileira de Zines',
     'youtube.com': url.includes('/live/') ? 'Live sobre Biblioteca de Zines' : 'Vídeo sobre Biblioteca de Zines',
     'dropsdejogos.uai.com.br': 'Biblioteca de Zines reúne obras indie do BR para ler de graça',
     'hqpop.com.br': 'Descubra a Biblioteca Brasileira de Zines: A Nova Casa da Arte Independente',
   };
+
+  if (domain === 'g1.globo.com') {
+    if (url.includes('/2026/05/28/')) return 'HQ e plataforma de zines produzidas por amapaenses são destaque em prêmio nacional';
+    if (url.includes('/2026/10/14/')) return 'Biblioteca virtual reúne mais de 300 zines gratuitos e amplia acesso à produção independente no AP';
+  }
   
   return knownTitles[domain] || `Menção na mídia - ${domain}`;
 }
@@ -125,9 +134,15 @@ function getKnownSiteDescription(domain: string): string {
     'youtube.com': 'Conteúdo em vídeo sobre a Biblioteca de Zines',
     'dropsdejogos.uai.com.br': 'Reportagem sobre zines brasileiros independentes',
     'hqpop.com.br': 'Artigo sobre a nova casa da arte independente brasileira',
+    'g1.globo.com': 'Reportagem do g1 sobre a Biblioteca de Zines e a produção independente no Amapá',
   };
   
   return knownDescriptions[domain] || `Conteúdo sobre a Biblioteca de Zines em ${domain}`;
+}
+
+function getKnownSiteImage(domain: string): string {
+  if (domain === 'hqpop.com.br') return 'https://hqpop.com.br/wp-content/uploads/2025/01/hqpop_bibliotecadezines_2401.jpg';
+  return '';
 }
 
 function getKnownSiteName(domain: string): string {
