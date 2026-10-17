@@ -10,6 +10,7 @@ import { WebsiteStructuredData } from "@/components/seo/structured-data";
 import { siteConfig } from "./config/site";
 import type { Metadata } from "next";
 import SafeImage from "@/components/safe-image";
+import { joinAuthors } from "@/utils/utils";
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} - Arquivo Digital de Zines Brasileiros e Latino-Americanos`,
@@ -107,7 +108,7 @@ export default async function HomePage() {
                 
                   <PostItZineInfo
                     title={randomZine.title}
-                    authors={randomZine.library_zines_authors?.map(author => author.authors.name).join(", ") || "Autor desconhecido"}
+                    authors={joinAuthors(randomZine.library_zines_authors) || "Autor desconhecido"}
                     slug={randomZine.slug || ""}
                     className="max-w-xs"
                   />

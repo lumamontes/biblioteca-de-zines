@@ -75,7 +75,7 @@ export function PostItNote({ title, content, className }: { title: string; conte
   return (
     <PostIt className={className}>
       <div>
-        <p className="font-bold text-xs mb-1">{title}</p>
+        <p className="line-clamp-2 font-bold text-xs mb-1">{title}</p>
         <p className="text-xs opacity-80">{content}</p>
       </div>
     </PostIt>
@@ -96,10 +96,10 @@ export function PostItZineInfo({
   className?: string;
 }) {
   return (
-    <PostIt color={color} size="sm" className={className}>
+    <PostIt color={color} size="sm" className={cn("h-24 w-[300px] max-w-full overflow-hidden", className)}>
       <div>
         <p className="font-bold text-xs mb-1">{title}</p>
-        <p className="text-xs opacity-80 mb-1">por {authors}</p>
+        <p className="line-clamp-2 text-xs opacity-80 mb-1">por {authors}</p>
         <a 
           href={`/zines/${slug}`} 
           className="text-xs underline text-zine-darkblue hover:opacity-80 transition-colors duration-200"
