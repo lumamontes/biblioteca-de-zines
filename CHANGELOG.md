@@ -14,6 +14,16 @@ mudança entrou em `main`. Mudanças ainda não incorporadas ficam em `Unrelease
 
 ### Adicionado
 
+- **Observações de metadados das fontes**: ao adquirir um arquivo, a Biblioteca
+  passa a registrar separadamente o que veio da fonte e o que foi observado pelo
+  sistema. Para PDFs, isso inclui tipo declarado e detectado, identificação do
+  formato, tamanho recebido, páginas e orientação, metadados incorporados,
+  camada de texto, resultado da extração e hash SHA-256 para comparação de
+  fixidade. Fontes inacessíveis, arquivos que não são PDF, PDFs protegidos e
+  falhas de extração também recebem resultados explícitos, em vez de parecerem
+  simplesmente ausentes. As observações permanecem internas e não substituem
+  automaticamente os metadados editoriais do catálogo. [PR #167](https://github.com/lumamontes/biblioteca-de-zines/pull/167) [commit 2a5894c](https://github.com/lumamontes/biblioteca-de-zines/commit/2a5894c) [commit d8684aa](https://github.com/lumamontes/biblioteca-de-zines/commit/d8684aa)
+
 - **Histórico editorial e changelog técnico**: a Biblioteca passa a ter uma
   linha do tempo pública para eventos e marcos do projeto, além de uma visão
   para pessoas interessadas na implementação. A visão técnica é renderizada
@@ -34,20 +44,6 @@ mudança entrou em `main`. Mudanças ainda não incorporadas ficam em `Unrelease
   Isso torna mais fácil encontrar o trabalho de uma pessoa e seguir para a
   plataforma correta, sem tratar todos os links externos como se fossem iguais.
   [commit 6956df8](https://github.com/lumamontes/biblioteca-de-zines/commit/6956df8) [commit 526e729](https://github.com/lumamontes/biblioteca-de-zines/commit/526e729) [commit 4247fc1](https://github.com/lumamontes/biblioteca-de-zines/commit/4247fc1) [commit c196083](https://github.com/lumamontes/biblioteca-de-zines/commit/c196083) [commit 7ebbec2](https://github.com/lumamontes/biblioteca-de-zines/commit/7ebbec2) [commit c3dcc17](https://github.com/lumamontes/biblioteca-de-zines/commit/c3dcc17)
-
-## 2026-10-17
-
-### Adicionado
-
-- **Observações de metadados das fontes**: ao adquirir um arquivo, a Biblioteca
-  passa a registrar separadamente o que veio da fonte e o que foi observado pelo
-  sistema. Para PDFs, isso inclui tipo declarado e detectado, identificação do
-  formato, tamanho recebido, páginas e orientação, metadados incorporados,
-  camada de texto, resultado da extração e hash SHA-256 para comparação de
-  fixidade. Fontes inacessíveis, arquivos que não são PDF, PDFs protegidos e
-  falhas de extração também recebem resultados explícitos, em vez de parecerem
-  simplesmente ausentes. As observações permanecem internas e não substituem
-  automaticamente os metadados editoriais do catálogo. [PR #167](https://github.com/lumamontes/biblioteca-de-zines/pull/167) [commit 2a5894c](https://github.com/lumamontes/biblioteca-de-zines/commit/2a5894c) [commit d8684aa](https://github.com/lumamontes/biblioteca-de-zines/commit/d8684aa)
 
 ## 2026-10-12
 
