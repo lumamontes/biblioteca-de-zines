@@ -14,11 +14,12 @@ import { recordSourceMetadataDerivative } from '@/application/source-metadata/re
 export function createZinePageProcessor(supabase: SupabaseClient<Database>) {
   return createPageProcessor({
     downloadSource,
-     recordSourceObservation: (job, source, failureReason) => recordSourceObservation({
+    recordSourceObservation: (job, source, failureReason, sourceAcquisition) => recordSourceObservation({
       publicationId: job.zineId,
       sourceUri: job.pdfUrl,
       source,
       acquisition: {
+        ...sourceAcquisition,
         method: job.pdfUrl.includes('drive.google.com') ? 'google-drive' : 'http',
         status: source ? 'acquired' : 'unreachable',
         failureReason,

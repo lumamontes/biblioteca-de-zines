@@ -18,15 +18,15 @@ export type SourceObservationInput = {
     method?: 'http' | 'google-drive' | 'direct-file' | 'unknown';
     status?: 'acquired' | 'unreachable';
     failureReason?: string;
-    filename?: string;
-    declaredSize?: number;
-    httpStatus?: number;
+    filename?: string | null;
+    declaredSize?: number | null;
+    httpStatus?: number | null;
     redirectCount?: number;
-    acquiredAt?: string;
-    receivedByteSize?: number;
-    declaredMediaType?: string;
-    detectedMediaType?: string;
-    redirectOutcome?: string;
+    acquiredAt?: string | null;
+    receivedByteSize?: number | null;
+    declaredMediaType?: string | null;
+    detectedMediaType?: string | null;
+    redirectOutcome?: string | null;
   };
 };
 

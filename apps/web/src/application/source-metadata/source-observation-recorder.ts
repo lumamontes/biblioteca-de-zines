@@ -23,20 +23,35 @@ export async function recordSourceObservation(
   input: SourceObservationRecordingInput,
   dependencies: SourceObservationRecordingDependencies,
 ): Promise<number> {
+  const acquisitionMetadata = {
+    ...input.source?.acquisition,
+    ...input.acquisition,
+  };
+  const extractionAcquisition = {
+    ...acquisitionMetadata,
+    filename: acquisitionMetadata.filename ?? undefined,
+    declaredSize: acquisitionMetadata.declaredSize ?? undefined,
+    acquiredAt: acquisitionMetadata.acquiredAt ?? undefined,
+    receivedByteSize: acquisitionMetadata.receivedByteSize ?? undefined,
+    httpStatus: acquisitionMetadata.httpStatus ?? undefined,
+    declaredMediaType: acquisitionMetadata.declaredMediaType ?? undefined,
+    detectedMediaType: acquisitionMetadata.detectedMediaType ?? undefined,
+    redirectOutcome: acquisitionMetadata.redirectOutcome ?? undefined,
+  };
   const outcome = await extractSourceObservation(
-    { source: input.source, sourceUri: input.sourceUri, acquisition: input.acquisition },
+    { source: input.source, sourceUri: input.sourceUri, acquisition: extractionAcquisition },
     dependencies.inspectPdf,
     dependencies.clock,
     await dependencies.repository.findLatestFixity(input.sourceUri),
   );
   const source: SourceMetadataBatchSource = { sourceId: `publication:${input.publicationId}`, publicationId: input.publicationId, submissionId: null, sourceUri: input.sourceUri };
   const acquisition: SourceMetadataAcquisition = {
-    method: input.acquisition?.method ?? 'unknown', acquiredAt: input.acquisition?.acquiredAt ?? input.source?.acquisition?.acquiredAt ?? null,
-    filename: input.acquisition?.filename ?? input.source?.acquisition?.filename ?? null, declaredSize: input.acquisition?.declaredSize ?? input.source?.acquisition?.declaredSize ?? null,
-    receivedByteSize: input.acquisition?.receivedByteSize ?? input.source?.acquisition?.receivedByteSize ?? (input.source ? input.source.buffer.byteLength : null),
-    httpStatus: input.acquisition?.httpStatus ?? null, redirectOutcome: input.acquisition?.redirectCount === undefined ? null : `${input.acquisition.redirectCount} redirect(s)`,
-    declaredMediaType: input.acquisition?.declaredMediaType ?? input.source?.acquisition?.declaredMediaType ?? null,
-    detectedMediaType: input.acquisition?.detectedMediaType ?? input.source?.acquisition?.detectedMediaType ?? null,
+    method: acquisitionMetadata.method ?? 'unknown', acquiredAt: acquisitionMetadata.acquiredAt ?? null,
+    filename: acquisitionMetadata.filename ?? null, declaredSize: acquisitionMetadata.declaredSize ?? null,
+    receivedByteSize: acquisitionMetadata.receivedByteSize ?? (input.source ? input.source.buffer.byteLength : null),
+    httpStatus: acquisitionMetadata.httpStatus ?? null, redirectOutcome: acquisitionMetadata.redirectOutcome ?? (acquisitionMetadata.redirectCount === undefined ? null : `${acquisitionMetadata.redirectCount} redirect(s)`),
+    declaredMediaType: acquisitionMetadata.declaredMediaType ?? null,
+    detectedMediaType: acquisitionMetadata.detectedMediaType ?? null,
   };
   return dependencies.repository.create(mapSourceObservation(source, outcome, acquisition, 'Observed from approved-publication source processing; values are not catalogue metadata.'));
 }

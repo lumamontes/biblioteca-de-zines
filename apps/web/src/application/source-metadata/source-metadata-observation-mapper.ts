@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { SourceObservationOutcome } from '@/domain/source-observation-types';
 import type { SourceMetadataBatchSource } from './source-metadata-batch-types';
 import type { FixityContext, SourceMetadataObservation } from './source-metadata-types';
@@ -11,8 +12,8 @@ export function mapSourceObservation(
 ): SourceMetadataObservation {
   const observedAt = outcome.status === 'observed' ? outcome.observation.observedAt : outcome.observedAt;
   const base = {
-    observationId: `${source.sourceId}:${observedAt}`,
-    assetIdentity: `${source.sourceId}:${observedAt}`,
+    observationId: `${source.sourceId}:${observedAt}:${randomUUID()}`,
+    assetIdentity: source.sourceId,
     sourceObservationId: null,
     publicationId: source.publicationId,
     submissionId: source.submissionId,

@@ -5,7 +5,7 @@ import type { ProcessingJob } from '@/application/processing/processing-job-type
 
 export type CoverProcessorDependencies = CoverGenerationDependencies & {
   downloadSource: (sourceUrl: string) => Promise<SourceDocument>;
-  recordSourceObservation?: (job: ProcessingJob, source?: SourceDocument, failureReason?: string) => Promise<number>;
+  recordSourceObservation?: (job: ProcessingJob, source?: SourceDocument, failureReason?: string, acquisition?: SourceDocument['acquisition']) => Promise<number>;
   recordDerivative?: CoverDerivativeRecorder;
 };
 

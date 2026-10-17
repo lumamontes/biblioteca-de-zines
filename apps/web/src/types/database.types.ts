@@ -370,7 +370,7 @@ export type Database = {
         }
         Insert: {
           asset_identity: string
-          observation_id: string
+          observation_id?: string
           source_observation_id?: number | null
           acquired_at?: string | null
           acquisition_method?: string | null

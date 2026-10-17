@@ -16,3 +16,8 @@ test('source metadata migration accepts extractor and derivative text statuses',
   assert.match(migration, /text_layer_status[\s\S]*'unknown'[\s\S]*'not_applicable'/);
   assert.match(migration, /extraction_status[\s\S]*'not_applicable'/);
 });
+
+test('source metadata migration has a collision-safe observation id default', async () => {
+  const migration = await readFile(new URL('../supabase/migrations/20261017020000_makeSourceObservationIdsCollisionSafe.sql', import.meta.url), 'utf8');
+  assert.match(migration, /observation_id SET DEFAULT gen_random_uuid\(\)::TEXT/);
+});

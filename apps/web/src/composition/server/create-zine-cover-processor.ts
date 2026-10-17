@@ -22,9 +22,9 @@ export function createZineCoverProcessor(
     storage: createR2CoverAssetStore(),
     renderFirstPage: (source) => extractFirstPageFromPdf(source.buffer),
     optimizeCover: optimizeCoverImage,
-    recordSourceObservation: async (job, source, failureReason) => recordSourceObservation({
+    recordSourceObservation: async (job, source, failureReason, sourceAcquisition) => recordSourceObservation({
       publicationId: job.zineId, sourceUri: job.pdfUrl, source,
-      acquisition: { method: job.pdfUrl.includes('drive.google.com') ? 'google-drive' : 'http', status: source ? 'acquired' : 'unreachable', failureReason },
+      acquisition: { ...sourceAcquisition, method: job.pdfUrl.includes('drive.google.com') ? 'google-drive' : 'http', status: source ? 'acquired' : 'unreachable', failureReason },
     }, { inspectPdf: inspectPdfSource, repository: createSupabaseSourceMetadataRepository(supabase) }),
     recordDerivative: async ({ sourceObservationId, assetIdentity, storageReference, generationId }) => {
       await recordSourceMetadataDerivative(createSupabaseSourceMetadataRepository(supabase), {
