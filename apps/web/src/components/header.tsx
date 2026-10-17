@@ -49,11 +49,6 @@ export default function Header() {
             </Link>
           </li>
           <li>
-            <Link href="/novidades" className="hover:underline">
-              Novidades
-            </Link>
-          </li>
-          <li>
             <SuggestZineLink />
           </li>
         </ul>
@@ -97,15 +92,6 @@ export default function Header() {
                 onClick={toggleMenu}
               >
                 Publicações
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/novidades"
-                className="hover:underline"
-                onClick={toggleMenu}
-              >
-                Novidades
               </Link>
             </li>
             <li>

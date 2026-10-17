@@ -1,14 +1,18 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import BlogArticleCard from "@/components/blog/blog-article-card";
+import { PublicationsHub } from "@/components/publications/publications-hub";
+import { ChangelogSectionView } from "@/components/updates/changelog-section";
+import { LatestUpdate } from "@/components/updates/latest-update";
 import { PublicUpdate } from "@/components/updates/public-update";
+import { getChangelog } from "@/content/changelog";
 import { getPublicUpdates } from "@/content/updates";
 import { getBlogArticles } from "@/services/blog-service";
 
 export const metadata: Metadata = {
   title: "Publicações | Biblioteca de Zines",
   description:
-    "Novidades da Biblioteca de Zines e artigos publicados no Substack.",
+    "Blog, novidades e changelog técnico da Biblioteca de Zines.",
 };
 
 function formatDate(dateString: string): string {
@@ -37,64 +41,69 @@ export default async function PublicationsPage() {
     getBlogArticles(),
     Promise.resolve(getPublicUpdates()),
   ]);
+  const changelog = getChangelog();
+  const latestUpdate = updates[0];
 
   return (
     <main className="min-h-screen bg-white px-4 py-8 md:py-12">
       <div className="mx-auto max-w-screen-md">
-        <header className="mb-12">
+        <header className="mb-10">
           <h1 className="mb-4 text-3xl font-bold">Publicações</h1>
           <p className="max-w-2xl leading-relaxed text-neutral-700">
-            Novidades da Biblioteca, relatos de atividades e textos publicados
-            no nosso Substack.
+            Um só lugar para acompanhar o blog, as novidades da Biblioteca e as
+            mudanças técnicas do site.
           </p>
         </header>
 
-        <section aria-labelledby="updates-heading">
-          <h2 id="updates-heading" className="mb-6 text-2xl font-bold">
-            Novidades da Biblioteca
-          </h2>
-          <div>
-            {updates.map((update) => (
-              <PublicUpdate key={update.slug} update={update} />
-            ))}
-          </div>
-        </section>
-
-        <section
-          aria-labelledby="articles-heading"
-          className="mt-16 border-t border-neutral-200 pt-10"
-        >
-          <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-            <h2 id="articles-heading" className="text-2xl font-bold">
-              Textos
-            </h2>
-            <Link
-              href="https://bibliotecadezines.substack.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm underline"
-            >
-              Abrir Substack
-            </Link>
-          </div>
-
-          {articles.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {articles.map((article) => (
-                <BlogArticleCard
-                  key={article.link}
-                  article={article}
-                  formattedDate={formatDate(article.pubDate)}
-                  description={truncateText(stripHtml(article.description || ""))}
-                />
+        <PublicationsHub
+          latestUpdate={
+            latestUpdate ? <LatestUpdate update={latestUpdate} /> : null
+          }
+          blog={
+            <>
+              <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+                <h2 className="text-2xl font-bold">Blog</h2>
+                <Link
+                  href="https://bibliotecadezines.substack.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm underline"
+                >
+                  Abrir Substack
+                </Link>
+              </div>
+              {articles.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  {articles.map((article) => (
+                    <BlogArticleCard
+                      key={article.link}
+                      article={article}
+                      formattedDate={formatDate(article.pubDate)}
+                      description={truncateText(stripHtml(article.description || ""))}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-neutral-600">Nenhum texto disponível no momento.</p>
+              )}
+            </>
+          }
+          updates={
+            <>
+              <h2 className="mb-6 text-2xl font-bold">Novidades</h2>
+              {updates.map((update) => (
+                <PublicUpdate key={update.slug} update={update} />
               ))}
-            </div>
-          ) : (
-            <p className="text-neutral-600">
-              Nenhum texto disponível no momento.
-            </p>
-          )}
-        </section>
+            </>
+          }
+          nerds={
+            <>
+              {changelog.map((section) => (
+                <ChangelogSectionView key={section.title} section={section} />
+              ))}
+            </>
+          }
+        />
       </div>
     </main>
   );
