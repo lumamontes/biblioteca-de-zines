@@ -325,6 +325,141 @@ export type Database = {
           },
         ]
       }
+      source_metadata: {
+        Row: {
+          acquired_at: string | null
+          acquisition_method: string | null
+          asset_kind: "source" | "reading-copy" | "preview" | "derivative"
+          declared_media_type: string | null
+          detected_media_type: string | null
+          embedded_metadata: Json | null
+          extraction_status: string | null
+          extractor_version: string
+          failure_reason: string | null
+          fixity_algorithm: string | null
+          fixity_calculated_at: string | null
+          fixity_check_status: string | null
+          fixity_comparison_detail: string | null
+          fixity_context: string | null
+          fixity_digest: string | null
+          form_upload_id: number | null
+          format_identification_status: string | null
+          format_identifier: string | null
+          http_status: number | null
+          id: number
+          library_zine_id: number | null
+          page_observations: Json | null
+          provenance_note: string | null
+          received_byte_size: number | null
+          redirect_outcome: string | null
+          source_filename: string | null
+          source_reference: string | null
+          source_size_bytes: number | null
+          source_uri: string | null
+          status: "acquired" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
+          storage_key: string | null
+          text_layer_status: string | null
+          uncertainty_status: string | null
+          value_provenance: Json | null
+          visibility_state: "private" | "internal"
+          observed_at: string
+          pdf_page_count: number | null
+        }
+        Insert: {
+          acquired_at?: string | null
+          acquisition_method?: string | null
+          asset_kind?: "source" | "reading-copy" | "preview" | "derivative"
+          declared_media_type?: string | null
+          detected_media_type?: string | null
+          embedded_metadata?: Json | null
+          extraction_status?: string | null
+          extractor_version: string
+          failure_reason?: string | null
+          fixity_algorithm?: string | null
+          fixity_calculated_at?: string | null
+          fixity_check_status?: string | null
+          fixity_comparison_detail?: string | null
+          fixity_context?: string | null
+          fixity_digest?: string | null
+          form_upload_id?: number | null
+          format_identification_status?: string | null
+          format_identifier?: string | null
+          http_status?: number | null
+          id?: number
+          library_zine_id?: number | null
+          page_observations?: Json | null
+          provenance_note?: string | null
+          received_byte_size?: number | null
+          redirect_outcome?: string | null
+          source_filename?: string | null
+          source_reference?: string | null
+          source_size_bytes?: number | null
+          source_uri?: string | null
+          status: "acquired" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
+          storage_key?: string | null
+          text_layer_status?: string | null
+          uncertainty_status?: string | null
+          value_provenance?: Json | null
+          visibility_state?: "private" | "internal"
+          observed_at?: string
+          pdf_page_count?: number | null
+        }
+        Update: {
+          acquired_at?: string | null
+          acquisition_method?: string | null
+          asset_kind?: "source" | "reading-copy" | "preview" | "derivative"
+          declared_media_type?: string | null
+          detected_media_type?: string | null
+          embedded_metadata?: Json | null
+          extraction_status?: string | null
+          extractor_version?: string
+          failure_reason?: string | null
+          fixity_algorithm?: string | null
+          fixity_calculated_at?: string | null
+          fixity_check_status?: string | null
+          fixity_comparison_detail?: string | null
+          fixity_context?: string | null
+          fixity_digest?: string | null
+          form_upload_id?: number | null
+          format_identification_status?: string | null
+          format_identifier?: string | null
+          http_status?: number | null
+          id?: number
+          library_zine_id?: number | null
+          page_observations?: Json | null
+          provenance_note?: string | null
+          received_byte_size?: number | null
+          redirect_outcome?: string | null
+          source_filename?: string | null
+          source_reference?: string | null
+          source_size_bytes?: number | null
+          source_uri?: string | null
+          status?: "acquired" | "unreachable" | "not_pdf" | "invalid_pdf" | "protected" | "extraction_failed"
+          storage_key?: string | null
+          text_layer_status?: string | null
+          uncertainty_status?: string | null
+          value_provenance?: Json | null
+          visibility_state?: "private" | "internal"
+          observed_at?: string
+          pdf_page_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "source_metadata_form_upload_id_fkey"
+            columns: ["form_upload_id"]
+            isOneToOne: false
+            referencedRelation: "form_uploads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_metadata_library_zine_id_fkey"
+            columns: ["library_zine_id"]
+            isOneToOne: false
+            referencedRelation: "library_zines"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       zines: {
         Row: {
           author_name: string | null
