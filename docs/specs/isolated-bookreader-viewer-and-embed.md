@@ -29,9 +29,9 @@ runtime, jQuery, jQuery UI, vendor CSS, and BookReader-specific lifecycle. The
 main Biblioteca application owns publication access, active page-generation
 selection, fallback behavior, beta rollout, and the public reader data endpoint.
 
-Provide a versioned embed route using the canonical Biblioteca publication slug:
+Provide an embed route using the canonical Biblioteca publication slug:
 
-`https://viewer.biblioteca-de-zines.com.br/embed/v1/:slug`
+`https://viewer.biblioteca-de-zines.com.br/embed/p/:slug`
 
 The viewer fetches an access-filtered reader manifest from Biblioteca, renders
 the complete active page generation with BookReader, and falls back to the
@@ -155,9 +155,7 @@ protocol.
 - The viewer uses the canonical Biblioteca publication slug. Slugs resolve to
   the internal publication identity, and historical slugs remain usable as
   aliases.
-- The versioned embed route is `/embed/v1/:slug`. The route is designed for
-  future compatibility even if the unversioned route is later provided as an
-  alias.
+- The embed route is `/embed/p/:slug`.
 - The default embed is unbranded. An explicit presentation parameter may opt
   into Biblioteca branding; presentation parameters do not grant access.
 - V1 has no parent-page control or event protocol. The viewer is self-contained
