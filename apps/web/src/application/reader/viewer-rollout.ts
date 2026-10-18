@@ -51,9 +51,10 @@ export function isViewerPublicationAllowed(
   surface: ReaderDeliveryMode,
   betaToken?: string,
 ): boolean {
-  if (!config.betaEnabled) return false;
-  if (surface === 'standalone' && !config.enabled) return false;
-  if (surface === 'embed' && !config.embedEnabled) return false;
+  if (surface === 'standalone') {
+    return config.enabled;
+  }
+  if (!config.betaEnabled || !config.embedEnabled) return false;
   const publicationAllowed = config.allowAllPublications || config.betaSlugs.includes(slug);
   const testerAllowed = surface !== 'embed' || config.betaTokens.length === 0
     || Boolean(betaToken && config.betaTokens.includes(betaToken));

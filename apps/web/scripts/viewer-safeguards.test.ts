@@ -22,6 +22,11 @@ test('uses the canonical publication slug and keeps surfaces independently gated
   assert.equal(resolveViewerAccess(ready, 'old-zine', config, 'standalone').allowed, false);
 });
 
+test('uses the viewer flag for the main reader when the page manifest is available', () => {
+  const config = createViewerRolloutConfig({ READER_VIEWER_ENABLED: 'true' });
+  assert.equal(resolveViewerAccess(ready, 'canonical-zine', config, 'standalone').allowed, true);
+});
+
 test('returns only the canonical, access-filtered reader response for an alias', async () => {
   const config = createViewerRolloutConfig({
     READER_BETA_ALLOW_ALL: 'false',
