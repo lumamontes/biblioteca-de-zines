@@ -3,7 +3,7 @@ import { parseReaderEmbedConfiguration } from '@biblioteca-de-zines/reader';
 import { Reader } from '@/components/reader';
 import type { ReaderViewMode } from '@/application/reader-types';
 
-const readerApiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://biblioteca-de-zines.com.br';
+const readerApiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://www.biblioteca-de-zines.com.br';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
