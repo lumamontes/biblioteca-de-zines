@@ -27,7 +27,7 @@ test.beforeEach(async ({ page }) => {
 test('initializes from the public manifest and loads BookReader only in the viewer', async ({ page }) => {
   const bookReaderRequests: string[] = [];
   page.on('request', (request) => {
-    if (request.url().includes('@internetarchive/bookreader')) bookReaderRequests.push(request.url());
+    if (request.url().includes('cdn.jsdelivr.net')) bookReaderRequests.push(request.url());
   });
   await mockBookReaderAssets(page);
   await page.goto('/p/zine');
@@ -75,10 +75,10 @@ test('preserves the PDF fallback when BookReader initialization fails', async ({
 test('serves the unbranded embed and optional Biblioteca branding', async ({ page }) => {
   await mockBookReaderAssets(page);
   await page.goto('/embed/p/zine');
-  await expect(page.locator('.reader--branded')).toHaveCount(0);
+  await expect(page.locator('.reader__brand')).toHaveCount(0);
 
   await page.goto('/embed/p/zine?branding=biblioteca');
-  await expect(page.locator('.reader--branded')).toHaveCount(1);
+  await expect(page.locator('.reader__brand')).toHaveCount(1);
 });
 
 test('shows the PDF fallback when the endpoint is unavailable', async ({ page }) => {
