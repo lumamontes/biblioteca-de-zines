@@ -47,11 +47,10 @@ export function ZineReaderOptions({ initialMode, surface }: ZineReaderOptionsPro
         {mode === 'pdf' ? <div className="mx-auto h-full min-h-0 w-full max-w-xl"><PDFViewer url={surface.pdfUrl} /></div> : (
           <div className="flex min-h-0 flex-1 flex-col">
             <ZineReaderToolbar
-              downloadUrl={surface.pdfDownloadUrl}
+              originalUrl={surface.pdfUrl}
               embedCustomizer={<EmbedCustomizer configuration={configuration} copyStatus={copyStatus} embedCode={embedCode} onCopy={copyEmbedCode} onUpdate={updateConfiguration} previewUrl={previewUrl.toString()} title={surface.title} triggerClassName="hidden sm:inline-flex" />}
               mobileEmbedCustomizer={<EmbedCustomizer configuration={configuration} copyStatus={copyStatus} embedCode={embedCode} onCopy={copyEmbedCode} onUpdate={updateConfiguration} previewUrl={previewUrl.toString()} title={surface.title} triggerClassName="h-11 w-full justify-start" />}
               onFullscreen={openFullscreen}
-              viewerUrl={surface.beta.viewerUrl}
             />
             {!expanded && <div className="min-h-0 flex-1 overflow-hidden border border-neutral-200 bg-white">{readerFrame}</div>}
             {expanded && createPortal(
