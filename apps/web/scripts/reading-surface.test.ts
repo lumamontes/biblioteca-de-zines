@@ -26,7 +26,6 @@ test('creates a beta reading surface from an available canonical reader', () => 
     viewerOrigin: 'http://localhost:4100',
     reader: readyReader,
   }), {
-    pdfDownloadUrl: 'https://assets.example/zine.pdf',
     pdfUrl: 'https://assets.example/zine.pdf',
     title: 'Zine',
     beta: {

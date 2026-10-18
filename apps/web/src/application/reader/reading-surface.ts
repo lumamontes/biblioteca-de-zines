@@ -2,7 +2,6 @@ import { createPublicViewerEmbedUrl, createPublicViewerUrl } from './viewer-link
 import type { ViewerReaderResult } from './viewer-reader-types';
 
 export type ZineReadingSurface = {
-  pdfDownloadUrl: string;
   pdfUrl: string;
   title: string;
   beta: {
@@ -20,7 +19,6 @@ export function hasBetaReadingSurface(surface: ZineReadingSurface): surface is A
 }
 
 export function createZineReadingSurface(input: {
-  pdfDownloadUrl?: string;
   pdfUrl: string;
   title: string;
   viewerOrigin?: string;
@@ -34,5 +32,5 @@ export function createZineReadingSurface(input: {
       }
     : null;
 
-  return { beta, pdfDownloadUrl: input.pdfDownloadUrl ?? input.pdfUrl, pdfUrl: input.pdfUrl, title: input.title };
+  return { beta, pdfUrl: input.pdfUrl, title: input.title };
 }
