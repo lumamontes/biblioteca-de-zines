@@ -59,7 +59,10 @@ export default async function ZinePreview({
   if (preview.slug && preview.slug !== slug) redirect(`/zines/${preview.slug}`);
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
-  const reader = await getViewerReader(slug, createViewerRolloutConfig(process.env), "embed").catch(() => null);
+  const rollout = createViewerRolloutConfig(process.env);
+  const reader = rollout.enabled
+    ? await getViewerReader(slug, rollout).catch(() => null)
+    : null;
   const readingSurface = createZineReadingSurface({
     pdfUrl: previewUrl,
     title: preview.title,

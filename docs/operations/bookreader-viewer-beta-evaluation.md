@@ -49,7 +49,6 @@ The delivery probe measures manifest and derivative HTTP behavior:
 
 ```bash
 READER_PERFORMANCE_URL=https://biblioteca-de-zines.com.br/api/public-reader/<canonical-slug> \
-READER_BETA_TOKEN=<temporary-token> \
 READER_PERFORMANCE_OUTPUT=/tmp/reader-performance.json \
 pnpm reader:performance
 ```
@@ -126,11 +125,9 @@ current allowlist and disable new publication additions while investigating.
 Rollback immediately when there is abuse, a rights/access issue, or a material
 reliability incident:
 
-1. Set `READER_EMBED_ENABLED=false` for embed incidents.
-2. Set `READER_VIEWER_ENABLED=false` for normal viewer incidents.
-3. Keep `READER_BETA_ENABLED=false` if both surfaces must close.
-4. Verify the retained PDF remains available and do not delete page generations.
-5. Preserve request, fallback, bandwidth, and host evidence for the follow-up
+1. Set `READER_VIEWER_ENABLED=false` to close both reader surfaces.
+2. Verify the retained PDF remains available and do not delete page generations.
+3. Preserve request, fallback, bandwidth, and host evidence for the follow-up
    decision.
 
 ## Evidence Record
@@ -148,6 +145,4 @@ Fill this section with deployment-specific evidence before requesting expansion:
 - Final decision and approver: pending
 
 The rollout configuration must also pass the application readiness check before
-enabling beta. Selected-publication beta requires HTTPS and at least one
-explicit slug; `READER_BETA_ALLOW_ALL` remains an intentional override, not a
-default.
+enabling the viewer. The viewer origin must use HTTPS.

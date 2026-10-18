@@ -26,17 +26,15 @@ async function measure(url: string, headers: HeadersInit = {}): Promise<TimedRes
 async function main(): Promise<void> {
   const manifestUrl = process.env.READER_PERFORMANCE_URL;
   if (!manifestUrl) throw new Error('Set READER_PERFORMANCE_URL to a public-reader API URL');
-  const token = process.env.READER_BETA_TOKEN;
-  const headers = token ? { 'X-Reader-Beta-Token': token } : undefined;
-  const manifestResponse = await fetch(`${manifestUrl}${manifestUrl.includes('?') ? '&' : '?'}surface=embed`, { headers });
+  const manifestResponse = await fetch(`${manifestUrl}${manifestUrl.includes('?') ? '&' : '?'}surface=standalone`);
   if (!manifestResponse.ok) throw new Error(`Manifest request failed with ${manifestResponse.status}`);
   const manifest = await manifestResponse.json() as { status: 'ready'; manifest: { pages: { pageNumber: number; imageUrl: string }[] } };
   if (manifest.status !== 'ready') throw new Error('Performance target did not return a ready manifest');
 
   const plan = createReaderPerformancePlan(manifestUrl, manifest.manifest.pages);
-  const first = await measure(plan.firstPageUrl, headers);
-  const adjacent = await Promise.all(plan.adjacentPageUrls.map((url) => measure(url, headers)));
-  const revisit = await measure(plan.firstPageUrl, headers);
+  const first = await measure(plan.firstPageUrl);
+  const adjacent = await Promise.all(plan.adjacentPageUrls.map((url) => measure(url)));
+  const revisit = await measure(plan.firstPageUrl);
   const result = {
     generatedAt: new Date().toISOString(),
     manifest: { cacheControl: manifestResponse.headers.get('cache-control'), url: plan.manifestUrl },

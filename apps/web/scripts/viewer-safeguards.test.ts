@@ -16,17 +16,18 @@ const ready = {
   status: 'ready' as const,
 };
 
-test('uses the canonical publication slug and keeps surfaces independently gated', () => {
-  const config = createViewerRolloutConfig({ READER_BETA_ENABLED: 'true', READER_BETA_SLUGS: 'canonical-zine', READER_EMBED_ENABLED: 'true' });
-  assert.equal(resolveViewerAccess(ready, 'old-zine', config, 'embed').allowed, true);
-  assert.equal(resolveViewerAccess(ready, 'old-zine', config, 'standalone').allowed, false);
+test('uses one viewer flag for both reader surfaces', () => {
+  const config = createViewerRolloutConfig({ READER_VIEWER_ENABLED: 'true' });
+  assert.equal(resolveViewerAccess(ready, 'old-zine', config).allowed, true);
+});
+
+test('uses the viewer flag for the main reader when the page manifest is available', () => {
+  const config = createViewerRolloutConfig({ READER_VIEWER_ENABLED: 'true' });
+  assert.equal(resolveViewerAccess(ready, 'canonical-zine', config).allowed, true);
 });
 
 test('returns only the canonical, access-filtered reader response for an alias', async () => {
   const config = createViewerRolloutConfig({
-    READER_BETA_ALLOW_ALL: 'false',
-    READER_BETA_ENABLED: 'true',
-    READER_BETA_SLUGS: 'canonical-zine',
     READER_VIEWER_ENABLED: 'true',
   });
   const result = await getViewerReader({
@@ -40,7 +41,7 @@ test('returns only the canonical, access-filtered reader response for an alias',
       title: 'Canonical Zine',
       totalPages: 1,
     }),
-  }, 'old-zine', config, 'standalone');
+  }, 'old-zine', config);
 
   assert.equal(result.status, 'available');
   if (result.status === 'available') {
@@ -55,11 +56,11 @@ test('only the configured viewer origin receives CORS permission', () => {
   const denied = createViewerPreflightHeaders('https://attacker.example.test', 'https://viewer.example.test');
   assert.equal(allowed.get('Access-Control-Allow-Origin'), 'https://viewer.example.test');
   assert.equal(denied.has('Access-Control-Allow-Origin'), false);
-  assert.equal(allowed.get('Access-Control-Allow-Headers'), 'Content-Type, X-Reader-Beta-Token');
+  assert.equal(allowed.get('Access-Control-Allow-Headers'), 'Content-Type');
 });
 
 test('rejects unsafe rollout configuration and preserves immutable derivative policy', () => {
-  const config = createViewerRolloutConfig({ READER_BETA_ENABLED: 'true', READER_VIEWER_ORIGIN: 'http://viewer.example.test' });
+  const config = createViewerRolloutConfig({ READER_VIEWER_ORIGIN: 'http://viewer.example.test' });
   assert.equal(validateViewerRolloutConfig(config).ready, false);
   assert.equal(IMMUTABLE_DERIVATIVE_CACHE_CONTROL, 'public, max-age=31536000, immutable');
 });
