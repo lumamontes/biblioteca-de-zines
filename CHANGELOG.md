@@ -1,16 +1,10 @@
 # Changelog
 
-Todas as mudanças relevantes deste projeto serão documentadas neste arquivo.
-
-O formato segue o [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
-Quando o projeto começar a publicar versões formais, elas seguirão o
+Este changelog registra mudanças relevantes no projeto segundo o formato
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Alterações ainda não
+publicadas ficam em `Unreleased`; as demais são agrupadas pela data em que
+entraram em `main`. Versões formais seguirão o
 [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
-
-Este changelog descreve mudanças observáveis para pessoas que usam, mantêm ou
-integram a Biblioteca de Zines; ele não é uma transcrição do histórico de
-commits. O projeto ainda não publica versões formais, por isso as seções datadas
-usam a data em que uma mudança entrou em `main`, enquanto o trabalho que ainda
-não foi incorporado permanece em `Unreleased`.
 
 ## Unreleased
 
