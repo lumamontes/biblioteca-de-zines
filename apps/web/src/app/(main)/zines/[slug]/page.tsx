@@ -10,7 +10,8 @@ import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/s
 import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
 import { createViewerRolloutConfig } from "@/application/reader/viewer-rollout";
 import { getViewerReader } from "@/composition/server/public-reader";
-import { createPublicViewerUrl } from "@/application/reader/viewer-link";
+import { createPublicViewerEmbedUrl } from "@/application/reader/viewer-link";
+import { ZineReaderOptions } from "@/components/zine-reader-options";
 
 export async function generateMetadata({
   params,
@@ -53,10 +54,10 @@ export default async function ZinePreview({
   }
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
-  const reader = await getViewerReader(slug, createViewerRolloutConfig(process.env), "reader").catch(() => null);
+  const reader = await getViewerReader(slug, createViewerRolloutConfig(process.env), "embed").catch(() => null);
   const readyReader = reader?.status === "available" && reader.reader.status === "ready" ? reader.reader : null;
   const viewerUrl = readyReader
-    ? createPublicViewerUrl(process.env.READER_VIEWER_ORIGIN, readyReader.publication.slug)
+    ? createPublicViewerEmbedUrl(process.env.READER_VIEWER_ORIGIN, readyReader.publication.slug)
     : null;
   const categories = getZineCategories(preview.tags);
 
@@ -91,22 +92,13 @@ export default async function ZinePreview({
         <CategoryBadgeWithLink categories={categories} />
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
-          {viewerUrl && readyReader && (
-            <section className="w-full max-w-xl border border-black bg-white p-4 text-center">
-              <p className="text-sm">Esta zine está disponível para leitura em páginas.</p>
-              <a
-                className="mt-3 inline-flex border border-black px-4 py-2 text-sm font-medium transition hover:bg-neutral-100"
-                href={viewerUrl}
-                rel="noreferrer"
-                target="_blank"
-              >
-                Abrir leitor de páginas ({readyReader.manifest.pageCount} páginas)
-              </a>
-            </section>
+          {viewerUrl && readyReader ? (
+            <ZineReaderOptions embedUrl={viewerUrl} pageCount={readyReader.manifest.pageCount} pdfUrl={previewUrl} title={preview.title} />
+          ) : (
+            <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
+              <PDFViewer url={previewUrl} />
+            </div>
           )}
-          <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
-            <PDFViewer url={previewUrl} />
-          </div>
         </div>
       </BreadcrumbWrapper>
     </>

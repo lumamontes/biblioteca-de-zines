@@ -12,6 +12,10 @@ const readyResponse = {
 };
 
 test.beforeEach(async ({ page }) => {
+  await page.route('**/jquery@3.7.1/dist/jquery.min.js', (route) => route.fulfill({
+    contentType: 'application/javascript',
+    body: 'window.jQuery = window.$ = function() {};',
+  }));
   await page.route('**/api/public-reader/events', (route) => route.fulfill({ status: 204 }));
   await page.route('**/api/public-reader/**', (route) => route.fulfill({
     contentType: 'application/json',
@@ -30,6 +34,7 @@ test('initializes from the public manifest and loads BookReader only in the view
 
   await expect(page.locator('.reader__canvas')).toBeVisible();
   expect(bookReaderRequests).toEqual(expect.arrayContaining([
+    expect.stringContaining('/jquery@3.7.1/dist/jquery.min.js'),
     expect.stringContaining('/BookReader/BookReader.js'),
     expect.stringContaining('/BookReader/BookReader.css'),
   ]));

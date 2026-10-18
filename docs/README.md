@@ -25,6 +25,11 @@ não uma garantia de preservação.
 A [decisão sobre o release do viewer e derivados de páginas](./decisions/14-viewer-release-and-page-derivatives.md)
 é a referência atual para o monorepo que será publicado no próximo release.
 
+A [seleção do engine do reader visual](./decisions/15-reader-engine-selection.md)
+registra o resultado da comparação entre BookReader e a alternativa PDF.js/
+StPageFlip, incluindo a avaliação com pessoa usuária que definiu BookReader
+como o engine selecionado.
+
 A [especificação de processamento de páginas e ciclo de vida de assets](./specs/page-processing-and-asset-lifecycle.md)
 documenta o comportamento operacional desse viewer: gerações completas,
 ativação, entrega, reprocessamento e limpeza.
@@ -70,6 +75,10 @@ registra uma decisão histórica, supersedida pelo caminho do viewer.
 O [runbook de processamento de páginas](./runbooks/page-processing.md)
 documenta migrações, scripts, variáveis de ambiente, verificações e recuperação.
 
+
+Os [documentos operacionais do beta BookReader](./operations/bookreader-viewer-beta.md)
+e da [avaliação de release](./operations/bookreader-viewer-beta-evaluation.md)
+registram rollout, observabilidade, critérios de expansão, pausa e rollback.
 A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
 compara fontes brasileiras e internacionais para validar campos físicos, digitais,
 geográficos e de classificação.

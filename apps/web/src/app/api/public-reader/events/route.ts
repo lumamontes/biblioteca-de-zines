@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createViewerRolloutConfig } from '@/application/reader/viewer-rollout';
 import { isViewerEvent } from '@/application/reader/viewer-events';
 import { getViewerTrafficGuard } from '@/composition/server/viewer-traffic';
+import { createViewerPreflightHeaders } from '@/application/reader/viewer-cors';
+
+export function OPTIONS(request: NextRequest) {
+  const rollout = createViewerRolloutConfig(process.env);
+  return new NextResponse(null, { headers: createViewerPreflightHeaders(request.headers.get('origin'), rollout.viewerOrigin), status: 204 });
+}
 
 export async function POST(request: NextRequest) {
   const rollout = createViewerRolloutConfig(process.env);
@@ -22,7 +28,7 @@ export async function POST(request: NextRequest) {
     ...(event.derivativeBandwidthBytes === undefined ? {} : { derivativeBandwidthBytes: event.derivativeBandwidthBytes }),
     ...(event.memoryBytes === undefined ? {} : { memoryBytes: event.memoryBytes }),
   }));
-  return new NextResponse(null, { status: 204 });
+  return new NextResponse(null, { headers: createViewerPreflightHeaders(origin, rollout.viewerOrigin), status: 204 });
 }
 
 function getEmbedHost(referer: string | null) {

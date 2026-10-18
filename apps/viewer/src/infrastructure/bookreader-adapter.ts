@@ -5,6 +5,7 @@ export type BookReaderFactory = new (options: unknown) => BookReaderInstance;
 type BookReader = BookReaderInstance;
 type Target = HTMLDivElement & { id: string };
 const BOOKREADER_CDN = 'https://cdn.jsdelivr.net/npm/@internetarchive/bookreader@5.0.0-87/BookReader';
+const JQUERY_URL = 'https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js';
 let runtimePromise: Promise<void> | undefined;
 
 declare global {
@@ -13,10 +14,10 @@ declare global {
 
 export async function loadBookReaderRuntime(): Promise<void> {
   if (window.BookReader) return;
-  runtimePromise ??= Promise.all([
+  runtimePromise ??= loadAsset(JQUERY_URL, 'script').then(() => Promise.all([
     loadAsset(`${BOOKREADER_CDN}/BookReader.js`, 'script'),
     loadAsset(`${BOOKREADER_CDN}/BookReader.css`, 'style'),
-  ]).then(() => undefined);
+  ])).then(() => undefined);
   try {
     await runtimePromise;
     if (!window.BookReader) throw new Error('BookReader runtime is unavailable');
@@ -44,7 +45,14 @@ export function createBookReaderRenderer(factory?: BookReaderFactory): ReaderRen
         resizeHandler = () => instance?.resize?.();
         window.addEventListener('resize', resizeHandler);
       }
-      try { instance.init(); } catch (error) { onError?.(); cleanupInstance(); throw error; }
+      try {
+        instance.init();
+        if (typeof window !== 'undefined') {
+          window.requestAnimationFrame(() => {
+            try { instance?.resize?.(); } catch { /* BookReader may not be ready for a resize on its first frame. */ }
+          });
+        }
+      } catch (error) { onError?.(); cleanupInstance(); throw error; }
     },
     next: () => instance?.next(),
     previous: () => instance?.prev(),

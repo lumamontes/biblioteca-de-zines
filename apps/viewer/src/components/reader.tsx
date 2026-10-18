@@ -69,8 +69,8 @@ export function Reader({ slug, surface, branding = false }: { slug: string; surf
     return () => { disposed = true; cleanup(); };
   }, [slug, surface]);
 
-  if (state === 'fallback') return <Fallback branding={branding} fallback={fallback} title={data?.publication.title ?? slug} />;
-  return <main className={branding ? 'reader reader--branded' : 'reader'}>{state === 'loading' && <p className="reader__loading">Carregando leitor...</p>}<div aria-label={`Leitor de ${data?.publication.title ?? slug}`} className="reader__canvas" ref={target} /></main>;
+  if (state === 'fallback') return <Fallback branding={branding} fallback={fallback} surface={surface} title={data?.publication.title ?? slug} />;
+  return <main className={`reader${branding ? ' reader--branded' : ''}${surface === 'embed' ? ' reader--embed' : ''}`}>{state === 'loading' && <p aria-live="polite" className="reader__loading">Carregando leitor...</p>}<div aria-label={`Leitor de ${data?.publication.title ?? slug}`} className="reader__canvas" ref={target} /></main>;
 }
 
 function collectPerformanceMetrics(apiOrigin: string): Record<string, number | string> {
@@ -98,6 +98,6 @@ function collectPerformanceMetrics(apiOrigin: string): Record<string, number | s
   };
 }
 
-function Fallback({ branding, fallback, title }: { branding: boolean; fallback: { label: string; url: string }; title: string }) {
-  return <main className={branding ? 'reader reader--branded' : 'reader'}><section className="reader__fallback"><p role="alert">A leitura em páginas não pôde ser carregada.</p>{fallback.url ? <a href={fallback.url} rel="noreferrer">{fallback.label}: {title}</a> : <p>O PDF original não está disponível.</p>}</section></main>;
+function Fallback({ branding, fallback, surface, title }: { branding: boolean; fallback: { label: string; url: string }; surface: 'reader' | 'embed'; title: string }) {
+  return <main className={`${branding ? 'reader reader--branded' : 'reader'}${surface === 'embed' ? ' reader--embed' : ''}`}><section className="reader__fallback"><p role="alert">A leitura em páginas não pôde ser carregada.</p>{fallback.url ? <a href={fallback.url} rel="noreferrer">{fallback.label}: {title}</a> : <p>O PDF original não está disponível.</p>}</section></main>;
 }
