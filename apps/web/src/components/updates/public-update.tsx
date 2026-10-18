@@ -19,9 +19,6 @@ export function PublicUpdate({ update }: { update: Update }) {
         <time dateTime={update.date} className="text-sm text-neutral-500">
           {formatDate(update.date)}
         </time>
-        {update.historic && (
-          <span className="text-sm text-neutral-500">· histórico</span>
-        )}
       </div>
       <h2 className="mb-3 text-2xl font-bold">{update.public.title}</h2>
       <p className="mb-4 text-lg leading-relaxed">{update.public.summary}</p>
