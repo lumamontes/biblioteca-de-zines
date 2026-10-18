@@ -1,6 +1,6 @@
 import PDFViewer from "@/components/pdf-viewer";
 import CategoryBadgeWithLink from "@/components/zine-card/category-badge-with-link";
-import { getZineBySlug } from "@/services/zine-service";
+import { getZineSlugResolution } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { getSlugZineMetadata } from "@/utils/metadata";
 import { joinAuthors, getZineCategories } from "@/utils/utils";
@@ -12,7 +12,10 @@ import { createViewerRolloutConfig } from "@/application/reader/viewer-rollout";
 import { getViewerReader } from "@/composition/server/public-reader";
 import { createZineReadingSurface, hasBetaReadingSurface } from "@/application/reader/reading-surface";
 import { ZineReaderOptions } from "@/components/zine-reader-options";
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
+import { cache } from "react";
+
+const getCachedZineSlugResolution = cache(getZineSlugResolution);
 
 export async function generateMetadata({
   params,
@@ -20,7 +23,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const preview = await getZineBySlug(slug);
+  const resolution = await getCachedZineSlugResolution(slug);
+  const preview = resolution?.zine;
 
   if (!preview) {
     return {
@@ -29,13 +33,11 @@ export async function generateMetadata({
     };
   }
 
-  if (preview.slug && preview.slug !== slug) redirect(`/zines/${preview.slug}`);
-
   const thumbnailUrl = preview.cover_image 
     ? (getThumbnailUrl(preview.cover_image) || siteConfig.ogImage)
     : siteConfig.ogImage;
 
-  return getSlugZineMetadata(slug, preview, thumbnailUrl);
+  return getSlugZineMetadata(preview.slug || slug, preview, thumbnailUrl);
 }
 
 export default async function ZinePreview({
@@ -45,7 +47,8 @@ export default async function ZinePreview({
 }) {
   const { slug } = await params;
 
-  const preview = await getZineBySlug(slug);
+  const resolution = await getCachedZineSlugResolution(slug);
+  const preview = resolution?.zine;
 
   if (!preview) {
     return (
@@ -56,10 +59,10 @@ export default async function ZinePreview({
     );
   }
 
-  if (preview.slug && preview.slug !== slug) redirect(`/zines/${preview.slug}`);
+  if (resolution?.isAlias) permanentRedirect(`/zines/${preview.slug ?? slug}`);
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
-  const reader = await getViewerReader(slug, createViewerRolloutConfig(process.env), "embed").catch(() => null);
+  const reader = await getViewerReader(preview.slug ?? slug, createViewerRolloutConfig(process.env), "embed").catch(() => null);
   const readingSurface = createZineReadingSurface({
     pdfUrl: previewUrl,
     title: preview.title,
@@ -71,7 +74,7 @@ export default async function ZinePreview({
   const breadcrumbItems = [
     { name: "Início", url: siteConfig.url },
     { name: "Zines", url: `${siteConfig.url}/zines` },
-    { name: preview.title, url: `${siteConfig.url}/zines/${slug}`, current: true }
+    { name: preview.title, url: `${siteConfig.url}/zines/${preview.slug ?? slug}`, current: true }
   ];
 
   return (

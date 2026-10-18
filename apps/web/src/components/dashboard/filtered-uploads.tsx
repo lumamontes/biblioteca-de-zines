@@ -3,14 +3,16 @@ import { useState } from "react";
 import { EditableUploadPreview } from "./editable-upload-preview";
 import Button from "../button";
 import { Tables } from "@/types/database.types";
-import { Zine } from "@/@types/zine";
+import type { Zine } from "@/@types/zine";
+
+type DashboardZine = Pick<Zine, "id" | "title" | "slug" | "is_published">;
 
 export const FilteredUploads = ({
   uploads,
   zines,
 }: {
   uploads: Tables<"form_uploads">[];
-  zines: Zine[];
+  zines: DashboardZine[];
 }) => {
   const [filter, setFilter] = useState<"all" | "published" | "unpublished">(
     "all"

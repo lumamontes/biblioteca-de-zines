@@ -7,6 +7,26 @@ import { getThumbnailUrl } from "@/utils/assets";
 import { AuthorStructuredData, BreadcrumbStructuredData } from "@/components/seo/structured-data";
 import { siteConfig } from "@/app/config/site";
 import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
+import { cache } from "react";
+
+const getCachedAuthor = cache(async (slug: string) => {
+  const reader = await createAuthorReader();
+  return reader.getBySlug(slug);
+});
+
+const getCachedAuthorPageData = cache(async (slug: string) => {
+  const author = await getCachedAuthor(slug);
+  if (!author) return null;
+  const reader = await createAuthorReader();
+  return { author, zines: await reader.getZines(author.id) };
+});
+
+const getCachedAuthorMetadataData = cache(async (slug: string) => {
+  const author = await getCachedAuthor(slug);
+  if (!author) return null;
+  const reader = await createAuthorReader();
+  return { author, firstZine: await reader.getFirstZine(author.id) };
+});
 
 export async function generateMetadata({
   params,
@@ -14,23 +34,21 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const reader = await createAuthorReader();
-  const author = await reader.getBySlug(slug);
+  const data = await getCachedAuthorMetadataData(slug);
 
-  if (!author) {
+  if (!data) {
     return {
       title: "Autor não encontrado",
       description: "O autor que você está procurando não foi encontrado.",
     };
   }
 
-  const zines = await reader.getZines(author.id);
-  const firstZine = zines.length > 0 ? zines[0] : null;
+  const firstZine = data.firstZine;
   const thumbnailUrl = firstZine?.cover_image 
     ? getThumbnailUrl(firstZine.cover_image) 
     : null;
 
-  return getAuthorMetadata(author.name, author.bio, slug, firstZine, thumbnailUrl);
+  return getAuthorMetadata(data.author.name, data.author.bio, slug, firstZine, thumbnailUrl);
 }
 
 export default async function AuthorPage({
@@ -39,14 +57,13 @@ export default async function AuthorPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const reader = await createAuthorReader();
-  const author = await reader.getBySlug(slug);
+  const data = await getCachedAuthorPageData(slug);
 
-  if (!author) {
+  if (!data) {
     notFound();
   }
 
-  const zines = await reader.getZines(author.id);
+  const { author, zines } = data;
 
   const breadcrumbItems = [
     { name: "Início", url: siteConfig.url },

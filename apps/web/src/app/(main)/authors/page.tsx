@@ -66,7 +66,7 @@ export default async function AuthorsPage() {
 
           <div className="space-y-10">
             {authorGroups.map(([initial, groupedAuthors]) => (
-              <section key={initial} id={initial} className="scroll-mt-24">
+              <section key={initial} id={initial} className="scroll-mt-24 [content-visibility:auto]">
                 <h2 className="mb-4 border-b border-black pb-2 text-2xl font-bold">{initial}</h2>
                 <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {groupedAuthors.map((author) => (

@@ -2,6 +2,7 @@ import { Zine } from "@/@types/zine";
 import { createClient } from "@/utils/supabase/server";
 import { createClient as createBrowser } from "@/utils/supabase/client";
 import { getZineCategories } from "@/utils/utils";
+import { findPublishedZineBySlug } from "@/infrastructure/reader/supabase-published-zine-slug";
 
 export const getPublishedZines = async (
   page: number = 1,
@@ -103,25 +104,57 @@ export const getAllZines = async (): Promise<Zine[]> => {
   return (data ?? []) as Zine[];
 };
 
+export const getPublishedZinesForSitemap = async (): Promise<
+  Pick<Zine, 'slug' | 'is_published' | 'updated_at' | 'created_at'>[]
+> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('library_zines')
+    .select('slug, is_published, updated_at, created_at')
+    .eq('is_published', true);
+
+  if (error) {
+    console.error('Error fetching published zines for sitemap:', error.message);
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+};
+
+export const getDashboardZines = async (): Promise<
+  Pick<Zine, 'id' | 'title' | 'slug' | 'is_published'>[]
+> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('library_zines')
+    .select('id, title, slug, is_published');
+
+  if (error) {
+    console.error('Error fetching dashboard zines:', error.message);
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+};
+
 export const getZineBySlug = async (slug: string): Promise<Zine | null> => {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("library_zines")
-    .select(
-      '*, library_zines_authors (authors (id, name, url, slug))'
-    )
-    .eq("slug", slug)
-    .eq("is_published", true)
-    .single();
+  const select = '*, library_zines_authors (authors (id, name, url, slug))';
+  const resolution = await findPublishedZineBySlug<Zine>(supabase, slug, select);
+  return resolution?.data ?? null;
+};
 
-  if (error) {
-    console.error("Error fetching zine by slug:", error.message);
-    throw new Error('Não foi possível encontrar a zine.');
-  } 
+export type ZineSlugResolution = {
+  zine: Zine;
+  isAlias: boolean;
+};
 
-  return data ?? null;
-
+export const getZineSlugResolution = async (slug: string): Promise<ZineSlugResolution | null> => {
+  const supabase = await createClient();
+  const select = '*, library_zines_authors (authors (id, name, url, slug))';
+  const resolution = await findPublishedZineBySlug<Zine>(supabase, slug, select);
+  return resolution ? { zine: resolution.data, isAlias: resolution.isAlias } : null;
 };
 
 type SearchZineProps = {
@@ -162,20 +195,22 @@ export const searchZines = async ({
     query = query.order("created_at", { ascending: false });
   }
 
-  const { data: zines, error } = await query;
+  const authorQueryPromise = supabase
+    .from("authors")
+    .select("id, name")
+    .textSearch("name_fts", search ? search : '', {
+      config: "portuguese",
+      type: "websearch",
+    });
+  const [{ data: zines, error }, authorQuery] = await Promise.all([
+    query,
+    authorQueryPromise,
+  ]);
 
   if (error) {
     console.error("Error fetching zines:", error.message);
     throw new Error(error.message);
   }
-
-  const authorQuery = await supabase
-    .from("authors")
-    .select("id, name")
-    .textSearch("name_fts", search? search : '', {
-      config: "portuguese",
-      type: "websearch",
-    });
 
   if (authorQuery.error) {
     console.error("Error fetching authors:", authorQuery.error.message);
@@ -202,7 +237,7 @@ export const searchZines = async ({
       throw new Error(authorZinesError.message);
     }
 
-    const mergedZines = [...zines, ...authorZinesData].filter(
+    const mergedZines = [...(zines ?? []), ...(authorZinesData ?? [])].filter(
       (value, index, self) =>
         index === self.findIndex((t) => t.id === value.id)
     );

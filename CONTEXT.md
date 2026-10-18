@@ -38,6 +38,14 @@ _Avoid_: Reader engine, access policy
 The structured Biblioteca record that describes a zine, its publication state, authorship, links, and related metadata.
 _Avoid_: File, archive item
 
+**Canonical slug**:
+The current stable URL identifier assigned to a published catalogue record.
+_Avoid_: Treating an old URL identifier as the current canonical slug
+
+**Slug alias**:
+A historical URL identifier retained for a catalogue record after its canonical slug changes; it preserves discovery continuity but does not replace the canonical slug.
+_Avoid_: Treating an alias as a second current identity for the zine
+
 **Metadata field**:
 A named value describing a publication, agent, submission, asset, access decision, or provenance claim, with its source and visibility understood.
 _Avoid_: A value copied between forms without meaning

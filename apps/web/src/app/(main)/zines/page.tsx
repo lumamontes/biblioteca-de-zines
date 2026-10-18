@@ -17,8 +17,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Zines() {
-  const { zines, totalCount } = await getPublishedZines();
-  const categories = await getCategories();
+  const [{ zines, totalCount }, categories] = await Promise.all([
+    getPublishedZines(),
+    getCategories(),
+  ]);
 
   if (!zines?.length) {
     return <output>Não há zines publicados no momento.</output>;

@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { searchZines } from '@/services/zine-service';
 import { Zine } from '@/@types/zine';
 
@@ -48,6 +48,7 @@ export function useZineFilters(
   const [zines, setZines] = useState<Zine[]>(initialZines);
   const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
   const [loading, setLoading] = useState(false);
+  const searchRequestRef = useRef(0);
   
   const shouldFetchInitially = useMemo(() => {
     const hasFilters = initialFilters.search || 
@@ -93,6 +94,8 @@ export function useZineFilters(
   }, [router, pathname]);
 
   const performSearch = useCallback(async (newFilters: ZineFilters) => {
+    const requestId = ++searchRequestRef.current;
+
     try {
       setLoading(true);
       const filteredZines = await searchZines({
@@ -107,13 +110,16 @@ export function useZineFilters(
           )
         : filteredZines;
 
+      if (requestId !== searchRequestRef.current) return;
+
       setZines(finalZines);
       setTotalCount(finalZines.length);
       hasFetchedRef.current = true;
     } catch (error) {
+      if (requestId !== searchRequestRef.current) return;
       console.error('Error fetching zines:', error);
     } finally {
-      setLoading(false);
+      if (requestId === searchRequestRef.current) setLoading(false);
     }
   }, []);
 
@@ -121,6 +127,11 @@ export function useZineFilters(
     () => debounce(performSearch, SEARCH_DEBOUNCE_MS),
     [performSearch]
   );
+
+  useEffect(() => () => {
+    debouncedSearch.cancel();
+    searchRequestRef.current += 1;
+  }, [debouncedSearch]);
 
   const totalPages = useMemo(() => {
     const count = hasActiveFilters ? zines.length : totalCount;
@@ -144,36 +155,33 @@ export function useZineFilters(
       hasFetchedRef.current = true;
       debouncedSearch(initialFilters);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, initialFilters, shouldFetchInitially]);
 
   const updateFilter = useCallback((key: keyof ZineFilters, value: string | string[] | number) => {
-    setFilters(prev => {
-      const newFilters = { ...prev, [key]: value };
-      
-      if (key !== 'page' && key !== 'limit' && prev.page !== 1) {
-        newFilters.page = 1;
-      }
-      
-      const isFilterChange = key === 'search' || key === 'categories' || 
-                            key === 'publishedYears' || key === 'orderBy';
-      const isPaginationChange = (key === 'page' || key === 'limit');
-      const needsMoreData = isPaginationChange && 
-                           zines.length < (newFilters.page * newFilters.limit);
-      
-      updateURL(newFilters);
-      
-      if (isFilterChange || needsMoreData) {
-        if (needsMoreData) {
-          setLoading(true);
-        }
-        debouncedSearch(newFilters);
-      }
-      
-      return newFilters;
-    });
-  }, [zines.length, debouncedSearch, updateURL]);
+    const newFilters = { ...filters, [key]: value } as ZineFilters;
+
+    if (key !== 'page' && key !== 'limit' && filters.page !== 1) {
+      newFilters.page = 1;
+    }
+
+    const isFilterChange = key === 'search' || key === 'categories' ||
+      key === 'publishedYears' || key === 'orderBy';
+    const isPaginationChange = key === 'page' || key === 'limit';
+    const needsMoreData = isPaginationChange &&
+      zines.length < (newFilters.page * newFilters.limit);
+
+    setFilters(newFilters);
+    updateURL(newFilters);
+
+    if (isFilterChange || needsMoreData) {
+      if (needsMoreData) setLoading(true);
+      debouncedSearch(newFilters);
+    }
+  }, [debouncedSearch, filters, updateURL, zines.length]);
 
   const clearAllFilters = useCallback(() => {
+    debouncedSearch.cancel();
+    searchRequestRef.current += 1;
     const clearedFilters: ZineFilters = {
       search: '',
       categories: [],
@@ -186,8 +194,9 @@ export function useZineFilters(
     setFilters(clearedFilters);
     setZines(initialZines);
     setTotalCount(initialTotalCount);
+    setLoading(false);
     hasFetchedRef.current = false;
-  }, [initialZines, initialTotalCount, updateURL]);
+  }, [debouncedSearch, initialZines, initialTotalCount, updateURL]);
 
   return {
     zines,

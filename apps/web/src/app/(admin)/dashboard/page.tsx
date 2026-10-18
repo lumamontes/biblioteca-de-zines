@@ -2,14 +2,16 @@ import Button from "@/components/button";
 import { FilteredUploads } from "@/components/dashboard/filtered-uploads";
 import { WelcomeInstructions } from "@/components/dashboard/welcome-instructions";
 import { getFormUploads } from "@/services/form-uploads-service";
-import { getAllZines } from "@/services/zine-service";
+import { getDashboardZines } from "@/services/zine-service";
 import Link from "next/link";
 import React from "react";
 import { logout } from "../login/actions";
 
 export default async function HomePage() {
-  const uploads = await getFormUploads();
-  const zines = await getAllZines();
+  const [uploads, zines] = await Promise.all([
+    getFormUploads(),
+    getDashboardZines(),
+  ]);
 
   return (
     <div className="flex min-h-screen min-w-0 max-w-full flex-col overflow-x-hidden mx-auto px-6">

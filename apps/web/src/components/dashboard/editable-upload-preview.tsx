@@ -13,7 +13,7 @@ import {
   updatePublishedZine,
   updateUpload,
 } from "@/app/(admin)/dashboard/actions";
-import { Zine } from "@/@types/zine";
+import type { Zine } from "@/@types/zine";
 import { editUploadSchema, EditUploadFormData } from "@/schemas/edit-upload";
 import { getCategories } from "@/services/categories-service";
 import MultiSelect from "../ui/multi-select";
@@ -25,7 +25,7 @@ import SafeImage from "../safe-image";
 
 interface EditableUploadPreviewProps {
   upload: Tables<"form_uploads">;
-  zine?: Zine;
+  zine?: Pick<Zine, "id" | "title" | "slug" | "is_published">;
 }
 
 export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewProps) => {

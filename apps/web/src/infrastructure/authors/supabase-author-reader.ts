@@ -31,6 +31,20 @@ export function createSupabaseAuthorReader(supabase: SupabaseClient<Database>) {
       return (data ?? []) as unknown as Zine[];
     },
 
+    async getFirstZine(authorId: number): Promise<Pick<Zine, 'title' | 'cover_image'> | null> {
+      const { data, error } = await supabase
+        .from('library_zines')
+        .select('title, cover_image, library_zines_authors!inner(author_id)')
+        .eq('is_published', true)
+        .eq('library_zines_authors.author_id', authorId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw new Error(error.message);
+      return data as Pick<Zine, 'title' | 'cover_image'> | null;
+    },
+
     async getAll(): Promise<Author[]> {
       const { data: publishedRelations, error: relationsError } = await supabase
         .from('library_zines_authors')

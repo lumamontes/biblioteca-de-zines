@@ -1,27 +1,17 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { PublicReaderRepository } from '@/application/reader/public-reader-types';
 import type { Database } from '@/types/database.types';
+import { findPublishedZineBySlug } from './supabase-published-zine-slug';
 
 export function createSupabasePublicReaderRepository(supabase: SupabaseClient<Database>): PublicReaderRepository {
   return {
     async findPublicBySlug(slug) {
-      const initial = await supabase.from('library_zines')
-        .select('id, slug, title, pdf_url, active_page_generation, total_pages, import_status, is_published')
-        .eq('slug', slug).eq('is_published', true).maybeSingle();
-      if (initial.error) throw new Error(`Failed to load public reader publication: ${initial.error.message}`);
-      let data = initial.data;
-
-      if (!data) {
-        const alias = await supabase.from('zine_slug_aliases').select('zine_id').eq('slug', slug).maybeSingle();
-        if (alias.error) throw new Error(`Failed to load public reader slug alias: ${alias.error.message}`);
-        if (alias.data) {
-          const canonical = await supabase.from('library_zines')
-            .select('id, slug, title, pdf_url, active_page_generation, total_pages, import_status, is_published')
-            .eq('id', alias.data.zine_id).eq('is_published', true).maybeSingle();
-          if (canonical.error) throw new Error(`Failed to load public reader publication: ${canonical.error.message}`);
-          data = canonical.data;
-        }
-      }
+      const resolution = await findPublishedZineBySlug<ReaderPublicationRow>(
+        supabase,
+        slug,
+        'id, slug, title, pdf_url, active_page_generation, total_pages, import_status, is_published',
+      );
+      const data = resolution?.data;
       if (!data || !data.is_published || !data.slug) return null;
 
       const pages = data.active_page_generation
@@ -49,3 +39,14 @@ export function createSupabasePublicReaderRepository(supabase: SupabaseClient<Da
     },
   };
 }
+
+type ReaderPublicationRow = {
+  id: number;
+  slug: string | null;
+  title: string;
+  pdf_url: string | null;
+  active_page_generation: string | null;
+  total_pages: number | null;
+  import_status: string | null;
+  is_published: boolean | null;
+};

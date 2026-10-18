@@ -40,7 +40,7 @@ export function getAuthorMetadata(
   authorName: string,
   authorBio: string | null,
   authorSlug: string,
-  firstZine: Zine | null,
+  firstZine: Pick<Zine, "title"> | null,
   thumbnailUrl: string | null
 ) {
   const description = authorBio || `Conheça os zines de ${authorName} na Biblioteca de Zines`;

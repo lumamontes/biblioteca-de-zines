@@ -81,9 +81,11 @@ export default function MultiSelect({
   };
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (!isOpen) return;
+
+    document.addEventListener("pointerdown", handleClickOutside, { passive: true });
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
+  }, [isOpen]);
 
   const canSelectMore = selectedValues.length < maxSelections;
 
@@ -198,4 +200,4 @@ export default function MultiSelect({
       )}
     </div>
   );
-} 
+}
