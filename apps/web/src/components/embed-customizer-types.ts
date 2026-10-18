@@ -6,6 +6,8 @@ export type EmbedCustomizerProps = {
   embedCode: string;
   onCopy: () => void;
   onUpdate: (next: Partial<ReaderEmbedConfiguration>) => void;
+  previewUrl: string;
+  title: string;
   triggerClassName?: string;
 };
 

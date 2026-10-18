@@ -7,7 +7,7 @@ import { EmbedColorControl } from './embed-color-control';
 import { parseReaderBranding } from './embed-customizer-config';
 import type { EmbedCustomizerProps } from './embed-customizer-types';
 
-export function EmbedCustomizer({ configuration, copyStatus, embedCode, onCopy, onUpdate, triggerClassName = '' }: EmbedCustomizerProps) {
+export function EmbedCustomizer({ configuration, copyStatus, embedCode, onCopy, onUpdate, previewUrl, title, triggerClassName = '' }: EmbedCustomizerProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -53,6 +53,12 @@ export function EmbedCustomizer({ configuration, copyStatus, embedCode, onCopy, 
               <button aria-label="Copiar código para incorporar" className="flex size-9 shrink-0 items-center justify-center border border-black opacity-60 hover:opacity-100" onClick={onCopy} title={copyStatus === 'copied' ? 'Código copiado' : copyStatus === 'error' ? 'Não foi possível copiar automaticamente' : 'Copiar código'} type="button">
                 <Copy aria-hidden="true" size={17} strokeWidth={1.8} />
               </button>
+            </div>
+            <div className="mt-5">
+              <p className="mb-2 text-xs font-semibold">Prévia da incorporação</p>
+              <div className="h-64 overflow-hidden border border-neutral-200 bg-neutral-100 sm:h-80">
+                <iframe allow="fullscreen" className="h-full w-full border-0" src={previewUrl} title={`Prévia incorporada de ${title}`} />
+              </div>
             </div>
             <span aria-live="polite" className="sr-only">{copyStatus === 'copied' ? 'Código copiado' : copyStatus === 'error' ? 'Não foi possível copiar automaticamente. Selecione e copie o código manualmente.' : ''}</span>
           </div>
