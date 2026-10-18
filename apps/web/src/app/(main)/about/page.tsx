@@ -39,6 +39,11 @@ const RELATED_LINKS = [
     description: "Veja a lista aqui",
     url: "https://zines.barnard.edu/zine-libraries",
   },
+  {
+    title: "Viveiro Digital",
+    description: "Recursos para pesquisa, criação e circulação de publicações independentes.",
+    url: "https://viveiro-digital.github.io/recursos/",
+  },
 ];
 
 export default function About() {

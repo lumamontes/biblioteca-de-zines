@@ -108,7 +108,7 @@ export default function FilteredZines({ initialZines, initialTotalCount, categor
           onClearFilters={clearAllFilters}
           onCategoryClick={handleCategoryClick}
         />
-        <div className="flex flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <div className="mx-auto flex w-full max-w-8xl flex-row items-start justify-between gap-4 px-4 mb-4 sm:items-center sm:px-6 lg:px-12">
          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <QuantitySelector
             value={filters.limit}
