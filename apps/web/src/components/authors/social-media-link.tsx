@@ -61,7 +61,7 @@ export function SocialMediaLink({ href, platform }: SocialMediaLinkProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-100"
+      className="inline-flex h-fit max-w-full self-start items-center gap-2 border border-black px-4 py-2 text-left text-sm font-medium whitespace-normal transition-colors hover:bg-neutral-100"
     >
       {image ? (
         <Image src={image} alt="" width={16} height={16} className="h-4 w-4 object-contain" />

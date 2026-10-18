@@ -13,7 +13,7 @@ export function AuthorLinks({ value }: AuthorLinksProps) {
   if (links.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-3" aria-label="Links relevantes do autor">
+    <div className="flex flex-wrap items-start gap-3" aria-label="Links relevantes do autor">
       {links.map((link) => {
         const key = `${link.kind}:${link.href}`;
 
