@@ -1,27 +1,29 @@
 * { box-sizing: border-box; }
 
 :root { color-scheme: light; }
-html, body { margin: 0; min-height: 100%; background: #f5f5f0; color: #000; }
+html, body { margin: 0; min-height: 100%; background: #fafafa; color: #000; }
 body { font-family: var(--font-azeret), monospace; }
 button, input { font: inherit; }
 button { cursor: pointer; }
 
 .viewer-shell, .reader { min-height: 100dvh; }
-.reader { display: flex; flex-direction: column; background: #f5f5f0; color: #000; }
-.reader__header { display: flex; flex: 0 0 4rem; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem clamp(1rem, 3vw, 2.5rem); background: #f5f5f0; border-bottom: 1px solid #000; }
+.reader { display: flex; flex-direction: column; background: #fafafa; color: #000; }
+.reader__header { display: flex; flex: 0 0 4rem; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem clamp(1rem, 3vw, 2.5rem); background: #fafafa; border-bottom: 1px solid #000; }
 .reader__headerIdentity { display: flex; min-width: 0; align-items: center; gap: 1rem; }
 .reader__title { overflow: hidden; margin: 0.15rem 0 0; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85rem; }
 .reader__headerLink { flex: 0 0 auto; padding: 0.45rem 0.65rem; color: #000; border: 1px solid #000; font-size: 0.62rem; text-decoration: none; }
-.reader__headerLink:hover, .reader__headerLink:focus-visible { background: #000; color: #f5f5f0; }
+.reader__headerLink:hover, .reader__headerLink:focus-visible { background: #000; color: #fafafa; }
 .reader__brandImage { display: block; width: auto; height: 1.7rem; max-width: min(14rem, 45vw); object-fit: contain; object-position: left center; }
 .reader__brandImage + div { min-width: 0; }
 
 .reader__workspace { display: flex; min-height: 0; flex: 1; flex-direction: column; align-items: center; gap: 0; padding: 1rem clamp(0.75rem, 3vw, 2.5rem) 0.75rem; }
 .reader__stage { position: relative; width: min(100%, 1240px); height: clamp(31rem, calc(100dvh - 5.75rem), 54rem); overflow: hidden; background: #fff; border: 1px solid #000; }
 .reader__canvas { width: 100%; height: 100%; min-height: 0; background: #fff; }
+/* BookReader replaces the mount node's class list during init. Size it through the stable stage parent. */
+.reader__stage > .BookReader { width: 100%; height: 100%; }
 .reader__status { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 0.7rem; background: rgb(255 255 255 / 92%); color: #000; font-size: 0.65rem; }
 .reader__spinner { width: 0.8rem; height: 0.8rem; border: 1px solid #000; border-right-color: transparent; border-radius: 50%; animation: reader-spin 0.8s linear infinite; }
-.reader__fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: #f5f5f0; }
+.reader__fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: #fafafa; }
 .reader__fallbackMark { display: grid; width: 1.5rem; height: 1.5rem; flex: 0 0 auto; place-items: center; background: #000; color: #fff; font-size: 0.8rem; }
 .reader__fallbackTitle { margin: 0; font-size: 0.85rem; }
 .reader__fallbackText { max-width: 32rem; margin: 0.5rem 0 0; font-size: 0.7rem; line-height: 1.5; }
@@ -33,7 +35,7 @@ button { cursor: pointer; }
 .reader__brand { display: flex; align-items: center; min-height: 3rem; padding: 0.5rem 1rem; border-bottom: 1px solid #000; }
 
 /* Keep the vendor toolbar aligned with the site's black-and-paper palette. */
-.reader .BRtoolbar, .reader .BRnav, .reader .BRtoolbar input { background: #f5f5f0; color: #000; border-color: #000; }
+.reader .BRtoolbar, .reader .BRnav, .reader .BRtoolbar input { background: #fafafa; color: #000; border-color: #000; }
 .reader .BRtoolbar button, .reader .BRtoolbar a { color: #000; }
 .reader .BRtoolbarSectionInfo { display: none !important; }
 .reader .BRnav .full { display: none !important; }

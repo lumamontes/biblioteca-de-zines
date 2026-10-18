@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import { Azeret_Mono } from 'next/font/google';
 import './globals.css';
 
-export const metadata: Metadata = { title: 'Biblioteca de Zines - Leitor' };
+export const metadata: Metadata = {
+  title: 'Biblioteca de Zines - Leitor',
+  robots: { index: false, follow: false },
+};
 
 const azeret = Azeret_Mono({
   subsets: ['latin'],

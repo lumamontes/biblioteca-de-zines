@@ -17,7 +17,7 @@ export function ZineReaderOptions({ initialMode, surface }: ZineReaderOptionsPro
   const [expanded, setExpanded] = useState(false);
   const readerFrameRef = useRef<HTMLIFrameElement>(null);
   const { configuration, copyStatus, copyEmbedCode, embedCode, previewUrl, updateConfiguration } = useEmbedPreview(surface.beta.embedUrl, surface.title);
-  const readerFrame = <iframe allow="fullscreen" allowFullScreen className="h-full w-full border-0" ref={readerFrameRef} src={previewUrl.toString()} title={`Leitura digital de ${surface.title}`} />;
+  const readerFrame = <iframe allow="fullscreen" allowFullScreen className="h-full w-full border-0" ref={readerFrameRef} src={surface.beta.embedUrl} title={`Leitura digital de ${surface.title}`} />;
 
   function openFullscreen() {
     const frame = readerFrameRef.current;
@@ -37,19 +37,19 @@ export function ZineReaderOptions({ initialMode, surface }: ZineReaderOptionsPro
   }
 
   return (
-    <section className="w-full max-w-4xl">
-      <div className="mx-auto w-full max-w-xl">
+    <section className="w-full max-w-md">
+      <div className="mx-auto w-full max-w-md">
         <ReaderModeTabs pageCount={surface.beta.pageCount} value={mode} onChange={changeMode} />
       </div>
       <div className="min-h-12" />
 
       <div className="mt-3 flex h-screen min-h-0 flex-col overflow-hidden" role="tabpanel">
-        {mode === 'pdf' ? <div className="mx-auto h-full min-h-0 w-full max-w-xl"><PDFViewer url={surface.pdfUrl} /></div> : (
+        {mode === 'pdf' ? <div className="mx-auto h-full min-h-0 w-full max-w-md"><PDFViewer url={surface.pdfUrl} /></div> : (
           <div className="flex min-h-0 flex-1 flex-col">
             <ZineReaderToolbar
               downloadUrl={surface.pdfDownloadUrl}
-              embedCustomizer={<EmbedCustomizer configuration={configuration} copyStatus={copyStatus} embedCode={embedCode} onCopy={copyEmbedCode} onUpdate={updateConfiguration} triggerClassName="hidden sm:inline-flex" />}
-              mobileEmbedCustomizer={<EmbedCustomizer configuration={configuration} copyStatus={copyStatus} embedCode={embedCode} onCopy={copyEmbedCode} onUpdate={updateConfiguration} triggerClassName="h-11 w-full justify-start" />}
+              embedCustomizer={<EmbedCustomizer configuration={configuration} copyStatus={copyStatus} embedCode={embedCode} onCopy={copyEmbedCode} onUpdate={updateConfiguration} previewUrl={previewUrl.toString()} title={surface.title} triggerClassName="hidden sm:inline-flex" />}
+              mobileEmbedCustomizer={<EmbedCustomizer configuration={configuration} copyStatus={copyStatus} embedCode={embedCode} onCopy={copyEmbedCode} onUpdate={updateConfiguration} previewUrl={previewUrl.toString()} title={surface.title} triggerClassName="h-11 w-full justify-start" />}
               onFullscreen={openFullscreen}
               viewerUrl={surface.beta.viewerUrl}
             />
