@@ -37,14 +37,14 @@ export function ZineReaderOptions({ initialMode, surface }: ZineReaderOptionsPro
   }
 
   return (
-    <section className="w-full max-w-md">
-      <div className="mx-auto w-full max-w-md">
+    <section className="w-full max-w-4xl">
+      <div className="mx-auto w-full max-w-xl">
         <ReaderModeTabs pageCount={surface.beta.pageCount} value={mode} onChange={changeMode} />
       </div>
       <div className="min-h-12" />
 
       <div className="mt-3 flex h-screen min-h-0 flex-col overflow-hidden" role="tabpanel">
-        {mode === 'pdf' ? <div className="mx-auto h-full min-h-0 w-full max-w-md"><PDFViewer url={surface.pdfUrl} /></div> : (
+        {mode === 'pdf' ? <div className="mx-auto h-full min-h-0 w-full max-w-xl"><PDFViewer url={surface.pdfUrl} /></div> : (
           <div className="flex min-h-0 flex-1 flex-col">
             <ZineReaderToolbar
               downloadUrl={surface.pdfDownloadUrl}
