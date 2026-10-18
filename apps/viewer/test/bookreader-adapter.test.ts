@@ -59,6 +59,20 @@ test('passes an explicit starting mode and clamps the page to the manifest', () 
   assert.equal(options?.defaults, 'page/n1/mode/1up');
 });
 
+test('uses one-up mode for manifests containing landscape page images', () => {
+  let options: { defaults: string } | undefined;
+  const Factory: BookReaderFactory = class { constructor(value) { options = value as typeof options; return { bind() {}, init() {}, jumpToPage() {}, next() {}, prev() {} }; } };
+  const landscapeManifest = {
+    ...manifest,
+    pages: manifest.pages.map((page) => ({ ...page, width: 200, height: 100 })),
+  };
+  const renderer = createBookReaderRenderer(Factory);
+
+  renderer.mount(createTarget(), landscapeManifest, () => {});
+
+  assert.equal(options?.defaults, 'page/n0/mode/1up');
+});
+
 test('reports initialization failures and cleans the failed instance', () => {
   const events: string[] = [];
   const Factory: BookReaderFactory = class {
