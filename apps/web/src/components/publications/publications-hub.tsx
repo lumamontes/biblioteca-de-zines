@@ -31,7 +31,7 @@ export function PublicationsHub({
       {latestUpdate}
       <nav
         aria-label="Seções de publicações"
-        className="mb-8 flex flex-wrap gap-2 border-b border-neutral-200"
+        className="mb-8 flex flex-nowrap gap-2 overflow-x-auto border-b border-neutral-200"
       >
         {tabs.map((tab) => {
           const active = activeView === tab.id;
@@ -42,7 +42,7 @@ export function PublicationsHub({
               aria-selected={active}
               role="tab"
               onClick={() => setActiveView(tab.id)}
-              className={`border-b-2 px-3 py-3 text-sm ${
+              className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-3 text-sm ${
                 active
                   ? "border-black font-semibold"
                   : "border-transparent text-neutral-600 hover:border-neutral-400 hover:text-black"
