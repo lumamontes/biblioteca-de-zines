@@ -54,3 +54,6 @@ node_modules/
 *.pdf
 
 .turbo
+
+# Local-only Astro viewer prototype. The versioned V1 viewer remains Next/Vercel.
+/apps/viewer-astro/
