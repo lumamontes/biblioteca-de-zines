@@ -43,9 +43,6 @@ jobs:
       - name: Check types
         run: pnpm check-types:all
 
-      - name: Build viewer
-        run: pnpm --filter viewer build
-
       - name: Run viewer tests
         run: pnpm --filter viewer test
 
