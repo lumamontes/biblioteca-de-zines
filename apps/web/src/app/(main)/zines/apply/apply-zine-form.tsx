@@ -98,10 +98,19 @@ function ApplyZineFormContent({ pageGenerationEnabled }: { pageGenerationEnabled
 
   return (
     <main className="flex-1 px-4 py-8 md:py-12">
-      <div className="max-w-2xl mx-auto">
-        <FormHeader />
+        <div className="max-w-2xl mx-auto">
+          <FormHeader />
 
-        <form action={handleSubmit} className="space-y-8">
+          <InfoBox className="mb-8">
+            <p>
+              <strong>Antes de enviar:</strong>{' '}
+              <Link href="/zines/submission-guide" className="underline underline-offset-2">
+                leia o guia sobre envio, preservação e direitos.
+              </Link>
+            </p>
+          </InfoBox>
+
+          <form action={handleSubmit} className="space-y-8">
           <FormSection title="Autores">
             <div className="space-y-6">
               {authorForm.authors.map((author, authorIndex) => (
@@ -198,10 +207,7 @@ function ApplyZineFormContent({ pageGenerationEnabled }: { pageGenerationEnabled
               <p>
                 <strong>Depois da publicação:</strong>{' '}
                 processaremos o PDF página a página para o leitor. Se você não enviar uma capa,
-                usaremos a primeira página.{' '}
-                <Link href="/zines/submission-guide" className="underline underline-offset-2">
-                  Leia o guia completo sobre processamento, preservação e direitos.
-                </Link>
+                usaremos a primeira página.
               </p>
             </InfoBox>
           )}
