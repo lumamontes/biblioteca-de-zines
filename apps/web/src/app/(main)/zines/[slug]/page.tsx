@@ -1,7 +1,7 @@
 import PDFViewer from "@/components/pdf-viewer";
 import CategoryBadgeWithLink from "@/components/zine-card/category-badge-with-link";
-import { getZineSlugResolution } from "@/services/zine-service";
-import { getDownloadUrl, getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
+import { getZineBySlug } from "@/services/zine-service";
+import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { getSlugZineMetadata } from "@/utils/metadata";
 import { joinAuthors, getZineCategories } from "@/utils/utils";
 import { siteConfig } from "@/app/config/site";
@@ -12,10 +12,7 @@ import { createViewerRolloutConfig } from "@/application/reader/viewer-rollout";
 import { getViewerReader } from "@/composition/server/public-reader";
 import { createZineReadingSurface, hasBetaReadingSurface } from "@/application/reader/reading-surface";
 import { ZineReaderOptions } from "@/components/zine-reader-options";
-import { permanentRedirect } from "next/navigation";
-import { cache } from "react";
-
-const getCachedZineSlugResolution = cache(getZineSlugResolution);
+import { redirect } from "next/navigation";
 
 export async function generateMetadata({
   params,
@@ -23,8 +20,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const resolution = await getCachedZineSlugResolution(slug);
-  const preview = resolution?.zine;
+  const preview = await getZineBySlug(slug);
 
   if (!preview) {
     return {
@@ -33,24 +29,23 @@ export async function generateMetadata({
     };
   }
 
+  if (preview.slug && preview.slug !== slug) redirect(`/zines/${preview.slug}`);
+
   const thumbnailUrl = preview.cover_image 
     ? (getThumbnailUrl(preview.cover_image) || siteConfig.ogImage)
     : siteConfig.ogImage;
 
-  return getSlugZineMetadata(preview.slug || slug, preview, thumbnailUrl);
+  return getSlugZineMetadata(slug, preview, thumbnailUrl);
 }
 
 export default async function ZinePreview({
   params,
-  searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ view?: string }>;
 }) {
-  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const { slug } = await params;
 
-  const resolution = await getCachedZineSlugResolution(slug);
-  const preview = resolution?.zine;
+  const preview = await getZineBySlug(slug);
 
   if (!preview) {
     return (
@@ -61,13 +56,11 @@ export default async function ZinePreview({
     );
   }
 
-  if (resolution?.isAlias) permanentRedirect(`/zines/${preview.slug ?? slug}`);
+  if (preview.slug && preview.slug !== slug) redirect(`/zines/${preview.slug}`);
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
-  const downloadUrl = preview.pdf_url ? getDownloadUrl(preview.pdf_url) : "";
-  const reader = await getViewerReader(preview.slug ?? slug, createViewerRolloutConfig(process.env), "embed").catch(() => null);
+  const reader = await getViewerReader(slug, createViewerRolloutConfig(process.env), "embed").catch(() => null);
   const readingSurface = createZineReadingSurface({
-    pdfDownloadUrl: downloadUrl,
     pdfUrl: previewUrl,
     title: preview.title,
     viewerOrigin: process.env.READER_VIEWER_ORIGIN,
@@ -78,7 +71,7 @@ export default async function ZinePreview({
   const breadcrumbItems = [
     { name: "Início", url: siteConfig.url },
     { name: "Zines", url: `${siteConfig.url}/zines` },
-    { name: preview.title, url: `${siteConfig.url}/zines/${preview.slug ?? slug}`, current: true }
+    { name: preview.title, url: `${siteConfig.url}/zines/${slug}`, current: true }
   ];
 
   return (
@@ -107,7 +100,7 @@ export default async function ZinePreview({
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
           {hasBetaReadingSurface(readingSurface) ? (
-            <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} surface={readingSurface} />
+            <ZineReaderOptions initialMode="pdf" surface={readingSurface} />
           ) : (
             <div className="bg-neutral-500 w-full h-screen max-w-4xl mx-auto overflow-hidden">
               <PDFViewer url={previewUrl} />

@@ -33,7 +33,7 @@ export function ZineReaderToolbar({ downloadUrl, embedCustomizer, mobileEmbedCus
       {moreOpen && createPortal(
         <div className="fixed inset-0 z-40 flex items-end bg-black/40 sm:hidden" onClick={() => setMoreOpen(false)} role="presentation">
           <div className="w-full rounded-t-2xl bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]" onClick={(event) => event.stopPropagation()}>
-            <div className="mb-4 flex items-center justify-between border-b border-neutral-200 pb-3">
+            <div className="mb-4 flex items-center justify-between border-b pb-3">
               <p className="text-base font-semibold">Mais ações</p>
               <button aria-label="Fechar mais ações" className="flex size-9 items-center justify-center border border-black" onClick={() => setMoreOpen(false)} type="button">
                 <X aria-hidden="true" size={17} />
