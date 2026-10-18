@@ -14,7 +14,7 @@ importers:
 
   apps/viewer:
     dependencies:
-      '@biblioteca/reader-contracts':
+      '@biblioteca-de-zines/reader-contracts':
         specifier: workspace:*
         version: link:../../packages/reader-contracts
       '@internetarchive/bookreader':
@@ -54,7 +54,7 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.1130.0
         version: 3.1150.0
-      '@biblioteca/reader-contracts':
+      '@biblioteca-de-zines/reader-contracts':
         specifier: workspace:*
         version: link:../../packages/reader-contracts
       '@hookform/resolvers':

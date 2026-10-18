@@ -10,8 +10,9 @@ import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/s
 import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
 import { createViewerRolloutConfig } from "@/application/reader/viewer-rollout";
 import { getViewerReader } from "@/composition/server/public-reader";
-import { createPublicViewerEmbedUrl } from "@/application/reader/viewer-link";
+import { createZineReadingSurface, hasBetaReadingSurface } from "@/application/reader/reading-surface";
 import { ZineReaderOptions } from "@/components/zine-reader-options";
+import { redirect } from "next/navigation";
 
 export async function generateMetadata({
   params,
@@ -27,6 +28,8 @@ export async function generateMetadata({
       description: "A zine que você está procurando não foi encontrada.",
     };
   }
+
+  if (preview.slug && preview.slug !== slug) redirect(`/zines/${preview.slug}`);
 
   const thumbnailUrl = preview.cover_image 
     ? (getThumbnailUrl(preview.cover_image) || siteConfig.ogImage)
@@ -53,12 +56,16 @@ export default async function ZinePreview({
     );
   }
 
+  if (preview.slug && preview.slug !== slug) redirect(`/zines/${preview.slug}`);
+
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
   const reader = await getViewerReader(slug, createViewerRolloutConfig(process.env), "embed").catch(() => null);
-  const readyReader = reader?.status === "available" && reader.reader.status === "ready" ? reader.reader : null;
-  const viewerUrl = readyReader
-    ? createPublicViewerEmbedUrl(process.env.READER_VIEWER_ORIGIN, readyReader.publication.slug)
-    : null;
+  const readingSurface = createZineReadingSurface({
+    pdfUrl: previewUrl,
+    title: preview.title,
+    viewerOrigin: process.env.READER_VIEWER_ORIGIN,
+    reader: reader ?? { status: "unavailable" },
+  });
   const categories = getZineCategories(preview.tags);
 
   const breadcrumbItems = [
@@ -92,8 +99,8 @@ export default async function ZinePreview({
         <CategoryBadgeWithLink categories={categories} />
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
-          {viewerUrl && readyReader ? (
-            <ZineReaderOptions embedUrl={viewerUrl} pageCount={readyReader.manifest.pageCount} pdfUrl={previewUrl} title={preview.title} />
+          {hasBetaReadingSurface(readingSurface) ? (
+            <ZineReaderOptions surface={readingSurface} />
           ) : (
             <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
               <PDFViewer url={previewUrl} />

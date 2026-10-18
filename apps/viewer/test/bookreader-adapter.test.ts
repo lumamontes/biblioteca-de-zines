@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createBookReaderRenderer, type BookReaderFactory, type BookReaderInstance } from '@/infrastructure/bookreader-adapter';
-import type { ReaderPageManifest } from '@biblioteca/reader-contracts';
+import type { ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
 
 const manifest: ReaderPageManifest = {
   generationId: 'generation-1',
@@ -15,7 +15,7 @@ const manifest: ReaderPageManifest = {
 test('translates the manifest, navigation, page changes, and cleanup', () => {
   const events: string[] = [];
   let pageChanged: ((page: number) => void) | undefined;
-  let options: { data: Array<Array<{ uri: string; width: number; height: number }>> } | undefined;
+  let options: { data: Array<Array<{ uri: string; width: number; height: number }>>; defaults: string; enablePageResume: boolean; showLogo: boolean } | undefined;
   const instance: BookReaderInstance = {
     bind: (event, callback) => { events.push(`bind:${event}`); if (event === 'pageChanged') pageChanged = (page) => callback(page); },
     destroy: () => { events.push('destroy'); },
@@ -40,9 +40,23 @@ test('translates the manifest, navigation, page changes, and cleanup', () => {
 
   assert.equal(options?.data[0]?.[0]?.uri, 'https://assets/page-1.webp');
   assert.equal(options?.data[1]?.[0]?.width, 100);
+  assert.equal(options?.defaults, 'page/n0/mode/2up');
+  assert.equal(options?.enablePageResume, false);
+  assert.equal(options?.showLogo, false);
   assert.equal(changedPage, 2);
   assert.deepEqual(events, ['bind:pageChanged', 'bind:error', 'init', 'next', 'prev', 'jump:2', 'unbind:pageChanged', 'unbind:error', 'destroy']);
   assert.equal(target.cleared, true);
+});
+
+test('passes an explicit starting mode and page to BookReader', () => {
+  let options: { defaults: string } | undefined;
+  const instance: BookReaderInstance = { bind() {}, init() {}, jumpToPage() {}, next() {}, prev() {} };
+  const Factory: BookReaderFactory = class { constructor(value) { options = value as typeof options; return instance; } };
+  const renderer = createBookReaderRenderer(Factory, { mode: '1up', page: 4 });
+
+  renderer.mount(createTarget(), manifest, () => {});
+
+  assert.equal(options?.defaults, 'page/n3/mode/1up');
 });
 
 test('reports initialization failures and cleans the failed instance', () => {

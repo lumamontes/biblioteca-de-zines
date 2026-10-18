@@ -1,5 +1,5 @@
 {
-  "name": "@biblioteca/reader-contracts",
+  "name": "@biblioteca-de-zines/reader-contracts",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",

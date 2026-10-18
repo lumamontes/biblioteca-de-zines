@@ -1,17 +1,19 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createPageManifest } from '@/domain/reader/page-manifest';
-import { createReaderSession, type ReaderRenderer } from '@/application/reader';
+import { createReaderSession } from '@/application/reader-session';
+import type { ReaderRenderer } from '@/application/reader-types';
+import type { ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
+
+const manifest: ReaderPageManifest = {
+  generationId: 'generation-1',
+  pageCount: 2,
+  pages: [
+    { generationId: 'generation-1', pageNumber: 1, imageUrl: 'https://assets.example/1.webp', width: 100, height: 150 },
+    { generationId: 'generation-1', pageNumber: 2, imageUrl: 'https://assets.example/2.webp', width: 100, height: 150 },
+  ],
+};
 
 test('keeps reader operations provider-neutral and falls back on renderer failure', () => {
-  const manifest = createPageManifest({
-    generationId: 'generation-1',
-    pageCount: 2,
-    pages: [
-      { generationId: 'generation-1', pageNumber: 1, imageUrl: '/1.webp', width: 100, height: 150 },
-      { generationId: 'generation-1', pageNumber: 2, imageUrl: '/2.webp', width: 100, height: 150 },
-    ],
-  });
   const calls: string[] = [];
   let onPageChanged = (_page: number) => {};
   let onError = () => {};
@@ -25,7 +27,7 @@ test('keeps reader operations provider-neutral and falls back on renderer failur
   const session = createReaderSession({ manifest, fallback: { label: 'Open PDF', url: '/zine.pdf' } }, renderer);
   const states: string[] = [];
   session.subscribe((state) => states.push(state.status === 'ready' ? `page:${state.currentPage}` : state.reason));
-  session.mount({});
+  session.mount({} as HTMLElement);
   onPageChanged(2);
   session.next();
   session.previous();

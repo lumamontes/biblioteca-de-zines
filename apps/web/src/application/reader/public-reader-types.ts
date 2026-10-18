@@ -1,5 +1,4 @@
-import type { ReaderFallback } from './reader-contracts';
-import type { ReaderPageImage, ReaderPageManifest } from '@/domain/reader/page-manifest-types';
+import type { ReaderFallback, ReaderPageImage, ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
 
 export type PublicReaderPublicationRecord = {
   activePageGeneration: string | null;

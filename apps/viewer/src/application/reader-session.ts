@@ -1,5 +1,5 @@
-import type { ReaderPageManifest } from '@/domain/reader/page-manifest-types';
-import type { ReaderFallback, ReaderFallbackState, ReaderRenderer, ReaderSession, ReaderSessionState, ReaderRenderTarget } from './reader-contracts';
+import type { ReaderFallback, ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
+import type { ReaderRenderer, ReaderSession, ReaderSessionState } from './reader-types';
 
 type ReaderSessionInput = { manifest?: ReaderPageManifest; fallback: ReaderFallback };
 
@@ -23,15 +23,15 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
   const session: ReaderSession = {
     getState: () => state,
     subscribe: (listener) => { listeners.add(listener); return () => listeners.delete(listener); },
-    mount: (target: ReaderRenderTarget) => {
+    mount: (target) => {
       if (destroyed || mounted || state.status !== 'ready') return;
       renderer.mount(target, state.manifest, onPageChanged, () => session.useFallback('reader-failure'));
       mounted = true;
     },
     next: () => { if (mounted && state.status === 'ready') renderer.next(); },
     previous: () => { if (mounted && state.status === 'ready') renderer.previous(); },
-    goTo: (pageNumber) => { if (mounted && state.status === 'ready') renderer.goTo(pageNumber); },
-    useFallback: (reason: ReaderFallbackState['reason'] = 'user-selected') => {
+    goTo: (page) => { if (mounted && state.status === 'ready') renderer.goTo(page); },
+    useFallback: (reason = 'user-selected') => {
       if (destroyed || state.status === 'fallback') return;
       if (mounted) renderer.destroy();
       mounted = false;
@@ -45,5 +45,6 @@ export function createReaderSession(input: ReaderSessionInput, renderer: ReaderR
       listeners.clear();
     },
   };
+
   return session;
 }
