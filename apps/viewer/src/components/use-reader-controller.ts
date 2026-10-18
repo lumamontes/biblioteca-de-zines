@@ -8,7 +8,7 @@ import { createBookReaderRenderer, loadBookReaderRuntime } from '@/infrastructur
 import { fetchPublicReader } from '@/infrastructure/public-reader-client';
 import { createReaderTelemetry } from '@/infrastructure/reader-telemetry';
 
-const apiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://biblioteca-de-zines.com.br';
+const apiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://www.biblioteca-de-zines.com.br';
 
 export type ReaderControllerInput = { mode: ReaderViewMode; page: number; slug: string; surface: ReaderDeliveryMode };
 export type ReaderControllerState = {
