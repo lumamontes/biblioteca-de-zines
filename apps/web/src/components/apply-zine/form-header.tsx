@@ -15,7 +15,11 @@ export default function FormHeader() {
       
       <InfoBox>
         <p className="text-sm">
-          <strong>💬 Contato:</strong> Dúvidas? Entre em contato:{" "}
+          <strong>💬 Contato:</strong> Dúvidas? Leia o{' '}
+          <Link href="/zines/submission-guide">
+            guia de submissão
+          </Link>{' '}
+          ou entre em contato:{" "}
           <Link href="mailto:bibliotecadezines@gmail.com">
             bibliotecadezines@gmail.com
           </Link>
@@ -23,4 +27,4 @@ export default function FormHeader() {
       </InfoBox>
     </div>
   );
-} 
+}
