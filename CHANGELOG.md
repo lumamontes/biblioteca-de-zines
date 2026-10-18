@@ -35,30 +35,14 @@ entraram em `main`. Versões formais seguirão o
   alimente a página pública sem duplicar conteúdo.
   [commit 594a1f3](https://github.com/lumamontes/biblioteca-de-zines/commit/594a1f36dcd993c6ba206a1e8cae68d5c77927de)
 
-- **Estrutura proposta para um visualizador de páginas de zines independente**:
-  depois das pesquisas sobre imagens das páginas do PDF, processamento assíncrono e
-  integração do BookReader, o ADR 14 registra uma proposta para separar o
-  visualizador de páginas de zines do catálogo sem criar outro repositório. A
-  proposta preserva a aplicação de catálogo existente em `apps/web`, reserva
-  `apps/viewer` para o runtime que exibirá as páginas geradas a partir dos PDFs e
-  deixa contratos de `manifest`, API e configuração compartilhada em `packages/`
-  quando houver uma necessidade concreta. Ela é uma decisão para o próximo
-  release: não significa que o monorepo ou o visualizador já estejam disponíveis
-  em `main` ou em produção.
-  [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [ADR 14](docs/decisions/14-monorepo.md) [ADR 13](docs/decisions/13-internet-archive-bookreader-page-derivatives.md)
+## 2026-10-18
 
-- **Pesquisa e decisão sobre o visualizador de páginas de zines**: a avaliação
-  técnica e com uma pessoa usuária selecionou o Internet Archive BookReader para
-  o beta e para o caminho planejado de produção, em vez da combinação
-  PDF.js/StPageFlip, `react-pageflip` ou uma implementação própria com Three.js.
-  O spike anterior permanece preservado como evidência histórica, mas não é mais
-  a recomendação ativa. A especificação do visualizador isolado documenta o
-  limite entre o catálogo, o endpoint de dados, o `iframe`, o embed e o runtime
-  do BookReader; os runbooks documentam rollout selecionado, métricas, critérios
-  de confiabilidade, rollback e revisão legal. O beta permanece pausado em
-  publicações e pessoas testadoras selecionadas: esta documentação não significa
-  exposição geral nem disponibilidade do visualizador em produção.
-  [ADR 15](docs/decisions/15-reader-engine-selection.md) [Spike histórico](docs/spikes/visual-publication-reader-findings.md) [Especificação do visualizador e embed](docs/specs/isolated-bookreader-viewer-and-embed.md) [Operação do beta](docs/operations/bookreader-viewer-beta.md) [Avaliação do beta](docs/operations/bookreader-viewer-beta-evaluation.md) [PR #135](https://github.com/lumamontes/biblioteca-de-zines/pull/135) [PR #157](https://github.com/lumamontes/biblioteca-de-zines/pull/157)
+### Adicionado
+
+- **Visualizador independente de páginas de zines**: o monorepo passou a incluir o
+  runtime isolado do BookReader em `apps/viewer`, com contratos compartilhados e
+  documentação de operação. O beta permanece pausado para publicações e pessoas
+  testadoras selecionadas, sem exposição geral em produção. [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [PR #170](https://github.com/lumamontes/biblioteca-de-zines/pull/170) [ADR 14](docs/decisions/14-monorepo.md) [ADR 15](docs/decisions/15-reader-engine-selection.md)
 
 - **Descoberta de pessoas autoras e links de apoio**: páginas de pessoas autoras
   passam a reconhecer mais plataformas, distinguir links de financiamento,
