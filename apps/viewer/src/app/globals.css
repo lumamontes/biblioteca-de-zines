@@ -1,0 +1,10 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: #f5f1e8; color: #191714; }
+body { font-family: Georgia, serif; }
+.viewer-shell, .reader { min-height: 100vh; padding: 2rem; }
+.reader { display: grid; place-items: center; }
+.reader__canvas { width: min(100%, 1100px); min-height: 70vh; background: #fffdf8; border: 1px solid #191714; }
+.reader__loading { padding: 2rem; }
+.reader__fallback { width: min(100%, 34rem); padding: 2rem; border: 1px solid #191714; background: #fffdf8; }
+.reader__fallback a { color: inherit; font-weight: 700; }
+.reader--branded { background: #e1ff00; }

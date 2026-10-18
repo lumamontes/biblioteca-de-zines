@@ -1,0 +1,28 @@
+{
+  "name": "viewer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack -p 4100",
+    "build": "next build",
+    "start": "next start",
+    "check-types": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@biblioteca/reader-contracts": "workspace:*",
+    "@internetarchive/bookreader": "5.0.0-87",
+    "next": "15.1.11",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.49.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}

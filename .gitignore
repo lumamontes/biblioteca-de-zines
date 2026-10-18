@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+**/.next/
 /out/
 
 # production
@@ -30,8 +31,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (examples are safe to commit)
 .env*
+!**/env.example
 
 # vercel
 .vercel
@@ -50,3 +52,5 @@ node_modules/
 # archived zine PDFs (scripts/archive-zine-pdfs.mjs) — never commit downloaded content
 /archive/
 *.pdf
+
+.turbo

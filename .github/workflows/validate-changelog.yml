@@ -1,0 +1,27 @@
+name: Validate changelog
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - "CHANGELOG.md"
+      - "apps/web/scripts/changelog.test.mjs"
+      - "apps/web/package.json"
+      - "package.json"
+      - ".github/workflows/validate-changelog.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm test:changelog

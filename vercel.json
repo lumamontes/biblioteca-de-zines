@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter biblioteca-zines build",
+  "outputDirectory": "apps/web/.next"
+}

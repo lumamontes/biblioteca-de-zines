@@ -2,6 +2,11 @@
 
 Status: inventory calibration reviewed on 2026-09-24.
 
+This is a historical snapshot from before the viewer release. Statements about
+external PDF reading, missing page derivatives, or source custody describe the
+observed baseline at that time; they are not the current viewer architecture.
+See the active [viewer release decision](./decisions/14-viewer-release-and-page-derivatives.md).
+
 This document records the public-safe conclusions from the first archive
 inventory run. It is evidence for the archive baseline, not a preservation
 guarantee and not a claim that every catalogue record has an authorised

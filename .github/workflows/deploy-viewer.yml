@@ -1,0 +1,40 @@
+name: Deploy isolated viewer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/viewer/**'
+      - 'packages/reader-contracts/**'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/deploy-viewer.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-viewer
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_VIEWER_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      NEXT_PUBLIC_READER_API_ORIGIN: ${{ vars.READER_API_ORIGIN || 'https://biblioteca-de-zines.com.br' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter viewer check-types
+      - run: pnpm --filter viewer build
+      - name: Deploy viewer to Vercel
+        run: pnpm dlx vercel@latest deploy apps/viewer --prod --yes --token "$VERCEL_TOKEN"

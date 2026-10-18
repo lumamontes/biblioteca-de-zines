@@ -1,0 +1,229 @@
+import { Zine } from "@/@types/zine";
+import { createClient } from "@/utils/supabase/server";
+import { createClient as createBrowser } from "@/utils/supabase/client";
+import { getZineCategories } from "@/utils/utils";
+
+export const getPublishedZines = async (
+  page: number = 1,
+  limit: number = 20
+): Promise<{ zines: Zine[]; totalCount: number }> => {
+  const supabase = await createClient();
+
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { data, error, count } = await supabase
+    .from("library_zines")
+    .select(
+      '*, library_zines_authors (authors (id, name, url, slug))',
+      { count: 'exact' }
+    )
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .range(from, to)
+    .limit(limit);
+
+  if (error) {
+    console.error("Error fetching published zines:", error.message);
+    throw new Error(error.message);
+  }
+
+  return {
+    zines: (data ?? []) as Zine[],
+    totalCount: count ?? 0
+  };
+};
+
+export const getRandomZine = async (): Promise<Zine | null> => {
+  const supabase = await createClient();
+
+  const { count, error: countError } = await supabase
+    .from("library_zines")
+    .select('*', { count: 'exact', head: true })
+    .not('cover_image', 'is', null)
+    .eq("is_published", true);
+
+  if (countError) {
+    console.error("Error fetching zine count:", countError.message);
+    throw new Error(countError.message);
+  }
+
+  if (!count || count === 0) {
+    return null;
+  }
+
+  const randomOffset = Math.floor(Math.random() * count);
+
+  const { data, error } = await supabase
+    .from("library_zines")
+    .select(
+      '*, library_zines_authors (authors (id, name, url, slug))'
+    )
+    .eq("is_published", true)
+    .not('cover_image', 'is', null)
+    .range(randomOffset, randomOffset)
+    .limit(1);
+
+  if (error) {
+    console.error("Error fetching random zine:", error.message);
+    throw new Error(error.message);
+  }
+
+  return data && data.length > 0 ? (data[0] as Zine) : null;
+}
+
+export const getZinesWithSpecificTag = async (tag: string): Promise<Zine[]> => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc('fetch_zines_by_category', { cat: tag });
+  if (error) {
+    console.error("Error fetching zines with specific tag:", error.message);
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as Zine[];
+};
+    
+    
+
+export const getAllZines = async (): Promise<Zine[]> => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("library_zines")
+    .select(
+      '*, library_zines_authors (authors (id, name, url, slug))'
+    );
+
+  if (error) {
+    console.error("Error fetching published zines:", error.message);
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as Zine[];
+};
+
+export const getZineBySlug = async (slug: string): Promise<Zine | null> => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("library_zines")
+    .select(
+      '*, library_zines_authors (authors (id, name, url, slug))'
+    )
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .single();
+
+  if (error) {
+    console.error("Error fetching zine by slug:", error.message);
+    throw new Error('Não foi possível encontrar a zine.');
+  } 
+
+  return data ?? null;
+
+};
+
+type SearchZineProps = {
+  search?: string | null;
+  orderBy?: string;
+  authorId?: number | null;
+  categories?: string[];
+  publishedYears?: number[];
+};
+
+export const searchZines = async ({
+  search = null,
+  orderBy = "all",
+  categories = [],
+  publishedYears = [],
+}: SearchZineProps): Promise<Zine[]> => {
+  const supabase = await createBrowser();
+
+  let query = supabase
+    .from("library_zines")
+    .select(
+      "*, library_zines_authors!inner(authors!inner(id, name, url, slug))"
+    ).
+    eq("is_published", true);
+
+  if (search) {
+    query = query.textSearch("title_fts", search, {
+      config: "portuguese",
+      type: "websearch",
+    });
+  }
+
+  if (publishedYears.length > 0) {
+    query = query.in("year", publishedYears);
+  }
+
+  if (orderBy === "recent") {
+    query = query.order("created_at", { ascending: false });
+  }
+
+  const { data: zines, error } = await query;
+
+  if (error) {
+    console.error("Error fetching zines:", error.message);
+    throw new Error(error.message);
+  }
+
+  const authorQuery = await supabase
+    .from("authors")
+    .select("id, name")
+    .textSearch("name_fts", search? search : '', {
+      config: "portuguese",
+      type: "websearch",
+    });
+
+  if (authorQuery.error) {
+    console.error("Error fetching authors:", authorQuery.error.message);
+    throw new Error(authorQuery.error.message);
+  }
+
+  const authorIds = authorQuery.data.map((author) => author.id);
+
+  if (authorIds.length > 0) {
+    let queryAuthorZines = supabase
+      .from("library_zines")
+      .select("*, library_zines_authors!inner(authors!inner(id, name, url, slug))")
+      .eq("is_published", true)
+      .in("library_zines_authors.authors.id", authorIds);
+
+    if (orderBy === "recent") {
+      queryAuthorZines = queryAuthorZines.order("created_at", { ascending: false });
+    }
+
+    const { data: authorZinesData, error: authorZinesError } = await queryAuthorZines;
+
+    if (authorZinesError) {
+      console.error("Error fetching zines by author:", authorZinesError.message);
+      throw new Error(authorZinesError.message);
+    }
+
+    const mergedZines = [...zines, ...authorZinesData].filter(
+      (value, index, self) =>
+        index === self.findIndex((t) => t.id === value.id)
+    );
+
+    if (categories.length > 0) {
+      return mergedZines.filter((zine) => {
+        const zineCategories = getZineCategories(zine.tags);
+        return categories.some(category => zineCategories.includes(category));
+      });
+    }
+    
+    return mergedZines;
+  }
+
+  const allZines = zines ?? [];
+  if (categories.length > 0) {
+    return allZines.filter((zine) => {
+      const zineCategories = getZineCategories(zine.tags);
+      return categories.some(category => zineCategories.includes(category));
+    });
+  }
+  
+  return allZines;
+};
