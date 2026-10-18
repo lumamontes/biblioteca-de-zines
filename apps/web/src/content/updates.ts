@@ -2,6 +2,23 @@ import type { Update } from "./update-types";
 
 export const updates: Update[] = [
   {
+    slug: "biblioteca-em-destaque-na-midia",
+    date: "2026-10-15",
+    kind: "community",
+    public: {
+      title: "A Biblioteca apareceu em novas matérias",
+      summary:
+        "O acervo e a produção independente do Amapá chegaram a novas conversas, reportagens e espaços de divulgação.",
+      body: [
+        "Nos últimos meses, a Biblioteca foi mencionada em matérias do g1, Drops de Jogos e HQPOP, além de publicações e entrevistas nas redes.",
+        "As matérias ajudam a apresentar as zines brasileiras para mais pessoas e reforçam que preservar também é criar caminhos para encontrar, ler e compartilhar essas produções.",
+      ],
+      sourceUrl:
+        "https://g1.globo.com/ap/amapa/noticia/2026/10/14/biblioteca-virtual-reune-mais-de-300-zines-gratuitos-e-amplia-acesso-a-producao-independente-no-ap.ghtml",
+      sourceLabel: "Ler matéria no g1",
+    },
+  },
+  {
     slug: "retrospectiva-da-biblioteca-de-zines",
     date: "2025-12-21",
     kind: "community",
@@ -16,11 +33,6 @@ export const updates: Update[] = [
       ],
       sourceUrl: "https://www.instagram.com/p/DShdbKfjmG7/?img_index=1",
       sourceLabel: "Ver retrospectiva no Instagram",
-      media: Array.from({ length: 8 }, (_, index) => ({
-        kind: "image" as const,
-        src: `/novidades/retrospectiva-${String(index + 1).padStart(2, "0")}.jpg`,
-        alt: `Imagem ${index + 1} da retrospectiva da Biblioteca de Zines`,
-      })),
     },
   },
   {
@@ -38,11 +50,6 @@ export const updates: Update[] = [
       ],
       sourceUrl: "https://www.instagram.com/p/DRmrdOIABnV/?img_index=1",
       sourceLabel: "Ver relato da oficina no Instagram",
-      media: Array.from({ length: 7 }, (_, index) => ({
-        kind: "image" as const,
-        src: `/novidades/ueap-${String(index + 1).padStart(2, "0")}.jpg`,
-        alt: `Imagem ${index + 1} da oficina de fanzines na UEAP`,
-      })),
     },
   },
   {
@@ -57,14 +64,6 @@ export const updates: Update[] = [
       body: [
         "Os PDFs continuam sendo preservados como a representação original. A novidade é preparar imagens das páginas para que a navegação possa acontecer de forma progressiva, com zoom, miniaturas e uma alternativa clara quando o processamento não estiver disponível.",
         "O visualizador ainda está em desenvolvimento e será liberado gradualmente, depois de testes de desempenho, acessibilidade, segurança e recuperação.",
-      ],
-      media: [
-        {
-          kind: "image",
-          src: "/novidades/visualizador-paginas.svg",
-          alt: "Fluxo entre um PDF, imagens das páginas e o visualizador de zines",
-          caption: "Do PDF original às imagens usadas para exibir as páginas.",
-        },
       ],
     },
   },
@@ -81,14 +80,6 @@ export const updates: Update[] = [
         "Inventários e verificações ajudam a perceber quando o catálogo, uma fonte externa e uma cópia local deixaram de contar a mesma história.",
         "Esse trabalho não muda o que está disponível agora, mas cria uma forma melhor de investigar links quebrados, arquivos ausentes e mudanças no acervo antes que elas se percam.",
       ],
-      media: [
-        {
-          kind: "image",
-          src: "/novidades/inventario-acervo.svg",
-          alt: "Diagrama relacionando catálogo, fontes externas e cópias locais do acervo",
-          caption: "O inventário compara o catálogo com suas fontes e arquivos.",
-        },
-      ],
     },
   },
   {
@@ -104,14 +95,6 @@ export const updates: Update[] = [
         "As páginas reúnem links de apoio, plataformas reconhecidas e previews quando há informações suficientes para apresentá-los com segurança.",
         "A listagem também ganhou paginação para continuar navegável conforme a coleção cresce.",
       ],
-      media: [
-        {
-          kind: "image",
-          src: "/novidades/autorias-e-coletivos.svg",
-          alt: "Diagrama de uma página de autoria com zines e links de apoio",
-          caption: "Uma autoria conecta pessoas, coletivos, zines e links de apoio.",
-        },
-      ],
     },
   },
   {
@@ -125,14 +108,6 @@ export const updates: Update[] = [
         "Novas categorias, badges e filtros ajudam a descobrir publicações por diferentes caminhos.",
       body: [
         "A organização do catálogo continua sendo construída para facilitar a descoberta sem reduzir a diversidade das zines a uma única classificação.",
-      ],
-      media: [
-        {
-          kind: "image",
-          src: "/zines.png",
-          alt: "Tela do catálogo de zines com cartões e filtros",
-          caption: "Filtros e categorias criam novos caminhos para descobrir zines.",
-        },
       ],
     },
   },
@@ -148,14 +123,6 @@ export const updates: Update[] = [
       body: [
         "O formulário organiza as informações da zine, valida os dados e encaminha a submissão para revisão da equipe.",
       ],
-      media: [
-        {
-          kind: "image",
-          src: "/novidades/submissao-zine.svg",
-          alt: "Fluxo de envio, revisão e publicação de uma zine",
-          caption: "A submissão passa por revisão antes de entrar no acervo público.",
-        },
-      ],
     },
   },
   {
@@ -170,14 +137,6 @@ export const updates: Update[] = [
       body: [
         "Essa base tornou possível cuidar do acervo como uma coleção viva, em vez de apenas reunir links soltos. Zines, pessoas autoras, publicações e o estado de revisão passaram a ter lugares próprios no catálogo.",
       ],
-      media: [
-        {
-          kind: "image",
-          src: "/zines.png",
-          alt: "Tela do catálogo digital da Biblioteca de Zines",
-          caption: "O catálogo reúne publicações independentes em um só lugar.",
-        },
-      ],
     },
   },
   {
@@ -191,14 +150,6 @@ export const updates: Update[] = [
         "O projeto começa como uma coleção digital colaborativa e de código aberto para zines independentes.",
       body: [
         "Desde o início, a Biblioteca existe para ampliar o acesso à produção independente e cuidar de um acervo construído com a comunidade.",
-      ],
-      media: [
-        {
-          kind: "image",
-          src: "/final_biblioteca.gif",
-          alt: "Animação de apresentação da Biblioteca de Zines",
-          caption: "Uma biblioteca digital construída com a comunidade.",
-        },
       ],
     },
   },
