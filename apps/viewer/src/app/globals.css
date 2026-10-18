@@ -7,6 +7,11 @@ button, input { font: inherit; }
 button { cursor: pointer; }
 
 .viewer-shell, .reader { min-height: 100dvh; }
+.viewer-not-found { display: grid; min-height: 100dvh; place-content: center; gap: 0.75rem; padding: 2rem; background: #fafafa; color: #000; }
+.viewer-not-found p, .viewer-not-found h1 { margin: 0; }
+.viewer-not-found p:first-child { font-size: 0.7rem; }
+.viewer-not-found h1 { font-size: 1.25rem; font-weight: 400; }
+.viewer-not-found p:last-child { font-size: 0.7rem; }
 .reader { display: flex; flex-direction: column; background: #fafafa; color: #000; }
 .reader__header { display: flex; flex: 0 0 4rem; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem clamp(1rem, 3vw, 2.5rem); background: #fafafa; border-bottom: 1px solid #000; }
 .reader__headerIdentity { display: flex; min-width: 0; align-items: center; gap: 1rem; }
