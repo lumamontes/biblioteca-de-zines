@@ -1,32 +1,47 @@
-import Link from "next/link";
+import type { ReactNode } from "react";
 
-export function ChangelogIntroduction() {
-  return (
-    <div className="mb-10 border-l-4 border-neutral-900 bg-neutral-50 p-5 text-neutral-700">
-      <h2 className="mb-3 text-xl font-bold text-neutral-950">
-        Novidades para nerds
-      </h2>
-      <p className="mb-3 leading-relaxed">
-        Este é o changelog técnico da Biblioteca: um registro das mudanças
-        relevantes no sistema, escrito para pessoas que usam, mantêm ou estudam
-        o projeto. Ele explica o que mudou e por que isso importa, em vez de
-        repetir o histórico bruto de commits.
-      </p>
-      <p className="leading-relaxed">
-        O formato segue o{" "}
-        <Link
-          href="https://keepachangelog.com/en/1.1.0/"
+function renderInline(text: string): ReactNode[] {
+  return text.split(/(`[^`]+`|\[[^\]]+\]\([^)]+\))/g).map((part, index) => {
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code
+          key={`${part}-${index}`}
+          className="rounded bg-neutral-100 px-1 py-0.5 font-mono text-[0.9em] text-neutral-900"
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+
+    const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (link) {
+      return (
+        <a
+          key={`${link[2]}-${index}`}
+          href={link[2]}
           target="_blank"
           rel="noopener noreferrer"
           className="font-medium text-blue-700 underline decoration-blue-300 underline-offset-2 hover:bg-blue-50 hover:text-blue-900"
         >
-          Keep a Changelog
-        </Link>
-        : as entradas são agrupadas por mudança, usam categorias como
-        Adicionado, Alterado e Corrigido, e ficam marcadas com a data em que
-        chegaram à `main`. O que ainda está em desenvolvimento aparece em
-        Não publicado.
-      </p>
+          {link[1]}
+        </a>
+      );
+    }
+
+    return part;
+  });
+}
+
+export function ChangelogIntroduction({ paragraphs }: { paragraphs: string[] }) {
+  if (paragraphs.length === 0) return null;
+
+  return (
+    <div className="mb-10 border-l-4 border-neutral-900 bg-neutral-50 p-5 text-neutral-700">
+      {paragraphs.map((paragraph) => (
+        <p key={paragraph} className="mb-3 last:mb-0 leading-relaxed">
+          {renderInline(paragraph)}
+        </p>
+      ))}
     </div>
   );
 }

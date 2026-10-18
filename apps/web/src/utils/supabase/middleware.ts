@@ -8,7 +8,7 @@ export const updateSession = async (request: NextRequest) => {
       },
     });
 
-    createServerClient(
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -30,6 +30,9 @@ export const updateSession = async (request: NextRequest) => {
         },
       },
     );
+
+    // Refresh the session in one request boundary so updated cookies reach the browser.
+    await supabase.auth.getUser();
 
     return response;
 };

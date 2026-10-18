@@ -54,5 +54,5 @@ preservação ou um reader completo.
 ## Links
 
 - [Geração e migração histórica de capas](../specs/cover-only-generation-and-migration.md)
-- [Release do viewer e derivados de páginas](./14-viewer-release-and-page-derivatives.md)
+- [Release do viewer e imagens das páginas](./14-viewer-release-and-page-derivatives.md)
 - [Internet Archive BookReader](https://github.com/internetarchive/bookreader)

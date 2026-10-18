@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Paginas de pessoas autoras e coletivos</title>
+  <desc id="desc">Uma autoria conecta uma pessoa ou coletivo, suas zines e links de apoio.</desc>
+  <rect width="1200" height="675" fill="#f6f1e8"/>
+  <text x="72" y="88" fill="#171717" font-family="Arial,sans-serif" font-size="34" font-weight="700">Cada autoria, um caminho pelo acervo</text>
+  <text x="72" y="125" fill="#555" font-family="Arial,sans-serif" font-size="20">Paginas proprias aproximam pessoas, coletivos e publicacoes.</text>
+  <g transform="translate(90 215)">
+    <circle cx="100" cy="80" r="58" fill="#9d6b4f"/>
+    <circle cx="100" cy="62" r="20" fill="#f6f1e8"/>
+    <path d="M62 125c16-32 60-32 76 0" fill="#f6f1e8"/>
+    <text x="0" y="205" fill="#171717" font-family="Arial,sans-serif" font-size="25" font-weight="700">Autoria</text>
+  </g>
+  <path d="M270 295h110M270 355h110" stroke="#171717" stroke-width="5"/><path d="m365 275 30 20-30 20M365 335l30 20-30 20" fill="none" stroke="#171717" stroke-width="5"/>
+  <g transform="translate(450 215)">
+    <rect width="270" height="220" rx="8" fill="#fff" stroke="#171717" stroke-width="5"/>
+    <rect x="28" y="32" width="74" height="100" fill="#d6e4d4"/><rect x="116" y="32" width="74" height="100" fill="#e5c7ae"/><rect x="204" y="32" width="38" height="100" fill="#d6e4d4"/>
+    <path d="M28 164h214M28 190h145" stroke="#171717" stroke-width="9" stroke-linecap="round"/>
+    <text x="28" y="255" fill="#171717" font-family="Arial,sans-serif" font-size="23" font-weight="700">Zines relacionadas</text>
+  </g>
+  <path d="M755 325h110" stroke="#171717" stroke-width="5"/><path d="m850 305 30 20-30 20" fill="none" stroke="#171717" stroke-width="5"/>
+  <g transform="translate(930 245)">
+    <rect width="190" height="150" rx="8" fill="#171717"/>
+    <path d="M28 45h134M28 78h100M28 111h128" stroke="#d6e4d4" stroke-width="12" stroke-linecap="round"/>
+    <text x="28" y="188" fill="#171717" font-family="Arial,sans-serif" font-size="21" font-weight="700">Links de apoio</text>
+  </g>
+  <text x="72" y="580" fill="#555" font-family="Arial,sans-serif" font-size="18">A pagina de autoria organiza descoberta sem misturar todos os links externos.</text>
+</svg>

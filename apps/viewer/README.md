@@ -14,8 +14,17 @@ explicit PDF fallback.
 - `/viewer/v1/:slug`: standalone reader surface.
 - `/embed/v1/:slug`: focused iframe surface for Biblioteca pages and third-party
   embeds.
-- `?branding=biblioteca`: optional presentation branding for an embed; it does
-  not grant access.
+- `?branding=biblioteca`: optional Biblioteca preset with its logo; no branding
+  is rendered by default.
+- `?background=%23f7f5ef&text=%23111111`: optional validated hexadecimal theme
+  colors for an embed. These only affect presentation and do not grant access.
+- `?mode=2up`: starts in two-page mode, which is the default. Use `mode=1up`
+  for a single-page start.
+- `?page=4`: starts at a specific page number.
+
+These viewer parameters are intentionally small and explicit. They configure a
+document reader; video-specific parameters such as `loop`
+belong to a future video embed surface rather than the BookReader route.
 
 The embedding page controls iframe dimensions. V1 has no parent-page control or
 resize-message protocol.
@@ -61,13 +70,22 @@ viewer route
   -> page navigation, zoom, thumbnails, and fallback
 ```
 
-`src/infrastructure/bookreader-adapter.ts` is the vendor boundary. It loads the
-pinned BookReader assets, translates the manifest, delegates navigation, wires
-page/error events, resizes after mount, and cleans up the vendor instance.
+`src/infrastructure/bookreader-adapter.ts` is the vendor seam. Its public
+implementation stays small while private modules separate runtime asset loading
+(`bookreader-runtime.ts`), option translation (`bookreader-options.ts`), and
+vendor types (`bookreader-types.ts`). The adapter translates the manifest,
+delegates navigation, wires page/error events, resizes after mount, and cleans up
+the vendor instance.
 
-`src/components/reader.tsx` owns the viewer lifecycle and fallback state. The
-viewer must keep the PDF fallback when the endpoint, page generation, page
-assets, or BookReader initialization fails.
+`src/components/use-reader-controller.ts` owns the viewer lifecycle: API loading,
+session creation, runtime loading, telemetry, mounting, and fallback state.
+`src/components/reader.tsx` renders that state. The viewer must keep the PDF
+fallback when the endpoint, page generation, page assets, or BookReader
+initialization fails.
+
+The shared `@biblioteca-de-zines/reader` package contains only data and
+configuration that cross the web/viewer seam. Viewer session, renderer, runtime,
+and BookReader concerns remain inside this app.
 
 ## Verification
 

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Visualizador de paginas de zines</title>
+  <desc id="desc">Fluxo de um PDF original para imagens de paginas e um visualizador.</desc>
+  <rect width="1200" height="675" fill="#f6f1e8"/>
+  <path d="M0 540h1200" stroke="#171717" stroke-width="4"/>
+  <text x="72" y="88" fill="#171717" font-family="Arial,sans-serif" font-size="34" font-weight="700">Do PDF as paginas visiveis</text>
+  <text x="72" y="125" fill="#555" font-family="Arial,sans-serif" font-size="20">Uma imagem por pagina, uma geracao completa, uma experiencia mais fluida.</text>
+  <g transform="translate(80 220)">
+    <rect width="220" height="270" rx="8" fill="#fff" stroke="#171717" stroke-width="5"/>
+    <path d="M35 48h150M35 82h150M35 116h105M35 190h150" stroke="#9d6b4f" stroke-width="12" stroke-linecap="round"/>
+    <text x="35" y="238" fill="#171717" font-family="Arial,sans-serif" font-size="25" font-weight="700">PDF original</text>
+  </g>
+  <path d="M340 355h120" stroke="#171717" stroke-width="6"/><path d="m440 335 30 20-30 20" fill="none" stroke="#171717" stroke-width="6"/>
+  <g transform="translate(510 220)">
+    <rect width="220" height="270" rx="8" fill="#d6e4d4" stroke="#171717" stroke-width="5"/>
+    <rect x="35" y="40" width="60" height="82" fill="#fff" stroke="#171717" stroke-width="3"/><rect x="115" y="40" width="60" height="82" fill="#fff" stroke="#171717" stroke-width="3"/><rect x="35" y="142" width="60" height="82" fill="#fff" stroke="#171717" stroke-width="3"/><rect x="115" y="142" width="60" height="82" fill="#fff" stroke="#171717" stroke-width="3"/>
+    <text x="34" y="252" fill="#171717" font-family="Arial,sans-serif" font-size="22" font-weight="700">Paginas geradas</text>
+  </g>
+  <path d="M770 355h120" stroke="#171717" stroke-width="6"/><path d="m870 335 30 20-30 20" fill="none" stroke="#171717" stroke-width="6"/>
+  <g transform="translate(930 220)">
+    <rect width="190" height="270" rx="8" fill="#171717"/>
+    <rect x="22" y="22" width="146" height="190" rx="4" fill="#f6f1e8"/>
+    <path d="M48 90h94M48 120h70M48 164h94" stroke="#9d6b4f" stroke-width="10" stroke-linecap="round"/>
+    <text x="22" y="252" fill="#fff" font-family="Arial,sans-serif" font-size="22" font-weight="700">Visualizador</text>
+  </g>
+  <text x="72" y="600" fill="#555" font-family="Arial,sans-serif" font-size="18">O PDF continua sendo a fonte original e o fallback.</text>
+</svg>

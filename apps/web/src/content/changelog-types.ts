@@ -23,3 +23,8 @@ export interface ChangelogSection {
   releasedAt?: string;
   entries: ChangelogEntry[];
 }
+
+export interface ChangelogDocument {
+  introduction: string[];
+  sections: ChangelogSection[];
+}

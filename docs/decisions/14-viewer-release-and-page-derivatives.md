@@ -1,4 +1,4 @@
-# Release do viewer e derivados de páginas
+# Release do viewer e imagens das páginas
 
 **Substitui [12-cover-only-processing-at-publication](./12-cover-only-processing-at-publication.md) e atualiza o caminho definido em [13-internet-archive-bookreader-page-derivatives](./13-internet-archive-bookreader-page-derivatives.md).**
 

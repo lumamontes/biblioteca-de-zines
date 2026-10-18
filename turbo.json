@@ -1,12 +1,19 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": ["**/.env*"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
     },
     "check-types": {
-      "dependsOn": ["^check-types", "build"]
+      "dependsOn": ["^check-types"]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:application": {
+      "dependsOn": ["^build"]
     },
     "dev": {
       "persistent": true,

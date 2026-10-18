@@ -22,7 +22,7 @@ não uma garantia de preservação.
 
 ### Próxima versão do monorepo
 
-A [decisão sobre o release do viewer e derivados de páginas](./decisions/14-viewer-release-and-page-derivatives.md)
+A [decisão sobre o release do viewer e as imagens das páginas](./decisions/14-viewer-release-and-page-derivatives.md)
 é a referência atual para o monorepo que será publicado no próximo release.
 
 A [seleção do engine do reader visual](./decisions/15-reader-engine-selection.md)
@@ -75,10 +75,10 @@ registra uma decisão histórica, supersedida pelo caminho do viewer.
 O [runbook de processamento de páginas](./runbooks/page-processing.md)
 documenta migrações, scripts, variáveis de ambiente, verificações e recuperação.
 
-
 Os [documentos operacionais do beta BookReader](./operations/bookreader-viewer-beta.md)
 e da [avaliação de release](./operations/bookreader-viewer-beta-evaluation.md)
 registram rollout, observabilidade, critérios de expansão, pausa e rollback.
+
 A [pesquisa sobre formatos e catálogos de zines](./zine-format-archive-research.md)
 compara fontes brasileiras e internacionais para validar campos físicos, digitais,
 geográficos e de classificação.

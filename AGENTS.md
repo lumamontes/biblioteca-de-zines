@@ -27,13 +27,7 @@ Use lightweight application-service boundaries for new work:
 
 Prefer the smallest boundary that makes a workflow readable. Do not introduce full DDD ceremony, aggregates, factories, or value objects without a concrete domain need.
 
-The monorepo's target viewer release uses asynchronous full PDF-to-image page
-generation for approved public publications. This describes the future release,
-not the currently deployed production site. Keep page generation, cover
-generation, and future direct-upload intake as separate application workflows.
-Unpublished submissions must not create public derivatives; direct PDF upload
-and metadata extraction are deferred to a later version after the viewer release
-and community consultation.
+Current cover processing is a cover-only application workflow. Keep reusable PDF rendering primitives separate from the cover workflow so future full PDF-to-image page generation can be added without making page derivatives part of the current reader.
 
 <!-- BEGIN:turborepo-agent-rules -->
 

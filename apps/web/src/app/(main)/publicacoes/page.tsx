@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import BlogArticleCard from "@/components/blog/blog-article-card";
 import { PublicationsHub } from "@/components/publications/publications-hub";
+import { ChangelogIntroduction } from "@/components/updates/changelog-introduction";
 import { ChangelogSectionView } from "@/components/updates/changelog-section";
 import { LatestUpdate } from "@/components/updates/latest-update";
 import { PublicUpdate } from "@/components/updates/public-update";
@@ -98,7 +99,8 @@ export default async function PublicationsPage() {
           }
           nerds={
             <>
-              {changelog.map((section) => (
+              <ChangelogIntroduction paragraphs={changelog.introduction} />
+              {changelog.sections.map((section) => (
                 <ChangelogSectionView key={section.title} section={section} />
               ))}
             </>

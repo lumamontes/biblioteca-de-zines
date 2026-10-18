@@ -1,4 +1,4 @@
-# Internet Archive BookReader com derivados de páginas
+# Internet Archive BookReader com imagens das páginas
 
 **Decisão incorporada pela [decisão sobre o release do viewer](./14-viewer-release-and-page-derivatives.md).**
 
@@ -101,5 +101,5 @@ quando o processamento falha ou quando a pessoa prefere o arquivo original.
 - [Benchmark de renderização](../spikes/reading-derivative-inventory/benchmark.md)
 - [Caminho de leitura com BookReader](../specs/bookreader-reading-path.md)
 - [Processamento de páginas e ciclo de vida de assets](../specs/page-processing-and-asset-lifecycle.md)
-- [Release do viewer e derivados de páginas](./14-viewer-release-and-page-derivatives.md)
+- [Release do viewer e imagens das páginas](./14-viewer-release-and-page-derivatives.md)
 - [Internet Archive BookReader](https://github.com/internetarchive/bookreader)

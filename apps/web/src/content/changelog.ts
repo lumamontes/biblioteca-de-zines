@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import type {
   ChangelogEntry,
+  ChangelogDocument,
   ChangelogKind,
   ChangelogReference,
   ChangelogSection,
@@ -71,9 +72,16 @@ function parseEntry(lines: string[], index: number): { entry: ChangelogEntry; ne
   };
 }
 
-export function getChangelog(): ChangelogSection[] {
+export function getChangelog(): ChangelogDocument {
   const lines = readChangelog().split("\n");
   const sections: ChangelogSection[] = [];
+  const firstSectionIndex = lines.findIndex((line) => line.startsWith("## "));
+  const introduction = lines
+    .slice(1, firstSectionIndex === -1 ? lines.length : firstSectionIndex)
+    .join("\n")
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
   let section: ChangelogSection | undefined;
   let kind: ChangelogKind = "changed";
 
@@ -104,5 +112,8 @@ export function getChangelog(): ChangelogSection[] {
     }
   }
 
-  return sections.filter((currentSection) => currentSection.entries.length > 0);
+  return {
+    introduction,
+    sections: sections.filter((currentSection) => currentSection.entries.length > 0),
+  };
 }

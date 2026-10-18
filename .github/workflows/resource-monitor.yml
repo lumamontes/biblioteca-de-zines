@@ -27,7 +27,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        run: node scripts/export-monitor-resources.mjs monitor-resources.json
+        run: node apps/web/scripts/export-monitor-resources.mjs monitor-resources.json
       - name: Check published resources
         id: check
         continue-on-error: true

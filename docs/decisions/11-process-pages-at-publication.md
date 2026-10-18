@@ -63,5 +63,5 @@ receba um manifest completo, estável e cacheável.
 ## Links
 
 - [Processamento de páginas e ciclo de vida de assets](../specs/page-processing-and-asset-lifecycle.md)
-- [Release do viewer e derivados de páginas](./14-viewer-release-and-page-derivatives.md)
+- [Release do viewer e imagens das páginas](./14-viewer-release-and-page-derivatives.md)
 - [Runbook de processamento de páginas](../runbooks/page-processing.md)

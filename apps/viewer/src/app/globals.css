@@ -1,12 +1,18 @@
 * { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; background: #f5f1e8; color: #191714; }
+html, body { margin: 0; min-height: 100%; background: var(--reader-background, #f7f5ef); color: var(--reader-text, #111); }
 body { font-family: Georgia, serif; }
 .viewer-shell, .reader { min-height: 100vh; padding: 2rem; }
-.reader { position: relative; display: grid; place-items: center; }
-.reader__canvas { width: min(100%, 1100px); min-height: 70vh; background: #fffdf8; }
+.reader { position: relative; display: grid; place-items: center; background: var(--reader-background, #f7f5ef); color: var(--reader-text, #111); }
+.reader__canvas { width: min(100%, 1100px); min-height: 70vh; background: #fff; }
 .reader--embed { padding: 0; place-items: stretch; }
 .reader--embed .reader__canvas { width: 100%; min-height: 100vh; }
-.reader__loading { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 1rem; color: #73706a; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
-.reader__fallback { width: min(100%, 34rem); padding: 2rem; background: #fffdf8; }
+.reader__brand { display: flex; align-items: center; min-height: 3rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--reader-text, #111); }
+.reader__brand img { display: block; width: auto; height: 2rem; max-width: min(14rem, 70vw); object-fit: contain; object-position: left center; }
+.reader__loading { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 1rem; color: #555; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.reader__fallback { width: min(100%, 34rem); padding: 2rem; background: #fff; border: 1px solid #111; }
 .reader__fallback a { color: inherit; font-weight: 700; }
-.reader--branded { background: #e1ff00; }
+
+/* Keep the vendor toolbar quiet and neutral inside Biblioteca. */
+.reader .BRtoolbar, .reader .BRnav, .reader .BRtoolbar input { background: var(--reader-background, #f7f5ef); color: var(--reader-text, #111); border-color: var(--reader-text, #111); }
+.reader .BRtoolbar button, .reader .BRtoolbar a { color: var(--reader-text, #111); }
+.reader .BRtoolbarSectionInfo, .reader .BRinfo, .reader .BRshare { display: none !important; }
