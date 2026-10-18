@@ -101,6 +101,10 @@ Exemplo 2:
 - Escreva o ADR logo depois de tomar a decisão, enquanto tudo ainda está fresco na cabeça.
 - Mantenha o texto direto e fácil de entender.
 - Compartilhe com a equipe e peça feedback, assim as decisões ficam mais sólidas.
+- Mantenha cada ADR centrada em uma decisão: contexto, decisão, alternativas,
+  justificativa, consequências e links.
+- Preserve decisões históricas, mas marque quando forem substituídas e remova
+  detalhes operacionais que pertencem a specs, runbooks ou READMEs.
 
 ## Leituras recomendadas
 

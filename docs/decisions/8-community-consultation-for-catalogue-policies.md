@@ -22,7 +22,7 @@ ou outras decisões de implementação. Qualquer pessoa poderá propor mudanças
 mantenedores coordenarão o processo, publicarão a síntese e explicarão como as
 contribuições foram consideradas.
 
-## Alternativas consideradas
+## Alternativas Consideradas
 
 ### Definir o modelo apenas com pesquisa bibliográfica
 
@@ -39,6 +39,13 @@ permissões, registros e fluxos depois que decisões fossem aplicadas aos dados.
 Esta é a opção escolhida. Ela mantém o trabalho de pesquisa e modelagem útil como
 proposta, mas deixa decisões de representação e acesso abertas à contribuição da
 comunidade.
+
+## Justificativa
+
+A consulta reduz o risco de transformar escolhas de representação, privacidade e
+acesso em políticas difíceis de corrigir depois da migração. Ela mantém a comunidade
+como participante da definição do catálogo sem transferir decisões técnicas para o
+processo de consulta.
 
 ## Consequências
 

@@ -1,64 +1,40 @@
 # Processar páginas na publicação
 
-**Decisão histórica. O caminho atual do reader está documentado em [14-viewer-release-and-page-derivatives](./14-viewer-release-and-page-derivatives.md).**
+**Decisão histórica. O caminho atual está documentado em [14-viewer-release-and-page-derivatives](./14-viewer-release-and-page-derivatives.md).**
 
 ## Contexto
 
-Submissões em `form_uploads` são registros de entrada que aguardam revisão.
-Processar essas submissões antes da publicação criaria derivados privados para
-materiais que talvez nunca entrassem no acervo, além de adicionar um segundo
-ciclo de armazenamento.
-
-Ao mesmo tempo, uma publicação aprovada precisa de uma representação estável
-para leitura, com páginas ordenadas, fallback e possibilidade de reprocessamento
-quando o PDF muda.
+Submissões aguardam revisão e podem nunca entrar no acervo. Publicações aprovadas
+precisam de uma representação estável para leitura, com páginas ordenadas,
+fallback e possibilidade de reprocessamento.
 
 ## Decisão
 
-Decidimos processar o PDF somente depois que uma submissão se tornar uma
-publicação aprovada, criando uma geração completa de páginas e capa.
-
-- Submissões não publicadas não criam derivados públicos.
-- A publicação usa o PDF atualmente associado ao registro.
-- Uma geração completa precisa ser armazenada antes de ser ativada.
-- A geração ativa só muda depois que todas as páginas necessárias forem
-  processadas com sucesso.
-- Uma geração anterior continua ativa enquanto a substituta está sendo criada.
-- A mesma fonte pode ser reutilizada quando a geração estiver completa e o PDF
-  não tiver mudado.
+Processar o PDF depois que a submissão se tornar uma publicação aprovada, criando
+uma geração completa de páginas e capa antes de ativá-la.
 
 ## Alternativas Consideradas
 
-### Processar durante a submissão
-
-Seria possível mostrar previews mais cedo, mas criaria storage e limpeza para
-materiais que podem ser rejeitados ou nunca publicados.
-
-### Processar somente quando alguém abrir o reader
-
-Reduziria o processamento inicial, mas deixaria a primeira leitura lenta,
-complicaria concorrência e dificultaria controlar falhas e retries.
-
-### Processar somente a capa
-
-Foi usado como uma etapa intermediária para melhorar o catálogo antes do
-viewer. Não atende à navegação página a página do reader e hoje é mantido apenas
-para compatibilidade e migração legada.
+- **Processar durante a submissão:** criaria derivados para materiais que poderiam
+  ser rejeitados.
+- **Processar na primeira leitura:** deixaria a primeira experiência lenta e
+  dificultaria concorrência, retries e observabilidade.
+- **Processar somente a capa:** foi uma etapa intermediária e não atende ao reader
+  página a página.
 
 ## Justificativa
 
 Processar na publicação equilibra custo, privacidade e experiência de leitura.
-Evita criar derivados para submissões não aprovadas e permite que o viewer
-receba um manifest completo, estável e cacheável.
+Evita derivados públicos para submissões não aprovadas e permite ao viewer receber
+um manifest completo, estável e cacheável.
 
 ## Consequências
 
-- A publicação pode esperar o processamento assíncrono da geração.
-- Falhas individuais precisam permitir retry e ser visíveis para a manutenção.
-- O reader ganha páginas ordenadas, navegação própria e fallback para o PDF.
-- Uma alteração no PDF precisa criar uma nova geração.
-- A estratégia cover-only deixa de ser o fluxo principal e permanece como
-  compatibilidade histórica.
+- A publicação pode aguardar o processamento assíncrono da geração.
+- Falhas precisam permitir retry e ser visíveis para manutenção.
+- A geração anterior permanece ativa enquanto a substituta é criada.
+- Alterações no PDF criam uma nova geração.
+- O fluxo cover-only permanece apenas como histórico e migração.
 
 ## Links
 
