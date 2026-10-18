@@ -54,16 +54,15 @@ export const updates: Update[] = [
   },
   {
     slug: "visualizador-de-paginas-de-zines",
-    date: "2026-10-12",
+    date: "2026-10-18",
     kind: "site",
-    historic: true,
     public: {
-      title: "Uma nova forma de ver as páginas das zines",
+      title: "O novo visualizador de páginas entrou em fase beta",
       summary:
-        "A Biblioteca começou a preparar um visualizador próprio para exibir as páginas das zines com mais fluidez.",
+        "A Biblioteca começou a testar uma nova experiência para ler as páginas das zines com mais fluidez.",
       body: [
-        "Os PDFs continuam sendo preservados como a representação original. A novidade é preparar imagens das páginas para que a navegação possa acontecer de forma progressiva, com zoom, miniaturas e uma alternativa clara quando o processamento não estiver disponível.",
-        "O visualizador ainda está em desenvolvimento e será liberado gradualmente, depois de testes de desempenho, acessibilidade, segurança e recuperação.",
+        "Os PDFs continuam sendo preservados como a representação original. O beta usa imagens das páginas para testar uma navegação mais progressiva, com zoom, miniaturas e uma alternativa clara quando o processamento não estiver disponível.",
+        "A experiência será liberada gradualmente enquanto a Biblioteca acompanha desempenho, acessibilidade, segurança e recuperação.",
       ],
     },
   },
