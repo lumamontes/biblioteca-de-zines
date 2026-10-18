@@ -32,9 +32,30 @@ export function createSupabaseAuthorReader(supabase: SupabaseClient<Database>) {
     },
 
     async getAll(): Promise<Author[]> {
+      const { data: publishedRelations, error: relationsError } = await supabase
+        .from('library_zines_authors')
+        .select('author_id, zine_id, library_zines!inner(is_published)')
+        .eq('library_zines.is_published', true);
+
+      if (relationsError) throw new Error(relationsError.message);
+
+      const publishedZinesByAuthor = new Map<number, Set<number>>();
+      for (const relation of publishedRelations ?? []) {
+        const zineIds = publishedZinesByAuthor.get(relation.author_id) ?? new Set<number>();
+        zineIds.add(relation.zine_id);
+        publishedZinesByAuthor.set(relation.author_id, zineIds);
+      }
+
+      const authorIds = Array.from(publishedZinesByAuthor.entries())
+        .filter(([, zineIds]) => zineIds.size > 1)
+        .map(([authorId]) => authorId);
+
+      if (authorIds.length === 0) return [];
+
       const { data, error } = await supabase
         .from('authors')
         .select('*')
+        .in('id', authorIds)
         .order('name', { ascending: true });
 
       if (error) throw new Error(error.message);
