@@ -14,7 +14,10 @@ export type BookReaderOptions = {
 };
 
 export function createBookReaderOptions(targetId: string, manifest: ReaderPageManifest, viewOptions: ReaderViewOptions): BookReaderOptions {
-  const mode = viewOptions.mode ?? '2up';
+  const requestedMode = viewOptions.mode ?? '2up';
+  const mode = requestedMode === '2up' && manifest.pages.some((page) => page.width > page.height)
+    ? '1up'
+    : requestedMode;
   const page = normalizeReaderPage(viewOptions.page ?? 1, manifest.pageCount);
   return {
     data: manifest.pages.map((item) => [{ pageNum: item.pageNumber, uri: item.imageUrl, width: item.width, height: item.height }]),
