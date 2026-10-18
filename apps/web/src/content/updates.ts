@@ -6,16 +6,44 @@ export const updates: Update[] = [
     date: "2026-10-15",
     kind: "community",
     public: {
-      title: "A Biblioteca apareceu em novas matérias",
+      title: "A Biblioteca de Zines no G1 Amapá",
       summary:
-        "O acervo e a produção independente do Amapá chegaram a novas conversas, reportagens e espaços de divulgação.",
+        "Uma matéria do G1 Amapá contou como a Biblioteca amplia o acesso a zines e à produção independente no estado.",
       body: [
-        "Nos últimos meses, a Biblioteca foi mencionada em matérias do g1, Drops de Jogos e HQPOP, além de publicações e entrevistas nas redes.",
-        "As matérias ajudam a apresentar as zines brasileiras para mais pessoas e reforçam que preservar também é criar caminhos para encontrar, ler e compartilhar essas produções.",
+        "Luana Góes, idealizadora da Biblioteca, participou de uma matéria do G1 Amapá sobre o projeto, o acervo e a importância de tornar produções independentes mais fáceis de encontrar e ler.",
+        "A Biblioteca agradece a todas as pessoas que enviam zines, divulgam o acervo, participam das atividades e ajudam a manter essa coleção viva e acessível.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/g1-amapa.jpg",
+          alt: "Arte sobre a matéria do G1 Amapá com imagens da reportagem e da Biblioteca de Zines",
+        },
       ],
       sourceUrl:
         "https://g1.globo.com/ap/amapa/noticia/2026/10/14/biblioteca-virtual-reune-mais-de-300-zines-gratuitos-e-amplia-acesso-a-producao-independente-no-ap.ghtml",
-      sourceLabel: "Ler matéria no g1",
+      sourceLabel: "Ler matéria no G1 Amapá",
+    },
+  },
+  {
+    slug: "visualizador-de-paginas-de-zines",
+    date: "2026-10-18",
+    kind: "site",
+    public: {
+      title: "Um novo jeito de ler as páginas das zines",
+      summary:
+        "A Biblioteca começou a testar um visualizador de páginas em beta, com uma leitura mais fluida e progressiva.",
+      body: [
+        "Os PDFs continuam sendo preservados como a representação original. O beta usa imagens das páginas para experimentar uma navegação com zoom, miniaturas e carregamento progressivo, mantendo o PDF disponível quando o processamento das páginas não estiver pronto.",
+        "A experiência será liberada gradualmente enquanto acompanhamos seu funcionamento em diferentes telas e com diferentes publicações.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/visualizador-paginas.svg",
+          alt: "Ilustração do visualizador de páginas da Biblioteca de Zines",
+        },
+      ],
     },
   },
   {
@@ -25,11 +53,53 @@ export const updates: Update[] = [
     public: {
       title: "Retrospectiva da Biblioteca de Zines",
       summary:
-        "Um ano de zines arquivados, eventos, colaborações e muita criatividade compartilhada.",
+        "Um ano de zines arquivadas, encontros, colaborações e muita criatividade compartilhada.",
       body: [
-        "Desde o primeiro zine arquivado até os primeiros eventos, a Biblioteca cresceu com uma comunidade incrível de zineiros, artistas, devs, designers, coletivos e pessoas apoiadoras.",
-        "A Biblioteca agradece a todas as pessoas que enviam zines, levam o projeto para eventos, divulgam o acervo, participam do Clube de Zines e ajudam a colocar mais zines no mundo.",
-        "Novos projetos, textos, artes, materiais gratuitos, oficinas e melhorias para o site continuam chegando.",
+        "A Biblioteca cresceu com a participação de zineiros, artistas, pessoas desenvolvedoras, designers, coletivos e apoiadores. Cada zine enviada, atividade compartilhada e conversa ajudou a construir o acervo.",
+        "A retrospectiva reúne alguns momentos de 2024 e 2025: publicações, eventos, materiais gratuitos e projetos que ajudaram a colocar mais zines em circulação.",
+        "A Biblioteca agradece a todas as pessoas que fazem, enviam, leem, divulgam e ajudam a cuidar das zines.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/retrospectiva-images/retrospectiva-2024-2025-biblioteca-de-zines-1.jpg",
+          alt: "Imagem 1 da retrospectiva da Biblioteca de Zines de 2024 e 2025",
+        },
+        {
+          kind: "image",
+          src: "/novidades/retrospectiva-images/retrospectiva-2024-2025-biblioteca-de-zines-2.jpg",
+          alt: "Imagem 2 da retrospectiva da Biblioteca de Zines de 2024 e 2025",
+        },
+        {
+          kind: "image",
+          src: "/novidades/retrospectiva-images/retrospectiva-2024-2025-biblioteca-de-zines-3.jpg",
+          alt: "Imagem 3 da retrospectiva da Biblioteca de Zines de 2024 e 2025",
+        },
+        {
+          kind: "image",
+          src: "/novidades/retrospectiva-images/retrospectiva-2024-2025-biblioteca-de-zines-4.jpg",
+          alt: "Imagem 4 da retrospectiva da Biblioteca de Zines de 2024 e 2025",
+        },
+        {
+          kind: "image",
+          src: "/novidades/retrospectiva-images/retrospectiva-2024-2025-biblioteca-de-zines-5.jpg",
+          alt: "Imagem 5 da retrospectiva da Biblioteca de Zines de 2024 e 2025",
+        },
+        {
+          kind: "image",
+          src: "/novidades/retrospectiva-images/retrospectiva-2024-2025-biblioteca-de-zines-6.jpg",
+          alt: "Imagem 6 da retrospectiva da Biblioteca de Zines de 2024 e 2025",
+        },
+        {
+          kind: "image",
+          src: "/novidades/retrospectiva-images/retrospectiva-2024-2025-biblioteca-de-zines-7.jpg",
+          alt: "Imagem 7 da retrospectiva da Biblioteca de Zines de 2024 e 2025",
+        },
+        {
+          kind: "image",
+          src: "/novidades/retrospectiva-images/retrospectiva-2024-2025-biblioteca-de-zines-8.jpg",
+          alt: "Imagem 8 da retrospectiva da Biblioteca de Zines de 2024 e 2025",
+        },
       ],
       sourceUrl: "https://www.instagram.com/p/DShdbKfjmG7/?img_index=1",
       sourceLabel: "Ver retrospectiva no Instagram",
@@ -42,33 +112,49 @@ export const updates: Update[] = [
     public: {
       title: "Uma oficina de fanzines na UEAP",
       summary:
-        "A Biblioteca participou de uma apresentação sobre fanzines para uma turma de Letras da Universidade Estadual do Amapá.",
+        "Uma apresentação sobre fanzines para uma turma de Letras da Universidade Estadual do Amapá virou também um encontro de criação, troca e circulação de zines.",
       body: [
-        "A atividade foi um convite da professora Jeniffer Yara e contou com uma apresentação sobre a Biblioteca, um momento de criação de zines e uma dobra simples de mini zine.",
-        "O acervo físico foi levado para a turma, junto com materiais de coletivos e zines para conhecer, compartilhar e inspirar novas produções independentes.",
-        "Também foram distribuídas cópias gratuitas de zines sobre fanzines e sobre a própria Biblioteca. A experiência abriu mais uma conversa sobre criação, circulação e apoio à produção independente.",
+        "A atividade foi um convite da professora doutora Jeniffer Yara, da UEAP, e começou com uma apresentação de Luana Góes, idealizadora da Biblioteca de Zines, sobre fanzines e produção independente.",
+        "Depois da conversa, a turma criou suas próprias zines. Luana também ensinou uma dobra simples de minizine, apresentou o acervo físico da Biblioteca e compartilhou materiais de coletivos e artistas independentes, como o Coletivo Ventos do Norte e Cabelo Nuvem.",
+        "A atividade promoveu a troca de referências, a distribuição de zines e uma conversa sobre criação, circulação e apoio à produção independente.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/luana-biblioteca-ueap.jpg",
+          alt: "Luana Góes apresenta zines para uma turma da UEAP",
+        },
       ],
       sourceUrl: "https://www.instagram.com/p/DRmrdOIABnV/?img_index=1",
       sourceLabel: "Ver relato da oficina no Instagram",
     },
   },
   {
-    slug: "visualizador-de-paginas-de-zines",
-    date: "2026-10-18",
+    slug: "nova-versao-do-site",
+    date: "2025-10-04",
     kind: "site",
+    historic: true,
     public: {
-      title: "O novo visualizador de páginas entrou em fase beta",
+      title: "A Biblioteca ganhou uma nova versão do site",
       summary:
-        "A Biblioteca começou a testar uma nova experiência para ler as páginas das zines com mais fluidez.",
+        "Uma nova versão do site reuniu o acervo, uma indicação de zine, a seção de notícias e um espaço para o Clube de Zines.",
       body: [
-        "Os PDFs continuam sendo preservados como a representação original. O beta usa imagens das páginas para testar uma navegação mais progressiva, com zoom, miniaturas e uma alternativa clara quando o processamento não estiver disponível.",
-        "A experiência será liberada gradualmente enquanto a Biblioteca acompanha desempenho, acessibilidade, segurança e recuperação.",
+        "A Biblioteca passou a ter uma nova página inicial, com mais caminhos para descobrir zines e acompanhar o que está acontecendo no projeto.",
+        "A nova versão também abriu espaço para apresentar o Clube de Zines e compartilhar novidades da comunidade.",
+        "Leia, explore, faça zines.",
+      ],
+      media: [
+        {
+          kind: "video",
+          src: "/novidades/site-nova-versao.mp4",
+          alt: "Vídeo de apresentação da nova versão do site",
+        },
       ],
     },
   },
   {
     slug: "cuidado-e-inventario-do-acervo",
-    date: "2026-09-23",
+    date: "2026-09-13",
     kind: "site",
     historic: true,
     public: {
@@ -76,8 +162,20 @@ export const updates: Update[] = [
       summary:
         "A Biblioteca passou a acompanhar de forma mais repetível os arquivos, registros e fontes que mantêm o acervo acessível.",
       body: [
-        "Inventários e verificações ajudam a perceber quando o catálogo, uma fonte externa e uma cópia local deixaram de contar a mesma história.",
+        "Inventários e verificações ajudam a perceber quando o catálogo, uma fonte externa e uma cópia local deixam de contar a mesma história.",
         "Esse trabalho não muda o que está disponível agora, mas cria uma forma melhor de investigar links quebrados, arquivos ausentes e mudanças no acervo antes que elas se percam.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/monitor-recursos-1.png",
+          alt: "Tela de monitoramento de recursos publicados da Biblioteca de Zines",
+        },
+        {
+          kind: "image",
+          src: "/novidades/monitor-recursos-2.png",
+          alt: "Relatório de observação dos recursos do acervo",
+        },
       ],
     },
   },
@@ -91,8 +189,25 @@ export const updates: Update[] = [
       summary:
         "Agora é possível conhecer as pessoas e coletivos do acervo e encontrar as zines relacionadas a cada autoria.",
       body: [
-        "As páginas reúnem links de apoio, plataformas reconhecidas e previews quando há informações suficientes para apresentá-los com segurança.",
-        "A listagem também ganhou paginação para continuar navegável conforme a coleção cresce.",
+        "Cada página reúne as zines publicadas por uma pessoa autora ou coletivo em um só lugar, facilitando o compartilhamento e a leitura de diferentes trabalhos.",
+        "A funcionalidade ainda está em desenvolvimento. A ideia é continuar melhorando essas páginas com a participação de quem faz parte da comunidade.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/pagina-de-autor-1.jpg",
+          alt: "Apresentação das páginas de autor da Biblioteca de Zines",
+        },
+        {
+          kind: "image",
+          src: "/novidades/pagina-de-autor-2.jpg",
+          alt: "Exemplo de uma página de autor com zines publicadas",
+        },
+        {
+          kind: "image",
+          src: "/novidades/pagina-de-autor-3.jpg",
+          alt: "Exemplo de uma página de autor em uma tela de celular",
+        },
       ],
     },
   },
@@ -104,9 +219,17 @@ export const updates: Update[] = [
     public: {
       title: "O acervo ganhou categorias e filtros",
       summary:
-        "Novas categorias, badges e filtros ajudam a descobrir publicações por diferentes caminhos.",
+        "Categorias, etiquetas e filtros ajudam a descobrir publicações por diferentes caminhos.",
       body: [
-        "A organização do catálogo continua sendo construída para facilitar a descoberta sem reduzir a diversidade das zines a uma única classificação.",
+        "A organização do catálogo foi ampliada para facilitar a descoberta sem reduzir a diversidade das zines a uma única classificação.",
+        "É possível combinar busca, ano e categorias para encontrar publicações por assuntos e interesses diferentes.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/categorias-e-filtros.png",
+          alt: "Tela do acervo com filtros por ano e categorias",
+        },
       ],
     },
   },
@@ -116,26 +239,67 @@ export const updates: Update[] = [
     kind: "site",
     historic: true,
     public: {
-      title: "Enviar um zine ficou mais simples",
+      title: "Enviar uma zine ficou mais simples",
       summary:
         "A Biblioteca passou a receber submissões diretamente pelo próprio site.",
       body: [
         "O formulário organiza as informações da zine, valida os dados e encaminha a submissão para revisão da equipe.",
+        "Essa mudança substituiu o envio por Google Forms e aproximou o processo de submissão do catálogo e do painel de revisão.",
+      ],
+      media: [
+        {
+          kind: "video",
+          src: "/novidades/formulario-de-submissao.mp4",
+          alt: "Vídeo de apresentação do formulário de submissão",
+        },
       ],
     },
   },
   {
-    slug: "catalogo-de-zines-e-autores",
-    date: "2025-01-23",
+    slug: "painel-de-revisao-do-acervo",
+    date: "2025-03-01",
     kind: "site",
     historic: true,
     public: {
-      title: "O catálogo começou a tomar forma",
+      title: "Um painel para cuidar das zines recebidas",
       summary:
-        "A Biblioteca passou a organizar zines, autorias, publicação e administração em um catálogo próprio.",
+        "A Biblioteca criou um painel interno para que mantenedoras e pessoas revisoras acompanhem, editem e publiquem as submissões do acervo.",
       body: [
-        "Essa base tornou possível cuidar do acervo como uma coleção viva, em vez de apenas reunir links soltos. Zines, pessoas autoras, publicações e o estado de revisão passaram a ter lugares próprios no catálogo.",
+        "Nos primeiros meses do projeto, a Biblioteca passou a organizar as zines recebidas em um painel próprio. A ferramenta reúne as informações enviadas, os links dos arquivos e o estado de cada submissão.",
+        "Com esse painel, a equipe consegue revisar os dados, fazer ajustes quando necessário e publicar as zines no catálogo com mais clareza e cuidado.",
+        "Esse trabalho de bastidor ajuda a transformar cada envio em uma publicação acessível para quem lê e pesquisa zines independentes.",
       ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/catalogo-revisao-dashboard.png",
+          alt: "Painel interno de revisão das zines recebidas pela Biblioteca",
+        },
+      ],
+    },
+  },
+  {
+    slug: "mes-internacional-de-zines",
+    date: "2026-07-01",
+    kind: "community",
+    public: {
+      title: "Julho é o Mês Internacional da Zine",
+      summary:
+        "Para celebrar o International Zine Month, a Biblioteca preparou um template de minizine para imprimir e preencher.",
+      body: [
+        "O International Zine Month reúne celebrações e propostas de criação em diferentes lugares. A Biblioteca entrou na brincadeira com um template simples para quem quiser fazer uma minizine no papel.",
+        "Imprima, preencha, dobre e compartilhe a sua criação. Zines também são uma forma de experimentar, trocar ideias e colocar trabalhos em circulação.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/mes-internacional-zines.webp",
+          alt: "Cartaz do Mês Internacional da Zine de julho de 2026",
+        },
+      ],
+      sourceUrl:
+        "https://drive.google.com/file/d/1ka2nroNuvwskiyUxHvUSfxP1EIImAF0y/view",
+      sourceLabel: "Baixar o template de minizine",
     },
   },
   {
@@ -144,12 +308,23 @@ export const updates: Update[] = [
     kind: "community",
     historic: true,
     public: {
-      title: "Nasce a Biblioteca de Zines",
+      title: "Bem-vindas à Biblioteca de Zines",
       summary:
-        "O projeto começa como uma coleção digital colaborativa e de código aberto para zines independentes.",
+        "A Biblioteca começou como uma coleção digital colaborativa e de código aberto para zines independentes do Brasil.",
       body: [
-        "Desde o início, a Biblioteca existe para ampliar o acesso à produção independente e cuidar de um acervo construído com a comunidade.",
+        "A Biblioteca nasceu para arquivar e compartilhar zines brasileiras. O projeto é gratuito, colaborativo e aberto a pessoas que queiram ler, fazer, enviar ou ajudar a cuidar do acervo.",
+        "A ideia começou pequena e cresceu com a colaboração de uma comunidade que ajudou a transformar o projeto em um espaço para descobrir e celebrar zines independentes.",
+        "Explore, leia, divulgue e, mais importante, faça zines.",
       ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/bem-vindo-biblioteca.webp",
+          alt: "Cartaz de apresentação da Biblioteca de Zines",
+        },
+      ],
+      sourceUrl: "https://www.biblioteca-de-zines.com.br/",
+      sourceLabel: "Visitar a Biblioteca de Zines",
     },
   },
 ];
