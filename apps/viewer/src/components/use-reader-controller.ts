@@ -49,7 +49,9 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
         await loadBookReaderRuntime();
         if (disposed) return;
         session = createReaderSession({ fallback: parsed.fallback, initialPage: page, manifest: parsed.manifest }, createBookReaderRenderer(undefined, { mode, page }));
-        const unsubscribe = session.subscribe((next) => setState(next.status));
+        const unsubscribe = session.subscribe((next) => {
+          setState(next.status);
+        });
         if (!target.current) {
           session.destroy();
           return;

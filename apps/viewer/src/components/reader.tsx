@@ -1,24 +1,35 @@
 'use client';
 
-import type { ReaderBranding, ReaderDeliveryMode, ReaderEmbedConfiguration, ReaderFallbackLink } from '@biblioteca-de-zines/reader';
-import { useReaderController } from './use-reader-controller';
-import type { ReaderViewMode } from '@/application/reader-types';
 import type { CSSProperties } from 'react';
-
-type ReaderProps = { branding?: ReaderBranding; mode?: ReaderViewMode; page?: number; slug: string; surface: ReaderDeliveryMode; theme?: ReaderEmbedConfiguration };
-const BIBLIOTECA_LOGO_URL = 'https://biblioteca-de-zines.com.br/logo.png';
+import { useReaderController } from './use-reader-controller';
+import { ReaderHeader, ReaderBrand } from './reader-content';
+import { BIBLIOTECA_LOGO_URL } from './reader-config';
+import type { ReaderProps } from './reader-component-types';
 
 export function Reader({ slug, surface, branding = 'none', theme, mode = '2up', page = 1 }: ReaderProps) {
   const { fallback, publication, state, target } = useReaderController({ mode, page, slug, surface });
+  const title = publication?.title ?? slug;
+  const style = theme ? { '--reader-background': theme.background, '--reader-text': theme.text } as CSSProperties : undefined;
 
-  if (state === 'fallback') return <Fallback branding={branding} fallback={fallback} surface={surface} theme={theme} title={publication?.title ?? slug} />;
-  return <main className={`reader${surface === 'embed' ? ' reader--embed' : ''}`} style={theme ? { '--reader-background': theme.background, '--reader-text': theme.text } as CSSProperties : undefined}>{branding === 'biblioteca' && <ReaderBrand logoUrl={BIBLIOTECA_LOGO_URL} />} {state === 'loading' && <p aria-live="polite" className="reader__loading">Carregando leitor...</p>}<div aria-label={`Leitor de ${publication?.title ?? slug}`} className="reader__canvas" ref={target} /></main>;
-}
-
-function Fallback({ branding, fallback, surface, theme, title }: { branding: ReaderBranding; fallback: ReaderFallbackLink; surface: ReaderDeliveryMode; theme?: ReaderEmbedConfiguration; title: string }) {
-  return <main className={`reader${surface === 'embed' ? ' reader--embed' : ''}`} style={theme ? { '--reader-background': theme.background, '--reader-text': theme.text } as CSSProperties : undefined}>{branding === 'biblioteca' && <ReaderBrand logoUrl={BIBLIOTECA_LOGO_URL} />}<section className="reader__fallback"><p role="alert">A leitura em páginas não pôde ser carregada.</p>{fallback.url ? <a href={fallback.url} rel="noreferrer">{fallback.label}: {title}</a> : <p>O PDF original não está disponível.</p>}</section></main>;
-}
-
-function ReaderBrand({ logoUrl }: { logoUrl: string }) {
-  return <header className="reader__brand"><img alt="Biblioteca de Zines" src={logoUrl} /></header>;
+  return (
+    <main className={`reader${surface === 'embed' ? ' reader--embed' : ''}`} style={style}>
+      {surface === 'standalone' ? <ReaderHeader branding={branding} pdfUrl={fallback.url} title={title} /> : branding === 'biblioteca' && <header className="reader__brand"><ReaderBrand logoUrl={BIBLIOTECA_LOGO_URL} /></header>}
+      <section className="reader__workspace">
+        <div className="reader__stage">
+          <div aria-label={`Leitura digital de ${title}`} className="reader__canvas" ref={target} />
+          {state === 'loading' && <div aria-live="polite" className="reader__status"><span className="reader__spinner" />Carregando leitor...</div>}
+          {state === 'fallback' && (
+            <div className="reader__fallback" role="alert">
+              <span className="reader__fallbackMark">!</span>
+              <div>
+                <p className="reader__fallbackTitle">A leitura em páginas não pôde ser carregada.</p>
+                <p className="reader__fallbackText">Você ainda pode abrir o arquivo original para continuar a leitura.</p>
+                {fallback.url ? <a className="reader__fallbackLink" href={fallback.url} rel="noreferrer" target="_blank">{fallback.label}</a> : <span className="reader__fallbackText">O PDF original não está disponível.</span>}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
+  );
 }

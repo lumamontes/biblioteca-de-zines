@@ -51,3 +51,8 @@ export function getPreviewUrl(url: string){
   }
   return url;
 }
+
+export function getDownloadUrl(url: string) {
+  const fileId = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/)?.[1];
+  return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : url;
+}

@@ -1,7 +1,7 @@
 import PDFViewer from "@/components/pdf-viewer";
 import CategoryBadgeWithLink from "@/components/zine-card/category-badge-with-link";
 import { getZineSlugResolution } from "@/services/zine-service";
-import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
+import { getDownloadUrl, getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { getSlugZineMetadata } from "@/utils/metadata";
 import { joinAuthors, getZineCategories } from "@/utils/utils";
 import { siteConfig } from "@/app/config/site";
@@ -42,10 +42,12 @@ export async function generateMetadata({
 
 export default async function ZinePreview({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ view?: string }>;
 }) {
-  const { slug } = await params;
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
 
   const resolution = await getCachedZineSlugResolution(slug);
   const preview = resolution?.zine;
@@ -62,8 +64,10 @@ export default async function ZinePreview({
   if (resolution?.isAlias) permanentRedirect(`/zines/${preview.slug ?? slug}`);
 
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
+  const downloadUrl = preview.pdf_url ? getDownloadUrl(preview.pdf_url) : "";
   const reader = await getViewerReader(preview.slug ?? slug, createViewerRolloutConfig(process.env), "embed").catch(() => null);
   const readingSurface = createZineReadingSurface({
+    pdfDownloadUrl: downloadUrl,
     pdfUrl: previewUrl,
     title: preview.title,
     viewerOrigin: process.env.READER_VIEWER_ORIGIN,
@@ -103,9 +107,9 @@ export default async function ZinePreview({
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
           {hasBetaReadingSurface(readingSurface) ? (
-            <ZineReaderOptions surface={readingSurface} />
+            <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} surface={readingSurface} />
           ) : (
-            <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
+            <div className="bg-neutral-500 w-full h-screen max-w-4xl mx-auto overflow-hidden">
               <PDFViewer url={previewUrl} />
             </div>
           )}

@@ -26,9 +26,14 @@ test('creates a beta reading surface from an available canonical reader', () => 
     viewerOrigin: 'http://localhost:4100',
     reader: readyReader,
   }), {
+    pdfDownloadUrl: 'https://assets.example/zine.pdf',
     pdfUrl: 'https://assets.example/zine.pdf',
     title: 'Zine',
-    beta: { embedUrl: 'http://localhost:4100/embed/v1/canonical-zine', pageCount: 2 },
+    beta: {
+      embedUrl: 'http://localhost:4100/embed/v1/canonical-zine',
+      viewerUrl: 'http://localhost:4100/viewer/v1/canonical-zine',
+      pageCount: 2,
+    },
   });
 });
 

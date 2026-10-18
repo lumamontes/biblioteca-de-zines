@@ -7,6 +7,7 @@ export type BookReaderOptions = {
   defaults: string;
   enablePageResume: false;
   el: string;
+  imagesBaseURL: string;
   showLogo: false;
   showToolbar: true;
   ui: 'responsive';
@@ -20,6 +21,7 @@ export function createBookReaderOptions(targetId: string, manifest: ReaderPageMa
     defaults: `page/n${page - 1}/mode/${mode}`,
     enablePageResume: false,
     el: `#${targetId}`,
+    imagesBaseURL: 'https://cdn.jsdelivr.net/npm/@internetarchive/bookreader@5.0.0-87/BookReader/images/',
     showLogo: false,
     showToolbar: true,
     ui: 'responsive',
