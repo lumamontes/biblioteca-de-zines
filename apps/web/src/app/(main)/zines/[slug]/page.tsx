@@ -102,7 +102,7 @@ export default async function ZinePreview({
           {hasBetaReadingSurface(readingSurface) ? (
             <ZineReaderOptions initialMode="pdf" surface={readingSurface} />
           ) : (
-            <div className="bg-neutral-500 w-full h-screen max-w-4xl mx-auto overflow-hidden">
+            <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
               <PDFViewer url={previewUrl} />
             </div>
           )}
