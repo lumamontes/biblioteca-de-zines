@@ -1,14 +1,13 @@
-import { readLinkMetadata } from "@/infrastructure/source-acquisition/link-metadata-reader";
+import type { LinkMetadata } from "@/infrastructure/source-acquisition/link-metadata-types";
 import { MediaMentionCard } from "@/components/media-mention";
 import { ExternalLink } from "./external-link";
 
 interface AuthorLinkPreviewProps {
   href: string;
+  metadata: LinkMetadata;
 }
 
-export async function AuthorLinkPreview({ href }: AuthorLinkPreviewProps) {
-  const metadata = await readLinkMetadata(href);
-
+export function AuthorLinkPreview({ href, metadata }: AuthorLinkPreviewProps) {
   if (!metadata.hasPreview) return <ExternalLink href={href} />;
 
   return <MediaMentionCard url={href} type="article" metadata={metadata} />;
