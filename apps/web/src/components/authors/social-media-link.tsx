@@ -1,6 +1,5 @@
 import {
   Code2,
-  Cloud,
   Facebook,
   Gamepad2,
   Github,
@@ -15,9 +14,9 @@ import {
   Network,
   Podcast,
   Coffee,
-  X,
   Youtube,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { SocialPlatform } from "./author-link-types";
 
@@ -26,10 +25,10 @@ interface SocialMediaLinkProps {
   platform: SocialPlatform;
 }
 
-const SOCIAL_MEDIA: Record<SocialPlatform, { label: string; Icon: LucideIcon }> = {
+const SOCIAL_MEDIA: Record<SocialPlatform, { label: string; Icon?: LucideIcon; image?: string }> = {
   "apoia-se": { label: "Apoiar no Apoia.se", Icon: Coffee },
   bandcamp: { label: "Ver Bandcamp", Icon: Music },
-  bluesky: { label: "Ver Bluesky", Icon: Cloud },
+  bluesky: { label: "Ver Bluesky", image: "/social/bluesky.png" },
   "buy-me-a-coffee": { label: "Apoiar no Buy Me a Coffee", Icon: Coffee },
   catarse: { label: "Apoiar no Catarse", Icon: Coffee },
   codeberg: { label: "Ver Codeberg", Icon: GitBranch },
@@ -49,13 +48,13 @@ const SOCIAL_MEDIA: Record<SocialPlatform, { label: string; Icon: LucideIcon }> 
   paypal: { label: "Apoiar pelo PayPal", Icon: Coffee },
   sourcehut: { label: "Ver SourceHut", Icon: GitBranch },
   substack: { label: "Ver Substack", Icon: Mail },
-  twitter: { label: "Ver X", Icon: X },
+  twitter: { label: "Ver Twitter (X)", image: "/social/twitter.svg" },
   vakinha: { label: "Apoiar na Vakinha", Icon: Coffee },
   youtube: { label: "Ver YouTube", Icon: Youtube },
 };
 
 export function SocialMediaLink({ href, platform }: SocialMediaLinkProps) {
-  const { label, Icon } = SOCIAL_MEDIA[platform];
+  const { label, Icon, image } = SOCIAL_MEDIA[platform];
 
   return (
     <Link
@@ -64,7 +63,11 @@ export function SocialMediaLink({ href, platform }: SocialMediaLinkProps) {
       rel="noopener noreferrer"
       className="inline-flex items-center gap-2 border border-black px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-100"
     >
-      <Icon className="h-4 w-4" aria-hidden="true" />
+      {image ? (
+        <Image src={image} alt="" width={16} height={16} className="h-4 w-4 object-contain" />
+      ) : Icon ? (
+        <Icon className="h-4 w-4" aria-hidden="true" />
+      ) : null}
       {label}
     </Link>
   );
