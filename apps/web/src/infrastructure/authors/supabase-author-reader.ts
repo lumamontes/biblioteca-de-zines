@@ -47,7 +47,7 @@ export function createSupabaseAuthorReader(supabase: SupabaseClient<Database>) {
       }
 
       const authorIds = Array.from(publishedZinesByAuthor.entries())
-        .filter(([, zineIds]) => zineIds.size > 1)
+        .filter(([, zineIds]) => zineIds.size > 0)
         .map(([authorId]) => authorId);
 
       if (authorIds.length === 0) return [];
