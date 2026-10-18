@@ -1,33 +1,58 @@
-# Cover-Only Processing at Publication
+# Processar somente a capa na publicação
 
-## Context
+**Decisão histórica. Substituída como fluxo principal por [14-viewer-release-and-page-derivatives](./14-viewer-release-and-page-derivatives.md).**
 
-The current public reader uses Google Drive's PDF preview. The catalogue needs a reliable cover when a submission has no usable cover image, but it does not currently need locally hosted page images. Rendering every PDF page during publication would add unnecessary source downloads, compute, storage, and cleanup for a capability the reader does not use.
+## Contexto
 
-## Decision
+Antes do viewer, a Biblioteca usava o preview de PDF do Google Drive. O catálogo
+precisava de uma capa confiável quando a submissão não possuía uma imagem válida,
+mas ainda não utilizava páginas hospedadas pela própria Biblioteca.
 
-The current publication processing workflow renders only the first PDF page and stores one optimized WebP cover derivative in the public R2 bucket.
+Processar somente a primeira página era uma forma menor e mais barata de
+melhorar as capas enquanto o reader completo ainda não estava disponível.
 
-- A generated cover is stored under the publication's immutable cover-generation namespace.
-- A valid external or manually supplied cover remains authoritative.
-- Empty, known-placeholder, or unreachable covers may be replaced when the source PDF is usable.
-- The existing processed PDF source marker identifies which source produced the active generated cover.
-- An unchanged source and complete generated cover are reused across unpublish/republish cycles.
-- A changed source creates a new generated cover only when the active cover is generated; valid external covers are preserved.
-- Full PDF-to-image rendering remains reusable infrastructure for a future page-generation workflow and is not invoked by current cover processing.
+## Decisão
 
-## Consequences
+Durante essa etapa intermediária, decidimos gerar apenas uma capa WebP a partir
+da primeira página do PDF.
 
-Positive consequences:
+- Uma capa enviada e válida permanecia como referência principal.
+- Uma capa vazia, placeholder ou inacessível podia ser substituída.
+- A geração usava um namespace imutável no R2.
+- A capa nova era armazenada antes da atualização do registro do catálogo.
+- Uma falha não substituía a capa anterior.
+- O mesmo PDF e uma geração completa podiam ser reutilizados.
+- A geração completa de páginas ficava separada para o futuro reader.
 
-- Cover generation is materially cheaper than rendering every page.
-- The current reader remains unchanged.
-- Generated covers are optimized for web delivery and can be cached immutably.
-- Unreviewed submissions create no derivatives.
-- Existing full-page rendering capability is preserved without coupling it to current publication behavior.
+## Alternativas Consideradas
 
-Tradeoffs:
+### Processar todas as páginas imediatamente
 
-- The catalogue cover may differ from the Google Drive preview's first-page rendering details.
-- A generated cover must be regenerated when its source PDF changes.
-- Cover migration needs source-health evidence and careful invalid-cover detection.
+Naquele momento, isso adicionaria downloads, computação, storage e limpeza para
+uma capacidade que o reader ainda não consumia.
+
+### Manter somente o placeholder
+
+Seria mais simples, mas não aproveitaria a primeira página de PDFs que já
+estavam disponíveis e prejudicaria a identificação visual das publicações.
+
+## Justificativa
+
+O fluxo cover-only era uma etapa intermediária pequena, reversível e barata. Ele
+melhorava a descoberta do catálogo sem fingir que uma capa era uma cópia de
+preservação ou um reader completo.
+
+## Consequências
+
+- A Biblioteca passou a ter capas geradas e otimizadas para web.
+- O processamento completo de páginas permaneceu como infraestrutura separada.
+- O reader antigo continuou dependendo do preview externo.
+- A migração de capas existentes pode continuar usando este fluxo legado.
+- O viewer atual deve seguir a especificação de gerações completas, não esta
+  decisão histórica.
+
+## Links
+
+- [Geração e migração histórica de capas](../specs/cover-only-generation-and-migration.md)
+- [Release do viewer e imagens das páginas](./14-viewer-release-and-page-derivatives.md)
+- [Internet Archive BookReader](https://github.com/internetarchive/bookreader)

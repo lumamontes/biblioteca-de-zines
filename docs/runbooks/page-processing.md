@@ -1,6 +1,6 @@
 # Page Processing Runbook
 
-This runbook covers local cover migrations, queue processing, verification, and recovery. Full page derivatives are a future capability.
+This runbook covers local page-generation backfills, queue processing, verification, and recovery.
 
 ## Storage Configuration
 
@@ -16,7 +16,9 @@ NEXT_PUBLIC_R2_PUBLIC_URL=https://assets.biblioteca-de-zines.com.br
 
 Never commit credentials. The old `biblioteca-de-zines` bucket is not part of the active processing path.
 
-`form_uploads` do not create page derivatives. Processing starts when a submission becomes a `library_zine`.
+`form_uploads` do not create public page derivatives. Processing starts when a
+submission becomes an approved `library_zine`. Direct-upload intake is a later
+version and will have a separate private temporary-upload lifecycle.
 
 ## Database Migrations
 
@@ -28,15 +30,28 @@ supabase db push
 
 Relevant migrations:
 
-- `20251226002136_addZinePagesAndImportFields.sql`: retained future zine page/import fields.
+- `20251226002136_addZinePagesAndImportFields.sql`: initial zine page/import fields, now active for viewer delivery.
 - `20261011000000_addZineProcessingJobs.sql`: generation-aware publication pages and processing queue.
 - `20261011010000_addFormUploadPageProcessing.sql`: historical form-upload processing state and staging pages.
 - `20261012000000_removeLegacyFormUploadPages.sql`: removes the unused form-upload processing state and staging table.
 - `20261011020000_addProcessedZineSource.sql`: records the PDF URL used by the active public generation.
+- `20261012010000_addZinePageDimensions.sql`: stores the dimensions required by the reader manifest.
+- `20261012020000_activateZinePageGeneration.sql`: validates and atomically activates a complete generation.
+- `20261012030000_removeLegacyFormUploadPages.sql`: removes the superseded intake-side page staging model.
 
 Never edit an applied migration. Add a new timestamped migration for every later schema change.
 
 ## Explicit Published-Zine Processing
+
+Full page-generation backfill is dry-run by default:
+
+```bash
+pnpm migrate:pdf-pages -- --only-id <zine_id>
+pnpm migrate:pdf-pages -- --only-id <zine_id> --apply
+pnpm migrate:pdf-pages -- --apply --report /path/to/resource-report.json
+```
+
+Only published zines with a PDF and no complete active page generation are candidates. Known inaccessible or invalid PDF resources from the monitor report are excluded. A failed candidate does not stop subsequent candidates, and failed partial generations are removed before the command exits non-zero.
 
 Dry run one published zine:
 
@@ -50,13 +65,24 @@ Apply processing:
 pnpm migrate:pdf-covers -- --only-id <zine_id> --apply
 ```
 
-Apply all eligible published-zine covers after reviewing the dry run:
+Apply eligible published-zine cover migrations or repairs after reviewing the dry run:
 
 ```bash
 pnpm migrate:pdf-covers -- --apply
 ```
 
-The command downloads the current source, renders only the first page into an optimized WebP cover, and records the processed PDF source and processing status.
+The cover command is a focused cover migration/repair operation: it downloads
+the current source, renders the first page into an optimized WebP cover when no
+page generation exists, and records the processed PDF source and processing
+status. When a complete page generation exists, it reads page 1 from that
+generation and optimizes only the cover. It does not rerender pages.
+
+To repair one unreachable external cover while keeping an existing complete
+page generation, use:
+
+```bash
+pnpm migrate:pdf-covers -- --only-id <zine_id> --apply
+```
 
 To render only the first page of an existing intake PDF locally, without changing the database or uploading an asset:
 
@@ -95,7 +121,7 @@ from library_zines
 where id = <zine_id>;
 ```
 
-Future page-derivative verification:
+Active page-derivative verification:
 
 ```sql
 select generation_id, page_number, image_url
@@ -106,19 +132,21 @@ order by generation_id, page_number;
 
 ## Safe Reprocessing Rules
 
-- Same source URL and complete generated cover: reuse; do not rerender.
-- Changed source URL and generated fallback cover: create a new cover generation.
-- Missing or incomplete generated cover: regenerate.
+- Same source URL and complete active page generation: reuse; do not rerender.
+- Changed source URL: create a new complete page and cover generation.
+- Missing or incomplete active page generation: regenerate.
 - Metadata-only edit: do not process.
 - Keep the current successful generation until its replacement is verified.
-- Delete old generated cover objects only after the new cover is active.
+- Delete old page and cover objects only after the new generation is active.
 
 ## Cover Verification
 
-- A provided cover URL must remain unchanged.
-- An empty cover uses the first PDF page as the default.
-- A PDF change regenerates a generated fallback cover.
-- A cover-only edit does not rerender the PDF.
+- A valid existing cover URL remains unchanged for compatibility.
+- An empty or placeholder cover uses the first PDF page as the generated cover.
+- A PDF change creates a new complete page generation and cover.
+- A metadata-only edit does not rerender the PDF.
+- Legacy cover-only migration must not be used as a substitute for a complete
+  viewer page generation.
 
 ## Troubleshooting
 

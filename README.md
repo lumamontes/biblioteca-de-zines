@@ -68,15 +68,41 @@ de rede para esses registros.
 
 ### Como rodar
 
-Você precisa de um arquivo `.env` na raiz do projeto com todas as variáveis necessárias — use como base o arquivo `.env-example`. Se você não tem acesso a essas variáveis, entre em contato com nosso time através do [nosso email](mailto:bibliotecadezines@gmail.com).
+O projeto é um monorepo com duas aplicações: o site e seus workers ficam em
+`apps/web`, enquanto o viewer isolado fica em `apps/viewer`.
 
-Para rodar o servidor de desenvolvimento, digite no terminal: 
+As variáveis de ambiente são separadas por aplicação. Para configurar o site e
+os workers, use `apps/web/.env.local` como base no arquivo
+`apps/web/env.example`. Para o viewer, use `apps/viewer/.env.local` como base
+em `apps/viewer/env.example`. O viewer deve receber somente as variáveis de
+que precisa para funcionar; não copie secrets do web para uma instalação de
+produção do viewer.
+
+Se você não tem acesso às variáveis necessárias, entre em contato com nosso
+time através do [nosso email](mailto:bibliotecadezines@gmail.com).
+
+Para rodar o site e o viewer juntos, digite no terminal:
+
+```bash
+pnpm dev:all
+```
+
+Abra [http://localhost:3000](http://localhost:3000) para ver o site e
+[http://localhost:4100](http://localhost:4100) para testar o viewer isolado.
+
+Se quiser rodar somente o site, use:
 
 ```bash
 pnpm dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000) com seu browser para ver o site funcionando.
+Os workers e scripts de processamento são executados a partir de `apps/web`,
+por exemplo:
+
+```bash
+pnpm process:pending-zines
+pnpm migrate:pdf-covers
+```
 
 ## Mantenedores
 

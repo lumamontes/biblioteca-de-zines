@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Inventario do acervo</title>
+  <desc id="desc">Catalogo, fontes externas e copias locais comparados em um inventario.</desc>
+  <rect width="1200" height="675" fill="#eef0ec"/>
+  <text x="72" y="88" fill="#171717" font-family="Arial,sans-serif" font-size="34" font-weight="700">Cuidar tambem e comparar</text>
+  <text x="72" y="125" fill="#555" font-family="Arial,sans-serif" font-size="20">O inventario cria uma fotografia verificavel do acervo em cada momento.</text>
+  <g transform="translate(80 215)">
+    <rect width="280" height="250" rx="10" fill="#171717"/>
+    <text x="32" y="60" fill="#fff" font-family="Arial,sans-serif" font-size="26" font-weight="700">Catalogo</text>
+    <path d="M32 100h200M32 140h150M32 180h180" stroke="#d6e4d4" stroke-width="14" stroke-linecap="round"/>
+    <text x="32" y="222" fill="#f6f1e8" font-family="Arial,sans-serif" font-size="17">registros publicos</text>
+  </g>
+  <g transform="translate(460 215)">
+    <rect width="280" height="250" rx="10" fill="#fff" stroke="#171717" stroke-width="5"/>
+    <text x="32" y="60" fill="#171717" font-family="Arial,sans-serif" font-size="26" font-weight="700">Fontes</text>
+    <circle cx="56" cy="125" r="22" fill="#9d6b4f"/><circle cx="140" cy="125" r="22" fill="#9d6b4f"/><circle cx="224" cy="125" r="22" fill="#9d6b4f"/>
+    <path d="M78 125h40M162 125h40" stroke="#171717" stroke-width="5"/>
+    <text x="32" y="205" fill="#555" font-family="Arial,sans-serif" font-size="17">URLs e arquivos observados</text>
+  </g>
+  <g transform="translate(840 215)">
+    <rect width="280" height="250" rx="10" fill="#d6e4d4" stroke="#171717" stroke-width="5"/>
+    <text x="32" y="60" fill="#171717" font-family="Arial,sans-serif" font-size="26" font-weight="700">Evidencias</text>
+    <path d="M38 112h204M38 150h204M38 188h130" stroke="#171717" stroke-width="12" stroke-linecap="round"/>
+    <text x="32" y="222" fill="#555" font-family="Arial,sans-serif" font-size="17">relatorios comparaveis</text>
+  </g>
+  <path d="M360 340h95M740 340h95" stroke="#171717" stroke-width="5" stroke-dasharray="10 10"/>
+  <text x="72" y="580" fill="#555" font-family="Arial,sans-serif" font-size="18">A linha de base ajuda a investigar mudancas antes que elas desaparecam.</text>
+</svg>

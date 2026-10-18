@@ -22,9 +22,29 @@ _Avoid_: Treating a form response as automatic consent, consensus, or representa
 A digital publication represented in the Biblioteca catalogue.
 _Avoid_: Item, resource
 
+**Reader zine**:
+A public Biblioteca zine represented for reading, with its catalogue identity and an access-filtered reading representation.
+_Avoid_: Generic publication, archive item
+
+**Reader fallback link**:
+A link to the PDF reading representation offered when the page-based reading representation is unavailable.
+_Avoid_: Original, page derivative
+
+**Reader delivery mode**:
+The way a reader zine is delivered to a person: as a standalone reader or inside an embedded frame.
+_Avoid_: Reader engine, access policy
+
 **Catalogue record**:
 The structured Biblioteca record that describes a zine, its publication state, authorship, links, and related metadata.
 _Avoid_: File, archive item
+
+**Canonical slug**:
+The current stable URL identifier assigned to a published catalogue record.
+_Avoid_: Treating an old URL identifier as the current canonical slug
+
+**Slug alias**:
+A historical URL identifier retained for a catalogue record after its canonical slug changes; it preserves discovery continuity but does not replace the canonical slug.
+_Avoid_: Treating an alias as a second current identity for the zine
 
 **Metadata field**:
 A named value describing a publication, agent, submission, asset, access decision, or provenance claim, with its source and visibility understood.
@@ -74,6 +94,10 @@ _Avoid_: Treating a role as a permanent identity category
 Facts about a file reference, local observation, derivative, or access condition that are kept distinct from the publication record.
 _Avoid_: Treating a URL as proof of custody or authorization
 
+**Source metadata observation**:
+A timestamped record of what Biblioteca observed about a specific acquired source or file asset, including acquisition evidence, technical properties, fixity, format identification, and extraction results. It is not the publication's authoritative metadata and does not by itself establish rights, authenticity, or preservation.
+_Avoid_: Treating extracted PDF metadata or a checksum as confirmed catalogue truth
+
 **Archive**:
 The collection of files and evidence retained for the continuity of the Biblioteca's catalogue and publications.
 _Avoid_: Backup, storage bucket
@@ -103,12 +127,20 @@ A file or representation produced from another publication file, such as a page 
 _Avoid_: Duplicate
 
 **Generated cover**:
-A web-ready derivative made from the first page of a PDF when a publication does not have a valid submitted cover image. It is a cover asset, not a replacement for the source PDF or the reader's PDF preview.
-_Avoid_: Treating the generated cover as a reading copy or as evidence that the PDF is preserved
+A web-ready derivative made from the first page of a PDF for catalogue delivery. It is part of a page generation when the viewer is active, or a standalone fallback for legacy cover migration. It is not a replacement for the source PDF or evidence that the PDF is preserved.
+_Avoid_: Treating the generated cover as a reading copy or as evidence of rights or custody
 
 **Cover-only processing**:
-The current processing workflow that downloads a publication's PDF, renders only its first page, optimizes that image, and stores it as the publication's cover derivative. Full PDF-to-image page generation is a reusable future capability, not part of the current cover workflow.
-_Avoid_: Calling cover-only processing page processing
+The historical compatibility workflow that downloads a publication's PDF, renders only its first page, optimizes that image, and stores it as the publication's cover derivative. It is not the active viewer processing path.
+_Avoid_: Calling legacy cover-only processing the current page-generation workflow
+
+**Page generation**:
+The target viewer workflow in the monorepo that downloads the PDF of an approved public publication, renders every page into immutable delivery derivatives, creates a cover fallback, and activates a complete ordered page manifest atomically. It is not yet the production workflow.
+_Avoid_: Treating page derivatives as the original file, rights evidence, or automatic permission to reuse the work
+
+**Direct-upload intake**:
+A deferred later-version workflow for private PDF uploads, technical inspection, editable metadata suggestions, and authorised-original handling. Uploading a file does not publish it or establish rights.
+_Avoid_: Treating extracted PDF metadata as confirmed catalogue truth
 
 ## Evidence and diagnosis
 
@@ -213,3 +245,23 @@ _Avoid_: Calling every PDF an original
 **Access state**:
 The current condition of one access dimension, such as public, restricted, unknown, or not established.
 _Avoid_: Treating one access state as the answer for every use
+
+## Editorial and project updates
+
+**External publication**: A text published through the Biblioteca's Substack and presented on the site as an external publication.
+_Avoid_: Treating every public text as a project update
+
+**News item**: A public editorial record about a Biblioteca activity, event, workshop, presentation, retrospective, collaboration, or other meaningful community milestone.
+_Avoid_: Treating a news item as a technical release note
+
+**Public update**: A user-facing explanation of a notable change to the Biblioteca website or project, written in accessible Portuguese and optionally including media.
+_Avoid_: Treating a public update as a copy of a pull request
+
+**Technical update**: A concise record of a notable project change for contributors, categorized in Portuguese and linked to one or more pull requests.
+_Avoid_: Treating a technical update as an uncurated commit log
+
+**Novidade**: The shared public concept for a news item or public update. The site exposes technical updates through the nerds view of the same novelty timeline.
+_Avoid_: Treating news and product updates as identical editorial records
+
+**Editorial source**: The original publication or platform URL from which an adapted public record was prepared, retained for provenance and attribution.
+_Avoid_: Treating public availability on another platform as automatic authorization for every reuse
