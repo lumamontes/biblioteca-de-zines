@@ -1,4 +1,4 @@
-# Uso de ADRs
+# Uso do pnpm como gerenciador de pacotes
 
 ## Contexto
 

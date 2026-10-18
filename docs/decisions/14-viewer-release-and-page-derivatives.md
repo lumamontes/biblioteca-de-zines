@@ -2,8 +2,8 @@
 
 **Substitui [12-cover-only-processing-at-publication](./12-cover-only-processing-at-publication.md) e atualiza o caminho definido em [13-internet-archive-bookreader-page-derivatives](./13-internet-archive-bookreader-page-derivatives.md).**
 
-Situação: decisão para a próxima versão do monorepo. Não descreve a produção
-publicada atualmente.
+Situação: implementada no monorepo. O viewer está deployável e habilitável para
+beta por flag; o rollout público continua pausado.
 
 ## Contexto
 
@@ -49,6 +49,8 @@ publicação pública aprovada
 - Submissões não publicadas não criam derivados públicos.
 - O viewer pode voltar para o PDF quando o processamento ou a entrega das
   páginas estiver indisponível.
+- O reader standalone usa `/p/:slug` e o embed usa `/embed/p/:slug`, sempre com o
+  slug canônico da publicação, nunca o ID interno.
 
 ## Limite da submissão atual
 
@@ -113,6 +115,8 @@ comunidade.
 ## Links
 
 - [Processamento de páginas e ciclo de vida de assets](../specs/page-processing-and-asset-lifecycle.md)
+- [Viewer e embed isolados](../specs/isolated-bookreader-viewer-and-embed.md)
+- [Operação do beta do viewer](../operations/bookreader-viewer-beta.md)
 - [Decisão sobre o BookReader](./13-internet-archive-bookreader-page-derivatives.md)
 - [Versão posterior de upload direto](../specs/direct-upload-and-metadata-intake.md)
 - [Rascunho da consulta comunitária](../biblioteca-community-consultation-draft.md)

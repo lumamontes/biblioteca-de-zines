@@ -39,16 +39,16 @@ entraram em `main`. Versões formais seguirão o
 
 ### Adicionado
 
-- **Estrutura proposta para um visualizador de páginas de zines independente**:
+- **Visualizador independente de páginas de zines**:
   depois das pesquisas sobre imagens das páginas do PDF, processamento assíncrono e
-  integração do BookReader, o ADR 14 registra uma proposta para separar o
+  integração do BookReader, o ADR 14 registra a decisão de separar o
   visualizador de páginas de zines do catálogo sem criar outro repositório. A
-  proposta preserva a aplicação de catálogo existente em `apps/web`, reserva
+  decisão preserva a aplicação de catálogo existente em `apps/web`, reserva
   `apps/viewer` para o runtime que exibirá as páginas geradas a partir dos PDFs e
   deixa contratos de `manifest`, API e configuração compartilhada em `packages/`
-  quando houver uma necessidade concreta. A proposta agora está implementada no
+  quando houver uma necessidade concreta. A decisão agora está implementada no
   monorepo e disponível em `main`, mas o visualizador continua pausado em produção.
-  [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [PR #170](https://github.com/lumamontes/biblioteca-de-zines/pull/170) [ADR 14](docs/decisions/14-monorepo.md) [ADR 13](docs/decisions/13-internet-archive-bookreader-page-derivatives.md)
+  [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [PR #170](https://github.com/lumamontes/biblioteca-de-zines/pull/170) [ADR 14](docs/decisions/14-viewer-release-and-page-derivatives.md) [ADR 13](docs/decisions/13-internet-archive-bookreader-page-derivatives.md)
 
 - **Pesquisa e decisão sobre o visualizador de páginas de zines**: a avaliação
   técnica e com uma pessoa usuária selecionou o Internet Archive BookReader para
