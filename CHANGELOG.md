@@ -8,6 +8,8 @@ entraram em `main`. Versões formais seguirão o
 
 ## Unreleased
 
+## 2026-10-18
+
 ### Adicionado
 
 - **Observações de metadados das fontes**: ao adquirir o PDF externo associado a
@@ -35,10 +37,6 @@ entraram em `main`. Versões formais seguirão o
   alimente a página pública sem duplicar conteúdo.
   [commit 594a1f3](https://github.com/lumamontes/biblioteca-de-zines/commit/594a1f36dcd993c6ba206a1e8cae68d5c77927de)
 
-## 2026-10-18
-
-### Adicionado
-
 - **Monorepo para o catálogo e o visualizador**: o projeto foi reorganizado como
   um monorepo gerenciado por pnpm, mantendo o catálogo em `apps/web` e o
   visualizador isolado em `apps/viewer`.
@@ -46,7 +44,7 @@ entraram em `main`. Versões formais seguirão o
   histórico, contratos e dependências de workspace quando necessário. A mudança
   de arquitetura foi implementada sem alterar o funcionamento do catálogo
   existente.
-  [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [ADR do monorepo](docs/decisions/14-monorepo.md)
+  [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [ADR do monorepo](docs/decisions/16-monorepo.md)
 
 - **Visualizador independente de páginas de zines**:
   depois das pesquisas sobre imagens das páginas do PDF, processamento assíncrono e
@@ -77,6 +75,12 @@ entraram em `main`. Versões formais seguirão o
   [commit 6956df8](https://github.com/lumamontes/biblioteca-de-zines/commit/6956df8) [commit 526e729](https://github.com/lumamontes/biblioteca-de-zines/commit/526e729) [commit 4247fc1](https://github.com/lumamontes/biblioteca-de-zines/commit/4247fc1) [commit c196083](https://github.com/lumamontes/biblioteca-de-zines/commit/c196083) [commit 7ebbec2](https://github.com/lumamontes/biblioteca-de-zines/commit/7ebbec2) [commit c3dcc17](https://github.com/lumamontes/biblioteca-de-zines/commit/c3dcc17)
 
 ### Corrigido
+
+- **Leitura e apresentação de novidades**: páginas de autorias agora alinham seu
+  conteúdo ao cabeçalho e aos breadcrumbs, enquanto manifestos com imagens
+  panorâmicas usam uma imagem por passo no leitor para evitar a composição de duas
+  páginas espelhadas. A atualização sobre o novo visualizador também passou a
+  mostrar um vídeo da experiência. [PR #183](https://github.com/lumamontes/biblioteca-de-zines/pull/183)
 
 - **Navegação e recursos editoriais**: a paginação da listagem de zines agora
   respeita o recuo lateral da grade em telas grandes, e o breadcrumb das páginas
