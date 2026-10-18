@@ -63,8 +63,6 @@ processo de consulta.
   opcional.
 - A Biblioteca publicará uma síntese, mudanças feitas, divergências e questões
   ainda abertas.
-- Políticas finais e uma migração deverão considerar revisão jurídica adequada ao
-  caso; esta decisão não é aconselhamento jurídico.
 
 ## Links
 
