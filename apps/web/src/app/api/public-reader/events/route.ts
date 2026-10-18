@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   if (!isViewerEvent(event) || event.slug.length > 200) return NextResponse.json({ error: 'Invalid viewer event' }, { status: 400 });
   console.info(JSON.stringify({
     event: 'public_reader_viewer', origin, embedHost: getEmbedHost(request.headers.get('referer')),
-    slug: event.slug, surface: event.surface, type: event.type,
+     slug: event.slug, surface: event.surface === 'reader' ? 'standalone' : event.surface, type: event.type,
     ...(event.metadataBytes === undefined ? {} : { metadataBytes: event.metadataBytes }),
     ...(event.durationMs === undefined ? {} : { durationMs: event.durationMs }),
     ...(event.requestCount === undefined ? {} : { requestCount: event.requestCount }),

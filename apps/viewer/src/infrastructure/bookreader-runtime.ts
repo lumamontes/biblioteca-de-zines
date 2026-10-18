@@ -38,7 +38,10 @@ function loadAsset(url: string, kind: 'script' | 'style'): Promise<void> {
     }
     asset.setAttribute('data-reader-asset', url);
     asset.addEventListener('load', () => resolve(), { once: true });
-    asset.addEventListener('error', () => reject(new Error(`Failed to load reader asset: ${url}`)), { once: true });
+    asset.addEventListener('error', () => {
+      asset.remove();
+      reject(new Error(`Failed to load reader asset: ${url}`));
+    }, { once: true });
     document.head.appendChild(asset);
   });
 }

@@ -11,7 +11,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@biblioteca-de-zines/reader-contracts": "workspace:*",
+    "@biblioteca-de-zines/reader": "workspace:*",
     "@internetarchive/bookreader": "5.0.0-87",
     "next": "15.1.11",
     "react": "^19.0.0",

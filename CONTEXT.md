@@ -22,6 +22,18 @@ _Avoid_: Treating a form response as automatic consent, consensus, or representa
 A digital publication represented in the Biblioteca catalogue.
 _Avoid_: Item, resource
 
+**Reader zine**:
+A public Biblioteca zine represented for reading, with its catalogue identity and an access-filtered reading representation.
+_Avoid_: Generic publication, archive item
+
+**Reader fallback link**:
+A link to the PDF reading representation offered when the page-based reading representation is unavailable.
+_Avoid_: Original, page derivative
+
+**Reader delivery mode**:
+The way a reader zine is delivered to a person: as a standalone reader or inside an embedded frame.
+_Avoid_: Reader engine, access policy
+
 **Catalogue record**:
 The structured Biblioteca record that describes a zine, its publication state, authorship, links, and related metadata.
 _Avoid_: File, archive item

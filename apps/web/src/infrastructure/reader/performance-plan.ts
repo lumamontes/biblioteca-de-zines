@@ -12,7 +12,7 @@ export type ReaderPerformancePlan = {
 export function createReaderPerformancePlan(
   apiUrl: string,
   pages: readonly PerformanceManifestPage[],
-  surface: 'reader' | 'embed' = 'embed',
+  surface: ReaderDeliveryMode = 'embed',
 ): ReaderPerformancePlan {
   const orderedPages = [...pages].sort((left, right) => left.pageNumber - right.pageNumber);
   const firstPage = orderedPages[0];
@@ -24,3 +24,4 @@ export function createReaderPerformancePlan(
     manifestUrl: `${apiUrl}${apiUrl.includes('?') ? '&' : '?'}surface=${surface}`,
   };
 }
+import type { ReaderDeliveryMode } from '@biblioteca-de-zines/reader';

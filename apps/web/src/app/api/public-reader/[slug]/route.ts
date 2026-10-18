@@ -5,13 +5,14 @@ import { createViewerReaderHttpResponse } from '@/app/api/public-reader/viewer-r
 import { getViewerTrafficGuard } from '@/composition/server/viewer-traffic';
 import { createReaderResponseHeaders } from '@/infrastructure/storage/cache-policy';
 import { createViewerPreflightHeaders } from '@/application/reader/viewer-cors';
+import type { ReaderDeliveryMode } from '@biblioteca-de-zines/reader';
 import { createViewerRequestMetric } from '@/application/reader/viewer-metrics';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const rollout = createViewerRolloutConfig(process.env);
   const origin = request.headers.get('origin');
-  const surface = request.nextUrl.searchParams.get('surface') === 'reader' ? 'reader' : 'embed';
+  const surface: ReaderDeliveryMode = ['reader', 'standalone'].includes(request.nextUrl.searchParams.get('surface') ?? '') ? 'standalone' : 'embed';
   const betaToken = request.headers.get('x-reader-beta-token') ?? undefined;
   if (!validateViewerRolloutConfig(rollout).ready) return response({ error: 'Viewer rollout is unavailable' }, 503, origin, rollout.viewerOrigin);
   const traffic = getViewerTrafficGuard().check(request.headers.get('x-real-ip') || origin || 'anonymous');
@@ -34,6 +35,6 @@ function response(body: unknown, status: number, origin: string | null, viewerOr
   return new NextResponse(JSON.stringify(body), { status, headers: createReaderResponseHeaders(origin, viewerOrigin, remaining) });
 }
 
-function report(status: string, slug: string, surface: 'reader' | 'embed', origin: string | null) {
+function report(status: string, slug: string, surface: ReaderDeliveryMode, origin: string | null) {
   console.info(JSON.stringify(createViewerRequestMetric(status, slug, surface, origin)));
 }

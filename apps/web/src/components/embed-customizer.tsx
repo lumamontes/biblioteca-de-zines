@@ -1,7 +1,7 @@
 'use client';
 
 import { Code2, Copy } from 'lucide-react';
-import type { ReaderBranding, ReaderEmbedConfiguration } from '@biblioteca-de-zines/reader-contracts';
+import type { ReaderBranding, ReaderEmbedConfiguration } from '@biblioteca-de-zines/reader';
 
 type EmbedCustomizerProps = {
   configuration: ReaderEmbedConfiguration;

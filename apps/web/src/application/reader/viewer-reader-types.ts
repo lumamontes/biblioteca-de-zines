@@ -1,6 +1,6 @@
-import type { PublicReaderApiResponse } from './public-reader-api';
+import type { PublicReaderResponse } from '@biblioteca-de-zines/reader';
 
 export type ViewerReaderResult =
-  | { status: 'available'; reader: PublicReaderApiResponse }
+  | { status: 'available'; reader: PublicReaderResponse }
   | { status: 'not-found' }
   | { status: 'unavailable' };

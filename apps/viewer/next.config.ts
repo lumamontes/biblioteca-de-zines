@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@biblioteca/reader-contracts'],
+  transpilePackages: ['@biblioteca-de-zines/reader'],
   async headers() {
     const localApiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN?.startsWith('http://localhost:3000')
       ? ' http://localhost:3000'

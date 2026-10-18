@@ -1,6 +1,9 @@
-import type { ReaderFallback, ReaderPageImage, ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
+import type {
+  PublicReaderZine,
+  ReaderPageImage,
+} from '@biblioteca-de-zines/reader';
 
-export type PublicReaderPublicationRecord = {
+export type PublicReaderZineRecord = {
   activePageGeneration: string | null;
   id: number;
   importStatus: string | null;
@@ -10,9 +13,5 @@ export type PublicReaderPublicationRecord = {
   title: string;
   totalPages: number | null;
 };
-export interface PublicReaderRepository { findPublicBySlug(slug: string): Promise<PublicReaderPublicationRecord | null>; }
-export type PublicReaderFallbackReason = 'incomplete-page-generation' | 'page-generation-failed' | 'page-generation-unavailable' | 'source-unavailable';
-export type PublicReaderPublication = Pick<PublicReaderPublicationRecord, 'id' | 'slug' | 'title'>;
-export type PublicReaderFallback = { fallback: ReaderFallback; publication?: PublicReaderPublication; reason: PublicReaderFallbackReason; status: 'fallback' };
-export type PublicReaderReady = { fallback: ReaderFallback; manifest: ReaderPageManifest; publication: PublicReaderPublication; status: 'ready' };
-export type PublicReaderResult = PublicReaderFallback | PublicReaderReady;
+export interface PublicReaderRepository { findPublicBySlug(slug: string): Promise<PublicReaderZineRecord | null>; }
+export type { PublicReaderZine };

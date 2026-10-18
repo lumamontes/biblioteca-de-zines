@@ -1,4 +1,4 @@
-import { parseReaderEmbedConfiguration } from '@biblioteca-de-zines/reader-contracts';
+import { parseReaderEmbedConfiguration } from '@biblioteca-de-zines/reader';
 import { Reader } from '@/components/reader';
 import type { ReaderViewMode } from '@/application/reader-types';
 
@@ -7,5 +7,5 @@ export default async function ViewerPage({ params, searchParams }: { params: Pro
   const mode: ReaderViewMode = query.mode === '1up' ? '1up' : '2up';
   const configuration = parseReaderEmbedConfiguration(query);
   const page = Number.parseInt(query.page ?? '1', 10);
-  return <Reader branding={configuration.branding} mode={mode} page={Number.isFinite(page) && page > 0 ? page : 1} slug={slug} surface="reader" theme={configuration} />;
+  return <Reader branding={configuration.branding} mode={mode} page={Number.isFinite(page) && page > 0 ? page : 1} slug={slug} surface="standalone" theme={configuration} />;
 }

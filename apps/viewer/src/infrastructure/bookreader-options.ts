@@ -1,5 +1,5 @@
-import type { ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
-import type { ReaderViewMode } from '@/application/reader-types';
+import type { ReaderPageManifest } from '@biblioteca-de-zines/reader';
+import { normalizeReaderPage, type ReaderViewMode } from '@/application/reader-types';
 
 export type ReaderViewOptions = { mode?: ReaderViewMode; page?: number };
 export type BookReaderOptions = {
@@ -14,7 +14,7 @@ export type BookReaderOptions = {
 
 export function createBookReaderOptions(targetId: string, manifest: ReaderPageManifest, viewOptions: ReaderViewOptions): BookReaderOptions {
   const mode = viewOptions.mode ?? '2up';
-  const page = Math.max(1, viewOptions.page ?? 1);
+  const page = normalizeReaderPage(viewOptions.page ?? 1, manifest.pageCount);
   return {
     data: manifest.pages.map((item) => [{ pageNum: item.pageNumber, uri: item.imageUrl, width: item.width, height: item.height }]),
     defaults: `page/n${page - 1}/mode/${mode}`,

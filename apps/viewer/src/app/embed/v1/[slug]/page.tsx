@@ -1,4 +1,4 @@
-import { parseReaderEmbedConfiguration } from '@biblioteca-de-zines/reader-contracts';
+import { parseReaderEmbedConfiguration } from '@biblioteca-de-zines/reader';
 import { Reader } from '@/components/reader';
 import type { ReaderViewMode } from '@/application/reader-types';
 

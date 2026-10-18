@@ -19,7 +19,7 @@ const ready = {
 test('uses the canonical publication slug and keeps surfaces independently gated', () => {
   const config = createViewerRolloutConfig({ READER_BETA_ENABLED: 'true', READER_BETA_SLUGS: 'canonical-zine', READER_EMBED_ENABLED: 'true' });
   assert.equal(resolveViewerAccess(ready, 'old-zine', config, 'embed').allowed, true);
-  assert.equal(resolveViewerAccess(ready, 'old-zine', config, 'reader').allowed, false);
+  assert.equal(resolveViewerAccess(ready, 'old-zine', config, 'standalone').allowed, false);
 });
 
 test('returns only the canonical, access-filtered reader response for an alias', async () => {
@@ -40,7 +40,7 @@ test('returns only the canonical, access-filtered reader response for an alias',
       title: 'Canonical Zine',
       totalPages: 1,
     }),
-  }, 'old-zine', config, 'reader');
+  }, 'old-zine', config, 'standalone');
 
   assert.equal(result.status, 'available');
   if (result.status === 'available') {

@@ -1,4 +1,5 @@
 import type { ViewerRolloutReadiness } from './viewer-rollout-types';
+import type { ReaderDeliveryMode } from '@biblioteca-de-zines/reader';
 
 export type ViewerRolloutConfig = {
   allowAllPublications: boolean;
@@ -47,11 +48,11 @@ export function validateViewerRolloutConfig(config: ViewerRolloutConfig): Viewer
 export function isViewerPublicationAllowed(
   config: ViewerRolloutConfig,
   slug: string,
-  surface: 'reader' | 'embed',
+  surface: ReaderDeliveryMode,
   betaToken?: string,
 ): boolean {
   if (!config.betaEnabled) return false;
-  if (surface === 'reader' && !config.enabled) return false;
+  if (surface === 'standalone' && !config.enabled) return false;
   if (surface === 'embed' && !config.embedEnabled) return false;
   const publicationAllowed = config.allowAllPublications || config.betaSlugs.includes(slug);
   const testerAllowed = surface !== 'embed' || config.betaTokens.length === 0
@@ -63,9 +64,9 @@ export function createViewerUrl(
   config: ViewerRolloutConfig,
   slug: string,
   branding = false,
-  surface: 'reader' | 'embed' = 'embed',
+  surface: ReaderDeliveryMode = 'embed',
 ): string {
-  const route = surface === 'reader' ? 'viewer' : 'embed';
+  const route = surface === 'standalone' ? 'viewer' : 'embed';
   const url = new URL(`${config.viewerOrigin}/${route}/v1/${encodeURIComponent(slug)}`);
   if (branding) url.searchParams.set('branding', 'biblioteca');
   return url.toString();

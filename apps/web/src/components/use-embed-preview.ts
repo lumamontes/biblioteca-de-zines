@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { createConfiguredReaderEmbedUrl, DEFAULT_READER_EMBED_CONFIGURATION, type ReaderEmbedConfiguration } from '@biblioteca-de-zines/reader-contracts';
+import { createConfiguredReaderEmbedUrl, DEFAULT_READER_EMBED_CONFIGURATION, type ReaderEmbedConfiguration } from '@biblioteca-de-zines/reader';
 
 export function useEmbedPreview(embedUrl: string, title: string) {
   const [configuration, setConfiguration] = useState(DEFAULT_READER_EMBED_CONFIGURATION);

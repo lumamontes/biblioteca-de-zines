@@ -1,4 +1,4 @@
-import type { ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
+import type { ReaderPageManifest } from '@biblioteca-de-zines/reader';
 import type { ReaderRenderer } from '@/application/reader-types';
 import { getBookReaderFactory, loadBookReaderRuntime } from './bookreader-runtime';
 import { createBookReaderOptions, type ReaderViewOptions } from './bookreader-options';

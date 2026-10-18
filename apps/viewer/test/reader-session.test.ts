@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createReaderSession } from '@/application/reader-session';
 import type { ReaderRenderer } from '@/application/reader-types';
-import type { ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
+import type { ReaderPageManifest } from '@biblioteca-de-zines/reader';
 
 const manifest: ReaderPageManifest = {
   generationId: 'generation-1',
@@ -37,4 +37,52 @@ test('keeps reader operations provider-neutral and falls back on renderer failur
 
   assert.deepEqual(calls, ['mount', 'next', 'previous', 'go-to:1', 'destroy']);
   assert.deepEqual(states, ['page:2', 'reader-failure']);
+});
+
+test('keeps the requested page in session state and clamps it to the manifest', () => {
+  const renderer: ReaderRenderer = {
+    mount() {},
+    next() {},
+    previous() {},
+    goTo() {},
+    destroy() {},
+  };
+
+  const session = createReaderSession({ initialPage: 99, manifest, fallback: { label: 'Open PDF', url: '/zine.pdf' } }, renderer);
+
+  assert.equal(session.getState().status, 'ready');
+  assert.equal(session.getState().currentPage, 2);
+});
+
+test('cleans up when the renderer fails during mount', () => {
+  let destroyed = 0;
+  const renderer: ReaderRenderer = {
+    mount() { throw new Error('mount failed'); },
+    next() {},
+    previous() {},
+    goTo() {},
+    destroy() { destroyed += 1; },
+  };
+
+  const session = createReaderSession({ manifest, fallback: { label: 'Open PDF', url: '/zine.pdf' } }, renderer);
+
+  assert.throws(() => session.mount({} as HTMLElement), /mount failed/);
+  assert.equal(destroyed, 1);
+});
+
+test('cleans up when the renderer reports an error during mount', () => {
+  let destroyed = 0;
+  const renderer: ReaderRenderer = {
+    mount: (_target, _manifest, _pageChanged, onError) => onError?.(),
+    next() {},
+    previous() {},
+    goTo() {},
+    destroy() { destroyed += 1; },
+  };
+
+  const session = createReaderSession({ manifest, fallback: { label: 'Open PDF', url: '/zine.pdf' } }, renderer);
+  session.mount({} as HTMLElement);
+
+  assert.equal(session.getState().status, 'fallback');
+  assert.equal(destroyed, 1);
 });

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createConfiguredReaderEmbedUrl, DEFAULT_READER_EMBED_CONFIGURATION, parseReaderEmbedConfiguration } from '@biblioteca-de-zines/reader-contracts';
+import { createConfiguredReaderEmbedUrl, DEFAULT_READER_EMBED_CONFIGURATION, parseReaderEmbedConfiguration } from '@biblioteca-de-zines/reader';
 
 test('creates the neutral default embed configuration', () => {
   assert.equal(DEFAULT_READER_EMBED_CONFIGURATION.branding, 'none');

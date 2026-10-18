@@ -1,16 +1,15 @@
 import type { ReaderPageManifest, ReaderPageImage } from './manifest';
 
-export type ReaderFallback = { label: string; url: string };
+export type ReaderFallbackLink = { label: string; url: string };
 export type ReaderFallbackReason =
   | 'incomplete-page-generation'
   | 'page-generation-failed'
   | 'page-generation-unavailable'
-  | 'reader-failure'
   | 'source-unavailable';
-export type PublicReaderPublication = { id: number; slug: string; title: string };
+export type PublicReaderZine = { id: number; slug: string; title: string };
 export type PublicReaderResponse =
-  | { status: 'ready'; fallback: ReaderFallback; manifest: ReaderPageManifest; publication: PublicReaderPublication }
-  | { status: 'fallback'; fallback: ReaderFallback; publication?: PublicReaderPublication; reason: ReaderFallbackReason };
+  | { status: 'ready'; fallback: ReaderFallbackLink; manifest: ReaderPageManifest; publication: PublicReaderZine }
+  | { status: 'fallback'; fallback: ReaderFallbackLink; publication?: PublicReaderZine; reason: ReaderFallbackReason };
 
 export class ReaderContractError extends Error {
   constructor(message: string) {
@@ -40,12 +39,12 @@ function parseManifest(value: unknown): ReaderPageManifest {
   return { generationId: value.generationId, pageCount: value.pageCount, pages };
 }
 
-function parseFallback(value: unknown): ReaderFallback {
+function parseFallback(value: unknown): ReaderFallbackLink {
   if (!isRecord(value) || typeof value.label !== 'string' || typeof value.url !== 'string' || !isSafeUrl(value.url)) throw new ReaderContractError('Invalid reader fallback');
   return { label: value.label, url: value.url };
 }
 
-function parsePublication(value: unknown): PublicReaderPublication {
+function parsePublication(value: unknown): PublicReaderZine {
   if (!isRecord(value) || typeof value.id !== 'number' || typeof value.slug !== 'string' || typeof value.title !== 'string') throw new ReaderContractError('Invalid reader publication');
   return { id: value.id, slug: value.slug, title: value.title };
 }
@@ -55,7 +54,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isFallbackReason(value: unknown): value is ReaderFallbackReason {
-  return value === 'incomplete-page-generation' || value === 'page-generation-failed' || value === 'page-generation-unavailable' || value === 'reader-failure' || value === 'source-unavailable';
+  return value === 'incomplete-page-generation' || value === 'page-generation-failed' || value === 'page-generation-unavailable' || value === 'source-unavailable';
 }
 
 function isPositiveInteger(value: unknown): value is number {

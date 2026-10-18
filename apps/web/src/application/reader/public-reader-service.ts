@@ -1,7 +1,8 @@
+import type { PublicReaderResponse } from '@biblioteca-de-zines/reader';
 import { createPageManifest } from '@/domain/reader/page-manifest';
-import type { PublicReaderRepository, PublicReaderResult } from './public-reader-types';
+import type { PublicReaderRepository } from './public-reader-types';
 
-export async function getPublicReaderPublication(repository: PublicReaderRepository, slug: string): Promise<PublicReaderResult | null> {
+export async function getPublicReaderZine(repository: PublicReaderRepository, slug: string): Promise<PublicReaderResponse | null> {
   const publication = await repository.findPublicBySlug(slug);
   if (!publication) return null;
   const fallback = { label: 'Abrir o PDF original', url: publication.pdfUrl ?? '' };

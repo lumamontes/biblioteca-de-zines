@@ -1,10 +1,11 @@
 export type { ReaderPageImage, ReaderPageManifest } from './manifest';
+export type ReaderDeliveryMode = 'standalone' | 'embed';
 export {
   parsePublicReaderResponse,
   ReaderContractError,
-  type PublicReaderPublication,
+  type PublicReaderZine,
   type PublicReaderResponse,
-  type ReaderFallback,
+  type ReaderFallbackLink,
   type ReaderFallbackReason,
 } from './public-reader-response';
 export {

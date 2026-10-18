@@ -1,17 +1,6 @@
-export type ReaderPageImage = {
-  generationId: string;
-  pageNumber: number;
-  imageUrl: string;
-  width: number;
-  height: number;
-};
+export type { ReaderPageImage, ReaderPageManifest } from '@biblioteca-de-zines/reader';
 
 /** A complete manifest already selected from the publication's active generation. */
-export type ReaderPageManifest = {
-  generationId: string;
-  pageCount: number;
-  pages: readonly ReaderPageImage[];
-};
 
 export type PageManifestIssue =
   | 'empty'

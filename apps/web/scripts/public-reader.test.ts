@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createPageManifest, InvalidPageManifestError } from '@/domain/reader/page-manifest';
-import { getPublicReaderPublication } from '@/application/reader/public-reader-service';
-import type { PublicReaderPublicationRecord, PublicReaderRepository } from '@/application/reader/public-reader-types';
+import { getPublicReaderZine } from '@/application/reader/public-reader-service';
+import type { PublicReaderRepository, PublicReaderZineRecord } from '@/application/reader/public-reader-types';
 
 const page = (number: number, generationId = 'generation-1') => ({ generationId, pageNumber: number, imageUrl: `/page-${number}.webp`, width: 100, height: 150 });
 
@@ -12,20 +12,20 @@ test('validates an ordered complete active generation', () => {
 });
 
 test('returns ready, incomplete, failed, unavailable, and withdrawn states', async () => {
-  const ready = await getPublicReaderPublication(repository({ activePageGeneration: 'generation-1', importStatus: 'completed', pages: [page(1)], totalPages: 1 }), 'zine');
+  const ready = await getPublicReaderZine(repository({ activePageGeneration: 'generation-1', importStatus: 'completed', pages: [page(1)], totalPages: 1 }), 'zine');
   assert.equal(ready?.status, 'ready');
-  const incomplete = await getPublicReaderPublication(repository({ activePageGeneration: 'generation-1', pages: [], totalPages: 1 }), 'zine');
+  const incomplete = await getPublicReaderZine(repository({ activePageGeneration: 'generation-1', pages: [], totalPages: 1 }), 'zine');
   assert.equal(incomplete?.status, 'fallback');
   if (incomplete?.status === 'fallback') assert.equal(incomplete.reason, 'incomplete-page-generation');
-  const failed = await getPublicReaderPublication(repository({ activePageGeneration: 'legacy', importStatus: 'failed' }), 'zine');
+  const failed = await getPublicReaderZine(repository({ activePageGeneration: 'legacy', importStatus: 'failed' }), 'zine');
   if (failed?.status === 'fallback') assert.equal(failed.reason, 'page-generation-failed');
-  const failedActiveGeneration = await getPublicReaderPublication(repository({ activePageGeneration: 'generation-1', importStatus: 'failed', pages: [page(1)], totalPages: 1 }), 'zine');
+  const failedActiveGeneration = await getPublicReaderZine(repository({ activePageGeneration: 'generation-1', importStatus: 'failed', pages: [page(1)], totalPages: 1 }), 'zine');
   if (failedActiveGeneration?.status === 'fallback') assert.equal(failedActiveGeneration.reason, 'page-generation-failed');
-  const unavailable = await getPublicReaderPublication(repository({ activePageGeneration: null }), 'zine');
+  const unavailable = await getPublicReaderZine(repository({ activePageGeneration: null }), 'zine');
   if (unavailable?.status === 'fallback') assert.equal(unavailable.reason, 'page-generation-unavailable');
-  assert.equal(await getPublicReaderPublication({ findPublicBySlug: async () => null }, 'withdrawn'), null);
+  assert.equal(await getPublicReaderZine({ findPublicBySlug: async () => null }, 'withdrawn'), null);
 });
 
-function repository(overrides: Partial<PublicReaderPublicationRecord>): PublicReaderRepository {
+function repository(overrides: Partial<PublicReaderZineRecord>): PublicReaderRepository {
   return { findPublicBySlug: async () => ({ id: 1, slug: 'zine', title: 'Zine', pdfUrl: 'https://example.test/zine.pdf', activePageGeneration: null, importStatus: 'pending', pages: [], totalPages: 0, ...overrides }) };
 }

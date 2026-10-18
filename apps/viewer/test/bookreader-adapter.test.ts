@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createBookReaderRenderer, type BookReaderFactory, type BookReaderInstance } from '@/infrastructure/bookreader-adapter';
-import type { ReaderPageManifest } from '@biblioteca-de-zines/reader-contracts';
+import type { ReaderPageManifest } from '@biblioteca-de-zines/reader';
 
 const manifest: ReaderPageManifest = {
   generationId: 'generation-1',
@@ -48,7 +48,7 @@ test('translates the manifest, navigation, page changes, and cleanup', () => {
   assert.equal(target.cleared, true);
 });
 
-test('passes an explicit starting mode and page to BookReader', () => {
+test('passes an explicit starting mode and clamps the page to the manifest', () => {
   let options: { defaults: string } | undefined;
   const instance: BookReaderInstance = { bind() {}, init() {}, jumpToPage() {}, next() {}, prev() {} };
   const Factory: BookReaderFactory = class { constructor(value) { options = value as typeof options; return instance; } };
@@ -56,7 +56,7 @@ test('passes an explicit starting mode and page to BookReader', () => {
 
   renderer.mount(createTarget(), manifest, () => {});
 
-  assert.equal(options?.defaults, 'page/n3/mode/1up');
+  assert.equal(options?.defaults, 'page/n1/mode/1up');
 });
 
 test('reports initialization failures and cleans the failed instance', () => {
