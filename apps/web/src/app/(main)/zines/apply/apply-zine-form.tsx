@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import { pipe } from "composable-functions";
 import { Tables } from "@/types/database.types";
 import { getCategories } from "@/services/categories-service";
-import Link from "next/link";
 
 const hasFormDataInStorage = (): boolean => {
   const formData = get('apply-zine-form-data', {
@@ -33,7 +32,7 @@ const hasFormDataInStorage = (): boolean => {
   );
 };
 
-function ApplyZineFormContent({ pageGenerationEnabled }: { pageGenerationEnabled: boolean }) {
+function ApplyZineFormContent() {
   const authorForm = useAuthorForm();
   const zineForm = useZineForm();
   const additionalInfoForm = useAdditionalInfoForm();
@@ -98,10 +97,10 @@ function ApplyZineFormContent({ pageGenerationEnabled }: { pageGenerationEnabled
 
   return (
     <main className="flex-1 px-4 py-8 md:py-12">
-      <div className="max-w-2xl mx-auto">
-        <FormHeader />
+        <div className="max-w-2xl mx-auto">
+          <FormHeader />
 
-        <form action={handleSubmit} className="space-y-8">
+          <form action={handleSubmit} className="space-y-8">
           <FormSection title="Autores">
             <div className="space-y-6">
               {authorForm.authors.map((author, authorIndex) => (
@@ -193,19 +192,6 @@ function ApplyZineFormContent({ pageGenerationEnabled }: { pageGenerationEnabled
             disabled={isPending}
           />
 
-          {pageGenerationEnabled && (
-            <InfoBox>
-              <p>
-                <strong>Depois da publicação:</strong>{' '}
-                processaremos o PDF página a página para o leitor. Se você não enviar uma capa,
-                usaremos a primeira página.{' '}
-                <Link href="/zines/submission-guide" className="underline underline-offset-2">
-                  Leia o guia completo sobre processamento, preservação e direitos.
-                </Link>
-              </p>
-            </InfoBox>
-          )}
-
           <div className="pt-4 space-y-4">
             <div className="flex flex-col md:flex-row gap-4">
               <Button
@@ -262,10 +248,10 @@ function LoadingFallback() {
   );
 }
 
-export default function ApplyZineForm({ pageGenerationEnabled }: { pageGenerationEnabled: boolean }) {
+export default function ApplyZineForm() {
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <ApplyZineFormContent pageGenerationEnabled={pageGenerationEnabled} />
+      <ApplyZineFormContent />
     </Suspense>
   );
 }

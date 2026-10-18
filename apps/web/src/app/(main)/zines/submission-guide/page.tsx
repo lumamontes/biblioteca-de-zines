@@ -33,6 +33,17 @@ const sections = [
     ),
   },
   {
+    title: "Revisão e publicação",
+    children: (
+      <ul className="list-disc space-y-2 pl-5">
+        <li>Cada envio é revisado por pessoas voluntárias antes da publicação.</li>
+        <li>Por isso, não podemos garantir uma publicação imediata.</li>
+        <li>Se você precisa da publicação para um lançamento ou outra data específica, escreva para bibliotecadezines@gmail.com. Vamos receber a informação e fazer o possível para considerar o prazo.</li>
+        <li>Quando a publicação estiver disponível, avisaremos por e-mail se um endereço tiver sido informado no formulário.</li>
+      </ul>
+    ),
+  },
+  {
     title: "Direitos das pessoas autoras",
     children: (
       <>
