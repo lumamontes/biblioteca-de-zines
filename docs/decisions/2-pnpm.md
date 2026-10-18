@@ -1,8 +1,9 @@
-# Uso de ADRs
+# Uso do pnpm como gerenciador de pacotes
 
 ## Contexto
 
-Como todo projeto de Javascript, precisamos utilizar um gestor de packages. Essa ADR explica nossa escolha.
+Como todo projeto JavaScript, precisamos escolher um gerenciador de pacotes. Esta
+ADR registra essa escolha.
 
 ## Decisão
 
@@ -19,7 +20,8 @@ Decidimos usar [pnpm](https://pnpm.io/) como nosso gestor.
   
 ## Justificativa
 
-`pnpm` é um package manager moderno, é utilizado e patrocinado por vários projetos grandes (Discord, Prisma, Vercel), traz velocidade e, principalmente, salva espaço.
+O `pnpm` é um gerenciador moderno, utilizado por projetos como Discord, Prisma e
+Vercel. Ele oferece velocidade e, principalmente, economiza espaço.
 
 Enquanto o `npm` cria uma pasta node_modules em todos os novos projetos, o `pnpm` utiliza um clone ou _hard link_ dos pacotes instalados.
 
