@@ -30,7 +30,7 @@ test('initializes from the public manifest and loads BookReader only in the view
     if (request.url().includes('@internetarchive/bookreader')) bookReaderRequests.push(request.url());
   });
   await mockBookReaderAssets(page);
-  await page.goto('/viewer/v1/zine');
+  await page.goto('/p/zine');
 
   await expect(page.locator('.reader__canvas')).toBeVisible();
   expect(bookReaderRequests).toEqual(expect.arrayContaining([
@@ -43,7 +43,7 @@ test('initializes from the public manifest and loads BookReader only in the view
 
 test('translates navigation through the isolated BookReader adapter', async ({ page }) => {
   await mockBookReaderAssets(page);
-  await page.goto('/viewer/v1/zine');
+  await page.goto('/p/zine');
   await expect(page.locator('.reader__canvas')).toBeVisible();
 
   await page.evaluate(() => window.__bibliotecaBookReaderInstances[0]?.next());
@@ -52,7 +52,7 @@ test('translates navigation through the isolated BookReader adapter', async ({ p
 
 test('forwards viewport resize events to BookReader', async ({ page }) => {
   await mockBookReaderAssets(page);
-  await page.goto('/viewer/v1/zine');
+  await page.goto('/p/zine');
   await expect(page.locator('.reader__canvas')).toBeVisible();
 
   await page.evaluate(() => window.dispatchEvent(new Event('resize')));
@@ -66,7 +66,7 @@ test('preserves the PDF fallback when BookReader initialization fails', async ({
   }));
   await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.css', (route) => route.fulfill({ contentType: 'text/css', body: '' }));
 
-  await page.goto('/viewer/v1/zine');
+  await page.goto('/p/zine');
 
   await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: /Abrir o PDF original/ })).toHaveAttribute('href', readyResponse.fallback.url);
@@ -74,10 +74,10 @@ test('preserves the PDF fallback when BookReader initialization fails', async ({
 
 test('serves the unbranded embed and optional Biblioteca branding', async ({ page }) => {
   await mockBookReaderAssets(page);
-  await page.goto('/embed/v1/zine');
+  await page.goto('/embed/p/zine');
   await expect(page.locator('.reader--branded')).toHaveCount(0);
 
-  await page.goto('/embed/v1/zine?branding=biblioteca');
+  await page.goto('/embed/p/zine?branding=biblioteca');
   await expect(page.locator('.reader--branded')).toHaveCount(1);
 });
 
@@ -88,7 +88,7 @@ test('shows the PDF fallback when the endpoint is unavailable', async ({ page })
     status: 404,
     body: JSON.stringify({ error: 'Reader unavailable' }),
   }));
-  await page.goto('/viewer/v1/zine');
+  await page.goto('/p/zine');
 
   await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
   await expect(page.getByText('O PDF original não está disponível.')).toBeVisible();

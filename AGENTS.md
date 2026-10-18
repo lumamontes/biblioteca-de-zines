@@ -12,6 +12,15 @@ Use the five default triage labels: `needs-triage`, `needs-info`, `ready-for-age
 
 This is a single-context repository using root `CONTEXT.md` and `docs/adr/`. See `docs/agents/domain.md`.
 
+### Changelog
+
+Keep distinct architectural decisions and implementation milestones as separate
+entries in `CHANGELOG.md`; when a feature moves from `Unreleased` to a dated
+section, revise stale status language and preserve the original decision links
+and history. Do not replace multiple historical entries with a single summary
+unless the user explicitly asks for consolidation. Run `pnpm test:changelog` after
+editing the changelog.
+
 ### Application boundaries
 
 Use lightweight application-service boundaries for new work:

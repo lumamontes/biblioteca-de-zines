@@ -24,7 +24,7 @@ intercâmbio quando úteis, não um modelo obrigatório de livro. BIBFRAME,
 Schema.org, PREMIS e IIIF permanecerão opções condicionadas a consumidores ou
 fluxos reais.
 
-## Alternativas consideradas
+## Alternativas Consideradas
 
 ### Adotar um padrão único
 
@@ -40,6 +40,12 @@ aprendizado com outras bibliotecas de zines.
 
 Esta é a opção escolhida. Ela permite interoperabilidade sem transformar cada
 padrão em requisito ou autoridade sobre a comunidade.
+
+## Justificativa
+
+A semântica local preserva distinções de autoria, incerteza, privacidade e acesso.
+Crosswalks seletivos permitem exportar e aprender com padrões externos sem obrigar
+o catálogo a adotar pressupostos que não servem à Biblioteca.
 
 ## Consequências
 

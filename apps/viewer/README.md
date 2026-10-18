@@ -11,8 +11,8 @@ explicit PDF fallback.
 
 ## Routes
 
-- `/viewer/v1/:slug`: standalone reader surface.
-- `/embed/v1/:slug`: focused iframe surface for Biblioteca pages and third-party
+- `/p/:slug`: standalone reader surface.
+- `/embed/p/:slug`: focused iframe surface for Biblioteca pages and third-party
   embeds.
 - `?branding=biblioteca`: optional Biblioteca preset with its logo; no branding
   is rendered by default.
@@ -26,7 +26,7 @@ These viewer parameters are intentionally small and explicit. They configure a
 document reader; video-specific parameters such as `loop`
 belong to a future video embed surface rather than the BookReader route.
 
-The embedding page controls iframe dimensions. V1 has no parent-page control or
+The embedding page controls iframe dimensions. The initial release has no parent-page control or
 resize-message protocol.
 
 ## Local Development

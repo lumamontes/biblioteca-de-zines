@@ -1,5 +1,9 @@
 # Consultar zineiros antes de definir políticas de catálogo e acesso
 
+Situação: decisão aprovada. O formulário e os materiais de consulta estão sendo
+preparados, mas a consulta ainda não foi divulgada nem está em circulação na
+comunidade.
+
 ## Contexto
 
 A Biblioteca de Zines é um projeto open source cuja comunidade principal é formada
@@ -22,7 +26,7 @@ ou outras decisões de implementação. Qualquer pessoa poderá propor mudanças
 mantenedores coordenarão o processo, publicarão a síntese e explicarão como as
 contribuições foram consideradas.
 
-## Alternativas consideradas
+## Alternativas Consideradas
 
 ### Definir o modelo apenas com pesquisa bibliográfica
 
@@ -40,18 +44,25 @@ Esta é a opção escolhida. Ela mantém o trabalho de pesquisa e modelagem úti
 proposta, mas deixa decisões de representação e acesso abertas à contribuição da
 comunidade.
 
+## Justificativa
+
+A consulta reduz o risco de transformar escolhas de representação, privacidade e
+acesso em políticas difíceis de corrigir depois da migração. Ela mantém a comunidade
+como participante da definição do catálogo sem transferir decisões técnicas para o
+processo de consulta.
+
 ## Consequências
 
 - O modelo de catálogo permanece provisório até a pesquisa e a consulta serem
   sintetizadas.
-- A consulta será conduzida em português primeiro, com apoio em inglês quando
-  necessário, usando Google Forms e conversas ou votações no Telegram.
-- As respostas serão tratadas conforme uma configuração de privacidade testada,
-  sem coleta automática de email e com identificação opcional.
+- Quando divulgada, a consulta será conduzida em português primeiro, com apoio em
+  inglês quando necessário, usando o formulário preparado e conversas ou votações
+  no Telegram.
+- As respostas deverão ser tratadas conforme uma configuração de privacidade
+  definida antes da divulgação, sem coleta automática de email e com identificação
+  opcional.
 - A Biblioteca publicará uma síntese, mudanças feitas, divergências e questões
   ainda abertas.
-- Políticas finais e uma migração deverão considerar revisão jurídica adequada ao
-  caso; esta decisão não é aconselhamento jurídico.
 
 ## Links
 

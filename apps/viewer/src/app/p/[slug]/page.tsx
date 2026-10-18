@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function ViewerPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ branding?: string; mode?: string; page?: string }> }) {
+export default async function ReaderPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ branding?: string; mode?: string; page?: string }> }) {
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const mode: ReaderViewMode = query.mode === '2up' ? '2up' : '1up';
   const configuration = parseReaderEmbedConfiguration(query);
