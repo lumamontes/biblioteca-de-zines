@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter viewer build",
+  "installCommand": "pnpm --dir ../.. install --frozen-lockfile",
+  "buildCommand": "pnpm --dir ../.. --filter viewer build",
   "outputDirectory": ".next"
 }
