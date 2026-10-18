@@ -155,8 +155,7 @@ protocol.
 - The viewer uses the canonical Biblioteca publication slug. Slugs resolve to
   the internal publication identity, and historical slugs remain usable as
   aliases.
-- The embed route is `/embed/p/:slug`. The former `/embed/v1/:slug` route remains
-  available as a compatibility alias.
+- The embed route is `/embed/p/:slug`.
 - The default embed is unbranded. An explicit presentation parameter may opt
   into Biblioteca branding; presentation parameters do not grant access.
 - V1 has no parent-page control or event protocol. The viewer is self-contained
