@@ -40,10 +40,12 @@ export async function generateMetadata({
 
 export default async function ZinePreview({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ view?: string }>;
 }) {
-  const { slug } = await params;
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
 
   const preview = await getZineBySlug(slug);
 
@@ -103,7 +105,7 @@ export default async function ZinePreview({
       )}
       <p className="text-sm max-w-xl text-center">{preview.description}</p>
           {hasBetaReadingSurface(readingSurface) ? (
-            <ZineReaderOptions initialMode="pdf" surface={readingSurface} />
+            <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} surface={readingSurface} />
           ) : (
             <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
               <PDFViewer url={previewUrl} />
