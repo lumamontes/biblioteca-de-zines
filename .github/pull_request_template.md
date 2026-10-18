@@ -43,7 +43,7 @@ uma entrada e inclua as referências que sustentam a mudança.
 
 ## Atualização pública
 
-- [ ] Este PR precisa de uma entrada em `/novidades` porque muda a experiência pública.
+- [ ] Este PR precisa de uma entrada na aba `Novidades` de `/publicacoes` porque muda a experiência pública.
 - [ ] Este PR não precisa de uma entrada pública.
 
 ## Verificação

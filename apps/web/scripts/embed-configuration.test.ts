@@ -4,7 +4,7 @@ import { createConfiguredReaderEmbedUrl, DEFAULT_READER_EMBED_CONFIGURATION, par
 
 test('creates the neutral default embed configuration', () => {
   assert.equal(DEFAULT_READER_EMBED_CONFIGURATION.branding, 'none');
-  assert.equal(DEFAULT_READER_EMBED_CONFIGURATION.background, '#f7f5ef');
+  assert.equal(DEFAULT_READER_EMBED_CONFIGURATION.background, '#fafafa');
   assert.equal(DEFAULT_READER_EMBED_CONFIGURATION.text, '#111111');
 });
 

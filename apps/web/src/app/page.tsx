@@ -159,11 +159,8 @@ export default async function HomePage() {
           <h2 className="text-3xl md:text-4xl mb-4">Acompanhe a Biblioteca</h2>
           <p className="mb-8">Blog, novidades e tudo que está acontecendo por aqui.</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/novidades" className="bg-black px-6 py-3 font-bold text-white hover:rotate-1 transition-transform">
-              NOVIDADES
-            </Link>
             <Link href="/publicacoes" className="bg-white border-2 border-black px-6 py-3 font-bold hover:-rotate-1 transition-transform">
-              PUBLICAÇÕES
+              PUBLICAÇÕES E NOVIDADES
             </Link>
           </div>
         </div>

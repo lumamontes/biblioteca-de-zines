@@ -5,7 +5,7 @@ import { PublicationsHub } from "@/components/publications/publications-hub";
 import { ChangelogIntroduction } from "@/components/updates/changelog-introduction";
 import { ChangelogSectionView } from "@/components/updates/changelog-section";
 import { LatestUpdate } from "@/components/updates/latest-update";
-import { PublicUpdate } from "@/components/updates/public-update";
+import { NovidadesPage } from "@/components/updates/novidades-page";
 import { getChangelog } from "@/content/changelog";
 import { getPublicUpdates } from "@/content/updates";
 import { getBlogArticles } from "@/services/blog-service";
@@ -90,12 +90,7 @@ export default async function PublicationsPage() {
             </>
           }
           updates={
-            <>
-              <h2 className="mb-6 text-2xl font-bold">Novidades</h2>
-              {updates.map((update) => (
-                <PublicUpdate key={update.slug} update={update} />
-              ))}
-            </>
+            <NovidadesPage updates={updates} />
           }
           nerds={
             <>

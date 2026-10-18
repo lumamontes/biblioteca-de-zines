@@ -7,7 +7,7 @@ export type ReaderEmbedConfiguration = {
 };
 
 export const DEFAULT_READER_EMBED_CONFIGURATION: ReaderEmbedConfiguration = {
-  background: '#f7f5ef',
+  background: '#fafafa',
   branding: 'none',
   text: '#111111',
 };
