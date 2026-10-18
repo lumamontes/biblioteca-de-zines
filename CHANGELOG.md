@@ -46,7 +46,7 @@ entraram em `main`. Versões formais seguirão o
   histórico, contratos e dependências de workspace quando necessário. A mudança
   de arquitetura foi implementada sem alterar o funcionamento do catálogo
   existente.
-  [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [ADR do monorepo](docs/decisions/14-monorepo.md)
+  [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [ADR do monorepo](docs/decisions/16-monorepo.md)
 
 - **Visualizador independente de páginas de zines**:
   depois das pesquisas sobre imagens das páginas do PDF, processamento assíncrono e
