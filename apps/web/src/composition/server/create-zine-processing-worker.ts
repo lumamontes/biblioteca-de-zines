@@ -10,7 +10,8 @@ export function createZineProcessingWorker(): ProcessingWorker {
   const processor = createZinePageProcessor(supabase);
 
   return {
-    claimNext: () => jobs.claimNext(),
+    claimNext: (zineId) => jobs.claimNext(zineId),
+    enqueue: (zineId) => jobs.enqueue(zineId),
     processClaimed(job) {
       return processClaimedZine(job, jobs, processor);
     },

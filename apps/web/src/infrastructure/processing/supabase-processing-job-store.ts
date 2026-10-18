@@ -22,7 +22,7 @@ export function createSupabaseProcessingJobStore(
       if (error) throw new Error(`Failed to enqueue zine ${zineId}: ${error.message}`);
     },
 
-    async claimNext() {
+    async claimNext(zineId?: number) {
       const now = new Date();
       const nowIso = now.toISOString();
       const leaseUntil = new Date(now.getTime() + leaseDurationMs).toISOString();
@@ -33,11 +33,13 @@ export function createSupabaseProcessingJobStore(
         .eq('status', 'processing')
         .lt('lease_until', nowIso);
 
-      const { data: candidate, error: selectError } = await supabase
+      let candidateQuery = supabase
         .from('zine_processing_jobs')
         .select('id, zine_id, attempt_count')
         .eq('status', 'pending')
-        .lte('next_attempt_at', nowIso)
+        .lte('next_attempt_at', nowIso);
+      if (zineId !== undefined) candidateQuery = candidateQuery.eq('zine_id', zineId);
+      const { data: candidate, error: selectError } = await candidateQuery
         .order('id', { ascending: true })
         .limit(1)
         .maybeSingle();
@@ -80,7 +82,6 @@ export function createSupabaseProcessingJobStore(
         zineId: zine.id,
       };
     },
-
     async complete(jobId, attemptCount) {
       const { error } = await supabase
         .from('zine_processing_jobs')
