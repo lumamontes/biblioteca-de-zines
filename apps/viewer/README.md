@@ -49,10 +49,7 @@ flags when testing a publication:
 
 ```env
 READER_VIEWER_ORIGIN=http://localhost:4100
-READER_BETA_ENABLED=true
 READER_VIEWER_ENABLED=true
-READER_EMBED_ENABLED=true
-READER_BETA_ALLOW_ALL=true
 ```
 
 Do not put Supabase sessions, service-role keys, or other application secrets in

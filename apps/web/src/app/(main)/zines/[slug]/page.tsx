@@ -61,7 +61,7 @@ export default async function ZinePreview({
   const previewUrl = preview.pdf_url ? getPreviewUrl(preview.pdf_url) : "";
   const rollout = createViewerRolloutConfig(process.env);
   const reader = rollout.enabled
-    ? await getViewerReader(slug, rollout, "standalone").catch(() => null)
+    ? await getViewerReader(slug, rollout).catch(() => null)
     : null;
   const readingSurface = createZineReadingSurface({
     pdfUrl: previewUrl,

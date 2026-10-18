@@ -1,4 +1,4 @@
-export const VIEWER_ALLOWED_HEADERS = 'Content-Type, X-Reader-Beta-Token';
+export const VIEWER_ALLOWED_HEADERS = 'Content-Type';
 
 export function createViewerPreflightHeaders(origin: string | null, viewerOrigin: string): Headers {
   const headers = new Headers({

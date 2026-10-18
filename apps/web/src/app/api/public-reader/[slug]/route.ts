@@ -13,14 +13,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const rollout = createViewerRolloutConfig(process.env);
   const origin = request.headers.get('origin');
   const surface: ReaderDeliveryMode = ['reader', 'standalone'].includes(request.nextUrl.searchParams.get('surface') ?? '') ? 'standalone' : 'embed';
-  const betaToken = request.headers.get('x-reader-beta-token') ?? undefined;
   if (!validateViewerRolloutConfig(rollout).ready) return response({ error: 'Viewer rollout is unavailable' }, 503, origin, rollout.viewerOrigin);
   const traffic = getViewerTrafficGuard().check(request.headers.get('x-real-ip') || origin || 'anonymous');
   if (!traffic.allowed) {
     report('rate-limited', slug, surface, origin);
     return response({ error: 'Too many requests' }, 429, origin, rollout.viewerOrigin, traffic.remaining);
   }
-  const result = await getViewerReader(slug, rollout, surface, betaToken);
+  const result = await getViewerReader(slug, rollout);
   report(result.status === 'available' ? result.reader.status : result.status, slug, surface, origin);
   const http = createViewerReaderHttpResponse(result);
   return response(http.body, http.status, origin, rollout.viewerOrigin, traffic.remaining);
