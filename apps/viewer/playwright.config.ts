@@ -12,7 +12,7 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
     command: 'pnpm exec next dev --turbopack -H 127.0.0.1 -p 4100',
-    url: 'http://127.0.0.1:4100/p/zine',
+    url: 'http://127.0.0.1:4100',
     reuseExistingServer: !process.env.CI,
   },
 });
