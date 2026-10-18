@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.27.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate web Next.js type references
+        run: |
+          printf '%s\n' \
+            '/// <reference types="next" />' \
+            '/// <reference types="next/image-types/global" />' \
+            '// NOTE: This file should not be edited' \
+            '// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.' \
+            > apps/web/next-env.d.ts
+
+      - name: Check types
+        run: pnpm check-types:all
+
+      - name: Build viewer
+        run: pnpm --filter viewer build
+
+      - name: Run viewer tests
+        run: pnpm --filter viewer test
+
+      - name: Run web tests
+        run: pnpm --filter biblioteca-zines test
+
+      - name: Run application tests
+        run: pnpm test:application:all
+
+      - name: Validate changelog
+        run: pnpm test:changelog
+
+      - name: Install Playwright browser
+        run: pnpm --filter viewer exec playwright install --with-deps chromium
+
+      - name: Run viewer browser tests
+        run: pnpm --filter viewer test:e2e
