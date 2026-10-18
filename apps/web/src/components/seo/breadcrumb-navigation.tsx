@@ -56,7 +56,10 @@ interface BreadcrumbWrapperProps {
 export function BreadcrumbWrapper({ items, children, className }: BreadcrumbWrapperProps) {
   return (
     <div className={className}>
-      <BreadcrumbNavigation items={items} className="mb-6 px-4 pt-4" />
+      <BreadcrumbNavigation
+        items={items}
+        className="mx-auto mb-6 max-w-8xl px-4 pt-4 sm:px-6 lg:px-12"
+      />
       {children}
     </div>
   )
