@@ -32,7 +32,7 @@ export const updates: Update[] = [
     public: {
       title: "Um novo jeito de ler as páginas das zines",
       summary:
-        "A Biblioteca começou a testar um visualizador de páginas em beta, com uma leitura mais fluida e progressiva.",
+        "A Biblioteca começou a testar um novo visualizador de páginas, com navegação mais fluida e carregamento progressivo.",
       body: [
         "Os PDFs continuam sendo preservados como a representação original. O beta usa imagens das páginas para experimentar uma navegação com zoom, miniaturas e carregamento progressivo, mantendo o PDF disponível quando o processamento das páginas não estiver pronto.",
         "A experiência será liberada gradualmente enquanto acompanhamos seu funcionamento em diferentes telas e com diferentes publicações.",
