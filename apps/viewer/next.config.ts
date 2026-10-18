@@ -2,6 +2,12 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@biblioteca-de-zines/reader'],
+  async rewrites() {
+    return [
+      { source: '/viewer/v1/:slug', destination: '/p/:slug' },
+      { source: '/embed/v1/:slug', destination: '/embed/p/:slug' },
+    ];
+  },
   async headers() {
     const localApiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN?.startsWith('http://localhost:3000')
       ? ' http://localhost:3000'

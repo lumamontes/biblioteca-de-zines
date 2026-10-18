@@ -5,8 +5,8 @@ enables it. The same deployment may serve the main Biblioteca application and
 the viewer origin, but the viewer is loaded in an iframe and the vendor runtime
 remains confined to that document.
 
-The viewer host must route to the dedicated `/viewer/v1/:slug` entrypoint, while
-the public embed host/routes use `/embed/v1/:slug`. These are replaceable viewer
+The viewer host must route to the dedicated `/p/:slug` entrypoint, while
+the public embed host/routes use `/embed/p/:slug`. These are replaceable viewer
 surfaces, not new catalogue or persistence services. The core application origin
 remains responsible for the public-reader API.
 
@@ -39,14 +39,14 @@ fallback path.
 
 ## Embed
 
-The versioned embed URL is:
+The embed URL is:
 
-`https://viewer.biblioteca-de-zines.com.br/embed/v1/<canonical-slug>`
+`https://viewer.biblioteca-de-zines.com.br/embed/p/<canonical-slug>`
 
 Embeds are unbranded by default. Add `?branding=biblioteca` when attribution is
 desired. The parameter changes presentation only and never grants access.
 
-The embedding site controls the iframe dimensions. V1 has no parent-page control
+The embedding site controls the iframe dimensions. The initial release has no parent-page control
 or resize-message protocol.
 
 ## Verification

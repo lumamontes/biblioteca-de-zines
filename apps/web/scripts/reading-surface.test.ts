@@ -30,8 +30,8 @@ test('creates a beta reading surface from an available canonical reader', () => 
     pdfUrl: 'https://assets.example/zine.pdf',
     title: 'Zine',
     beta: {
-      embedUrl: 'http://localhost:4100/embed/v1/canonical-zine',
-      viewerUrl: 'http://localhost:4100/viewer/v1/canonical-zine',
+      embedUrl: 'http://localhost:4100/embed/p/canonical-zine',
+      viewerUrl: 'http://localhost:4100/p/canonical-zine',
       pageCount: 2,
     },
   });

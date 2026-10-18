@@ -3,7 +3,7 @@ import { parseReaderEmbedConfiguration } from '@biblioteca-de-zines/reader';
 import { Reader } from '@/components/reader';
 import type { ReaderViewMode } from '@/application/reader-types';
 
-const readerApiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://biblioteca-de-zines.com.br';
+const readerApiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://www.biblioteca-de-zines.com.br';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function ViewerPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ branding?: string; mode?: string; page?: string }> }) {
+export default async function ReaderPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ branding?: string; mode?: string; page?: string }> }) {
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const mode: ReaderViewMode = query.mode === '2up' ? '2up' : '1up';
   const configuration = parseReaderEmbedConfiguration(query);
