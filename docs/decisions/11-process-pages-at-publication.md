@@ -4,9 +4,10 @@
 
 ## Contexto
 
-Submissões aguardam revisão e podem nunca entrar no acervo. Publicações aprovadas
-precisam de uma representação estável para leitura, com páginas ordenadas,
-fallback e possibilidade de reprocessamento.
+Uma submissão pode ser rejeitada e, portanto, não deve gerar páginas públicas antes
+da publicação. Depois da aprovação, a pessoa leitora precisa de uma representação
+  estável, com páginas ordenadas, uma alternativa em PDF e possibilidade de
+  reprocessamento.
 
 ## Decisão
 
@@ -18,20 +19,20 @@ uma geração completa de páginas e capa antes de ativá-la.
 - **Processar durante a submissão:** criaria derivados para materiais que poderiam
   ser rejeitados.
 - **Processar na primeira leitura:** deixaria a primeira experiência lenta e
-  dificultaria concorrência, retries e observabilidade.
-- **Processar somente a capa:** foi uma etapa intermediária e não atende ao reader
+  dificultaria a concorrência, novas tentativas e o acompanhamento das falhas.
+- **Processar somente a capa:** foi uma etapa intermediária e não atende ao leitor
   página a página.
 
 ## Justificativa
 
 Processar na publicação equilibra custo, privacidade e experiência de leitura.
-Evita derivados públicos para submissões não aprovadas e permite ao viewer receber
-um manifest completo, estável e cacheável.
+Evita derivados públicos para submissões não aprovadas e permite ao visualizador
+receber um manifesto completo, estável e cacheável.
 
 ## Consequências
 
 - A publicação pode aguardar o processamento assíncrono da geração.
-- Falhas precisam permitir retry e ser visíveis para manutenção.
+- Falhas precisam permitir novas tentativas e ser visíveis para manutenção.
 - A geração anterior permanece ativa enquanto a substituta é criada.
 - Alterações no PDF criam uma nova geração.
 - O fluxo cover-only permanece apenas como histórico e migração.
@@ -39,5 +40,5 @@ um manifest completo, estável e cacheável.
 ## Links
 
 - [Processamento de páginas e ciclo de vida de assets](../specs/page-processing-and-asset-lifecycle.md)
-- [Release do viewer e imagens das páginas](./14-viewer-release-and-page-derivatives.md)
+- [Lançamento do visualizador e imagens das páginas](./14-viewer-release-and-page-derivatives.md)
 - [Runbook de processamento de páginas](../runbooks/page-processing.md)
