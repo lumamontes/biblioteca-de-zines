@@ -5,4 +5,5 @@ export type ZineReaderToolbarProps = {
   mobileEmbedCustomizer: ReactNode;
   onFullscreen: () => void;
   originalUrl: string;
+  viewerUrl: string;
 };

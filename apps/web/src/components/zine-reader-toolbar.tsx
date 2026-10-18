@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import type { ZineReaderToolbarProps } from './zine-reader-toolbar-types';
 
-export function ZineReaderToolbar({ embedCustomizer, mobileEmbedCustomizer, onFullscreen, originalUrl }: ZineReaderToolbarProps) {
+export function ZineReaderToolbar({ embedCustomizer, mobileEmbedCustomizer, onFullscreen, originalUrl, viewerUrl }: ZineReaderToolbarProps) {
   const [moreOpen, setMoreOpen] = useState(false);
 
   return (
@@ -16,6 +16,10 @@ export function ZineReaderToolbar({ embedCustomizer, mobileEmbedCustomizer, onFu
         <Link className="hidden h-9 items-center gap-2 border border-black px-3 hover:bg-neutral-100 sm:inline-flex" href={originalUrl} rel="noreferrer" target="_blank">
           <ExternalLink aria-hidden="true" size={15} />
           Abrir arquivo original
+        </Link>
+        <Link className="hidden h-9 items-center gap-2 border border-black px-3 hover:bg-neutral-100 sm:inline-flex" href={viewerUrl} rel="noreferrer" target="_blank">
+          <ExternalLink aria-hidden="true" size={15} />
+          Abrir leitor em nova aba
         </Link>
         <button className="inline-flex h-9 flex-1 items-center justify-center gap-2 border border-black px-3 hover:bg-neutral-100 sm:flex-none" onClick={onFullscreen} type="button">
           <Maximize2 aria-hidden="true" size={15} />
@@ -39,6 +43,10 @@ export function ZineReaderToolbar({ embedCustomizer, mobileEmbedCustomizer, onFu
               <Link className="inline-flex h-11 items-center gap-2 border border-black px-3" href={originalUrl} rel="noreferrer" target="_blank">
                 <ExternalLink aria-hidden="true" size={16} />
                 Abrir arquivo original
+              </Link>
+              <Link className="inline-flex h-11 items-center gap-2 border border-black px-3" href={viewerUrl} rel="noreferrer" target="_blank">
+                <ExternalLink aria-hidden="true" size={16} />
+                Abrir leitor em nova aba
               </Link>
               {mobileEmbedCustomizer}
             </div>
