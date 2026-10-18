@@ -58,7 +58,7 @@ export function BreadcrumbWrapper({ items, children, className }: BreadcrumbWrap
     <div className={className}>
       <BreadcrumbNavigation
         items={items}
-        className="mx-auto mb-6 max-w-8xl px-4 pt-4 sm:px-6 lg:px-12"
+        className="mx-auto mb-6 max-w-8xl px-8 pt-4 sm:px-10 lg:px-16"
       />
       {children}
     </div>
