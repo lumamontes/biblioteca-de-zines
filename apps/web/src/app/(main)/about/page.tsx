@@ -41,7 +41,7 @@ const RELATED_LINKS = [
   },
   {
     title: "Viveiro Digital",
-    description: "Recursos para pesquisa, criação e circulação de publicações independentes.",
+    description: "Recursos para pesquisa, criação e circulação de acervos independentes.",
     url: "https://viveiro-digital.github.io/recursos/",
   },
 ];
