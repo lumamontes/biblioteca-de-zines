@@ -39,9 +39,9 @@ export const updates: Update[] = [
       ],
       media: [
         {
-          kind: "image",
-          src: "/novidades/visualizador-paginas.svg",
-          alt: "Ilustração do visualizador de páginas da Biblioteca de Zines",
+          kind: "video",
+          src: "/novidades/visualizador-paginas.mp4",
+          alt: "Vídeo do visualizador de páginas da Biblioteca de Zines",
         },
       ],
     },

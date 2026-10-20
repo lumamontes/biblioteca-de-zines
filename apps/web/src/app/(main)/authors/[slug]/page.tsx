@@ -81,7 +81,7 @@ export default async function AuthorPage({
       <AuthorStructuredData author={author} zines={zines} />
       <BreadcrumbStructuredData items={breadcrumbItems} />
       <BreadcrumbWrapper items={navigationBreadcrumbItems}>
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="mx-auto max-w-8xl px-4 py-8 sm:px-6 lg:px-12">
         <section className="mb-8">
           <h1 className="text-3xl font-bold mb-4">{author.name}</h1>
         
