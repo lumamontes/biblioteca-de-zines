@@ -6,12 +6,13 @@ export const updates: Update[] = [
     date: "2026-10-21",
     kind: "site",
     public: {
-      title: "Uma leitura mais confortável no catálogo",
+      title: "Uma nova forma de ler e explorar zines",
       summary:
-        "A página de leitura ganhou uma organização mais clara e um contraste adaptável para os links sociais fixos.",
+        "A página de cada zine ganhou uma leitura mais ampla, com os detalhes organizados em uma lateral recolhível.",
       body: [
-        "Agora é possível alternar entre a visualização de PDF e a leitura digital com os controles organizados na lateral da zine.",
-        "Quando os links sociais passam sobre essa lateral em telas grandes, eles recebem um fundo translúcido sutil para continuar visíveis sem esconder completamente o conteúdo. Em telas pequenas, a navegação continua seguindo o fluxo normal da página.",
+        "A nova página coloca o PDF ou a leitura digital no centro da experiência e organiza título, autoria, descrição e outros detalhes em uma lateral recolhível. Assim, é possível consultar as informações da zine sem tirar o foco das páginas.",
+        "Também ficou mais simples alternar entre a visualização de PDF e a leitura digital. No PDF, a página pode ocupar toda a área disponível ou ser exibida inteira, enquanto os controles da leitura digital ficam organizados na própria lateral.",
+        "Para preservar esse foco no desktop, os links sociais fixos não aparecem nas páginas individuais de zines. Em telas pequenas, eles continuam seguindo o fluxo normal da página.",
       ],
       media: [
         {

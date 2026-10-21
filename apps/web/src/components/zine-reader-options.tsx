@@ -5,9 +5,11 @@ import { createPortal } from 'react-dom';
 import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { EmbedCustomizer } from './embed-customizer';
-import { PdfDisplayOptions, ReaderModeTabs } from './reader-mode-tabs';
+import { PdfDisplayOptions } from './pdf-display-options';
+import { ReaderModeTabs } from './reader-mode-tabs';
 import { useEmbedPreview } from './use-embed-preview';
-import type { PdfDisplayMode, ReaderDisplayMode, ZineReaderOptionsProps } from './zine-reader-options-types';
+import type { PdfDisplayMode } from './pdf-display-options-types';
+import type { ReaderDisplayMode, ZineReaderOptionsProps } from './zine-reader-options-types';
 import { ZineReaderToolbar } from './zine-reader-toolbar';
 import { ZineReadingLayout } from './zine-reading-layout';
 

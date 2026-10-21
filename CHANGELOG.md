@@ -20,10 +20,10 @@ entraram em `main`. Versões formais seguirão o
   empilhado sem controles de recolhimento.
   [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191) [PR #192](https://github.com/lumamontes/biblioteca-de-zines/pull/192)
 
-- **Contraste adaptável dos links sociais**: os links sociais fixos agora detectam
-  quando passam sobre a lateral do leitor e recebem um fundo translúcido sutil,
-  mantendo a navegação visível sem alterar sua posição ou aparência em telas
-  pequenas. [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191) [PR #192](https://github.com/lumamontes/biblioteca-de-zines/pull/192)
+- **Navegação social nas páginas de zines**: os links sociais fixos deixam de
+  aparecer no desktop das páginas individuais de zines para não cobrir descrições
+  longas nem competir com a leitura. Eles continuam disponíveis em outras páginas
+  e seguem no fluxo normal em telas pequenas. [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191) [PR #192](https://github.com/lumamontes/biblioteca-de-zines/pull/192)
 
 ## 2026-10-18
 

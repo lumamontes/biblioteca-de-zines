@@ -1,4 +1,3 @@
-import PDFViewer from "@/components/pdf-viewer";
 import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { getSlugZineMetadata } from "@/utils/metadata";
@@ -12,7 +11,7 @@ import { createZineReadingSurface, hasBetaReadingSurface } from "@/application/r
 import { ZineReaderOptions } from "@/components/zine-reader-options";
 import { redirect } from "next/navigation";
 import { ZineDetails } from "@/components/zine-details";
-import { ZineReadingLayout } from "@/components/zine-reading-layout";
+import { PdfReadingLayout } from "@/components/pdf-reading-layout";
 
 export async function generateMetadata({
   params,
@@ -88,11 +87,7 @@ export default async function ZinePreview({
       {hasBetaReadingSurface(readingSurface) ? (
             <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} surface={readingSurface} />
           ) : (
-            <ZineReadingLayout sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />}>
-              <div className="h-[min(72vh,56rem)] min-h-[32rem] w-full overflow-hidden border border-neutral-200 bg-white lg:h-full">
-                <PDFViewer url={previewUrl} />
-              </div>
-            </ZineReadingLayout>
+            <PdfReadingLayout sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} url={previewUrl} />
           )}
         </div>
       </BreadcrumbWrapper>
