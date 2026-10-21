@@ -29,6 +29,12 @@ body {
   color: rgb(var(--foreground-rgb));
 }
 
+@media (min-width: 1024px) {
+  body:has(.reading-layout-page) {
+    overflow: hidden;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -80,6 +86,24 @@ html {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .reading-sidebar-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .reading-sidebar-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .embed-modal-overlay {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .embed-modal-overlay::-webkit-scrollbar {
+    display: none;
   }
 }
 

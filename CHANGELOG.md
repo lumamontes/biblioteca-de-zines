@@ -6,7 +6,24 @@ publicadas ficam em `Unreleased`; as demais são agrupadas pela data em que
 entraram em `main`. Versões formais seguirão o
 [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 2026-10-21
+
+### Alterado
+
+- **Novo layout em detalhamento de zines**: a página de detalhes passou a manter o
+  PDF ou leitor digital em um painel principal no desktop, enquanto informações
+  editoriais e controles ficam em uma coluna lateral recolhível. A lateral
+  organiza os modos `Visualização de PDF` e `Leitura digital`, oferece as opções
+  de ocupar a área ou mostrar a página inteira sem recarregar o PDF e reúne as
+  ações do leitor digital. O embed usa o leitor sem preset, breadcrumbs longos
+  são truncados com acesso ao título completo e telas pequenas mantêm um fluxo
+  empilhado sem controles de recolhimento.
+  [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191) [PR #192](https://github.com/lumamontes/biblioteca-de-zines/pull/192)
+
+- **Navegação social nas páginas de zines**: os links sociais fixos deixam de
+  aparecer no desktop das páginas individuais de zines para não cobrir descrições
+  longas nem competir com a leitura. Eles continuam disponíveis em outras páginas
+  e seguem no fluxo normal em telas pequenas. [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191) [PR #192](https://github.com/lumamontes/biblioteca-de-zines/pull/192)
 
 ## 2026-10-18
 

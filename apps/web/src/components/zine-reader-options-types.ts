@@ -20,5 +20,7 @@ export type ReaderModeTabProps = {
 
 export type ZineReaderOptionsProps = {
   initialMode: ReaderDisplayMode;
+  sidebar: ReactNode;
+  sidebarHeader: ReactNode;
   surface: AvailableZineReadingSurface;
 };

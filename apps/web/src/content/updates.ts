@@ -2,6 +2,28 @@ import type { Update } from "./update-types";
 
 export const updates: Update[] = [
   {
+    slug: "leitura-com-mais-contraste",
+    date: "2026-10-21",
+    kind: "site",
+    public: {
+      title: "Uma nova forma de ler e explorar zines",
+      summary:
+        "A página de cada zine ganhou uma leitura mais ampla, com os detalhes organizados em uma lateral recolhível.",
+      body: [
+        "A nova página coloca o PDF ou a leitura digital no centro da experiência e organiza título, autoria, descrição e outros detalhes em uma lateral recolhível. Assim, é possível consultar as informações da zine sem tirar o foco das páginas.",
+        "Também ficou mais simples alternar entre a visualização de PDF e a leitura digital. No PDF, a página pode ocupar toda a área disponível ou ser exibida inteira, enquanto os controles da leitura digital ficam organizados na própria lateral.",
+        "Para preservar esse foco no desktop, os links sociais fixos não aparecem nas páginas individuais de zines. Em telas pequenas, eles continuam seguindo o fluxo normal da página.",
+      ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/nova-pagina-detalhamento-zines.png",
+          alt: "Nova página de detalhes e leitura de uma zine na Biblioteca de Zines",
+        },
+      ],
+    },
+  },
+  {
     slug: "biblioteca-em-destaque-na-midia",
     date: "2026-10-15",
     kind: "community",

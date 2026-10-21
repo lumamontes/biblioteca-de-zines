@@ -1,18 +1,17 @@
-import PDFViewer from "@/components/pdf-viewer";
-import CategoryBadgeWithLink from "@/components/zine-card/category-badge-with-link";
 import { getZineBySlug } from "@/services/zine-service";
 import { getPreviewUrl, getThumbnailUrl } from "@/utils/assets";
 import { getSlugZineMetadata } from "@/utils/metadata";
-import { joinAuthors, getZineCategories } from "@/utils/utils";
+import { getZineCategories } from "@/utils/utils";
 import { siteConfig } from "@/app/config/site";
-import Link from "next/link";
 import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/structured-data";
-import { BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
+import { BreadcrumbNavigation, BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
 import { createViewerRolloutConfig } from "@/application/reader/viewer-rollout";
 import { getViewerReader } from "@/composition/server/public-reader";
 import { createZineReadingSurface, hasBetaReadingSurface } from "@/application/reader/reading-surface";
 import { ZineReaderOptions } from "@/components/zine-reader-options";
 import { redirect } from "next/navigation";
+import { ZineDetails } from "@/components/zine-details";
+import { PdfReadingLayout } from "@/components/pdf-reading-layout";
 
 export async function generateMetadata({
   params,
@@ -83,33 +82,12 @@ export default async function ZinePreview({
     <>
       <ZineStructuredData zine={preview} />
       <BreadcrumbStructuredData items={breadcrumbItems} />
-      <BreadcrumbWrapper items={breadcrumbItems}>
-        <div className="flex min-h-screen flex-col items-center w-full mx-auto p-4 md:p-0 gap-16">
-        <p className="text-sm">
-          <strong>{preview.title}</strong> por {joinAuthors(preview.library_zines_authors)}
-        </p>
-      <div className="flex gap-2 flex-wrap justify-center max-w-2xl mx-auto">
-      {preview.library_zines_authors.length > 0 && preview.library_zines_authors.map(({authors}) => (
-          <Link
-            key={authors.id}
-            href={authors.slug ? `/authors/${authors.slug}` : authors.url || "#"}
-            {...(authors.slug ? {} : { target: "_blank" })}
-            className="flex items-center justify-center px-3 py-1.5 text-sm font-medium text-black border border-black rounded-md hover:bg-neutral-100 transition"
-          >
-            Conhecer autor: {authors.name}
-          </Link>
-        ))}
-      </div>
-      {categories.length > 0 && (
-        <CategoryBadgeWithLink categories={categories} />
-      )}
-      <p className="text-sm max-w-xl text-center">{preview.description}</p>
-          {hasBetaReadingSurface(readingSurface) ? (
-            <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} surface={readingSurface} />
+      <BreadcrumbWrapper className="lg:flex lg:h-[calc(100dvh-5rem)] lg:flex-col lg:overflow-hidden" items={breadcrumbItems} showNavigation={false}>
+        <div className="reading-layout-page flex min-h-0 w-full flex-1 flex-col items-center gap-8 p-4 md:p-0 lg:overflow-hidden">
+      {hasBetaReadingSurface(readingSurface) ? (
+            <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} surface={readingSurface} />
           ) : (
-            <div className="bg-neutral-500 w-full h-screen max-w-xl mx-auto overflow-hidden">
-              <PDFViewer url={previewUrl} />
-            </div>
+            <PdfReadingLayout sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} url={previewUrl} />
           )}
         </div>
       </BreadcrumbWrapper>
