@@ -50,6 +50,7 @@ Use lightweight application-service boundaries for new work:
 - `apps/viewer` owns reader rendering and delivery mechanics. Do not modify it for an `apps/web` feature unless the issue explicitly requires a viewer change.
 - Keep protocol discriminants as typed unions. Do not duplicate nested response-shape checks at call sites; expose a named domain predicate when a business rule depends on them.
 - Before committing, inspect `git diff --name-only origin/main...HEAD` and confirm every changed path belongs to the owning application.
+- Open every new pull request as a draft with `gh pr create --draft`. Mark it ready only after explicit human approval.
 
 Prefer the smallest boundary that makes a workflow readable. Do not introduce full DDD ceremony, aggregates, factories, or value objects without a concrete domain need.
 
