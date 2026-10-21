@@ -6,21 +6,24 @@ publicadas ficam em `Unreleased`; as demais são agrupadas pela data em que
 entraram em `main`. Versões formais seguirão o
 [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 2026-10-21
 
 ### Alterado
 
 - **Visualização persistente de zines**: a página de detalhes passou a manter o
   PDF ou leitor digital em um painel principal no desktop, enquanto informações
-  editoriais e controles ficam em uma coluna lateral recolhível. O PDF mantém
-  sua rolagem dentro do painel, o leitor digital usa a navegação própria sem
-  uma segunda rolagem e telas pequenas continuam usando um fluxo empilhado.
-  [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191)
+  editoriais e controles ficam em uma coluna lateral recolhível. A lateral
+  organiza os modos `Visualização de PDF` e `Leitura digital`, oferece as opções
+  de ocupar a área ou mostrar a página inteira sem recarregar o PDF e reúne as
+  ações do leitor digital. O embed usa o leitor sem preset, breadcrumbs longos
+  são truncados com acesso ao título completo e telas pequenas mantêm um fluxo
+  empilhado sem controles de recolhimento.
+  [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191) [PR #192](https://github.com/lumamontes/biblioteca-de-zines/pull/192)
 
 - **Contraste adaptável dos links sociais**: os links sociais fixos agora detectam
   quando passam sobre a lateral do leitor e recebem um fundo translúcido sutil,
   mantendo a navegação visível sem alterar sua posição ou aparência em telas
-  pequenas. [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191)
+  pequenas. [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191) [PR #192](https://github.com/lumamontes/biblioteca-de-zines/pull/192)
 
 ## 2026-10-18
 
