@@ -49,12 +49,11 @@ Use role suffixes for new sibling modules so a file's responsibility is visible 
 - `name.component.tsx` contains a React component.
 - `name.types.ts` contains types and interfaces only; it never contains JSX or runtime behavior.
 - `name.config.ts` contains reusable runtime configuration and constants.
-- `name.content.tsx` contains JSX-producing render helpers and content composition.
-- `name.formatting.ts` contains pure formatting and parsing helpers.
+- `name.helpers.ts` contains feature-local pure helpers, including formatting and parsing.
 - `name.service.ts` contains application orchestration and behavior.
 - `name.repository.ts` contains persistence-facing adapters.
 
-Use the narrowest applicable role. Do not create a suffix module merely to rename a one-line local value, and do not rename existing files unless the change already owns that area or a dedicated migration is requested.
+Use `.tsx` only when a file contains JSX. Reserve `utils.ts` for helpers shared across multiple features; keep feature-local helpers in `name.helpers.ts`. Use the narrowest applicable role. Do not create a suffix module merely to rename a one-line local value, and do not rename existing files unless the change already owns that area or a dedicated migration is requested.
 
 ### Hard implementation guardrails
 
