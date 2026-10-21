@@ -1,12 +1,12 @@
 'use client';
 
+import type { PublicReaderZine } from '@biblioteca-de-zines/reader';
 import { useEffect, useRef, useState } from 'react';
 import { createReaderSession } from '@/application/reader-session';
 import type { ReaderDeliveryMode, ReaderViewMode } from '@/application/reader-types';
 import { createBookReaderRenderer, loadBookReaderRuntime } from '@/infrastructure/bookreader-adapter';
 import { fetchPublicReader } from '@/infrastructure/public-reader-client';
 import { createReaderTelemetry } from '@/infrastructure/reader-telemetry';
-import type { PublicReaderZine } from '@biblioteca-de-zines/reader';
 
 const apiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://www.biblioteca-de-zines.com.br';
 
