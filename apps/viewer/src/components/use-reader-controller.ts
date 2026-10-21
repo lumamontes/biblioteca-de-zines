@@ -1,33 +1,27 @@
 'use client';
 
-import type { PublicReaderZine } from '@biblioteca-de-zines/reader';
 import { useEffect, useRef, useState } from 'react';
 import { createReaderSession } from '@/application/reader-session';
-import type { ReaderDeliveryMode, ReaderViewMode } from '@/application/reader-types';
 import { createBookReaderRenderer, loadBookReaderRuntime } from '@/infrastructure/bookreader-adapter';
-import { fetchPublicReader } from '@/infrastructure/public-reader-client';
+import { createReaderRequestController, fetchPublicReader } from '@/infrastructure/public-reader-client';
 import { createReaderTelemetry } from '@/infrastructure/reader-telemetry';
+import type { ReaderControllerInput, ReaderControllerState } from './reader-controller-types';
 
 const apiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://www.biblioteca-de-zines.com.br';
-
-export type ReaderControllerInput = { mode: ReaderViewMode; page: number; slug: string; surface: ReaderDeliveryMode };
-export type ReaderControllerState = {
-  publication?: PublicReaderZine;
-  fallback: { label: string; url: string };
-  state: 'loading' | 'ready' | 'fallback';
-  target: React.RefObject<HTMLDivElement | null>;
-};
 
 export function useReaderController({ mode, page, slug, surface }: ReaderControllerInput): ReaderControllerState {
   const target = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<ReaderControllerState['state']>('loading');
   const [publication, setPublication] = useState<ReaderControllerState['publication']>();
   const [fallback, setFallback] = useState<ReaderControllerState['fallback']>({ label: 'Abrir a publicação', url: '' });
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     let disposed = false;
     let cleanup = () => {};
+    let cancelRequest = () => {};
     let session: ReturnType<typeof createReaderSession> | undefined;
+    let hasValidReaderData = false;
     setState('loading');
     setPublication(undefined);
     setFallback({ label: 'Abrir a publicação', url: '' });
@@ -35,17 +29,18 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
 
     async function load() {
       try {
-        const controller = new AbortController();
-        const timeout = window.setTimeout(() => controller.abort(), 10000);
-        const { data: parsed, metadataBytes } = await fetchPublicReader(apiOrigin, slug, surface, controller.signal).finally(() => window.clearTimeout(timeout));
+        const request = createReaderRequestController();
+        cancelRequest = request.cancel;
+        const { data: parsed, metadataBytes } = await fetchPublicReader(apiOrigin, slug, surface, request.signal).finally(request.cancel);
         if (disposed) return;
         setPublication(parsed.publication);
         setFallback(parsed.fallback);
         if (parsed.status === 'fallback') {
           telemetry.report('fallback', { metadataBytes });
-          setState('fallback');
+          setState(parsed.reason === 'source-unavailable' ? 'unavailable' : 'fallback');
           return;
         }
+        hasValidReaderData = true;
         await loadBookReaderRuntime();
         if (disposed) return;
         session = createReaderSession({ fallback: parsed.fallback, initialPage: page, manifest: parsed.manifest }, createBookReaderRenderer(undefined, { mode, page }));
@@ -64,13 +59,13 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
       } catch {
         session?.destroy();
         telemetry.report('page-error');
-        if (!disposed) setState('fallback');
+        if (!disposed) setState(hasValidReaderData ? 'fallback' : 'unavailable');
       }
     }
 
     void load();
-    return () => { disposed = true; cleanup(); };
-  }, [mode, page, slug, surface]);
+    return () => { disposed = true; cancelRequest(); cleanup(); };
+  }, [mode, page, retryKey, slug, surface]);
 
-  return { fallback, publication, state, target };
+  return { fallback, publication, retry: () => setRetryKey((current) => current + 1), state, target };
 }

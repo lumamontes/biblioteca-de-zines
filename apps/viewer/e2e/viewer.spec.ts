@@ -81,7 +81,7 @@ test('serves the unbranded embed and optional Biblioteca branding', async ({ pag
   await expect(page.locator('.reader--branded')).toHaveCount(1);
 });
 
-test('shows the PDF fallback when the endpoint is unavailable', async ({ page }) => {
+test('shows the unavailable state when the endpoint is unavailable', async ({ page }) => {
   await page.unroute('**/api/public-reader/**');
   await page.route('**/api/public-reader/**', (route) => route.fulfill({
     contentType: 'application/json',
@@ -90,8 +90,26 @@ test('shows the PDF fallback when the endpoint is unavailable', async ({ page })
   }));
   await page.goto('/p/zine');
 
-  await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
-  await expect(page.getByText('O PDF original não está disponível.')).toBeVisible();
+  await expect(page.getByText('Opa, parece que o link para essa zine não está mais disponível!', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Tentar novamente' })).toBeVisible();
+});
+
+test('allows retrying an unavailable reader without a scheduled check', async ({ page }) => {
+  let attempts = 0;
+  await page.unroute('**/api/public-reader/**');
+  await page.route('**/api/public-reader/**', (route) => {
+    attempts += 1;
+    return route.fulfill(attempts === 1
+      ? { contentType: 'application/json', status: 503, body: JSON.stringify({ error: 'Reader unavailable' }) }
+      : { contentType: 'application/json', status: 200, body: JSON.stringify(readyResponse) });
+  });
+  await mockBookReaderAssets(page);
+  await page.goto('/p/zine');
+
+  await expect(page.getByText('Opa, parece que o link para essa zine não está mais disponível!', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Tentar novamente' }).click();
+  await expect(page.locator('.reader__canvas')).toBeVisible();
+  expect(attempts).toBe(2);
 });
 
 async function mockBookReaderAssets(page: import('@playwright/test').Page) {
