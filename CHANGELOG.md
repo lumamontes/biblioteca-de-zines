@@ -10,7 +10,7 @@ entraram em `main`. Versões formais seguirão o
 
 ### Alterado
 
-- **Visualização persistente de zines**: a página de detalhes passou a manter o
+- **Novo layout em detalhamento de zines**: a página de detalhes passou a manter o
   PDF ou leitor digital em um painel principal no desktop, enquanto informações
   editoriais e controles ficam em uma coluna lateral recolhível. A lateral
   organiza os modos `Visualização de PDF` e `Leitura digital`, oferece as opções
