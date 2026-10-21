@@ -10,14 +10,15 @@ interface BreadcrumbItem {
 interface BreadcrumbNavigationProps {
   items: BreadcrumbItem[]
   className?: string
+  truncateCurrent?: boolean
 }
 
-export function BreadcrumbNavigation({ items, className = "" }: BreadcrumbNavigationProps) {
+export function BreadcrumbNavigation({ items, className = "", truncateCurrent = false }: BreadcrumbNavigationProps) {
   return (
-    <nav aria-label="Breadcrumb" className={`flex items-center space-x-2 text-sm ${className}`}>
-      <ol className="flex items-center space-x-2">
+    <nav aria-label="Breadcrumb" className={`flex min-w-0 items-center space-x-2 overflow-hidden text-sm ${className}`}>
+      <ol className="flex min-w-0 items-center space-x-2">
         {items.map((item, index) => (
-          <li key={item.url} className="flex items-center">
+          <li key={item.url} className={`flex items-center ${truncateCurrent && index === items.length - 1 ? "min-w-0" : ""}`}>
             {index > 0 && (
               <ChevronRight 
                 className="w-4 h-4 mx-2 text-gray-400 flex-shrink-0" 
@@ -26,8 +27,9 @@ export function BreadcrumbNavigation({ items, className = "" }: BreadcrumbNaviga
             )}
             {item.current || index === items.length - 1 ? (
               <span 
-                className="text-gray-900 font-medium" 
+                className={`text-gray-900 font-medium ${truncateCurrent && index === items.length - 1 ? "block max-w-[8rem] truncate sm:max-w-56" : ""}`}
                 aria-current="page"
+                title={truncateCurrent && index === items.length - 1 ? item.name : undefined}
               >
                 {item.name}
               </span>
@@ -51,15 +53,13 @@ interface BreadcrumbWrapperProps {
   items: BreadcrumbItem[]
   children: React.ReactNode
   className?: string
+  showNavigation?: boolean
 }
 
-export function BreadcrumbWrapper({ items, children, className }: BreadcrumbWrapperProps) {
+export function BreadcrumbWrapper({ items, children, className, showNavigation = true }: BreadcrumbWrapperProps) {
   return (
     <div className={className}>
-      <BreadcrumbNavigation
-        items={items}
-        className="mx-auto mb-6 max-w-8xl px-8 pt-4 sm:px-10 lg:px-16"
-      />
+      {showNavigation && <BreadcrumbNavigation items={items} className="mx-auto mb-6 max-w-8xl px-8 pt-4 sm:px-10 lg:px-16" />}
       {children}
     </div>
   )

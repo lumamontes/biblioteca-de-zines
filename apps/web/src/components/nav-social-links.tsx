@@ -40,6 +40,8 @@ const links: SocialLink[] = [
 export default function NavSocialLinks() {
   const [isOverlapping, setIsOverlapping] = useState(false);
   const pathname = usePathname();
+  const isZineReaderPage = /^\/zines\/[^/]+$/.test(pathname);
+  const showContrastBackdrop = isOverlapping || isZineReaderPage;
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
@@ -95,9 +97,9 @@ export default function NavSocialLinks() {
   return (
     <nav
       data-social-links="true"
-      className="mt-12 p-4 md:fixed md:bottom-16 md:right-12"
+      className={`mt-12 p-4 md:fixed md:bottom-16 ${isZineReaderPage ? "md:hidden" : "md:right-12"}`}
     >
-      <div className={isOverlapping ? "rounded-lg border border-gray-200/70 bg-white/65 p-1.5 backdrop-blur-[1px] transition-[background-color,backdrop-filter,border-color] duration-200" : ""}>
+      <div className={`rounded-lg border p-1.5 transition-[background-color,backdrop-filter,border-color] duration-200 ${showContrastBackdrop ? "border-transparent md:border-gray-200/70 md:bg-white/75 md:backdrop-blur-[1px]" : "border-transparent bg-transparent"}`}>
         <ul className="flex items-center justify-center gap-4 md:flex-col">
           {links.map(({ href, src, alt }, index) => (
             <li key={index} className="list-none">

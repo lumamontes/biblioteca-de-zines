@@ -86,9 +86,9 @@ export default async function ZinePreview({
       <BreadcrumbWrapper className="lg:flex lg:h-[calc(100dvh-5rem)] lg:flex-col lg:overflow-hidden" items={breadcrumbItems} showNavigation={false}>
         <div className="reading-layout-page flex min-h-0 w-full flex-1 flex-col items-center gap-8 p-4 md:p-0 lg:overflow-hidden">
       {hasBetaReadingSurface(readingSurface) ? (
-            <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} sidebarHeader={<BreadcrumbNavigation items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} surface={readingSurface} />
+            <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} surface={readingSurface} />
           ) : (
-            <ZineReadingLayout sidebarHeader={<BreadcrumbNavigation items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />}>
+            <ZineReadingLayout sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />}>
               <div className="h-[min(72vh,56rem)] min-h-[32rem] w-full overflow-hidden border border-neutral-200 bg-white lg:h-full">
                 <PDFViewer url={previewUrl} />
               </div>

@@ -6,10 +6,10 @@ import type { ZineReadingLayoutProps } from './zine-reading-layout-types';
 
 export function ZineReadingLayout({ children, sidebar, sidebarHeader }: ZineReadingLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const gridColumns = sidebarOpen ? 'lg:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)]' : 'lg:grid-cols-[minmax(0,1fr)_auto]';
+  const gridColumns = sidebarOpen ? 'lg:grid-cols-[minmax(0,1fr)_24rem]' : 'lg:grid-cols-[minmax(0,1fr)_6.5rem]';
 
   return (
-    <div className={`grid h-full min-h-0 w-full gap-6 ${gridColumns} lg:items-start`}>
+    <div className={`grid h-full min-h-0 w-full gap-6 transition-[grid-template-columns] duration-300 ease-out ${gridColumns} lg:items-start`}>
       <div className="min-h-0 min-w-0 lg:h-full">{children}</div>
       {sidebarOpen ? (
         <aside data-social-obstacle="true" className="reading-sidebar-scroll min-h-0 min-w-0 lg:max-h-full lg:overflow-y-auto">
@@ -19,7 +19,7 @@ export function ZineReadingLayout({ children, sidebar, sidebarHeader }: ZineRead
               <button
                 aria-expanded="true"
                 aria-label="Recolher informações da zine"
-                className="inline-flex size-9 items-center justify-center border border-black hover:bg-neutral-100"
+                className="hidden size-9 items-center justify-center border border-black hover:bg-neutral-100 lg:inline-flex"
                 onClick={() => setSidebarOpen(false)}
                 type="button"
               >
@@ -30,7 +30,7 @@ export function ZineReadingLayout({ children, sidebar, sidebarHeader }: ZineRead
           </div>
         </aside>
       ) : (
-        <div className="flex justify-start">
+        <div className="hidden justify-start lg:flex lg:pr-16">
           <button
             aria-expanded="false"
             aria-label="Mostrar informações da zine"

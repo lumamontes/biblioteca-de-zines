@@ -13,6 +13,13 @@ export const updates: Update[] = [
         "Agora é possível alternar entre a visualização de PDF e a leitura digital com os controles organizados na lateral da zine.",
         "Quando os links sociais passam sobre essa lateral em telas grandes, eles recebem um fundo translúcido sutil para continuar visíveis sem esconder completamente o conteúdo. Em telas pequenas, a navegação continua seguindo o fluxo normal da página.",
       ],
+      media: [
+        {
+          kind: "image",
+          src: "/novidades/nova-pagina-detalhamento-zines.png",
+          alt: "Nova página de detalhes e leitura de uma zine na Biblioteca de Zines",
+        },
+      ],
     },
   },
   {
