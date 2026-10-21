@@ -1,5 +1,5 @@
 import { createPublicViewerEmbedUrl, createPublicViewerUrl } from './viewer-link';
-import type { ViewerReaderResult } from './viewer-reader-types';
+import { hasUnavailableReaderSource, type ViewerReaderResult } from './viewer-reader-types';
 
 export type ZineReadingSurface = {
   pdfUrl: string;
@@ -25,12 +25,7 @@ export function createZineReadingSurface(input: {
   viewerOrigin?: string;
   reader: ViewerReaderResult;
 }): ZineReadingSurface {
-  const sourceUnavailable = !input.pdfUrl && (
-    input.reader.status === 'unavailable'
-    || (input.reader.status === 'available'
-      && input.reader.reader.status === 'fallback'
-      && input.reader.reader.reason === 'source-unavailable')
-  );
+  const sourceUnavailable = !input.pdfUrl && hasUnavailableReaderSource(input.reader);
   const beta = input.reader.status === 'available' && input.reader.reader.status === 'ready'
       ? {
           embedUrl: createPublicViewerEmbedUrl(input.viewerOrigin, input.reader.reader.publication.slug),
