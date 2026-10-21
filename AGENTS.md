@@ -42,6 +42,20 @@ Use lightweight application-service boundaries for new work:
 - Put reusable types and interfaces in dedicated `*-types.ts` or `*-contracts.ts` files.
 - Before finishing a UI change, inspect each component diff and move top-level constants, helper functions, and type declarations out of the component file unless they are inseparable from the component's JSX.
 
+### File organization
+
+Use role suffixes for new sibling modules so a file's responsibility is visible from its name:
+
+- `name.component.tsx` contains a React component.
+- `name.types.ts` contains types and interfaces only; it never contains JSX or runtime behavior.
+- `name.config.ts` contains reusable runtime configuration and constants.
+- `name.content.tsx` contains JSX-producing render helpers and content composition.
+- `name.formatting.ts` contains pure formatting and parsing helpers.
+- `name.service.ts` contains application orchestration and behavior.
+- `name.repository.ts` contains persistence-facing adapters.
+
+Use the narrowest applicable role. Do not create a suffix module merely to rename a one-line local value, and do not rename existing files unless the change already owns that area or a dedicated migration is requested.
+
 ### Hard implementation guardrails
 
 - `*-types.ts` and `*-contracts.ts` are type-only files. Put runtime functions, predicates, constants, and side effects in a behavior or configuration module beside them.
