@@ -7,12 +7,10 @@ import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/s
 import { BreadcrumbNavigation, BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
 import { createViewerRolloutConfig } from "@/application/reader/viewer-rollout";
 import { getViewerReader } from "@/composition/server/public-reader";
-import { createZineReadingSurface, hasBetaReadingSurface } from "@/application/reader/reading-surface";
-import { ZineReaderOptions } from "@/components/zine-reader-options";
+import { createZineReadingSurface } from "@/application/reader/reading-surface";
+import { ZineReadingSurfaceView } from "@/components/zine-reading-surface-view";
 import { redirect } from "next/navigation";
 import { ZineDetails } from "@/components/zine-details";
-import { PdfReadingLayout } from "@/components/pdf-reading-layout";
-import { ZineReaderUnavailable } from "@/components/zine-reader-unavailable";
 
 export async function generateMetadata({
   params,
@@ -85,13 +83,12 @@ export default async function ZinePreview({
       <BreadcrumbStructuredData items={breadcrumbItems} />
       <BreadcrumbWrapper className="lg:flex lg:h-[calc(100dvh-5rem)] lg:flex-col lg:overflow-hidden" items={breadcrumbItems} showNavigation={false}>
         <div className="reading-layout-page flex min-h-0 w-full flex-1 flex-col items-center gap-8 p-4 md:p-0 lg:overflow-hidden">
-      {readingSurface.availability === "unavailable" ? (
-            <ZineReaderUnavailable sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} title={preview.title} />
-          ) : hasBetaReadingSurface(readingSurface) ? (
-            <ZineReaderOptions initialMode={query.view === "reader" ? "beta" : "pdf"} sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} surface={readingSurface} />
-          ) : (
-            <PdfReadingLayout sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />} sidebar={<ZineDetails categories={categories} zine={preview} />} url={previewUrl} />
-          )}
+          <ZineReadingSurfaceView
+            initialMode={query.view === "reader" ? "beta" : "pdf"}
+            sidebar={<ZineDetails categories={categories} zine={preview} />}
+            sidebarHeader={<BreadcrumbNavigation truncateCurrent items={breadcrumbItems} className="!mx-0 !mb-0 !max-w-none !min-w-0 !px-0 !pt-0 text-xs" />}
+            surface={readingSurface}
+          />
         </div>
       </BreadcrumbWrapper>
     </>
