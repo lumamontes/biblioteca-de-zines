@@ -8,6 +8,20 @@ entraram em `main`. Versões formais seguirão o
 
 ## Unreleased
 
+### Alterado
+
+- **Visualização persistente de zines**: a página de detalhes passou a manter o
+  PDF ou leitor digital em um painel principal no desktop, enquanto informações
+  editoriais e controles ficam em uma coluna lateral recolhível. O PDF mantém
+  sua rolagem dentro do painel, o leitor digital usa a navegação própria sem
+  uma segunda rolagem e telas pequenas continuam usando um fluxo empilhado.
+  [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191)
+
+- **Contraste adaptável dos links sociais**: os links sociais fixos agora detectam
+  quando passam sobre a lateral do leitor e recebem um fundo translúcido sutil,
+  mantendo a navegação visível sem alterar sua posição ou aparência em telas
+  pequenas. [Issue #191](https://github.com/lumamontes/biblioteca-de-zines/issues/191)
+
 ## 2026-10-18
 
 ### Adicionado

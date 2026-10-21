@@ -2,6 +2,20 @@ import type { Update } from "./update-types";
 
 export const updates: Update[] = [
   {
+    slug: "leitura-com-mais-contraste",
+    date: "2026-10-21",
+    kind: "site",
+    public: {
+      title: "Uma leitura mais confortável no catálogo",
+      summary:
+        "A página de leitura ganhou uma organização mais clara e um contraste adaptável para os links sociais fixos.",
+      body: [
+        "Agora é possível alternar entre a visualização de PDF e a leitura digital com os controles organizados na lateral da zine.",
+        "Quando os links sociais passam sobre essa lateral em telas grandes, eles recebem um fundo translúcido sutil para continuar visíveis sem esconder completamente o conteúdo. Em telas pequenas, a navegação continua seguindo o fluxo normal da página.",
+      ],
+    },
+  },
+  {
     slug: "biblioteca-em-destaque-na-midia",
     date: "2026-10-15",
     kind: "community",

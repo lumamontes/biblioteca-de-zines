@@ -12,7 +12,7 @@ export function ZineReadingLayout({ children, sidebar, sidebarHeader }: ZineRead
     <div className={`grid h-full min-h-0 w-full gap-6 ${gridColumns} lg:items-start`}>
       <div className="min-h-0 min-w-0 lg:h-full">{children}</div>
       {sidebarOpen ? (
-        <aside className="reading-sidebar-scroll min-h-0 min-w-0 lg:max-h-full lg:overflow-y-auto">
+        <aside data-social-obstacle="true" className="reading-sidebar-scroll min-h-0 min-w-0 lg:max-h-full lg:overflow-y-auto">
           <div className="border border-neutral-200 bg-white p-5 shadow-sm">
             <div className="mb-5 flex items-center justify-between gap-3 border-b border-neutral-200 pb-3">
               <div className="min-w-0 flex-1">{sidebarHeader}</div>
