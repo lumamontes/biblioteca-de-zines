@@ -1,5 +1,6 @@
 import { createPublicViewerEmbedUrl, createPublicViewerUrl } from './viewer-link';
-import { hasUnavailableReaderSource, type ViewerReaderResult } from './viewer-reader-types';
+import { hasUnavailableReaderSource } from './viewer-reader-availability';
+import type { ViewerReaderResult } from './viewer-reader-types';
 
 export type ZineReadingSurface = {
   pdfUrl: string;
