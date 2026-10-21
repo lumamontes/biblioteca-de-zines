@@ -4,6 +4,7 @@ import type { ViewerReaderResult } from './viewer-reader-types';
 export type ZineReadingSurface = {
   pdfUrl: string;
   title: string;
+  availability: 'available' | 'unavailable';
   beta: {
     embedUrl: string;
     viewerUrl: string;
@@ -24,6 +25,12 @@ export function createZineReadingSurface(input: {
   viewerOrigin?: string;
   reader: ViewerReaderResult;
 }): ZineReadingSurface {
+  const sourceUnavailable = !input.pdfUrl && (
+    input.reader.status === 'unavailable'
+    || (input.reader.status === 'available'
+      && input.reader.reader.status === 'fallback'
+      && input.reader.reader.reason === 'source-unavailable')
+  );
   const beta = input.reader.status === 'available' && input.reader.reader.status === 'ready'
       ? {
           embedUrl: createPublicViewerEmbedUrl(input.viewerOrigin, input.reader.reader.publication.slug),
@@ -32,5 +39,5 @@ export function createZineReadingSurface(input: {
       }
     : null;
 
-  return { beta, pdfUrl: input.pdfUrl, title: input.title };
+  return { availability: sourceUnavailable ? 'unavailable' : 'available', beta, pdfUrl: input.pdfUrl, title: input.title };
 }

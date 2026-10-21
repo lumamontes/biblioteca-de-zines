@@ -26,6 +26,7 @@ test('creates a beta reading surface from an available canonical reader', () => 
     viewerOrigin: 'http://localhost:4100',
     reader: readyReader,
   }), {
+    availability: 'available',
     pdfUrl: 'https://assets.example/zine.pdf',
     title: 'Zine',
     beta: {
@@ -37,9 +38,28 @@ test('creates a beta reading surface from an available canonical reader', () => 
 });
 
 test('does not expose beta or embed configuration when the reader is unavailable', () => {
-  assert.equal(createZineReadingSurface({
-    pdfUrl: 'https://assets.example/zine.pdf',
+  const surface = createZineReadingSurface({
+    pdfUrl: '',
     title: 'Zine',
     reader: { status: 'unavailable' },
-  }).beta, null);
+  });
+  assert.equal(surface.beta, null);
+  assert.equal(surface.availability, 'unavailable');
+});
+
+test('marks a missing source as unavailable in the web reading surface', () => {
+  const surface = createZineReadingSurface({
+    pdfUrl: '',
+    title: 'Zine',
+    reader: {
+      status: 'available',
+      reader: {
+        status: 'fallback',
+        fallback: { label: 'Abrir PDF', url: '' },
+        publication: { id: 1, slug: 'zine', title: 'Zine' },
+        reason: 'source-unavailable',
+      },
+    },
+  });
+  assert.equal(surface.availability, 'unavailable');
 });
