@@ -1,20 +1,7 @@
 import { createPublicViewerEmbedUrl, createPublicViewerUrl } from './viewer-link';
-import { hasUnavailableReaderSource } from './viewer-reader-availability';
+import { hasUnavailableReaderSource } from './viewer-reader.helpers';
 import type { ViewerReaderResult } from './viewer-reader-types';
-
-export type ZineReadingSurface = {
-  pdfUrl: string;
-  title: string;
-  availability: 'available' | 'unavailable';
-  beta: {
-    embedUrl: string;
-    viewerUrl: string;
-    pageCount: number;
-  } | null;
-};
-export type AvailableZineReadingSurface = Omit<ZineReadingSurface, 'beta'> & {
-  beta: NonNullable<ZineReadingSurface['beta']>;
-};
+import type { AvailableZineReadingSurface, ZineReadingSurface } from './reading-surface.types';
 
 export function hasBetaReadingSurface(surface: ZineReadingSurface): surface is AvailableZineReadingSurface {
   return surface.beta !== null;

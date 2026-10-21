@@ -7,8 +7,8 @@ import { ZineStructuredData, BreadcrumbStructuredData } from "@/components/seo/s
 import { BreadcrumbNavigation, BreadcrumbWrapper } from "@/components/seo/breadcrumb-navigation";
 import { createViewerRolloutConfig } from "@/application/reader/viewer-rollout";
 import { getViewerReader } from "@/composition/server/public-reader";
-import { createZineReadingSurface } from "@/application/reader/reading-surface";
-import { ZineReadingSurfaceView } from "@/components/zine-reading-surface-view";
+import { createZineReadingSurface } from "@/application/reader/reading-surface.service";
+import { ZineReadingSurfaceView } from "@/components/zine-reading-surface-view.component";
 import { redirect } from "next/navigation";
 import { ZineDetails } from "@/components/zine-details";
 

@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReaderModeTabProps } from './zine-reader-options-types';
+import type { ReaderModeTabProps } from './zine-reader-options.types';
 
 export function ReaderModeTab({ active, ariaLabel, icon, label, onClick }: ReaderModeTabProps) {
   const className = active

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createZineReadingSurface } from '@/application/reader/reading-surface';
+import { createZineReadingSurface } from '@/application/reader/reading-surface.service';
 
 const readyReader = {
   status: 'available' as const,
