@@ -5,13 +5,10 @@ import { createReaderSession } from '@/application/reader-session';
 import { createBookReaderRenderer, loadBookReaderRuntime } from '@/infrastructure/bookreader-adapter';
 import { createReaderRequestController, fetchPublicReader } from '@/infrastructure/public-reader-client';
 import { createReaderTelemetry } from '@/infrastructure/reader-telemetry';
-import { DEFAULT_READER_FALLBACK } from './reader-controller-config';
-import type { ReaderControllerInput, ReaderControllerResult, ReaderControllerState } from './reader-controller-types';
+import { INITIAL_READER_STATE, READER_API_ORIGIN } from './reader-controller.config';
+import type { ReaderControllerInput, ReaderControllerResult, ReaderControllerState } from './reader-controller.types';
 
-const apiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://www.biblioteca-de-zines.com.br';
-const INITIAL_READER_STATE: ReaderControllerState = { fallback: DEFAULT_READER_FALLBACK, state: 'loading' };
-
-export type { ReaderControllerInput, ReaderControllerResult, ReaderControllerState } from './reader-controller-types';
+export type { ReaderControllerInput, ReaderControllerResult, ReaderControllerState } from './reader-controller.types';
 
 export function useReaderController({ mode, page, slug, surface }: ReaderControllerInput): ReaderControllerResult {
   const target = useRef<HTMLDivElement>(null);
@@ -21,13 +18,13 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
     let disposed = false;
     let destroySession = () => {};
     const request = createReaderRequestController();
-    const telemetry = createReaderTelemetry(apiOrigin, slug, surface);
+    const telemetry = createReaderTelemetry(READER_API_ORIGIN, slug, surface);
 
     setReaderState(INITIAL_READER_STATE);
 
     async function loadReader() {
       try {
-        const { data, metadataBytes } = await fetchPublicReader(apiOrigin, slug, surface, request.signal).finally(request.cancel);
+        const { data, metadataBytes } = await fetchPublicReader(READER_API_ORIGIN, slug, surface, request.signal).finally(request.cancel);
         if (disposed) return;
 
         setReaderState({
