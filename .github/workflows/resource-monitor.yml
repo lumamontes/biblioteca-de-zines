@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
   monitor:
@@ -37,6 +38,24 @@ jobs:
             --config monitor/config.yml \
             --output resource-report.json \
             --markdown-output resource-report.md
+      - name: Update known failures
+        if: always() && steps.check.outcome != 'cancelled'
+        run: |
+          node apps/web/scripts/export-known-failures.mjs \
+            monitor-resources.json \
+            resource-report.json \
+            apps/web/monitor/known-failures.json
+      - name: Open known failures pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/update-known-source-failures
+          delete-branch: true
+          draft: true
+          title: "chore: update known source failures"
+          commit-message: "chore: update known source failures"
+          body: |
+            Automated weekly update from the published resource monitor.
+          add-paths: apps/web/monitor/known-failures.json
       - name: Upload monitor reports
         if: always()
         uses: actions/upload-artifact@v4

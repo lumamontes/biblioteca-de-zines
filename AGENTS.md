@@ -42,6 +42,29 @@ Use lightweight application-service boundaries for new work:
 - Put reusable types and interfaces in dedicated `*-types.ts` or `*-contracts.ts` files.
 - Before finishing a UI change, inspect each component diff and move top-level constants, helper functions, and type declarations out of the component file unless they are inseparable from the component's JSX.
 
+### File organization
+
+Use role suffixes for new sibling modules so a file's responsibility is visible from its name:
+
+- `name.component.tsx` contains a React component.
+- `name.types.ts` contains types and interfaces only; it never contains JSX or runtime behavior.
+- `name.config.ts` contains reusable runtime configuration and constants.
+- `name.helpers.ts` contains feature-local pure helpers, including formatting and parsing.
+- `name.service.ts` contains application orchestration and behavior.
+- `name.repository.ts` contains persistence-facing adapters.
+
+Use `.tsx` only when a file contains JSX. Reserve `utils.ts` for helpers shared across multiple features; keep feature-local helpers in `name.helpers.ts`. Use the narrowest applicable role. Do not create a suffix module merely to rename a one-line local value, and do not rename existing files unless the change already owns that area or a dedicated migration is requested.
+
+### Hard implementation guardrails
+
+- `*-types.ts` and `*-contracts.ts` are type-only files. Put runtime functions, predicates, constants, and side effects in a behavior or configuration module beside them.
+- Identify the user-facing route and owning application before editing. Record the allowed paths and any application that must remain unchanged.
+- `apps/web` owns catalogue-page behavior: availability state, fallback selection, user-facing messages, and recovery actions for `/zines/[slug]`.
+- `apps/viewer` owns reader rendering and delivery mechanics. Do not modify it for an `apps/web` feature unless the issue explicitly requires a viewer change.
+- Keep protocol discriminants as typed unions. Do not duplicate nested response-shape checks at call sites; expose a named domain predicate when a business rule depends on them.
+- Before committing, inspect `git diff --name-only origin/main...HEAD` and confirm every changed path belongs to the owning application.
+- Open every new pull request as a draft with `gh pr create --draft`. Mark it ready only after explicit human approval.
+
 Prefer the smallest boundary that makes a workflow readable. Do not introduce full DDD ceremony, aggregates, factories, or value objects without a concrete domain need.
 
 Current cover processing is a cover-only application workflow. Keep reusable PDF rendering primitives separate from the cover workflow so future full PDF-to-image page generation can be added without making page derivatives part of the current reader.
