@@ -46,6 +46,10 @@ export function getThumbnailUrl(url: string) {
 }
 
 export function getPreviewUrl(url: string){
+  if (url.includes('drive.google.com/drive/folders/')) {
+    return '';
+  }
+
   if(url.includes('google.com') && !url.includes('preview')){
     return url.replace('view', 'preview');
   }

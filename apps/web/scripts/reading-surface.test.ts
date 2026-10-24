@@ -63,3 +63,21 @@ test('marks a missing source as unavailable in the web reading surface', () => {
   });
   assert.equal(surface.availability, 'unavailable');
 });
+
+test('does not render an empty PDF surface when page generation is unavailable', () => {
+  const surface = createZineReadingSurface({
+    pdfUrl: '',
+    title: 'Zine',
+    reader: {
+      status: 'available',
+      reader: {
+        status: 'fallback',
+        fallback: { label: 'Abrir PDF', url: '' },
+        publication: { id: 1, slug: 'zine', title: 'Zine' },
+        reason: 'page-generation-unavailable',
+      },
+    },
+  });
+  assert.equal(surface.availability, 'unavailable');
+  assert.equal(surface.beta, null);
+});

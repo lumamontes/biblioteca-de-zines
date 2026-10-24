@@ -13,7 +13,6 @@ export function createZineReadingSurface(input: {
   viewerOrigin?: string;
   reader: ViewerReaderResult;
 }): ZineReadingSurface {
-  const sourceUnavailable = !input.pdfUrl && hasUnavailableReaderSource(input.reader);
   const beta = input.reader.status === 'available' && input.reader.reader.status === 'ready'
       ? {
           embedUrl: createPublicViewerEmbedUrl(input.viewerOrigin, input.reader.reader.publication.slug),
@@ -21,6 +20,7 @@ export function createZineReadingSurface(input: {
           pageCount: input.reader.reader.manifest.pageCount,
       }
     : null;
+  const sourceUnavailable = !input.pdfUrl && (beta === null || hasUnavailableReaderSource(input.reader));
 
   return { availability: sourceUnavailable ? 'unavailable' : 'available', beta, pdfUrl: input.pdfUrl, title: input.title };
 }
