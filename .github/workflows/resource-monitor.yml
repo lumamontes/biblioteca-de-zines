@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   monitor:
@@ -44,17 +45,17 @@ jobs:
             monitor-resources.json \
             resource-report.json \
             apps/web/monitor/known-failures.json
-      - name: Commit known failures
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/web/monitor/known-failures.json
-          if git diff --cached --quiet; then
-            echo "Known failures are unchanged."
-          else
-            git commit -m "chore: update known source failures"
-            git push
-          fi
+      - name: Open known failures pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/update-known-source-failures
+          delete-branch: true
+          draft: true
+          title: "chore: update known source failures"
+          commit-message: "chore: update known source failures"
+          body: |
+            Automated weekly update from the published resource monitor.
+          add-paths: apps/web/monitor/known-failures.json
       - name: Upload monitor reports
         if: always()
         uses: actions/upload-artifact@v4
