@@ -10,7 +10,7 @@ export function ZineUnavailableReadingSurface({ sidebar, sidebarHeader, surface 
   return (
     <section className="w-full lg:h-full">
       <ZineReadingLayout sidebarHeader={sidebarHeader} sidebar={sidebar}>
-        <div className="flex h-[min(72vh,56rem)] min-h-[32rem] items-center justify-center border border-neutral-200 bg-white p-6 text-center" role="alert">
+        <div className="flex h-[min(72vh,56rem)] min-h-[32rem] items-center justify-center border border-neutral-200 bg-white p-6 text-center lg:h-full" role="alert">
           <div className="max-w-xl space-y-4">
             <p className="text-lg font-semibold">Opa, parece que o link para essa zine não está mais disponível!</p>
             <p className="text-sm leading-6">Tente novamente mais tarde. Se você é a pessoa autora da zine, entre em contato com a gente.</p>
