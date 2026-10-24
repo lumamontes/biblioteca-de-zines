@@ -13,7 +13,7 @@ export function ZineUnavailableReadingSurface({ sidebar, sidebarHeader, surface 
         <div className="flex h-[min(72vh,56rem)] min-h-[32rem] items-center justify-center border border-neutral-200 bg-white p-6 text-center" role="alert">
           <div className="max-w-xl space-y-4">
             <p className="text-lg font-semibold">Opa, parece que o link para essa zine não está mais disponível!</p>
-            <p className="text-sm leading-6">Tente novamente mais tarde. Entre em contato com a gente para que possamos resolver isso.</p>
+            <p className="text-sm leading-6">Tente novamente mais tarde. Entre em contato com a gente.</p>
             <button className="border border-black bg-black px-4 py-2 text-xs font-semibold text-white hover:bg-white hover:text-black" onClick={() => router.refresh()} type="button">Tentar novamente</button>
             <a
               className="ml-2 inline-block border border-black px-4 py-2 text-xs font-semibold hover:bg-black hover:text-white"
