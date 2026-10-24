@@ -15,3 +15,10 @@ test('keeps Google Drive file previews available', () => {
     'https://drive.google.com/file/d/file-id/preview?usp=drive_link',
   );
 });
+
+test('does not use a source listed as a known failure for a PDF preview', () => {
+  assert.equal(
+    getPreviewUrl('https://drive.google.com/file/d/1qfnuodoP034YQX5QyJ0WGNzQwp_wsxoY/view?usp=sharing'),
+    '',
+  );
+});
