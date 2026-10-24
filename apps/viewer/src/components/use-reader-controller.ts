@@ -1,76 +1,82 @@
 'use client';
 
-import type { PublicReaderZine } from '@biblioteca-de-zines/reader';
 import { useEffect, useRef, useState } from 'react';
 import { createReaderSession } from '@/application/reader-session';
-import type { ReaderDeliveryMode, ReaderViewMode } from '@/application/reader-types';
 import { createBookReaderRenderer, loadBookReaderRuntime } from '@/infrastructure/bookreader-adapter';
-import { fetchPublicReader } from '@/infrastructure/public-reader-client';
+import { createReaderRequestController, fetchPublicReader } from '@/infrastructure/public-reader-client';
 import { createReaderTelemetry } from '@/infrastructure/reader-telemetry';
+import { DEFAULT_READER_FALLBACK } from './reader-controller-config';
+import type { ReaderControllerInput, ReaderControllerResult, ReaderControllerState } from './reader-controller-types';
 
 const apiOrigin = process.env.NEXT_PUBLIC_READER_API_ORIGIN ?? 'https://www.biblioteca-de-zines.com.br';
+const INITIAL_READER_STATE: ReaderControllerState = { fallback: DEFAULT_READER_FALLBACK, state: 'loading' };
 
-export type ReaderControllerInput = { mode: ReaderViewMode; page: number; slug: string; surface: ReaderDeliveryMode };
-export type ReaderControllerState = {
-  publication?: PublicReaderZine;
-  fallback: { label: string; url: string };
-  state: 'loading' | 'ready' | 'fallback';
-  target: React.RefObject<HTMLDivElement | null>;
-};
+export type { ReaderControllerInput, ReaderControllerResult, ReaderControllerState } from './reader-controller-types';
 
-export function useReaderController({ mode, page, slug, surface }: ReaderControllerInput): ReaderControllerState {
+export function useReaderController({ mode, page, slug, surface }: ReaderControllerInput): ReaderControllerResult {
   const target = useRef<HTMLDivElement>(null);
-  const [state, setState] = useState<ReaderControllerState['state']>('loading');
-  const [publication, setPublication] = useState<ReaderControllerState['publication']>();
-  const [fallback, setFallback] = useState<ReaderControllerState['fallback']>({ label: 'Abrir a publicação', url: '' });
+  const [readerState, setReaderState] = useState(INITIAL_READER_STATE);
 
   useEffect(() => {
     let disposed = false;
-    let cleanup = () => {};
-    let session: ReturnType<typeof createReaderSession> | undefined;
-    setState('loading');
-    setPublication(undefined);
-    setFallback({ label: 'Abrir a publicação', url: '' });
+    let destroySession = () => {};
+    const request = createReaderRequestController();
     const telemetry = createReaderTelemetry(apiOrigin, slug, surface);
 
-    async function load() {
+    setReaderState(INITIAL_READER_STATE);
+
+    async function loadReader() {
       try {
-        const controller = new AbortController();
-        const timeout = window.setTimeout(() => controller.abort(), 10000);
-        const { data: parsed, metadataBytes } = await fetchPublicReader(apiOrigin, slug, surface, controller.signal).finally(() => window.clearTimeout(timeout));
+        const { data, metadataBytes } = await fetchPublicReader(apiOrigin, slug, surface, request.signal).finally(request.cancel);
         if (disposed) return;
-        setPublication(parsed.publication);
-        setFallback(parsed.fallback);
-        if (parsed.status === 'fallback') {
-          telemetry.report('fallback', { metadataBytes });
-          setState('fallback');
-          return;
-        }
-        await loadBookReaderRuntime();
-        if (disposed) return;
-        session = createReaderSession({ fallback: parsed.fallback, initialPage: page, manifest: parsed.manifest }, createBookReaderRenderer(undefined, { mode, page }));
-        const unsubscribe = session.subscribe((next) => {
-          setState(next.status);
+
+        setReaderState({
+          fallback: data.fallback,
+          publication: data.publication,
+          state: data.status === 'ready' ? 'loading' : 'fallback',
         });
-        if (!target.current) {
-          session.destroy();
+
+        if (data.status === 'fallback') {
+          telemetry.report('fallback', { metadataBytes });
           return;
         }
+
+        await loadBookReaderRuntime();
+        if (disposed || !target.current) return;
+
+        const session = createReaderSession(
+          { fallback: data.fallback, initialPage: page, manifest: data.manifest },
+          createBookReaderRenderer(undefined, { mode, page }),
+        );
+        const unsubscribe = session.subscribe((next) => {
+          setReaderState((current) => ({ ...current, state: next.status }));
+        });
+        destroySession = () => {
+          unsubscribe();
+          session.destroy();
+        };
+
         session.mount(target.current);
-        setState(session.getState().status);
+        setReaderState((current) => ({ ...current, state: session.getState().status }));
         telemetry.report('page-load', { metadataBytes });
         telemetry.ready();
-        cleanup = () => { unsubscribe(); session?.destroy(); };
       } catch {
-        session?.destroy();
+        destroySession();
         telemetry.report('page-error');
-        if (!disposed) setState('fallback');
+        if (!disposed) setReaderState((current) => ({ ...current, state: 'fallback' }));
       }
     }
 
-    void load();
-    return () => { disposed = true; cleanup(); };
+    void loadReader();
+    return () => {
+      disposed = true;
+      request.cancel();
+      destroySession();
+    };
   }, [mode, page, slug, surface]);
 
-  return { fallback, publication, state, target };
+  return {
+    ...readerState,
+    target,
+  };
 }
