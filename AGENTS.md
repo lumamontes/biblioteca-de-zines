@@ -14,6 +14,13 @@ This is a single-context repository using root `CONTEXT.md` and `docs/adr/`. See
 
 ### Changelog
 
+Every pull request must add a meaningful entry to `CHANGELOG.md` under
+`Unreleased`, including refactors, tests, documentation, configuration, and
+workflow changes. Link the related issue and pull request when they exist.
+Before pushing a pull request, run `pnpm test:changelog` and confirm the entry
+describes the user-facing or architectural milestone rather than only naming a
+file or commit.
+
 Keep distinct architectural decisions and implementation milestones as separate
 entries in `CHANGELOG.md`; when a feature moves from `Unreleased` to a dated
 section, revise stale status language and preserve the original decision links
