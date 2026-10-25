@@ -6,6 +6,16 @@ publicadas ficam em `Unreleased`; as demais são agrupadas pela data em que
 entraram em `main`. Versões formais seguirão o
 [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Alterado
+
+- **Lifecycle do visualizador isolado**: o carregamento de dados, o timeout e
+  cancelamento de requests, a montagem da sessão do BookReader e a limpeza do
+  runtime passam a ter responsabilidades mais explícitas. A configuração e os
+  contratos do controlador também ficam separados em módulos próprios, com
+  cobertura para timeout e cancelamento. [PR #194](https://github.com/lumamontes/biblioteca-de-zines/pull/194)
+
 ## 2026-10-21
 
 ### Alterado
