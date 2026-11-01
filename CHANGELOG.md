@@ -6,6 +6,17 @@ publicadas ficam em `Unreleased`; as demais são agrupadas pela data em que
 entraram em `main`. Versões formais seguirão o
 [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Adicionado
+
+- **Novas menções na mídia**: a seção “Na Mídia” da página inicial passa a
+  ampliar a visibilidade da Biblioteca e a reunir referências recentes sobre o
+  acervo, sua proposta de catalogação e o acesso a publicações independentes,
+  incluindo matérias do [Equinócio Play](https://equinocioplay.com.br/2026/10/19/uma-publicacao-pequena-no-formato-mas-gigante-nas-possibilidades-de-expressao/),
+  da [Zine Libraries](https://www.zinelibraries.info/brazilian-virtual-zine-collection/)
+  e do [Portal Amazônia](https://portalamazonia.com/cultura/biblioteca-zines-independente-ap/).
+
 ## 2026-10-21
 
 ### Alterado
