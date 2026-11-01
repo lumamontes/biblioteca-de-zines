@@ -16,6 +16,7 @@ entraram em `main`. Versões formais seguirão o
   incluindo matérias do [Equinócio Play](https://equinocioplay.com.br/2026/10/19/uma-publicacao-pequena-no-formato-mas-gigante-nas-possibilidades-de-expressao/),
   da [Zine Libraries](https://www.zinelibraries.info/brazilian-virtual-zine-collection/)
   e do [Portal Amazônia](https://portalamazonia.com/cultura/biblioteca-zines-independente-ap/).
+  [PR #195](https://github.com/lumamontes/biblioteca-de-zines/pull/195)
 
 ## 2026-10-21
 
