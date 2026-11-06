@@ -1,10 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import TelegramIcon from "@public/social/telegram.svg";
-import GithubIcon from "@public/social/github.svg";
-import EmailIcon from "@public/social/envelope.svg";
-import InstagramIcon from "@public/social/instagram.svg";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -16,22 +12,22 @@ type SocialLink = {
 const links: SocialLink[] = [
   {
     alt: "Telegram",
-    src: TelegramIcon,
+    src: "/social/telegram.svg",
     href: "https://t.me/+-irW84jni8ExYWFh",
   },
   {
     alt: "Github",
-    src: GithubIcon,
+    src: "/social/github.svg",
     href: "https://github.com/lumamontes/biblioteca-de-zines",
   },
   {
     alt: "Newsletter",
-    src: EmailIcon,
+    src: "/social/envelope.svg",
     href: "https://bibliotecadezines.substack.com/",
   },
   {
     alt: "Instagram",
-    src: InstagramIcon,
+    src: "/social/instagram.svg",
     href: "https://www.instagram.com/bibliotecadezines/",
   }
 ];
@@ -51,6 +47,8 @@ export default function NavSocialLinks() {
               <Image
                 src={src}
                 alt={alt}
+                width={28}
+                height={28}
                 className="h-7 w-7 rounded-md p-1 text-red fill-red transition-colors duration-300 hover:bg-neutral-100"
               />
             </Link>
