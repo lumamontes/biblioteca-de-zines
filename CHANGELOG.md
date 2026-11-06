@@ -17,6 +17,13 @@ entraram em `main`. Versões formais seguirão o
   da [Zine Libraries](https://www.zinelibraries.info/brazilian-virtual-zine-collection/)
   e do [Portal Amazônia](https://portalamazonia.com/cultura/biblioteca-zines-independente-ap/).
   [PR #195](https://github.com/lumamontes/biblioteca-de-zines/pull/195)
+### Alterado
+
+- **Lifecycle do visualizador isolado**: o carregamento de dados, o timeout e
+  cancelamento de requests, a montagem da sessão do BookReader e a limpeza do
+  runtime passam a ter responsabilidades mais explícitas. A configuração e os
+  contratos do controlador também ficam separados em módulos próprios, com
+  cobertura para timeout e cancelamento. [PR #194](https://github.com/lumamontes/biblioteca-de-zines/pull/194)
 
 ## 2026-10-21
 

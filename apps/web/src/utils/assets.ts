@@ -1,3 +1,5 @@
+import knownFailures from '../../monitor/known-failures.json';
+
 export function getThumbnailUrl(url: string) {
   if (url.startsWith('file://')) {
     return null;
@@ -46,6 +48,15 @@ export function getThumbnailUrl(url: string) {
 }
 
 export function getPreviewUrl(url: string){
+  const sourceUrl = url.split(/[?#]/, 1)[0];
+  const isKnownUnavailable = knownFailures.failures.some(
+    (failure) => failure.url.split(/[?#]/, 1)[0] === sourceUrl,
+  );
+
+  if (url.includes('drive.google.com/drive/folders/') || isKnownUnavailable) {
+    return '';
+  }
+
   if(url.includes('google.com') && !url.includes('preview')){
     return url.replace('view', 'preview');
   }

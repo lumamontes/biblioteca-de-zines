@@ -2,7 +2,7 @@
 
 import { BookOpen, FileText } from 'lucide-react';
 import { ReaderModeTab } from './reader-mode-tab';
-import type { ReaderModeTabsProps } from './zine-reader-options-types';
+import type { ReaderModeTabsProps } from './zine-reader-options.types';
 
 export function ReaderModeTabs({ pageCount, value, onChange }: ReaderModeTabsProps) {
   return (
