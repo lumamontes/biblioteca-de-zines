@@ -15,7 +15,7 @@ entraram em `main`. Versões formais seguirão o
   acervo, sua proposta de catalogação e o acesso a publicações independentes,
   incluindo matérias do [Equinócio Play](https://equinocioplay.com.br/2026/10/19/uma-publicacao-pequena-no-formato-mas-gigante-nas-possibilidades-de-expressao/)
   e do [Portal Amazônia](https://portalamazonia.com/cultura/biblioteca-zines-independente-ap/).
-  [PR #195](https://github.com/lumamontes/biblioteca-de-zines/pull/195)
+  [PR #195](https://github.com/lumamontes/biblioteca-de-zines/pull/195) [PR #196](https://github.com/lumamontes/biblioteca-de-zines/pull/196)
 ### Alterado
 
 - **Lifecycle do visualizador isolado**: o carregamento de dados, o timeout e
