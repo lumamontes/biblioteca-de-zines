@@ -122,7 +122,7 @@ entraram em `main` (UTC). Versões formais seguirão o
   depois das pesquisas sobre imagens das páginas do PDF, processamento assíncrono e
   integração do BookReader, a decisão sobre o release do visualizador registra
   como o visualizador de páginas de zines funciona, preservando a aplicação de
-  catálogo e deixando o runtime do BookReader isolado. A integração entrou na `main` com endereços canônicos de leitura e controles de liberação por publicação. A configuração de build permite implantar o viewer separadamente.
+  catálogo e deixando o runtime do BookReader isolado. A integração entrou na `main` com endereços canônicos de leitura e controles de liberação por publicação. A configuração de build permite implantar o viewer separadamente. A implantação em produção foi posteriormente confirmada com as rotas de leitura e incorporação de uma publicação e seu manifesto ativo de 48 páginas. [Verificação em produção na #153](https://github.com/lumamontes/biblioteca-de-zines/issues/153)
   [PR #158](https://github.com/lumamontes/biblioteca-de-zines/pull/158) [PR #168](https://github.com/lumamontes/biblioteca-de-zines/pull/168) [PR #169](https://github.com/lumamontes/biblioteca-de-zines/pull/169) [PR #170](https://github.com/lumamontes/biblioteca-de-zines/pull/170) [PR #175](https://github.com/lumamontes/biblioteca-de-zines/pull/175) [ADR do release do visualizador](docs/decisions/14-viewer-release-and-page-derivatives.md) [ADR 13](docs/decisions/13-internet-archive-bookreader-page-derivatives.md)
 
 - **Pesquisa e decisão sobre o visualizador de páginas de zines**: a avaliação
