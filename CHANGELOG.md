@@ -8,6 +8,10 @@ entraram em `main`. Versões formais seguirão o
 
 ## Unreleased
 
+### Corrigido
+
+- O monitor semanal volta a localizar a configuração de verificação dos recursos publicados após a reorganização do monorepo. [Issue #204](https://github.com/lumamontes/biblioteca-de-zines/issues/204)
+
 ### Adicionado
 
 - **Novas menções na mídia**: a seção “Na Mídia” da página inicial passa a
