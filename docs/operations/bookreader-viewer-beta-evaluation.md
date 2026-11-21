@@ -146,3 +146,16 @@ Fill this section with deployment-specific evidence before requesting expansion:
 
 The rollout configuration must also pass the application readiness check before
 enabling the viewer. The viewer origin must use HTTPS.
+
+## Contagem diária por publicação
+
+Após aplicar a migração de contadores, execute a consulta em uma sessão administrativa do Supabase. Ajuste as datas UTC ao período desejado. Cada evento representa uma ocorrência; uma falha pode também oferecer o PDF. O contador de fallback mede a oferta, não o clique. Falhas de persistência geram o aviso `reader_event_count_unavailable`.
+
+```sql
+select z.slug, c.surface, c.event, sum(c.total) as ocorrencias
+from reader_metrics.daily_counts c
+join public.library_zines z on z.id = c.zine_id
+where c.day >= current_date - 6 and c.day <= current_date
+group by z.slug, c.surface, c.event
+order by z.slug, c.surface, c.event;
+```

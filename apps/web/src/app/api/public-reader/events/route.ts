@@ -1,3 +1,4 @@
+import { createAdminClient } from '@/utils/supabase/admin';
 import { NextRequest, NextResponse } from 'next/server';
 import { createViewerRolloutConfig } from '@/application/reader/viewer-rollout';
 import { isViewerEvent } from '@/application/reader/viewer-events';
@@ -17,6 +18,18 @@ export async function POST(request: NextRequest) {
   if (!getViewerTrafficGuard().check(`event:${key}`).allowed) return new NextResponse(null, { status: 429 });
   const event: unknown = await request.json().catch(() => null);
   if (!isViewerEvent(event) || event.slug.length > 200) return NextResponse.json({ error: 'Invalid viewer event' }, { status: 400 });
+  if (event.type !== 'page-load') {
+    try {
+      const { error } = await createAdminClient().rpc('count_reader_event', {
+        p_slug: event.slug,
+        p_surface: event.surface === 'reader' ? 'standalone' : event.surface,
+        p_event: event.type,
+      });
+      if (error) throw error;
+    } catch {
+      console.warn('reader_event_count_unavailable');
+    }
+  }
   console.info(JSON.stringify({
     event: 'public_reader_viewer', origin, embedHost: getEmbedHost(request.headers.get('referer')),
      slug: event.slug, surface: event.surface === 'reader' ? 'standalone' : event.surface, type: event.type,

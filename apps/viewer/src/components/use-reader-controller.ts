@@ -22,11 +22,21 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
 
     setReaderState(INITIAL_READER_STATE);
 
+    let reportedFailure = false;
+    let hasOriginal = false;
+    function reportFailure() {
+      if (disposed || reportedFailure) return;
+      reportedFailure = true;
+      telemetry.report('page-error');
+      if (hasOriginal) telemetry.report('fallback');
+    }
+
     async function loadReader() {
       try {
         const { data, metadataBytes } = await fetchPublicReader(READER_API_ORIGIN, slug, surface, request.signal).finally(request.cancel);
         if (disposed) return;
 
+        hasOriginal = Boolean(data.fallback.url);
         setReaderState({
           fallback: data.fallback,
           publication: data.publication,
@@ -34,7 +44,7 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
         });
 
         if (data.status === 'fallback') {
-          telemetry.report('fallback', { metadataBytes });
+          if (hasOriginal) telemetry.report('fallback', { metadataBytes });
           return;
         }
 
@@ -46,6 +56,7 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
           createBookReaderRenderer(undefined, { mode, page }),
         );
         const unsubscribe = session.subscribe((next) => {
+          if (next.status === 'fallback') reportFailure();
           setReaderState((current) => ({ ...current, state: next.status }));
         });
         destroySession = () => {
@@ -55,11 +66,12 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
 
         session.mount(target.current);
         setReaderState((current) => ({ ...current, state: session.getState().status }));
+        if (session.getState().status !== 'ready') return;
         telemetry.report('page-load', { metadataBytes });
         telemetry.ready();
       } catch {
         destroySession();
-        telemetry.report('page-error');
+        reportFailure();
         if (!disposed) setReaderState((current) => ({ ...current, state: 'fallback' }));
       }
     }

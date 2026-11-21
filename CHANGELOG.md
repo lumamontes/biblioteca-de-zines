@@ -10,6 +10,9 @@ entraram em `main`. Versões formais seguirão o
 
 ### Adicionado
 
+- **Contadores operacionais do leitor**: a API agrega por dia, publicação e superfície as aberturas, falhas e ofertas de PDF. A equipe pode consultar o período desejado no Supabase e acompanhar as ocorrências sem registrar sessões individuais na tabela.
+  [Issue #190](https://github.com/lumamontes/biblioteca-de-zines/issues/190)
+
 - **Novas menções na mídia**: a seção “Na Mídia” da página inicial passa a
   ampliar a visibilidade da Biblioteca e a reunir referências recentes sobre o
   acervo, sua proposta de catalogação e o acesso a publicações independentes,

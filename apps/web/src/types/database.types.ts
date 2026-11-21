@@ -526,6 +526,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      count_reader_event: {
+        Args: { p_slug: string; p_surface: string; p_event: string }
+        Returns: undefined
+      }
       activate_zine_page_generation: {
         Args: { p_cover_image: string | null; p_generation_id: string; p_pages: Json; p_source_url: string; p_zine_id: number }
         Returns: { activated: boolean; cover_image_used: boolean; previous_generation_id: string | null }[]
