@@ -11,7 +11,7 @@ entraram em `main` (UTC). Versões formais seguirão o
 ### Alterado
 
 - **Cronologia do catálogo e do leitor**: a página de novidades técnicas passa a distinguir a escolha do BookReader, a integração na Biblioteca e as correções posteriores. As datas registram a entrada na branch principal em UTC e os links permitem consultar cada entrega.
-  [Histórico do changelog](https://github.com/lumamontes/biblioteca-de-zines/commits/main/CHANGELOG.md)
+  [PR #199](https://github.com/lumamontes/biblioteca-de-zines/pull/199) [Histórico do changelog](https://github.com/lumamontes/biblioteca-de-zines/commits/main/CHANGELOG.md)
 
 ## 2026-11-07
 
