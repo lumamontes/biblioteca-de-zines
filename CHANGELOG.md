@@ -8,6 +8,9 @@ entraram em `main` (UTC). Versões formais seguirão o
 
 ## Unreleased
 
+### Corrigido
+
+- O monitor semanal volta a localizar a configuração de verificação dos recursos publicados após a reorganização do monorepo. [Issue #204](https://github.com/lumamontes/biblioteca-de-zines/issues/204)
 ### Alterado
 
 - **Cronologia do catálogo e do leitor**: a página de novidades técnicas passa a distinguir a escolha do BookReader, a integração na Biblioteca e as correções posteriores. As datas registram a entrada na branch principal em UTC e os links permitem consultar cada entrega.
