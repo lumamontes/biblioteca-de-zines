@@ -60,6 +60,11 @@ test('forwards viewport resize events to BookReader', async ({ page }) => {
 });
 
 test('preserves the PDF fallback when BookReader initialization fails', async ({ page }) => {
+  const events: string[] = [];
+  await page.route('**/api/public-reader/events', (route) => {
+    events.push(route.request().postDataJSON().type);
+    return route.fulfill({ status: 204 });
+  });
   await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.js', (route) => route.fulfill({
     contentType: 'application/javascript',
     body: 'window.BookReader = function() { this.bind = function() {}; this.init = function() { throw new Error("init failed"); }; };',
@@ -70,6 +75,7 @@ test('preserves the PDF fallback when BookReader initialization fails', async ({
 
   await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: /Abrir o PDF original/ })).toHaveAttribute('href', readyResponse.fallback.url);
+  await expect.poll(() => [...events].sort()).toEqual(['fallback', 'page-error']);
 });
 
 test('serves the unbranded embed and optional Biblioteca branding', async ({ page }) => {
