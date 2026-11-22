@@ -159,3 +159,16 @@ where c.day >= current_date - 6 and c.day <= current_date
 group by z.slug, c.surface, c.event
 order by z.slug, c.surface, c.event;
 ```
+
+### Exportar o relatório interno
+
+No computador de uma pessoa autorizada, configure uma conexão PostgreSQL de leitura com acesso a `reader_metrics.daily_counts` e às colunas `id` e `slug` de `public.library_zines`. O comando usa `psql` com a configuração padrão de conexão, por exemplo um serviço em `pg_service.conf` com TLS e credencial configurada localmente. Guarde o relatório num diretório privado.
+
+```sh
+PGSERVICE=biblioteca-reader pnpm --silent reader:events-report 2026-11-22 2026-11-28 json > reader-events.json
+PGSERVICE=biblioteca-reader pnpm --silent reader:events-report 2026-11-22 2026-11-28 markdown > reader-events.md
+```
+
+As duas datas são inclusivas e se referem ao dia UTC da coleta. Para o primeiro relatório semanal, use sete dias completos de coleta. Cada linha combina uma zine e uma superfície com alguma ocorrência no intervalo, com zero para os demais eventos. O JSON usa strings decimais para preservar contagens inteiras grandes. Falhas e ofertas podem representar a mesma leitura. Os agregados atuais permitem contagens por evento; latência, tráfego e taxas por tentativa dependem de outras medições.
+
+A CI exercita a falha de inicialização do BookReader com e sem PDF. O navegador envia os eventos habituais; o teste intercepta essas requisições e executa a função SQL da migração em um PostgreSQL descartável.

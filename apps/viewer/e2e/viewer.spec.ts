@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { PGlite } from '@electric-sql/pglite';
 import { expect, test } from '@playwright/test';
 
 const readyResponse = {
@@ -61,24 +64,57 @@ test('forwards viewport resize events to BookReader', async ({ page }) => {
   await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderEvents)).toContain('resize');
 });
 
-test('preserves the PDF fallback when BookReader initialization fails', async ({ page }) => {
-  const events: string[] = [];
-  await page.route('**/api/public-reader/events', (route) => {
-    events.push(route.request().postDataJSON().type);
-    return route.fulfill({ status: 204 });
+for (const hasPdf of [true, false]) {
+  test(`counts a BookReader startup failure ${hasPdf ? 'with' : 'without'} a PDF`, async ({ page }) => {
+    const database = new PGlite();
+    try {
+      await database.exec(`
+        create role anon;
+        create role authenticated;
+        create role service_role bypassrls;
+        create table public.library_zines (id integer primary key, slug text, is_published boolean);
+        insert into public.library_zines values (42, 'zine', true);
+        grant select on public.library_zines to service_role;
+      `);
+      const migration = await readFile(join(__dirname, '../../web/supabase/migrations/20261121000000_count_reader_events.sql'), 'utf8');
+      await database.exec(migration);
+      await database.exec('set role service_role');
+      await page.route('**/api/public-reader/events', async (route) => {
+        const { slug, surface, type } = route.request().postDataJSON();
+        await database.query('select public.count_reader_event($1, $2, $3)', [slug, surface, type]);
+        await route.fulfill({ status: 204 });
+      });
+      await page.route('**/api/public-reader/v1/**', (route) => route.fulfill({
+        json: { ...readyResponse, fallback: { ...readyResponse.fallback, url: hasPdf ? readyResponse.fallback.url : '' } },
+      }));
+      await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.js', (route) => route.fulfill({
+        contentType: 'application/javascript',
+        body: 'window.BookReader = function() { this.bind = function() {}; this.init = function() { throw new Error("init failed"); }; };',
+      }));
+      await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.css', (route) => route.fulfill({ contentType: 'text/css', body: '' }));
+
+      const surface = hasPdf ? 'standalone' : 'embed';
+      await page.goto(hasPdf ? '/p/zine' : '/embed/p/zine');
+      await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
+      const pdfLink = page.getByRole('alert').getByRole('link', { name: 'Abrir o PDF original' });
+      if (hasPdf) {
+        await expect(pdfLink).toHaveAttribute('href', readyResponse.fallback.url);
+      } else {
+        await expect(pdfLink).toHaveCount(0);
+        await expect(page.getByText('O PDF original não está disponível.')).toBeVisible();
+      }
+      const eventNames = hasPdf ? ['fallback', 'page-error'] : ['page-error'];
+      await expect.poll(async () => (await database.query(`
+        select zine_id, surface, event, total::integer
+        from reader_metrics.daily_counts
+        where day = (now() at time zone 'UTC')::date
+        order by event
+      `)).rows).toEqual(eventNames.map(event => ({ zine_id: 42, surface, event, total: 1 })));
+    } finally {
+      await database.close();
+    }
   });
-  await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.js', (route) => route.fulfill({
-    contentType: 'application/javascript',
-    body: 'window.BookReader = function() { this.bind = function() {}; this.init = function() { throw new Error("init failed"); }; };',
-  }));
-  await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.css', (route) => route.fulfill({ contentType: 'text/css', body: '' }));
-
-  await page.goto('/p/zine');
-
-  await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Abrir o PDF original/ })).toHaveAttribute('href', readyResponse.fallback.url);
-  await expect.poll(() => [...events].sort()).toEqual(['fallback', 'page-error']);
-});
+}
 
 test('attributes an old reader link to the canonical publication', async ({ page }) => {
   await mockBookReaderAssets(page);

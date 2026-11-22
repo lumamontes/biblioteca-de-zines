@@ -15,6 +15,8 @@ entraram em `main` (UTC). Versões formais seguirão o
 
 - **Verificação do leitor de produção**: a equipe pode executar um teste manual que confirma o carregamento da primeira imagem e a navegação no leitor direto e no incorporado ao catálogo. [Issue #206](https://github.com/lumamontes/biblioteca-de-zines/issues/206)
 
+- **Relatório interno do leitor**: a equipe pode exportar contagens por zine e superfície em JSON ou Markdown. Um teste de navegador confere os contadores de falha e oferta de PDF com a migração num banco descartável. [Issue #205](https://github.com/lumamontes/biblioteca-de-zines/issues/205)
+
 ### Corrigido
 
 - O monitor semanal volta a localizar a configuração de verificação dos recursos publicados após a reorganização do monorepo. [Issue #204](https://github.com/lumamontes/biblioteca-de-zines/issues/204)
