@@ -46,7 +46,8 @@ test('translates navigation through the isolated BookReader adapter', async ({ p
   await page.goto('/p/zine');
   await expect(page.locator('.reader__canvas')).toBeVisible();
 
-  await page.evaluate(() => window.__bibliotecaBookReaderInstances[0]?.next());
+  await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderInstances?.length ?? 0)).toBeGreaterThan(0);
+  await page.evaluate(() => window.__bibliotecaBookReaderInstances[0].next());
   await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderEvents)).toContain('next');
 });
 
@@ -55,6 +56,7 @@ test('forwards viewport resize events to BookReader', async ({ page }) => {
   await page.goto('/p/zine');
   await expect(page.locator('.reader__canvas')).toBeVisible();
 
+  await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderInstances?.length ?? 0)).toBeGreaterThan(0);
   await page.evaluate(() => window.dispatchEvent(new Event('resize')));
   await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderEvents)).toContain('resize');
 });
