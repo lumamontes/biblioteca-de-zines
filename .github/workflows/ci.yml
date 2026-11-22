@@ -44,6 +44,12 @@ jobs:
       - name: Run viewer tests
         run: pnpm --filter viewer test
 
+      - name: Install Chromium for viewer browser tests
+        run: pnpm --filter viewer exec playwright install --with-deps chromium
+
+      - name: Run viewer browser tests
+        run: pnpm --filter viewer test:e2e
+
       - name: Run web tests
         run: pnpm --filter biblioteca-zines test
 

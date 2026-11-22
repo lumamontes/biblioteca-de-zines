@@ -10,7 +10,7 @@ entraram em `main`. Versões formais seguirão o
 
 ### Adicionado
 
-- **Contadores operacionais do leitor**: a API agrega por dia, publicação e superfície as aberturas, falhas e ofertas de PDF. A equipe pode consultar o período desejado no Supabase e acompanhar as ocorrências sem registrar sessões individuais na tabela.
+- **Contadores operacionais do leitor**: a API agrega por dia, publicação e superfície as aberturas, falhas e ofertas de PDF. A equipe pode consultar o período desejado no Supabase e acompanhar as ocorrências sem registrar sessões individuais na tabela. A CI verifica em Chromium que o leitor oferece o PDF e registra os eventos esperados quando o BookReader falha ao iniciar.
   [Issue #190](https://github.com/lumamontes/biblioteca-de-zines/issues/190) [PR #200](https://github.com/lumamontes/biblioteca-de-zines/pull/200)
 
 - **Novas menções na mídia**: a seção “Na Mídia” da página inicial passa a
