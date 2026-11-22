@@ -4,44 +4,36 @@ import { formatDate, paragraphs } from './proposal-formatting.helpers';
 import { DELIVERY_LABEL } from './proposal-text.config';
 
 export function ContributionList({ contributions }: { contributions: ContributionView[] }) {
-  if (contributions.length === 0) {
-    return <p className="empty">Ninguém comentou ainda. A primeira contribuição costuma ajudar a equipe a entender a necessidade.</p>;
-  }
+  if (contributions.length === 0) return <p className="empty">Ninguém comentou ainda.</p>;
   return (
-    <ol className="conversation">
-      {contributions.map((contribution) => (
-        <li key={contribution.id} id={`contribution-${contribution.id}`} className="contribution">
-          {contribution.hidden ? (
-            <p className="contribution__removed">Contribuição removida pela moderação.</p>
-          ) : (
-            <>
-              <p className="contribution__byline">
-                <strong className="contribution__author">{contribution.displayName}</strong>
-                <span aria-hidden="true"> · </span>
-                <time dateTime={contribution.createdAt}>{formatDate(contribution.createdAt)}</time>
-              </p>
-              <div className="prose">
-                {paragraphs(contribution.text ?? '').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-              </div>
-              <p className="contribution__delivery">
-                {contribution.delivery === 'sent' && contribution.githubUrl ? (
-                  <a href={contribution.githubUrl} className="external">{DELIVERY_LABEL.sent}</a>
-                ) : (
-                  DELIVERY_LABEL[contribution.delivery]
-                )}
-              </p>
-              {contribution.influence ? (
-                <p className="influence">
-                  <strong>Ajudou a decidir:</strong> {INFLUENCE_TEXT[contribution.influence.kind]}.
-                  {contribution.influence.note ? <> {contribution.influence.note}</> : null}
+    <ol className="rows">
+      {contributions.map((contribution) => {
+        const delivery = DELIVERY_LABEL[contribution.delivery];
+        return (
+          <li key={contribution.id} id={`contribution-${contribution.id}`} className="entry">
+            {contribution.hidden ? (
+              <p className="muted">Comentário removido pela moderação.</p>
+            ) : (
+              <>
+                <p className="entry__meta">
+                  <strong>{contribution.displayName}</strong> · <time dateTime={contribution.createdAt}>{formatDate(contribution.createdAt)}</time>
                 </p>
-              ) : null}
-            </>
-          )}
-        </li>
-      ))}
+                {paragraphs(contribution.text ?? '').map((paragraph, index) => (
+                  <p key={index} className="text">{paragraph}</p>
+                ))}
+                {contribution.influence ? (
+                  <p className="entry__foot">Ajudou a decidir: {INFLUENCE_TEXT[contribution.influence.kind]}.</p>
+                ) : null}
+                {delivery ? (
+                  <p className="entry__foot">
+                    {contribution.delivery === 'sent' && contribution.githubUrl ? <a href={contribution.githubUrl}>{delivery}</a> : delivery}
+                  </p>
+                ) : null}
+              </>
+            )}
+          </li>
+        );
+      })}
     </ol>
   );
 }

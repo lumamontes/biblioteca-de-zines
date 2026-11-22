@@ -66,7 +66,9 @@ function applySnapshot(state: CommunityState, proposal: Proposal, snapshot: GitH
   });
   const warnings: StageWarning[] = unauthorizedMarker ? [...derived.warnings, 'unauthorized_official_marker'] : derived.warnings;
 
-  if (responses.some((response) => !previousResponses.some((earlier) => earlier.githubCommentId === response.githubCommentId && earlier.updatedAt === response.updatedAt))) {
+  // The first sync only fills the cache; later changes count as new activity.
+  const hasNewResponse = responses.some((response) => !previousResponses.some((earlier) => earlier.githubCommentId === response.githubCommentId && earlier.updatedAt === response.updatedAt));
+  if (proposal.cache && hasNewResponse) {
     proposal.lastActivityAt = now;
   }
   if (proposal.cache && proposal.cache.stage !== derived.stage) proposal.lastActivityAt = now;

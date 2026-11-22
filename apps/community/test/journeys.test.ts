@@ -30,7 +30,7 @@ test('journey A: a lost confirmation and a retry deliver one comment; the answer
   assert.equal(comments.length, commentsBefore + 1);
 
   // The team answers and changes the stage on GitHub.
-  portal.github.simulateComment(184, { authorLogin: 'lumamontes', authorAssociation: 'OWNER', body: '### Decisão da Biblioteca\nA prévia vai mostrar a capa e os créditos primeiro.\n\n#### Próximos passos\nTestar com três coletivos.' });
+  portal.github.simulateComment(184, { authorLogin: 'lumamontes', authorAssociation: 'OWNER', body: '### Decisão da Biblioteca de Zines\nA prévia vai mostrar a capa e os créditos primeiro.\n\n#### Próximos passos\nTestar com três coletivos.' });
   portal.github.simulateSetStageLabel(184, 'portal:decided');
   await portal.sync.syncProposal(1);
 
@@ -117,7 +117,7 @@ test('only authorized maintainers answer officially, and earlier answers survive
   const portal = createTestCommunity();
   await portal.sync.syncAll();
   portal.github.simulateComment(89, { authorLogin: 'visitante-qualquer', authorAssociation: 'NONE', body: '### Resposta da Biblioteca\nNão sou da equipe.' });
-  portal.github.simulateComment(89, { authorLogin: 'lumamontes', authorAssociation: 'OWNER', body: '### Resposta da Biblioteca\nVamos testar com leitor de tela.' });
+  portal.github.simulateComment(89, { authorLogin: 'lumamontes', authorAssociation: 'OWNER', body: '### Resposta da Biblioteca de Zines\nVamos testar com leitor de tela.' });
   await portal.sync.syncProposal(2);
 
   let proposal = await portal.queries.getProposal(2, null);
@@ -154,12 +154,13 @@ test('editing the public title on GitHub changes the slug and records the earlie
   assert.equal(proposal?.questionRevisions.at(-1)?.publicTitle, 'O que você gostaria de conferir antes de enviar sua zine?');
 });
 
-test('the list keeps team questions with few votes visible ahead of popular ones', async () => {
+test('the list keeps team questions with few votes visible ahead of the rest', async () => {
   const portal = createTestCommunity();
   await portal.sync.syncAll();
-  const list = await portal.queries.listProposals('support');
-  assert.deepEqual(list.featured.map((item) => item.number), [1, 2]);
-  assert.equal(list.featured[1].votes.support, 0, '#89 has no votes and still comes first');
+  const list = await portal.queries.listProposals();
+  assert.equal(list.highlight?.number, 5, 'the newest team question (#197, printing) is highlighted');
+  assert.deepEqual(list.open.map((item) => item.number), [5, 2, 1, 6], 'team questions first, then the rest');
+  assert.equal(list.open[1].votes.support, 0, '#89 has no votes and still comes before non-featured proposals');
   assert.deepEqual(list.suggestions.map((item) => item.number), [4]);
   assert.deepEqual(list.decided.map((item) => item.number), [3]);
   assert.equal(list.decided[0].stage, 'available');

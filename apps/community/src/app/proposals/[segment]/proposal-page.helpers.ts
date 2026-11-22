@@ -4,7 +4,7 @@ import type { ContributionFormState } from '@/components/proposal/contribution-f
 
 const FIELD_ERRORS: Readonly<Record<string, string>> = {
   text: 'Escreva seu comentário antes de enviar.',
-  displayName: 'Escreva um nome de exibição. Pode ser um pseudônimo.',
+  displayName: 'Escreva seu nome. Pode ser um apelido.',
 };
 
 /** Rebuilds the form result after a submission made without JavaScript (see the contribute route). */

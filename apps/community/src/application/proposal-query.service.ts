@@ -4,7 +4,7 @@ import { isContributionOpen, isVotingOpen } from '@/domain/stage.service';
 import type { Stage } from '@/domain/proposal.types';
 import { findProposal, toContributionView, toSummary } from './community-state.helpers';
 import { STALE_AFTER_MS, RECENTLY_DECIDED_LIMIT } from './proposal-query.config';
-import type { ProposalDetailView, ProposalListView, ProposalOrder, ProposalSummary } from './community-view.types';
+import type { ProposalDetailView, ProposalListView, ProposalSummary } from './community-view.types';
 import type { CommunityDependencies } from './community.types';
 
 const OPEN_STAGES: ReadonlySet<Stage> = new Set<Stage>(['discussion', 'decided', 'in_progress']);
@@ -14,26 +14,21 @@ function byRecentActivity(a: ProposalSummary, b: ProposalSummary): number {
   return b.lastActivityAt.localeCompare(a.lastActivityAt);
 }
 
-function bySupport(a: ProposalSummary, b: ProposalSummary): number {
-  return b.votes.support - a.votes.support || byRecentActivity(a, b);
-}
-
 export function createProposalQueryService({ repository, clock }: Pick<CommunityDependencies, 'repository' | 'clock'>) {
   return {
-    async listProposals(order: ProposalOrder = 'recent'): Promise<ProposalListView> {
+    async listProposals(): Promise<ProposalListView> {
       const state = await repository.read();
       const summaries = state.proposals
         .filter((proposal) => proposal.origin === 'community' || proposal.presentedByTeam)
         .map((proposal) => toSummary(state, proposal));
-      const sort = order === 'support' ? bySupport : byRecentActivity;
+      // Team questions come first, so an important topic with few votes is never buried under popular ones.
+      const open = summaries
+        .filter((item) => OPEN_STAGES.has(item.stage))
+        .sort((a, b) => Number(b.featured) - Number(a.featured) || byRecentActivity(a, b));
       return {
-        order,
-        // The team's chosen questions come first so an important topic with few votes stays visible.
-        featured: summaries.filter((item) => item.featured && OPEN_STAGES.has(item.stage)).sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
-        suggestions: summaries
-          .filter((item) => item.stage === 'triage')
-          .sort(order === 'support' ? bySupport : (a, b) => b.createdAt.localeCompare(a.createdAt)),
-        open: summaries.filter((item) => !item.featured && OPEN_STAGES.has(item.stage)).sort(sort),
+        highlight: open.find((item) => item.featured) ?? null,
+        open,
+        suggestions: summaries.filter((item) => item.stage === 'triage').sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
         decided: summaries.filter((item) => DECIDED_STAGES.has(item.stage)).sort(byRecentActivity).slice(0, RECENTLY_DECIDED_LIMIT),
       };
     },

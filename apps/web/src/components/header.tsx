@@ -52,7 +52,7 @@ export default function Header() {
           {communityPortalUrl ? (
             <li>
               <a href={communityPortalUrl} className="hover:underline focus-visible:underline">
-                Participe
+                Comunidade
               </a>
             </li>
           ) : null}
@@ -105,7 +105,7 @@ export default function Header() {
             {communityPortalUrl ? (
               <li>
                 <a href={communityPortalUrl} className="hover:underline focus-visible:underline">
-                  Participe
+                  Comunidade
                 </a>
               </li>
             ) : null}

@@ -4,10 +4,10 @@ import type { DeliveryState } from '@/domain/proposal.types';
 export const STALE_SENDING_MS = 5 * 60 * 1000;
 
 export const DELIVERY_MESSAGES: Readonly<Record<DeliveryState, string>> = {
-  local: 'Comentário publicado neste portal.',
-  pending: 'Comentário guardado. Ainda vamos publicá-lo no GitHub.',
+  local: 'Comentário publicado.',
+  pending: 'Enviando para o GitHub…',
   sending: 'Enviando para o GitHub…',
   sent: 'Comentário publicado no GitHub.',
-  failed: 'Não foi possível confirmar a publicação no GitHub. Seu texto foi guardado. Tente de novo; ele não vai aparecer duas vezes.',
-  cancelled: 'Envio cancelado pela moderação.',
+  failed: 'Não conseguimos confirmar a publicação no GitHub. Seu texto continua aqui. Tente de novo: ele não vai aparecer duas vezes.',
+  cancelled: 'Este comentário não será publicado.',
 };

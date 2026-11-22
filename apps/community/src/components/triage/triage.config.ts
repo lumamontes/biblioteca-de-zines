@@ -8,14 +8,14 @@ export const INFLUENCE_KINDS: readonly InfluenceKind[] = ['clarified_need', 'cha
 export const WARNING_TEXT: Readonly<Record<StageWarning, string>> = {
   terminal_label_on_open_issue: 'A issue está aberta, mas tem um rótulo de etapa final. O portal mostra “Em conversa” até a issue ser fechada.',
   multiple_stage_labels: 'A issue tem mais de um rótulo de etapa. O portal usa o mais avançado.',
-  decision_without_justification: 'A etapa indica uma decisão, mas falta um comentário “### Decisão da Biblioteca” com a justificativa.',
+  decision_without_justification: 'A etapa indica uma decisão, mas falta um comentário “### Decisão da Biblioteca de Zines” com a justificativa.',
   unauthorized_official_marker: 'Alguém que não é mantenedora usou o marcador de resposta oficial. O comentário foi ignorado.',
 };
 
 export const SIMULATED_HEADINGS = {
-  answer: '### Resposta da Biblioteca',
-  update: '### Atualização da Biblioteca',
-  decision: '### Decisão da Biblioteca',
+  answer: '### Resposta da Biblioteca de Zines',
+  update: '### Atualização da Biblioteca de Zines',
+  decision: '### Decisão da Biblioteca de Zines',
 } as const;
 
 export const SIMULATED_AUTHORS: readonly { login: string; association: GitHubComment['authorAssociation']; label: string }[] = [

@@ -1,6 +1,7 @@
-# Biblioteca Community Portal
+# Biblioteca de Zines: Comunidade
 
-This app lets people who read, create, or submit zines suggest improvements,
+This app is the community section of the Biblioteca de Zines. It shares the
+catalogue's header, font, and reading column, and lets people who read, create, or submit zines suggest improvements,
 vote, and comment from their phone without a GitHub account. GitHub stays the
 source of truth for team decisions, stages, and official responses. See the
 [specification](../../docs/specs/community-portal.md) and
@@ -12,8 +13,8 @@ or maintainer sign-in yet. The interface says so in a demonstration notice.
 
 ## Routes
 
-- `/`: questions the team wants input on, recent suggestions, open and
-  recently decided proposals (`?order=support` sorts by support).
+- `/`: the team's highlighted question and three tabs: open conversations,
+  suggestions in triage, and recent decisions (`?tab=suggestions|decided`).
 - `/proposals/:number-:slug`: permanent proposal address. Any slug resolves by
   number and redirects (308) to the current one.
 - `/suggest`: new suggestion.

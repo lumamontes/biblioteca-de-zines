@@ -1,19 +1,39 @@
 import Link from 'next/link';
+import { CATALOGUE_NAV_LINKS, SUGGEST_ZINE_PATH } from './site-header.config';
 
+function NavLinks({ catalogueUrl }: { catalogueUrl: string }) {
+  return (
+    <ul>
+      {CATALOGUE_NAV_LINKS.map((link) => (
+        <li key={link.path}>
+          <a href={`${catalogueUrl}${link.path}`}>{link.label}</a>
+        </li>
+      ))}
+      <li>
+        <Link href="/" aria-current="page">Comunidade</Link>
+      </li>
+      <li>
+        <a href={`${catalogueUrl}${SUGGEST_ZINE_PATH}`}>Sugerir Zine</a>
+      </li>
+    </ul>
+  );
+}
+
+/** Mirrors the catalogue header so moving between the two feels like one site. */
 export function SiteHeader({ catalogueUrl }: { catalogueUrl: string }) {
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <p className="site-header__brand">
-          <a href={catalogueUrl}>Biblioteca de Zines</a>
-          <span className="site-header__section">Participe</span>
-        </p>
-        <nav aria-label="Portal da comunidade">
-          <ul className="site-header__nav">
-            <li><Link href="/">Propostas</Link></li>
-            <li><Link href="/suggest">Sugerir</Link></li>
-          </ul>
+        <a href={catalogueUrl} className="site-header__brand">Biblioteca de Zines</a>
+        <nav className="site-nav site-nav--desktop" aria-label="Principal">
+          <NavLinks catalogueUrl={catalogueUrl} />
         </nav>
+        <details className="site-menu">
+          <summary>Menu</summary>
+          <nav className="site-nav" aria-label="Principal">
+            <NavLinks catalogueUrl={catalogueUrl} />
+          </nav>
+        </details>
       </div>
     </header>
   );

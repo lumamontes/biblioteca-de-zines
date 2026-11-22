@@ -1,27 +1,28 @@
 import type { DeliveryState, OfficialResponseKind, PullRequestReference } from '@/domain/proposal.types';
 
 export const RESPONSE_KIND_LABEL: Readonly<Record<OfficialResponseKind, string>> = {
-  answer: 'Resposta oficial da Biblioteca',
-  update: 'Atualização oficial da Biblioteca',
-  decision: 'Decisão da Biblioteca',
+  answer: 'Resposta da Biblioteca de Zines',
+  update: 'Atualização da Biblioteca de Zines',
+  decision: 'Decisão da Biblioteca de Zines',
 };
 
-export const DELIVERY_LABEL: Readonly<Record<DeliveryState, string>> = {
-  local: 'Publicado neste portal',
-  pending: 'Aguardando publicação no GitHub',
+/** Shown under a comment only when it says something useful. */
+export const DELIVERY_LABEL: Readonly<Record<DeliveryState, string | null>> = {
+  local: null,
+  pending: 'Enviando para o GitHub',
   sending: 'Enviando para o GitHub',
   sent: 'Publicado no GitHub',
-  failed: 'Publicação no GitHub pendente',
-  cancelled: 'Não publicado',
+  failed: 'Ainda não chegou ao GitHub',
+  cancelled: null,
 };
 
-export const VOTE_NOTE = 'Os votos ajudam a equipe a perceber interesse. Eles não decidem sozinhos: relatos e impacto também contam.';
-
-export const DRAFT_STORAGE_PREFIX = 'community:draft:';
-export const DISPLAY_NAME_STORAGE_KEY = 'community:display-name';
+export const VOTE_NOTE = 'Os votos mostram interesse. A decisão também considera os relatos e o impacto.';
 
 export const PULL_REQUEST_STATE_LABEL: Readonly<Record<PullRequestReference['state'], string>> = {
   open: 'aberto',
   closed: 'fechado',
   merged: 'incorporado',
 };
+
+export const DRAFT_STORAGE_PREFIX = 'community:draft:';
+export const DISPLAY_NAME_STORAGE_KEY = 'community:display-name';

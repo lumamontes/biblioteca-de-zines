@@ -1,9 +1,9 @@
 import type { OfficialResponseKind } from './proposal.types';
 
 const OFFICIAL_HEADINGS: ReadonlyArray<[RegExp, OfficialResponseKind]> = [
-  [/^#{1,6}\s*resposta da biblioteca\s*$/i, 'answer'],
-  [/^#{1,6}\s*atualiza[cç][aã]o da biblioteca\s*$/i, 'update'],
-  [/^#{1,6}\s*decis[aã]o da biblioteca\s*$/i, 'decision'],
+  [/^#{1,6}\s*resposta da biblioteca( de zines)?\s*$/i, 'answer'],
+  [/^#{1,6}\s*atualiza[cç][aã]o da biblioteca( de zines)?\s*$/i, 'update'],
+  [/^#{1,6}\s*decis[aã]o da biblioteca( de zines)?\s*$/i, 'decision'],
 ];
 
 function firstContentLine(body: string): { line: string; rest: string } {
@@ -73,22 +73,22 @@ export function contributionCommentBody(input: {
   const quoted = input.text.split('\n').map((line) => `> ${line}`).join('\n');
   return [
     contributionMarker(input.contributionId),
-    `**${input.displayName}** comentou pelo [portal da comunidade](${input.proposalUrl}):`,
+    `**${input.displayName}** comentou pela [comunidade da Biblioteca de Zines](${input.proposalUrl}):`,
     '',
     quoted,
   ].join('\n');
 }
 
 export function moderatedCommentBody(contributionId: string, moderatedAtLabel: string): string {
-  return `${contributionMarker(contributionId)}\n_Contribuição removida pela moderação da Biblioteca em ${moderatedAtLabel}._`;
+  return `${contributionMarker(contributionId)}\n_Contribuição removida pela moderação da Biblioteca de Zines em ${moderatedAtLabel}._`;
 }
 
 export function linkCommentBody(input: { proposalNumber: number; proposalUrl: string; votesFor: number; votesAgainst: number; contributionCount: number }): string {
   return [
     proposalMarker(input.proposalNumber),
-    `Esta issue acompanha a [proposta pública nº ${input.proposalNumber}](${input.proposalUrl}) no portal da comunidade.`,
+    `Esta issue acompanha a [proposta pública nº ${input.proposalNumber}](${input.proposalUrl}) na comunidade da Biblioteca de Zines.`,
     '',
     `No momento do vínculo: ${input.votesFor} votos a favor, ${input.votesAgainst} contra e ${input.contributionCount} contribuições.`,
-    'Novos comentários feitos pelo portal aparecerão aqui. Respostas oficiais começam com `### Resposta da Biblioteca`, `### Atualização da Biblioteca` ou `### Decisão da Biblioteca`.',
+    'Novos comentários feitos pelo portal aparecerão aqui. Respostas oficiais começam com `### Resposta da Biblioteca de Zines`, `### Atualização da Biblioteca de Zines` ou `### Decisão da Biblioteca de Zines`.',
   ].join('\n');
 }

@@ -8,13 +8,13 @@ export const metadata: Metadata = { title: 'Sugerir uma melhoria' };
 export default function SuggestPage() {
   return (
     <>
-      <Link href="/" className="back">← Todas as propostas</Link>
-      <section className="intro" aria-labelledby="page-title">
-        <h1 id="page-title" className="page-title">Sugerir uma melhoria</h1>
-        <p className="lead">
-          Conte o que você precisa na Biblioteca. A equipe lê todas as sugestões e responde no endereço da sugestão, que você pode guardar e compartilhar.
+      <Link href="/" className="back">← Comunidade</Link>
+      <header className="header-block">
+        <h1 className="title">Sugerir uma melhoria</h1>
+        <p className="intro">
+          O que você gostaria de ver na Biblioteca de Zines? A equipe lê todas as sugestões e responde no endereço da sua sugestão.
         </p>
-      </section>
+      </header>
       <SuggestionForm action={suggestAction} />
     </>
   );

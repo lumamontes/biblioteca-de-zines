@@ -285,7 +285,7 @@ A community comment on a proposal. Before the link it lives only in the portal; 
 _Avoid_: Treating a failed or pending delivery as a lost comment
 
 **Official response**:
-A comment by an authorized maintainer on the principal issue whose first line is `### Resposta da Biblioteca`, `### Atualização da Biblioteca`, or `### Decisão da Biblioteca`.
+A comment by an authorized maintainer on the principal issue whose first line is `### Resposta da Biblioteca de Zines`, `### Atualização da Biblioteca de Zines`, or `### Decisão da Biblioteca de Zines`.
 _Avoid_: Writing official responses in the portal
 
 **Stage**:
@@ -293,7 +293,7 @@ The single public representation of a proposal's progress, derived from the prin
 _Avoid_: Showing GitHub's open/closed state as the community-facing status
 
 **Release confirmation**:
-Evidence that an improvement is in use, such as a successful production deployment that contains the related pull request. Only it allows the stage "Disponível na Biblioteca".
+Evidence that an improvement is in use, such as a successful production deployment that contains the related pull request. Only it allows the stage "Disponível na Biblioteca de Zines".
 _Avoid_: Treating a merged pull request or a closed issue as availability
 
 **Influence**:

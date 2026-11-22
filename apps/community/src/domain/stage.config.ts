@@ -25,14 +25,14 @@ export const STAGE_PROGRESS: Readonly<Record<Stage, number>> = {
 
 export const TERMINAL_STAGES: ReadonlySet<Stage> = new Set<Stage>(['available', 'not_planned', 'archived']);
 
-export const STAGE_TEXT: Readonly<Record<Stage, { label: string; description: string }>> = {
-  triage: { label: 'Recebida, em triagem', description: 'A equipe ainda vai ler e ligar esta sugestão a uma issue.' },
-  discussion: { label: 'Em conversa', description: 'A decisão está aberta. Sua contribuição pode mudar o rumo.' },
-  decided: { label: 'Decidida: vamos fazer', description: 'A equipe decidiu seguir com esta proposta.' },
-  in_progress: { label: 'Em desenvolvimento', description: 'A melhoria está sendo construída.' },
-  available: { label: 'Disponível na Biblioteca', description: 'A melhoria já está no ar para todo mundo.' },
-  not_planned: { label: 'Não vamos seguir agora', description: 'A equipe explicou por que não vai seguir com esta proposta agora.' },
-  archived: { label: 'Arquivada', description: 'A sugestão foi encerrada na triagem, com justificativa.' },
+export const STAGE_LABEL: Readonly<Record<Stage, string>> = {
+  triage: 'Em triagem',
+  discussion: 'Em conversa',
+  decided: 'Decidida',
+  in_progress: 'Em desenvolvimento',
+  available: 'Disponível na Biblioteca de Zines',
+  not_planned: 'Não vamos seguir agora',
+  archived: 'Arquivada',
 };
 
 export const INFLUENCE_TEXT: Readonly<Record<InfluenceKind, string>> = {

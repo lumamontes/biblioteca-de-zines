@@ -7,8 +7,8 @@ function clean(value: unknown): string {
 }
 
 function validateDisplayName(name: string): string | undefined {
-  if (!name) return 'Escreva um nome de exibição. Pode ser um pseudônimo.';
-  if (name.length > INPUT_LIMITS.displayName) return `Use até ${INPUT_LIMITS.displayName} caracteres no nome de exibição.`;
+  if (!name) return 'Escreva seu nome. Pode ser um apelido.';
+  if (name.length > INPUT_LIMITS.displayName) return `Use até ${INPUT_LIMITS.displayName} caracteres no nome.`;
   return undefined;
 }
 
@@ -19,7 +19,7 @@ export function validateSuggestion(input: { title: unknown; report: unknown; dis
   const errors: FieldErrors<'title' | 'report' | 'displayName'> = {};
   if (title.length < INPUT_LIMITS.titleMin) errors.title = `Escreva um título com pelo menos ${INPUT_LIMITS.titleMin} caracteres.`;
   else if (title.length > INPUT_LIMITS.titleMax) errors.title = `Use até ${INPUT_LIMITS.titleMax} caracteres no título.`;
-  if (!report) errors.report = 'Conte o que você precisa e por quê.';
+  if (!report) errors.report = 'Conte o que você gostaria de ver na Biblioteca de Zines.';
   else if (report.length > INPUT_LIMITS.text) errors.report = `Use até ${INPUT_LIMITS.text} caracteres.`;
   const nameError = validateDisplayName(displayName);
   if (nameError) errors.displayName = nameError;

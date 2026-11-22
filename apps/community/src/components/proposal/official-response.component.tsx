@@ -4,24 +4,18 @@ import { RESPONSE_KIND_LABEL } from './proposal-text.config';
 
 type OfficialResponseBlockProps = { response: OfficialResponse; text?: string; children?: React.ReactNode };
 
+/** Official answers use the catalogue's callout, so they stand apart from the conversation. */
 export function OfficialResponseBlock({ response, text, children }: OfficialResponseBlockProps) {
-  const edited = response.updatedAt !== response.createdAt;
   return (
-    <article className={`official official--${response.kind}`}>
-      <p className="official__label">{RESPONSE_KIND_LABEL[response.kind]}</p>
-      <p className="official__byline">
-        Por <strong>{response.authorLogin}</strong>, em <time dateTime={response.createdAt}>{formatDate(response.createdAt)}</time>
-        {edited ? <> · editada em <time dateTime={response.updatedAt}>{formatDate(response.updatedAt)}</time></> : null}
+    <article className="callout">
+      <p className="eyebrow">
+        {RESPONSE_KIND_LABEL[response.kind]} · <time dateTime={response.createdAt}>{formatDate(response.createdAt)}</time>
       </p>
-      <div className="prose">
-        {paragraphs(text ?? response.body).map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
-      </div>
+      {paragraphs(text ?? response.body).map((paragraph, index) => (
+        <p key={index} className="text">{paragraph}</p>
+      ))}
       {children}
-      <p>
-        <a href={response.url} className="external">Ver no GitHub</a>
-      </p>
+      <a href={response.url} className="link">Por {response.authorLogin} no GitHub</a>
     </article>
   );
 }

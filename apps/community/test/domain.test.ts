@@ -48,7 +48,8 @@ test('flags inconsistent labels instead of trusting them', () => {
 });
 
 test('reads the official response convention from the first line only', () => {
-  assert.deepEqual(parseOfficialResponse('### Resposta da Biblioteca\nObrigada!'), { kind: 'answer', text: 'Obrigada!' });
+  assert.deepEqual(parseOfficialResponse('### Resposta da Biblioteca de Zines\nObrigada!'), { kind: 'answer', text: 'Obrigada!' });
+  assert.equal(parseOfficialResponse('### Resposta da Biblioteca\nForma curta antiga.')?.kind, 'answer');
   assert.equal(parseOfficialResponse('## Decisão da Biblioteca\nVamos fazer.')?.kind, 'decision');
   assert.equal(parseOfficialResponse('#### atualizacao da biblioteca\nx')?.kind, 'update');
   assert.equal(parseOfficialResponse('Olá\n### Resposta da Biblioteca'), null);

@@ -92,19 +92,21 @@ export function communityFixture(): CommunityState {
 
   return {
     version: 1,
-    nextProposalNumber: 5,
+    nextProposalNumber: 7,
     proposals: [
       teamProposal(1, 184, 'O que você gostaria de conferir antes de enviar sua zine?', '2026-11-17T12:00:00.000Z'),
-      teamProposal(2, 89, 'Como tornar a navegação por teclado mais clara?', '2026-11-17T12:05:00.000Z'),
+      teamProposal(2, 89, 'Navegar pelo site usando o teclado', '2026-11-17T12:05:00.000Z'),
       teamProposal(3, 191, 'Como você prefere ler uma zine no site?', '2026-10-12T12:00:00.000Z'),
       authorFilter,
+      teamProposal(5, 197, 'Baixar zines para imprimir', '2026-11-21T15:00:00.000Z'),
+      teamProposal(6, 46, 'Avisar quem enviou quando a zine for publicada', '2026-11-16T12:00:00.000Z'),
     ],
     contributions: [
-      contribution({ id: SEED_CONTRIBUTION_IDS.coverPreview, proposalNumber: 1, displayName: 'Bia Xerox', text: 'Quero ver a capa do jeito que ela vai aparecer no catálogo, com o corte certo.', createdAt: '2026-11-18T14:02:00.000Z', sent: { commentId: 9001, issueNumber: 184 } }),
+      contribution({ id: SEED_CONTRIBUTION_IDS.coverPreview, proposalNumber: 1, displayName: 'Bia Xerox', text: 'Quero ver a capa do jeito que ela vai aparecer no catálogo.', createdAt: '2026-11-18T14:02:00.000Z', sent: { commentId: 9001, issueNumber: 184 } }),
       contribution({ id: SEED_CONTRIBUTION_IDS.collectiveCredits, proposalNumber: 1, displayName: 'Coletivo Maré', text: 'Quero conferir se o nome do coletivo aparece nos créditos.', createdAt: '2026-11-19T10:30:00.000Z', sent: { commentId: 9002, issueNumber: 184 } }),
       contribution({ id: SEED_CONTRIBUTION_IDS.authorFilterLocal, proposalNumber: 4, displayName: 'Jo Grampo', text: 'Isso ajudaria muito. Muitos coletivos mudam de nome com o tempo.', createdAt: '2026-11-21T09:40:00.000Z' }),
     ],
-    votes: [...votes(1, 12, 1), ...votes(3, 9, 0), ...votes(4, 3, 0)],
+    votes: [...votes(1, 12, 1), ...votes(3, 9, 0), ...votes(4, 3, 0), ...votes(5, 7, 0), ...votes(6, 2, 0)],
     influences: [
       {
         contributionId: SEED_CONTRIBUTION_IDS.collectiveCredits,

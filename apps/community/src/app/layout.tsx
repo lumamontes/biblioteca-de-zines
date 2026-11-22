@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import { DemoNotice } from '@/components/layout/demo-notice.component';
 import { SiteFooter } from '@/components/layout/site-footer.component';
 import { SiteHeader } from '@/components/layout/site-header.component';
 import { getCommunityServer } from '@/composition/server/community-server.service';
@@ -16,8 +15,8 @@ const azeret = localFont({
 });
 
 export const metadata: Metadata = {
-  title: { default: 'Participe · Biblioteca de Zines', template: '%s · Participe · Biblioteca de Zines' },
-  description: 'Ajude a decidir o que a Biblioteca de Zines faz em seguida: sugira, vote, comente e acompanhe as respostas da equipe.',
+  title: { default: 'Comunidade | Biblioteca de Zines', template: '%s | Comunidade | Biblioteca de Zines' },
+  description: 'Sugira, vote e acompanhe as melhorias da Biblioteca de Zines.',
 };
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
@@ -29,11 +28,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body>
         <a href="#content" className="skip-link">Pular para o conteúdo</a>
         <SiteHeader catalogueUrl={settings.catalogueUrl} />
-        {fixtureGitHub.kind === 'fixture' ? <DemoNotice durable={settings.durableData} /> : null}
-        <main id="content" tabIndex={-1} className="site-main">
+        <main id="content" tabIndex={-1} className="page">
           {children}
         </main>
-        <SiteFooter catalogueUrl={settings.catalogueUrl} repository={fixtureGitHub.repository} />
+        <SiteFooter repository={fixtureGitHub.repository} demo={fixtureGitHub.kind === 'fixture'} />
       </body>
     </html>
   );

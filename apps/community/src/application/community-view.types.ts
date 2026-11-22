@@ -15,8 +15,6 @@ import type {
 } from '@/domain/proposal.types';
 import type { VoteTally } from '@/domain/voting.service';
 
-export type ProposalOrder = 'recent' | 'support';
-
 export type ProposalSummary = {
   number: number;
   path: string;
@@ -33,11 +31,11 @@ export type ProposalSummary = {
 };
 
 export type ProposalListView = {
-  featured: ProposalSummary[];
-  suggestions: ProposalSummary[];
+  /** The team question shown first, so an important topic with few votes stays visible. */
+  highlight: ProposalSummary | null;
   open: ProposalSummary[];
+  suggestions: ProposalSummary[];
   decided: ProposalSummary[];
-  order: ProposalOrder;
 };
 
 export type ContributionView = {

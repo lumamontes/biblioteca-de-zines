@@ -64,7 +64,7 @@ export function ContributionForm({ proposalNumber, fallbackAction, initialState,
     <form
       action={fallbackAction}
       method="post"
-      className="contribute"
+      className="form"
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
@@ -80,14 +80,27 @@ export function ContributionForm({ proposalNumber, fallbackAction, initialState,
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <p id="publication-notice" className="notice">
-        {issueNumber
-          ? <>Seu comentário e seu nome de exibição serão publicados na <strong>issue #{issueNumber} do GitHub</strong>, que é pública. Não inclua dados pessoais.</>
-          : <>Seu comentário e seu nome de exibição ficam públicos neste portal. Se a equipe ligar esta sugestão a uma issue do GitHub, os próximos comentários serão publicados lá.</>}
-      </p>
+      <div className="field">
+        <label htmlFor="text">Comentário</label>
+        <textarea
+          id="text"
+          name="text"
+          rows={4}
+          maxLength={4000}
+          required
+          value={text}
+          onChange={(event) => {
+            setText(event.target.value);
+            saveDraft(proposalNumber, { contributionId, text: event.target.value });
+          }}
+          aria-invalid={errors.text ? true : undefined}
+          aria-describedby={['publication-notice', errors.text ? 'text-error' : null].filter(Boolean).join(' ')}
+        />
+        {errors.text ? <p id="text-error" className="field__error">{errors.text}</p> : null}
+      </div>
 
       <div className="field">
-        <label htmlFor="displayName">Nome de exibição <span className="field__hint">(pode ser um pseudônimo)</span></label>
+        <label htmlFor="displayName">Seu nome <span className="field__hint">(pode ser um apelido)</span></label>
         <input
           id="displayName"
           name="displayName"
@@ -106,40 +119,27 @@ export function ContributionForm({ proposalNumber, fallbackAction, initialState,
         {errors.displayName ? <p id="displayName-error" className="field__error">{errors.displayName}</p> : null}
       </div>
 
-      <div className="field">
-        <label htmlFor="text">Seu comentário</label>
-        <textarea
-          id="text"
-          name="text"
-          rows={5}
-          maxLength={4000}
-          required
-          value={text}
-          onChange={(event) => {
-            setText(event.target.value);
-            saveDraft(proposalNumber, { contributionId, text: event.target.value });
-          }}
-          aria-invalid={errors.text ? true : undefined}
-          aria-describedby={['publication-notice', errors.text ? 'text-error' : null].filter(Boolean).join(' ')}
-        />
-        {errors.text ? <p id="text-error" className="field__error">{errors.text}</p> : null}
-      </div>
+      <p id="publication-notice" className="form__notice">
+        {issueNumber
+          ? <>Seu comentário e seu nome vão aparecer publicamente na issue #{issueNumber} do GitHub.</>
+          : <>Seu comentário e seu nome ficam públicos nesta página.</>}
+      </p>
 
-      <div className="contribute__actions">
+      <div className="form__actions">
         <button
           type="submit"
           className="button"
           aria-disabled={isPending || undefined}
           aria-describedby="publication-notice"
         >
-          {failed ? 'Tentar de novo' : 'Enviar comentário'}
+          {failed ? 'Tentar de novo' : 'Comentar'}
         </button>
       </div>
 
       <p role="status" aria-live="polite" className={`form-status${failed ? ' form-status--error' : ''}`}>
         {statusMessage}
         {state.status === 'saved' && state.delivery === 'sent' && state.githubUrl ? (
-          <> <a href={state.githubUrl} className="external">Ver no GitHub</a></>
+          <> <a href={state.githubUrl} className="link">Ver no GitHub</a></>
         ) : null}
       </p>
     </form>

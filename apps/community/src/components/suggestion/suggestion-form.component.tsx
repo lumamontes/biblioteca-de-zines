@@ -10,7 +10,7 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
   const values = state.status === 'idle' ? { title: '', report: '', displayName: '' } : state.values;
 
   return (
-    <form action={formAction} className="contribute" noValidate>
+    <form action={formAction} className="form" noValidate>
       <div className="field field--trap" aria-hidden="true">
         <label htmlFor="website">Não preencha este campo</label>
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
@@ -18,7 +18,7 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
 
       <div className="field">
         <label htmlFor="title">Título</label>
-        <p id="title-hint" className="note">Uma frase curta. Por exemplo: “Filtrar zines pelo nome do coletivo”.</p>
+        <p id="title-hint" className="muted">Uma frase curta. Por exemplo: “Filtrar zines pelo nome do coletivo”.</p>
         <input
           id="title"
           name="title"
@@ -34,11 +34,11 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
       </div>
 
       <div className="field">
-        <label htmlFor="report">O que você precisa e por quê</label>
+        <label htmlFor="report">Conte mais</label>
         <textarea
           id="report"
           name="report"
-          rows={6}
+          rows={5}
           maxLength={4000}
           required
           defaultValue={values.report}
@@ -50,7 +50,7 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
       </div>
 
       <div className="field">
-        <label htmlFor="displayName">Nome de exibição <span className="field__hint">(pode ser um pseudônimo)</span></label>
+        <label htmlFor="displayName">Seu nome <span className="field__hint">(pode ser um apelido)</span></label>
         <input
           id="displayName"
           name="displayName"
@@ -66,11 +66,11 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
         {errors.displayName ? <p id="displayName-error" className="field__error">{errors.displayName}</p> : null}
       </div>
 
-      <p id="suggestion-notice" className="notice">
-        Sua sugestão e seu nome de exibição ficam públicos neste portal. Se a equipe ligar a sugestão a uma issue do GitHub, a issue terá um link para esta página.
+      <p id="suggestion-notice" className="form__notice">
+        Sua sugestão e seu nome ficam públicos na comunidade da Biblioteca de Zines.
       </p>
 
-      <div className="contribute__actions">
+      <div className="form__actions">
         <button
           type="submit"
           className="button"
