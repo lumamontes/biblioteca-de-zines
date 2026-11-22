@@ -20,6 +20,8 @@ entraram em `main` (UTC). Versões formais seguirão o
 - O monitor semanal volta a localizar a configuração de verificação dos recursos publicados após a reorganização do monorepo. [Issue #204](https://github.com/lumamontes/biblioteca-de-zines/issues/204)
 ### Alterado
 
+- **Monitor semanal do leitor**: a equipe pode acompanhar a disponibilidade do leitor direto e do embed com um teste automático às segundas-feiras às 06h43 UTC, além de rodar a mesma verificação manualmente após mudanças no leitor. [Issue #206](https://github.com/lumamontes/biblioteca-de-zines/issues/206)
+
 - **Diagnóstico de descoberta no catálogo**: A documentação reúne 17 fichas públicas e 20 buscas reproduzidas na Biblioteca. A equipe passa a ter uma base para comparar descrição, categorias e ordenação sem alterar a busca publicada.
   [Issue #202](https://github.com/lumamontes/biblioteca-de-zines/issues/202) [Issue #203](https://github.com/lumamontes/biblioteca-de-zines/issues/203)
 

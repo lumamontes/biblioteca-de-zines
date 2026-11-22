@@ -2,6 +2,8 @@ name: Monitor production reader
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "43 6 * * 1"
 
 permissions:
   contents: read
