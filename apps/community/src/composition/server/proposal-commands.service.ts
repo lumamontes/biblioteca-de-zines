@@ -13,7 +13,8 @@ function proposalNumberFrom(formData: FormData): number {
 export async function voteFromForm(formData: FormData): Promise<{ proposalNumber: number }> {
   const proposalNumber = proposalNumberFrom(formData);
   const intent = formData.get('intent');
-  if (intent !== 'support' && intent !== 'oppose') return { proposalNumber };
+  // The community only upvotes; pressing the upvote again withdraws it.
+  if (intent !== 'support') return { proposalNumber };
   const { votes } = await getCommunityServer();
   await votes.castVote({ proposalNumber, voterHash: await ensureVoterHash(), intent });
   return { proposalNumber };

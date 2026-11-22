@@ -24,6 +24,8 @@ export type ProposalSummary = {
   origin: ProposalOrigin;
   featured: boolean;
   votes: VoteTally;
+  /** Whether the current visitor has upvoted this proposal. */
+  viewerVoted: boolean;
   contributionCount: number;
   hasOfficialResponse: boolean;
   createdAt: string;
@@ -31,11 +33,8 @@ export type ProposalSummary = {
 };
 
 export type ProposalListView = {
-  /** The team question shown first, so an important topic with few votes stays visible. */
-  highlight: ProposalSummary | null;
-  open: ProposalSummary[];
-  suggestions: ProposalSummary[];
-  decided: ProposalSummary[];
+  /** Every public proposal, in board order: open ones (team questions first), suggestions, then decisions. */
+  notes: ProposalSummary[];
 };
 
 export type ContributionView = {

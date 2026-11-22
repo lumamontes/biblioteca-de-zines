@@ -20,15 +20,15 @@ entraram em `main`. Versões formais seguirão o
   [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198)
   [ADR 17](docs/decisions/17-independent-community-portal.md)
   [Spec](docs/specs/community-portal.md) [PR #211](https://github.com/lumamontes/biblioteca-de-zines/pull/211)
-- **Primeiro incremento do portal da comunidade**: `apps/community` é uma seção
-  da Biblioteca de Zines com o mesmo cabeçalho, a mesma fonte e a mesma coluna
-  de leitura do catálogo. Ela mostra perguntas tiradas das issues reais, como a
-  impressão de zines e a navegação por teclado, propostas com endereço
-  permanente, sugestões, votos que podem ser trocados ou retirados e
-  comentários com rascunho preservado e envio idempotente para o GitHub. A
-  triagem local vincula sugestões a issues, modera contribuições e registra
-  influência nas decisões. O GitHub ainda é simulado, e o catálogo mostra o
-  link “Comunidade” só quando `NEXT_PUBLIC_COMMUNITY_URL` está configurado.
+- **Primeiro incremento do portal da comunidade**: `apps/community` é um mural
+  da Biblioteca de Zines, com o cabeçalho do catálogo e propostas desenhadas
+  como post-its de papel nas cores da marca. As perguntas vêm das issues reais,
+  como a impressão de zines e a navegação por teclado. Quem visita apoia ideias
+  com um ▲, comenta com o rascunho preservado e acompanha as respostas da equipe
+  no mesmo endereço, sem conta no GitHub. Cada comentário chega à issue uma
+  única vez. A triagem local vincula sugestões a issues, modera e registra
+  influência. O GitHub ainda é simulado, e o catálogo mostra o link
+  “Comunidade” só quando `NEXT_PUBLIC_COMMUNITY_URL` está configurado.
   [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198) [PR #211](https://github.com/lumamontes/biblioteca-de-zines/pull/211)
 - **Novas menções na mídia**: a seção “Na Mídia” da página inicial passa a
   ampliar a visibilidade da Biblioteca e a reunir referências recentes sobre o

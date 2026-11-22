@@ -16,28 +16,25 @@ function byRecentActivity(a: ProposalSummary, b: ProposalSummary): number {
 
 export function createProposalQueryService({ repository, clock }: Pick<CommunityDependencies, 'repository' | 'clock'>) {
   return {
-    async listProposals(): Promise<ProposalListView> {
+    async listProposals(voterHash: string | null = null): Promise<ProposalListView> {
       const state = await repository.read();
       const summaries = state.proposals
         .filter((proposal) => proposal.origin === 'community' || proposal.presentedByTeam)
-        .map((proposal) => toSummary(state, proposal));
+        .map((proposal) => toSummary(state, proposal, voterHash));
       // Team questions come first, so an important topic with few votes is never buried under popular ones.
       const open = summaries
         .filter((item) => OPEN_STAGES.has(item.stage))
         .sort((a, b) => Number(b.featured) - Number(a.featured) || byRecentActivity(a, b));
-      return {
-        highlight: open.find((item) => item.featured) ?? null,
-        open,
-        suggestions: summaries.filter((item) => item.stage === 'triage').sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-        decided: summaries.filter((item) => DECIDED_STAGES.has(item.stage)).sort(byRecentActivity).slice(0, RECENTLY_DECIDED_LIMIT),
-      };
+      const suggestions = summaries.filter((item) => item.stage === 'triage').sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      const decided = summaries.filter((item) => DECIDED_STAGES.has(item.stage)).sort(byRecentActivity).slice(0, RECENTLY_DECIDED_LIMIT);
+      return { notes: [...open, ...suggestions, ...decided] };
     },
 
     async getProposal(number: number, voterHash: string | null): Promise<ProposalDetailView | null> {
       const state = await repository.read();
       const proposal = findProposal(state, number);
       if (!proposal) return null;
-      const summary = toSummary(state, proposal);
+      const summary = toSummary(state, proposal, voterHash);
       const responses = [...(proposal.cache?.officialResponses ?? [])].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
       const latestDecision = [...responses].reverse().find((response) => response.kind === 'decision');
       const syncedAt = proposal.cache?.syncedAt ?? null;

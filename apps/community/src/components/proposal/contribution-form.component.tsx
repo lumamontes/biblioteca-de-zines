@@ -100,7 +100,7 @@ export function ContributionForm({ proposalNumber, fallbackAction, initialState,
       </div>
 
       <div className="field">
-        <label htmlFor="displayName">Seu nome <span className="field__hint">(pode ser um apelido)</span></label>
+        <label htmlFor="displayName">Seu nome <span className="field__hint">(pode ser apelido)</span></label>
         <input
           id="displayName"
           name="displayName"
@@ -121,8 +121,8 @@ export function ContributionForm({ proposalNumber, fallbackAction, initialState,
 
       <p id="publication-notice" className="form__notice">
         {issueNumber
-          ? <>Seu comentário e seu nome vão aparecer publicamente na issue #{issueNumber} do GitHub.</>
-          : <>Seu comentário e seu nome ficam públicos nesta página.</>}
+          ? <>Seu comentário e seu nome ficam públicos aqui e na issue #{issueNumber} do GitHub.</>
+          : <>Seu comentário e seu nome ficam públicos aqui.</>}
       </p>
 
       <div className="form__actions">
@@ -132,7 +132,7 @@ export function ContributionForm({ proposalNumber, fallbackAction, initialState,
           aria-disabled={isPending || undefined}
           aria-describedby="publication-notice"
         >
-          {failed ? 'Tentar de novo' : 'Comentar'}
+          {failed ? 'TENTAR DE NOVO' : 'COMENTAR :)'}
         </button>
       </div>
 

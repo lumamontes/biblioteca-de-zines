@@ -204,7 +204,7 @@ Prioridade: **P0** = obrigatório no piloto, **P1** = desejável no piloto,
 | RF-01 | Visitante | Encontra o portal pelo catálogo | Link “Comunidade” no cabeçalho do catálogo, no desktop e no móvel, quando `NEXT_PUBLIC_COMMUNITY_URL` está definido | P0 | 1 |
 | RF-02 | Visitante | Abre uma proposta por link compartilhado | `/proposals/{n}-{slug}` responde 200. Slug antigo ou ausente redireciona com 308 para o atual | P0 | 1 |
 | RF-03 | Visitante | Sugere uma melhoria | Formulário com título, relato e nome. Funciona sem JavaScript (**executada**). Leva ao endereço da nova proposta | P0 | 1 |
-| RF-04 | Visitante | Vota a favor ou contra, muda ou retira | Um voto por votante e proposta. Clicar no voto ativo retira. O estado é anunciado por `aria-pressed`. Funciona sem JavaScript (**executada**) | P0 | 1 |
+| RF-04 | Visitante | Apoia uma proposta (▲) ou retira o apoio, no mural ou na proposta | Um apoio por votante e proposta. Apertar de novo retira. Não há voto contra (decisão das mantenedoras, 22/11/2026). O estado é anunciado por `aria-pressed`. Funciona sem JavaScript (**executada**) | P0 | 1 |
 | RF-05 | Visitante | Comenta | Aviso de publicação visível antes do botão. Rascunho preservado em falha. Situações pendente, publicada e com falha exibidas. Funciona sem JavaScript (**executada**) | P0 | 1 |
 | RF-06 | Visitante | Tenta reenviar sem duplicar | Repetir o envio usa a mesma chave de idempotência. A issue recebe um único comentário | P0 | 1 |
 | RF-07 | Visitante | Encontra resposta e etapa no mesmo endereço | Resposta oficial e etapa aparecem depois da sincronização, sem edição manual no portal | P0 | 1 (fixture), 2 (real) |
@@ -314,7 +314,13 @@ Casos de borda:
 O portal não tem formulário de resposta oficial. O botão da triagem leva à
 issue principal.
 
-### 3.6 Votos
+### 3.6 Apoios (votos)
+
+O prompt pedia votos a favor e contra. As mantenedoras decidiram manter só o
+apoio (▲): é menos atrito, e o voto contra não ajuda a decidir num mural da
+comunidade. O domínio ainda aceita o valor −1, mas a interface e as rotas só
+enviam apoio.
+
 
 | Alternativa | Atrito | Pseudonimato | Abuso | Troca de dispositivo | Desfazer |
 |---|---|---|---|---|---|
@@ -340,154 +346,133 @@ etapas `available`, `not_planned` e `archived`.
 
 ## 4. Experiência visual e conteúdo
 
-### 4.0 Princípio: parecer parte da Biblioteca de Zines
+### 4.0 Princípio: um mural da Biblioteca de Zines
 
-**[recomendação]** A comunidade é uma seção da Biblioteca de Zines, não um
-produto à parte. Quem vem do catálogo não deve perceber que mudou de
-aplicação. Por isso:
+**[recomendação aprovada]** A comunidade é uma página própria, com a voz da
+home da Biblioteca de Zines:
 
-- **Mesmo cabeçalho do catálogo:** marca “Biblioteca de Zines” e os links Zines,
-  Sobre, Clube de Zines, Publicações, Comunidade e Sugerir Zine, na mesma ordem
-  de `apps/web/src/components/header.tsx`. “Comunidade” aparece como página
-  atual. Os outros links levam ao catálogo. Abaixo de 768 px, os links ficam
-  num menu, como no catálogo.
-- **Mesma página:** fundo branco, texto preto, Azeret Mono, coluna de 768 px
-  (`max-w-screen-md`), título de 1,875 rem e texto em cinza neutro, como em
-  `/publicacoes`.
-- **Um só destaque visual:** o bloco com borda preta à esquerda e fundo
-  `neutral-50` (o “Última novidade” de `/publicacoes`). Ele marca só o que é
-  da equipe: a pergunta em destaque, o que está em aberto, as respostas e a
-  decisão da Biblioteca de Zines.
-- **Sem caixas, selos ou cores de marca:** listas separadas por linhas finas,
-  como no catálogo. A etapa aparece como texto curto acima do título.
-- **Nome completo:** títulos, rótulos e convenções usam “Biblioteca de Zines”
-  por extenso.
-- **Conteúdo das issues reais:** cada pergunta mantém os pontos da issue de
-  origem, como a impressão de zines (#197), a prévia do formulário (#184), a
-  navegação por teclado (#89) e o aviso de zine publicada (#46).
+- **Cabeçalho do catálogo:** Zines, Sobre, Clube de Zines, Publicações,
+  Comunidade e Sugerir Zine, com “Comunidade” como página atual. Abaixo de
+  768 px, os links ficam num menu, como no catálogo.
+- **Botão preto em maiúsculas com “:)”,** como o “EXPLORAR :)” da home:
+  “SUGERIR UMA IDEIA :)”, “COMENTAR :)” e “ENVIAR :)”.
+- **Propostas como post-its de papel,** nas cores da marca, levemente
+  inclinados, como o post-it da zine em destaque na home.
+  - A textura de papel é desenhada com ruído SVG (`feTurbulence`) no próprio
+    CSS, sem imagem externa nem licença.
+  - Cada post-it tem uma faixa de cola no topo e o canto de baixo levantado.
+  - Sugestões novas aparecem em papel branco preso com fita crepe.
+  - O que já está no ar aparece em verde.
+  - As demais alternam amarelo e azul pelo número, então cada post-it mantém a
+    cor em todas as páginas.
+- **Sem etiquetas, abas ou explicações.** No post-it ficam só o título, o
+  apoio (▲ e o número) e a contagem de comentários.
+- **Palavras simples:** “comentários” e “Sugerir uma ideia”. O apoio é só um
+  ▲ com o número. “Biblioteca de Zines” aparece sempre por extenso.
+- **Conteúdo das issues reais:** impressão de zines (#197), prévia do
+  formulário (#184), navegação por teclado (#89), aviso de zine publicada (#46)
+  e a leitura nova, já no ar (#191).
 
-### 4.1 Lista (`/`)
+### 4.1 Mural (`/`)
 
 ```text
 ┌──────────────────────────────┐
-│ Biblioteca de Zines     Menu │   ← no desktop, os links do catálogo
+│ Biblioteca de Zines     Menu │
 ├──────────────────────────────┤
 │ Comunidade                   │
-│ Ideias e perguntas para      │
-│ melhorar a Biblioteca de     │
-│ Zines. Vote, comente e …     │
-│ Sugerir uma melhoria         │
-│ ┃ A EQUIPE QUER OUVIR VOCÊ   │
-│ ┃ Baixar zines para imprimir │
-│ ┃ Você imprimiria zines do … │
-│ Em conversa Sugestões Decid. │
-│ ──────────────────────────── │
-│ Baixar zines para imprimir   │
-│ 7 votos a favor · 0 coment.  │
-│ ──────────────────────────── │
-│ Navegar pelo site usando o   │
-│ teclado                      │
-│ sem votos ainda · 0 coment.  │
+│ O que a Biblioteca de Zines  │
+│ deve fazer agora? Apoie as   │
+│ ideias que você quer ver e   │
+│ comente.                     │
+│ [ SUGERIR UMA IDEIA :) ]     │
+│                              │
+│  ╱‾‾‾‾‾‾‾‾‾╲  ╱‾‾‾‾‾‾‾‾‾╲    │
+│ │Baixar     │ │Navegar    │  │
+│ │zines para │ │pelo site  │  │
+│ │imprimir   │ │usando o   │  │
+│ │[▲ 7]      │ │[▲ 0]      │  │
+│ │0 coment.  │ │0 coment.  │  │
+│  ‾‾‾‾‾‾‾‾‾‾‾   ‾‾‾‾‾‾‾‾‾‾‾   │
 └──────────────────────────────┘
 ```
 
-No desktop, a ordem é a mesma, numa coluna centralizada de 768 px.
+No desktop, cabem de três a quatro post-its por linha. No celular, cabem dois.
 
 **Como equilibrar propostas novas, populares e sem votos:** a ordem não segue
-os votos.
+os apoios.
 
-1. **O destaque** é a pergunta da equipe mais recente (rótulo `portal:featured`).
-2. **“Em conversa”** lista primeiro as perguntas da equipe e depois as demais,
-   pela última atividade. Assim, a #89 aparece com zero votos.
-3. **“Sugestões”** mostra as da comunidade em triagem, das mais novas para as
-   mais antigas.
-4. **“Decididas”** mostra as decisões recentes.
+1. Primeiro vêm as perguntas da equipe (`portal:featured`).
+2. Depois, as demais conversas, pela última atividade.
+3. Depois, as sugestões novas.
+4. Por fim, o que já foi decidido.
 
-Uma proposta sem votos diz “sem votos ainda” em vez de “0”. Não há ordenação
-por votos.
+Assim, a #89 aparece logo no começo, mesmo com zero apoios.
 
-### 4.2 Proposta aberta (`/proposals/1-...`)
+### 4.2 Proposta (`/proposals/1-...`)
 
 ```text
 ← Comunidade
-EM CONVERSA · PERGUNTA DA EQUIPE
-O que você gostaria de conferir antes de enviar sua zine?
-Antes de enviar o formulário, o que você precisa ver: a capa, os créditos,
-a ordem das páginas ou outra coisa?
-┃ O QUE ESTÁ EM ABERTO
-┃ Quais informações a prévia do formulário mostra primeiro…
-[ Apoiar 12 ] [ Não apoiar 1 ]
-Os votos mostram interesse. A decisão também considera os relatos e o impacto.
+ ╱‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾╲
+│ O que você gostaria de conferir      │
+│ antes de enviar sua zine?            │
+│ Antes de enviar o formulário, o que  │
+│ você precisa ver: a capa, os …       │
+│ Ainda estamos decidindo: quais …     │
+ ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+[▲ 12]  Apoie se você também quer isso.
 
-Respostas da equipe
-┃ RESPOSTA DA BIBLIOTECA DE ZINES · 20 DE NOVEMBRO DE 2026
-┃ Obrigada pelos relatos. A prévia vai começar pela capa e pelos créditos…
-┃ Por lumamontes no GitHub
+A Biblioteca de Zines respondeu
+ (post-it azul) lumamontes · 20 de novembro
+ Obrigada pelos relatos. A prévia vai começar …
+ ver no GitHub
 
-Conversa
-Coletivo Maré · 19 de novembro de 2026
+Comentários (2)
+Coletivo Maré · 19 de novembro
 Quero conferir se o nome do coletivo aparece nos créditos.
-Ajudou a decidir: esclareceu uma necessidade.
-Publicado no GitHub
-────────────────────────────────────────────
+✓ ajudou a decidir: esclareceu uma necessidade
+- - - - - - - - - - - - - - - - - - - -
 
 Comentar
-Comentário [                         ]
-Seu nome (pode ser um apelido) [     ]
-Seu comentário e seu nome vão aparecer publicamente na issue #184 do GitHub.
-[ Comentar ]
+Comentário [                       ]
+Seu nome (pode ser apelido) [      ]
+Seu comentário e seu nome ficam públicos aqui e na issue #184 do GitHub.
+[ COMENTAR :) ]
 
-▸ Detalhes técnicos   (issue, tarefas, PRs, última sincronização)
+▸ Detalhes técnicos
 ```
 
-Uma coluna em todas as larguras. A decisão em aberto vem logo depois da
-pergunta. A resposta da equipe fica antes da conversa, perto da pergunta.
+A página tem uma coluna de até 560 px, como a página “Sobre”. Numa proposta
+decidida, a decisão aparece em verde no topo de “A Biblioteca de Zines
+respondeu”, com os próximos passos.
 
-### 4.3 Proposta decidida
+### 4.3 Nova ideia (`/suggest`)
 
-A decisão da Biblioteca de Zines vem logo abaixo do título, com justificativa,
-próximos passos e link para o comentário no GitHub. Depois vêm “A pergunta”, a
-votação encerrada (contagem final) e a conversa.
+Os campos são “Sua ideia em uma frase”, “Conte mais” e “Seu nome (pode ser
+apelido)”. Antes do botão **ENVIAR :)**, a página avisa: “Sua ideia e seu nome
+ficam públicos aqui”.
 
-### 4.4 Nova sugestão (`/suggest`)
+### 4.4 Triagem (`/triage`)
 
-Título, “Conte mais”, “Seu nome (pode ser um apelido)” e o aviso “Sua sugestão
-e seu nome ficam públicos na comunidade da Biblioteca de Zines”, antes do botão
-**Enviar sugestão**.
+A triagem é só da equipe e funciona localmente. Ela usa os mesmos estilos, em
+lista simples. Para cada sugestão, ela traz:
 
-### 4.5 Triagem (`/triage`)
-
-A triagem usa a mesma página e os mesmos estilos. Para cada sugestão, ela traz:
-
-- o relato original;
-- vincular a uma issue existente ou criar uma issue;
+- vincular a uma issue ou criar uma;
 - arquivar com justificativa.
 
 Para cada proposta vinculada, ela traz:
 
-- avisos de inconsistência;
+- avisos;
 - “Responder na issue”;
-- associar tarefas;
-- moderar e registrar influência (recolhido);
-- o simulador do GitHub (recolhido, só local).
-
-### 4.6 O que compartilhar com o catálogo
-
-| Elemento | Como |
-|---|---|
-| Fonte Azeret Mono | Mesmos arquivos (OFL), via `next/font/local` |
-| Cores | Branco, preto e os cinzas `neutral` do Tailwind, como variáveis em `apps/community/src/app/globals.css` |
-| Cabeçalho e navegação | Mesmos links e ordem do catálogo, em `site-header.config.ts`, sem importar o componente (o catálogo usa Tailwind e estado de cliente) |
-| Bloco de destaque | Mesma composição do “Última novidade”: borda de 4 px, `neutral-50`, rótulo pequeno em maiúsculas |
-| Abas | Mesma composição das abas de `/publicacoes`, como links (funcionam sem JavaScript) |
-| Componentes React do catálogo | Não importados: dependem de Tailwind, Supabase e rotas do catálogo |
+- moderar e registrar influência;
+- o simulador do GitHub.
 
 ## 5. Responsividade como requisito de aceite
 
 ### 5.1 Princípios
 
-- **Uma coluna em todas as larguras,** limitada a 768 px como no catálogo. A
-  ordem visual é a ordem do HTML.
+- **O mural se reorganiza pelo espaço disponível:** de três a quatro post-its
+  por linha no desktop e dois abaixo de 480 px. A proposta tem uma coluna de
+  até 560 px. A ordem visual é a ordem do HTML.
 - **Uma única quebra, a mesma do catálogo:** em 768 px (`md`), os links do
   cabeçalho viram o menu. O menu é um `<details>`, então funciona sem
   JavaScript.
@@ -507,8 +492,8 @@ Para cada proposta vinculada, ela traz:
 | 390 | Celular comum | Sem rolagem horizontal. Alvos ≥ 24 px | Navegador automatizado |
 | 767 | Imediatamente antes da quebra real | Menu visível, links do cabeçalho ocultos | Navegador automatizado |
 | 768 | Na quebra real (`md` do catálogo) | Links do cabeçalho visíveis, menu oculto | Navegador automatizado |
-| 1024 | Tablet em paisagem | Coluna de 768 px centralizada | Navegador automatizado |
-| 1440 e 1920 | Monitor largo | Coluna de leitura ≤ 768 px | Navegador automatizado |
+| 1024 | Tablet em paisagem | Três post-its por linha | Navegador automatizado |
+| 1440 e 1920 | Monitor largo | Mural limitado a 1000 px e coluna da proposta ≤ 560 px | Navegador automatizado |
 
 ### 5.3 Cenários e como verificar
 

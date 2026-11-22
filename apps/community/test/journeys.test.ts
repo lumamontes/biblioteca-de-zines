@@ -158,12 +158,9 @@ test('the list keeps team questions with few votes visible ahead of the rest', a
   const portal = createTestCommunity();
   await portal.sync.syncAll();
   const list = await portal.queries.listProposals();
-  assert.equal(list.highlight?.number, 5, 'the newest team question (#197, printing) is highlighted');
-  assert.deepEqual(list.open.map((item) => item.number), [5, 2, 1, 6], 'team questions first, then the rest');
-  assert.equal(list.open[1].votes.support, 0, '#89 has no votes and still comes before non-featured proposals');
-  assert.deepEqual(list.suggestions.map((item) => item.number), [4]);
-  assert.deepEqual(list.decided.map((item) => item.number), [3]);
-  assert.equal(list.decided[0].stage, 'available');
+  assert.deepEqual(list.notes.map((item) => item.number), [5, 2, 1, 6, 4, 3], 'team questions, the rest, suggestions, then decisions');
+  assert.equal(list.notes[1].votes.support, 0, '#89 has no votes and still comes before non-featured proposals');
+  assert.equal(list.notes.at(-1)?.stage, 'available');
 });
 
 test('votes close on terminal stages and the outbox retry is safe to repeat', async () => {

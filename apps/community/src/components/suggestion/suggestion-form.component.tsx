@@ -17,8 +17,8 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
       </div>
 
       <div className="field">
-        <label htmlFor="title">Título</label>
-        <p id="title-hint" className="muted">Uma frase curta. Por exemplo: “Filtrar zines pelo nome do coletivo”.</p>
+        <label htmlFor="title">Sua ideia em uma frase</label>
+        <p id="title-hint" className="muted">Por exemplo: “Encontrar todas as zines de um coletivo”.</p>
         <input
           id="title"
           name="title"
@@ -50,7 +50,7 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
       </div>
 
       <div className="field">
-        <label htmlFor="displayName">Seu nome <span className="field__hint">(pode ser um apelido)</span></label>
+        <label htmlFor="displayName">Seu nome <span className="field__hint">(pode ser apelido)</span></label>
         <input
           id="displayName"
           name="displayName"
@@ -67,7 +67,7 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
       </div>
 
       <p id="suggestion-notice" className="form__notice">
-        Sua sugestão e seu nome ficam públicos na comunidade da Biblioteca de Zines.
+        Sua ideia e seu nome ficam públicos aqui.
       </p>
 
       <div className="form__actions">
@@ -80,7 +80,7 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
             if (isPending) event.preventDefault();
           }}
         >
-          Enviar sugestão
+          ENVIAR :)
         </button>
       </div>
 

@@ -24,7 +24,7 @@ export function absoluteProposalUrl(origin: string, proposal: Pick<Proposal, 'nu
   return new URL(proposalPath(proposal.number, proposal.publicTitle), origin).toString();
 }
 
-export function toSummary(state: CommunityState, proposal: Proposal): ProposalSummary {
+export function toSummary(state: CommunityState, proposal: Proposal, voterHash: string | null = null): ProposalSummary {
   const votes = tallyVotes(state.votes.filter((vote) => vote.proposalNumber === proposal.number));
   const contributionCount = state.contributions.filter(
     (contribution) => contribution.proposalNumber === proposal.number && contribution.moderation.state === 'visible',
@@ -38,6 +38,7 @@ export function toSummary(state: CommunityState, proposal: Proposal): ProposalSu
     origin: proposal.origin,
     featured: proposal.featured,
     votes,
+    viewerVoted: voterHash !== null && state.votes.some((vote) => vote.proposalNumber === proposal.number && vote.voterHash === voterHash && vote.value === 1),
     contributionCount,
     hasOfficialResponse: (proposal.cache?.officialResponses.length ?? 0) > 0,
     createdAt: proposal.createdAt,

@@ -8,9 +8,9 @@ import { parseProposalSegment } from '@/domain/proposal-path.helpers';
 import { ContributionForm } from '@/components/proposal/contribution-form.component';
 import { ContributionList } from '@/components/proposal/contribution-list.component';
 import { OfficialResponseBlock } from '@/components/proposal/official-response.component';
-import { formatDate, formatDateTime, paragraphs } from '@/components/proposal/proposal-formatting.helpers';
+import { formatDate, formatDateTime, noteColor, paragraphs } from '@/components/proposal/proposal-formatting.helpers';
 import { TechnicalDetails } from '@/components/proposal/technical-details.component';
-import { VoteControls } from '@/components/proposal/vote-controls.component';
+import { UpvoteButton } from '@/components/proposal/upvote-button.component';
 import { getCommunityServer } from '@/composition/server/community-server.service';
 import { readVoterHash } from '@/composition/server/voter-session.service';
 import { contributeAction, voteAction } from './actions';
@@ -50,76 +50,69 @@ export default async function ProposalPage({ params, searchParams }: ProposalPag
   const noScriptResult = contributionResultFromQuery(proposal, query);
 
   const decided = isDecidedStage(proposal.stage) && proposal.decision !== null;
-  const origin = proposal.origin === 'community' && proposal.originalReport
-    ? `Sugestão de ${proposal.originalReport.displayName}`
-    : 'Pergunta da equipe';
 
   return (
-    <>
+    <div className="column">
       <Link href="/" className="back">← Comunidade</Link>
 
-      <header>
-        <p className="eyebrow">{STAGE_LABEL[proposal.stage]} · {origin}</p>
-        <h1 className="title">{proposal.title}</h1>
-      </header>
+      <article className={`note note--${noteColor(proposal)} note--wide note--lead`}>
+        <h1 className="note__heading">{proposal.title}</h1>
+        {paragraphs(proposal.question).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+        {proposal.openDecision && !decided ? (
+          <p><strong>Ainda estamos decidindo:</strong> {proposal.openDecision}</p>
+        ) : null}
+        {proposal.originalReport && proposal.origin === 'community' ? (
+          <p className="note__byline">sugerida por {proposal.originalReport.displayName}</p>
+        ) : null}
+      </article>
 
-      {decided && proposal.decision ? (
-        <OfficialResponseBlock response={proposal.decision.response} text={proposal.decision.justification}>
-          {proposal.decision.nextSteps ? (
-            <>
-              <p className="eyebrow callout__subhead">Próximos passos</p>
-              {paragraphs(proposal.decision.nextSteps).map((paragraph, index) => <p key={index} className="text">{paragraph}</p>)}
-            </>
-          ) : null}
-        </OfficialResponseBlock>
-      ) : null}
-
-      <div className={decided ? 'section' : undefined}>
-        {decided ? <h2 className="section-title">A pergunta</h2> : null}
-        {paragraphs(proposal.question).map((paragraph, index) => <p key={index} className="text">{paragraph}</p>)}
+      <div className="votes" id="votes">
+        {proposal.votingOpen ? (
+          <>
+            <UpvoteButton
+              proposalNumber={proposal.number}
+              proposalPath={proposal.canonicalPath}
+              count={proposal.votes.support}
+              pressed={proposal.viewerVote === 1}
+              returnTo="proposal"
+              action={voteAction}
+            />
+            <span className="muted">{proposal.viewerVote === 1 ? 'Você apoiou. Toque de novo para retirar.' : 'Apoie se você também quer isso.'}</span>
+          </>
+        ) : (
+          <span className="muted">▲ {proposal.votes.support} · {STAGE_LABEL[proposal.stage].toLowerCase()}</span>
+        )}
       </div>
 
-      {proposal.openDecision && !decided ? (
-        <div className="callout section-sm">
-          <p className="eyebrow">O que está em aberto</p>
-          <p className="text">{proposal.openDecision}</p>
-        </div>
-      ) : null}
-
-      {proposal.awaitingRelease ? <p className="muted section-sm">A equipe concluiu esta melhoria. Ela aparece como disponível quando estiver no ar.</p> : null}
+      {proposal.awaitingRelease ? <p className="muted">Pronto! Aparece como disponível assim que estiver no ar.</p> : null}
       {proposal.release && proposal.stage === 'available' ? (
-        <p className="muted section-sm">No ar desde <time dateTime={proposal.release.confirmedAt}>{formatDate(proposal.release.confirmedAt)}</time>.</p>
+        <p className="muted">✓ No ar desde <time dateTime={proposal.release.confirmedAt}>{formatDate(proposal.release.confirmedAt)}</time>.</p>
       ) : null}
-      {!proposal.presentedByTeam ? <p className="muted section-sm">A equipe deixou de apresentar esta pergunta. O histórico continua aqui.</p> : null}
-      {proposal.archiveReason ? <p className="muted section-sm">Arquivada: {proposal.archiveReason}</p> : null}
-      {proposal.stale && proposal.syncedAt ? (
-        <p className="muted section-sm">Atualizado com o GitHub em {formatDateTime(proposal.syncedAt)}.</p>
-      ) : null}
+      {proposal.archiveReason ? <p className="muted">Arquivada: {proposal.archiveReason}</p> : null}
+      {!proposal.presentedByTeam ? <p className="muted">A equipe deixou de apresentar esta pergunta. O histórico continua aqui.</p> : null}
+      {proposal.stale && proposal.syncedAt ? <p className="muted">Atualizado com o GitHub em {formatDateTime(proposal.syncedAt)}.</p> : null}
 
-      <VoteControls
-        proposalNumber={proposal.number}
-        returnPath={proposal.canonicalPath}
-        support={proposal.votes.support}
-        oppose={proposal.votes.oppose}
-        viewerVote={proposal.viewerVote}
-        open={proposal.votingOpen}
-        action={voteAction}
-      />
-
-      {proposal.responses.length > 0 ? (
-        <section className="section" aria-labelledby="responses-title">
-          <h2 id="responses-title" className="section-title">Respostas da equipe</h2>
-          {proposal.responses.map((response) => <OfficialResponseBlock key={response.githubCommentId} response={response} />)}
+      {proposal.decision || proposal.responses.length > 0 ? (
+        <section aria-labelledby="responses-title">
+          <h2 id="responses-title" className="section-title">A Biblioteca de Zines respondeu</h2>
+          <div className="responses">
+            {decided && proposal.decision ? (
+              <OfficialResponseBlock response={proposal.decision.response} text={proposal.decision.justification} color="green">
+                {proposal.decision.nextSteps ? <p><strong>Próximos passos:</strong> {proposal.decision.nextSteps}</p> : null}
+              </OfficialResponseBlock>
+            ) : null}
+            {proposal.responses.map((response) => <OfficialResponseBlock key={response.githubCommentId} response={response} />)}
+          </div>
         </section>
       ) : null}
 
-      <section className="section" aria-labelledby="conversation-title">
-        <h2 id="conversation-title" className="section-title">Conversa</h2>
+      <section aria-labelledby="conversation-title">
+        <h2 id="conversation-title" className="section-title">Comentários ({proposal.contributionCount})</h2>
         <ContributionList contributions={proposal.contributions} />
       </section>
 
       {proposal.contributionOpen ? (
-        <section className="section" aria-labelledby="contribute-title">
+        <section aria-labelledby="contribute-title">
           <h2 id="contribute-title" className="section-title">Comentar</h2>
           <ContributionForm
             proposalNumber={proposal.number}
@@ -135,6 +128,6 @@ export default async function ProposalPage({ params, searchParams }: ProposalPag
       ) : null}
 
       <TechnicalDetails proposal={proposal} />
-    </>
+    </div>
   );
 }

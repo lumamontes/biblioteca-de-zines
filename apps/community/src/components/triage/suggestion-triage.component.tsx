@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { TriageProposalView } from '@/application/community-view.types';
-import { summaryLine } from '@/components/proposal/proposal-formatting.helpers';
+import { countLabel } from '@/components/proposal/proposal-formatting.helpers';
 import type { TriageActions } from './triage-actions.types';
 
 export function SuggestionTriage({ item, actions }: { item: TriageProposalView; actions: TriageActions }) {
@@ -11,7 +11,7 @@ export function SuggestionTriage({ item, actions }: { item: TriageProposalView; 
       <h3 id={titleId}>
         <Link href={summary.path}>Nº {summary.number} · {summary.title}</Link>
       </h3>
-      <p className="muted">{summaryLine(summary)}</p>
+      <p className="muted">▲ {summary.votes.support} · {countLabel(summary.contributionCount, 'comentário', 'comentários')}</p>
       {item.originalReport ? (
         <blockquote className="callout">
           <p>{item.originalReport.text}</p>
