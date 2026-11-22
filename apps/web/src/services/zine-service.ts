@@ -1,3 +1,4 @@
+import type { Tables } from "@/types/database.types";
 import { Zine } from "@/@types/zine";
 import { createClient } from "@/utils/supabase/server";
 import { createClient as createBrowser } from "@/utils/supabase/client";
@@ -122,12 +123,12 @@ export const getPublishedZinesForSitemap = async (): Promise<
 };
 
 export const getDashboardZines = async (): Promise<
-  Pick<Zine, 'id' | 'title' | 'slug' | 'is_published'>[]
+  Pick<Tables<'library_zines'>, 'id' | 'title' | 'slug' | 'is_published' | 'source_upload_id'>[]
 > => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('library_zines')
-    .select('id, title, slug, is_published');
+    .select('id, title, slug, is_published, source_upload_id');
 
   if (error) {
     console.error('Error fetching dashboard zines:', error.message);

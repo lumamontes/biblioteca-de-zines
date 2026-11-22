@@ -3,22 +3,24 @@ import { useState } from "react";
 import { EditableUploadPreview } from "./editable-upload-preview";
 import Button from "../button";
 import { Tables } from "@/types/database.types";
-import type { Zine } from "@/@types/zine";
 
-type DashboardZine = Pick<Zine, "id" | "title" | "slug" | "is_published">;
+type DashboardZine = Pick<Tables<"library_zines">, "id" | "title" | "slug" | "is_published" | "source_upload_id">;
 
 export const FilteredUploads = ({
   uploads,
   zines,
+  canSendPublicationEmail,
 }: {
   uploads: Tables<"form_uploads">[];
   zines: DashboardZine[];
+  canSendPublicationEmail: boolean;
 }) => {
   const [filter, setFilter] = useState<"all" | "published" | "unpublished">(
     "all"
   );
   const filteredUploads = uploads.filter((upload) => {
-    const isPublished = zines.some(
+    const linkedZine = zines.find((zine) => zine.source_upload_id === upload.id);
+    const isPublished = linkedZine ? linkedZine.is_published : zines.some(
       (zine) => zine.title === upload.title && zine.is_published
     );
     if (filter === "published") return isPublished;
@@ -66,9 +68,19 @@ export const FilteredUploads = ({
       ) : (
         <div className="flex flex-col mt-6 space-y-4">
           {filteredUploads.map((upload) => {
-            const findZine = zines.find((zine) => zine.title === upload.title);
+            const linkedZine = zines.find((zine) => zine.source_upload_id === upload.id);
+            const titleMatches = zines.filter((zine) => zine.title === upload.title);
+            const findZine = linkedZine ?? titleMatches[0];
+            const uniqueLegacyMatch = titleMatches.length === 1 &&
+              titleMatches[0].source_upload_id === null &&
+              uploads.filter((candidate) => candidate.title === upload.title).length === 1;
             return (
-              <EditableUploadPreview key={upload.id} upload={upload} zine={findZine} />
+              <EditableUploadPreview
+                key={upload.id}
+                upload={upload}
+                zine={findZine}
+                canSendPublicationEmail={canSendPublicationEmail && (Boolean(linkedZine) || uniqueLegacyMatch)}
+              />
             );
           })}
         </div>

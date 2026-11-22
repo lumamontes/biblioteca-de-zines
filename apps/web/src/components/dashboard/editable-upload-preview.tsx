@@ -21,14 +21,16 @@ import { parseTags } from "@/utils/utils";
 import { toast } from "sonner";
 import { parseUploadAuthors, getLegacyAuthorLinksNotice } from "@/utils/authors";
 import AuthorsField from "./authors-field";
+import { PublicationEmailPanel } from "./publication-email.component";
 import SafeImage from "../safe-image";
 
 interface EditableUploadPreviewProps {
   upload: Tables<"form_uploads">;
+  canSendPublicationEmail?: boolean;
   zine?: Pick<Zine, "id" | "title" | "slug" | "is_published">;
 }
 
-export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewProps) => {
+export const EditableUploadPreview = ({ upload, zine, canSendPublicationEmail }: EditableUploadPreviewProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [categories, setCategories] = useState<Tables<"categories">[]>([]);
@@ -349,6 +351,9 @@ export const EditableUploadPreview = ({ upload, zine }: EditableUploadPreviewPro
               </span>
             ))}
           </div>
+        )}
+        {zine?.is_published && canSendPublicationEmail && (
+          <PublicationEmailPanel key={zine.id} zineId={zine.id} />
         )}
       </div>
 

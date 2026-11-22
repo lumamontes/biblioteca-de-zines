@@ -5,12 +5,14 @@ import { getFormUploads } from "@/services/form-uploads-service";
 import { getDashboardZines } from "@/services/zine-service";
 import Link from "next/link";
 import React from "react";
+import { getPublicationEmailAdmin } from "@/composition/server/publication-email-module";
 import { logout } from "../login/actions";
 
 export default async function HomePage() {
-  const [uploads, zines] = await Promise.all([
+  const [uploads, zines, emailAdmin] = await Promise.all([
     getFormUploads(),
     getDashboardZines(),
+    getPublicationEmailAdmin(),
   ]);
 
   return (
@@ -26,7 +28,7 @@ export default async function HomePage() {
 
       <WelcomeInstructions uploads={uploads} />
 
-      <FilteredUploads uploads={uploads} zines={zines} />
+      <FilteredUploads uploads={uploads} zines={zines} canSendPublicationEmail={Boolean(emailAdmin)} />
     </div>
   );
 }

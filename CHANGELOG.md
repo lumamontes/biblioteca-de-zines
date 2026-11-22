@@ -10,6 +10,8 @@ entraram em `main` (UTC). Versões formais seguirão o
 
 ### Adicionado
 
+- **Notificações de publicação**: a equipe pode revisar a mensagem e o destinatário antes de confirmar o envio e consultar o histórico por autoria na zine. [Issue #46](https://github.com/lumamontes/biblioteca-de-zines/issues/46) [PR original #60](https://github.com/lumamontes/biblioteca-de-zines/pull/60)
+
 - **Contadores operacionais do leitor**: a API agrega por dia, publicação e superfície as aberturas, falhas e ofertas de PDF. A equipe pode consultar o período desejado no Supabase e acompanhar as ocorrências sem registrar sessões individuais na tabela. Links antigos são atribuídos à publicação atual, falhas são contadas mesmo sem PDF e a API limita o tamanho dos eventos. A CI verifica em Chromium que o leitor oferece o PDF e registra os eventos esperados quando o BookReader falha ao iniciar.
   [Issue #190](https://github.com/lumamontes/biblioteca-de-zines/issues/190) [PR #200](https://github.com/lumamontes/biblioteca-de-zines/pull/200)
 
