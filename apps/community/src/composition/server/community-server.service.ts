@@ -19,14 +19,38 @@ const globalForCommunity = globalThis as typeof globalThis & { communityServer?:
 function build(): CommunityServer {
   const settings = readServerSettings();
   const clock = () => new Date();
+  const hostedDemo = !settings.durableData;
   const repository = new JsonFileCommunityRepository({
-    filePath: join(settings.dataDirectory, 'community.json'),
-    seed: () => (settings.extremeSeed ? withExtremeContent(communityFixture()) : communityFixture()),
+    filePath: join(settings.dataDirectory, hostedDemo ? 'community-preview-v2.json' : 'community.json'),
+    seed: () => {
+      const state = communityFixture();
+      if (!hostedDemo) return settings.extremeSeed ? withExtremeContent(state) : state;
+      return {
+        ...state,
+        proposals: state.proposals.filter((proposal) => proposal.principalIssue !== null),
+        contributions: [],
+        votes: [],
+        influences: [],
+      };
+    },
     durable: settings.durableData,
   });
   const github = new FixtureGitHubGateway({
-    filePath: join(settings.dataDirectory, 'github-fixture.json'),
-    seed: githubFixture,
+    filePath: join(settings.dataDirectory, hostedDemo ? 'github-preview-v2.json' : 'github-fixture.json'),
+    seed: () => {
+      const state = githubFixture();
+      if (!hostedDemo) return state;
+      return {
+        ...state,
+        issues: state.issues.map((issue) => ({
+          ...issue,
+          comments: [],
+          pullRequests: [],
+          release: null,
+          labels: issue.labels.filter((label) => !label.startsWith('portal:') || label === 'portal:featured'),
+        })),
+      };
+    },
     failureMode: settings.failureMode,
     clock,
   });

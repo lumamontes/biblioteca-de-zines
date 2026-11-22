@@ -22,7 +22,8 @@ export async function voteFromForm(formData: FormData): Promise<{ proposalNumber
 
 export async function contributeFromForm(formData: FormData): Promise<ContributionFormState> {
   if (formData.get('website')) return { status: 'error', message: 'Não foi possível enviar o comentário.' };
-  const { contributions } = await getCommunityServer();
+  const { contributions, settings } = await getCommunityServer();
+  if (!settings.durableData) return { status: 'error', message: 'Nesta versão de teste, comente diretamente no GitHub.' };
   try {
     const result = await contributions.submit({
       proposalNumber: proposalNumberFrom(formData),

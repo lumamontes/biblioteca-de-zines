@@ -25,11 +25,9 @@ entraram em `main`. Versões formais seguirão o
   independente `apps/community`. O mural tem um cabeçalho próprio com um link
   para o catálogo. As propostas aparecem em uma lista e vêm de issues reais,
   como a impressão de zines e a navegação por teclado. Quem
-  visita apoia ideias com um botão de seta para cima, comenta
-  com o rascunho preservado e acompanha as respostas da equipe sem conta no
-  GitHub. Cada comentário chega à issue uma única vez. O que já está no ar
-  leva à novidade em Publicações, e a novidade leva de volta à conversa. O
-  GitHub ainda é simulado, e o catálogo só mostra a comunidade quando
+  visita pode testar votos e sugestões temporários. A versão hospedada começa
+  sem votos ou comentários de exemplo e encaminha a conversa para a issue real
+  do GitHub. O catálogo só mostra a comunidade quando
   `COMMUNITY_ORIGIN` está configurado. O mural pode ser aberto pelo endereço
   direto e pelos links nas novidades relacionadas.
   [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198) [PR #211](https://github.com/lumamontes/biblioteca-de-zines/pull/211)

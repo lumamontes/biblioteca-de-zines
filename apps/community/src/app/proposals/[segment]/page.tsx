@@ -96,7 +96,7 @@ export default async function ProposalPage({ params, searchParams }: ProposalPag
       ) : null}
       {proposal.archiveReason ? <p className="muted">Arquivada: {proposal.archiveReason}</p> : null}
       {!proposal.presentedByTeam ? <p className="muted">A equipe deixou de apresentar esta pergunta. O histórico continua aqui.</p> : null}
-      {proposal.stale && proposal.syncedAt ? <p className="muted">Atualizado com o GitHub em {formatDateTime(proposal.syncedAt)}.</p> : null}
+      {catalogueSettings.durableData && proposal.stale && proposal.syncedAt ? <p className="muted">Atualizado com o GitHub em {formatDateTime(proposal.syncedAt)}.</p> : null}
 
       {proposal.decision || proposal.responses.length > 0 ? (
         <section aria-labelledby="responses-title">
@@ -117,7 +117,11 @@ export default async function ProposalPage({ params, searchParams }: ProposalPag
         <ContributionList contributions={proposal.contributions} />
       </section>
 
-      {proposal.contributionOpen ? (
+      {!catalogueSettings.durableData && proposal.principalIssue ? (
+        <p><a href={proposal.principalIssue.url}>Comentar na issue do GitHub</a></p>
+      ) : null}
+
+      {catalogueSettings.durableData && proposal.contributionOpen ? (
         <section aria-labelledby="contribute-title">
           <h2 id="contribute-title" className="section-title">Comentar</h2>
           <ContributionForm
