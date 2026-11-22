@@ -5,7 +5,7 @@ export function SiteHeader({ catalogueUrl }: { catalogueUrl: string }) {
     <header className="site-header">
       <div className="site-header__inner">
         <Link href="/" className="site-header__brand">Mural da comunidade</Link>
-        <a href={catalogueUrl || '/'} className="site-header__catalogue">Biblioteca de Zines</a>
+        <a href={catalogueUrl || 'https://www.biblioteca-de-zines.com.br/'} className="site-header__catalogue">Biblioteca de Zines</a>
       </div>
     </header>
   );
