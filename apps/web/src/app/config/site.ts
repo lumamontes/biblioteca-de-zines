@@ -26,4 +26,12 @@ export const siteExternalLinks = {
   INSTAGRAM: "https://www.instagram.com/bibliotecadezines/",
 };
 
+/**
+ * The community (apps/community) is served at /comunidade through a rewrite in next.config.ts.
+ * The header links to it only when COMMUNITY_ORIGIN is configured, so the catalogue never
+ * links to an undeployed page.
+ */
+export const COMMUNITY_PATH = "/comunidade";
+export const communityEnabled = process.env.NEXT_PUBLIC_COMMUNITY_ENABLED === "true";
+
 export const PLACEHOLDER_COVER_IMAGE = "./zines.png"

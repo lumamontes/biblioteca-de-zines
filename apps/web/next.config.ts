@@ -1,6 +1,20 @@
 import type { NextConfig } from "next";
 
+/**
+ * The community app (apps/community) is deployed on its own and served here at /comunidade.
+ * Set COMMUNITY_ORIGIN to its deployment (for example http://localhost:4200) to turn it on.
+ */
+const communityOrigin = process.env.COMMUNITY_ORIGIN?.replace(/\/+$/, "");
+
 const nextConfig: NextConfig = {
+  env: { NEXT_PUBLIC_COMMUNITY_ENABLED: communityOrigin ? "true" : "" },
+  async rewrites() {
+    if (!communityOrigin) return [];
+    return [
+      { source: "/comunidade", destination: `${communityOrigin}/comunidade` },
+      { source: "/comunidade/:path*", destination: `${communityOrigin}/comunidade/:path*` },
+    ];
+  },
   serverExternalPackages: ["@napi-rs/canvas", "pdfjs-dist"],
   images: {
     remotePatterns: [

@@ -265,3 +265,37 @@ _Avoid_: Treating news and product updates as identical editorial records
 
 **Editorial source**: The original publication or platform URL from which an adapted public record was prepared, retained for provenance and attribution.
 _Avoid_: Treating public availability on another platform as automatic authorization for every reuse
+
+## Community
+
+**Community portal**:
+The Biblioteca application where readers, creators, and submitters suggest, vote on, and discuss proposals without a GitHub account. GitHub remains the source of truth for team decisions and progress.
+_Avoid_: Treating the portal as a second place where the team records decisions
+
+**Proposal**:
+A public topic with a permanent number and address in the portal. A community suggestion and a team question are both proposals; a suggestion is a proposal before triage links it to an issue.
+_Avoid_: Modelling suggestion and proposal as separate records with separate addresses
+
+**Principal issue**:
+The single GitHub issue where a linked proposal's conversation continues and where maintainers answer. Other issues are related tasks.
+_Avoid_: Spreading one proposal's public conversation across several issues
+
+**Contribution**:
+A community comment on a proposal. Before the link it lives only in the portal; after the link it is published once to the principal issue with the author's display name.
+_Avoid_: Treating a failed or pending delivery as a lost comment
+
+**Official response**:
+A comment by an authorized maintainer on the principal issue whose first line is `### Resposta da Biblioteca de Zines`, `### Atualização da Biblioteca de Zines`, or `### Decisão da Biblioteca de Zines`.
+_Avoid_: Writing official responses in the portal
+
+**Stage**:
+The single public representation of a proposal's progress, derived from the principal issue's labels, state, and release confirmation. It is distinct from the issue's technical state and from a contribution's delivery state.
+_Avoid_: Showing GitHub's open/closed state as the community-facing status
+
+**Release confirmation**:
+Evidence that an improvement is in use, such as a successful production deployment that contains the related pull request. Only it allows the stage "Disponível na Biblioteca de Zines".
+_Avoid_: Treating a merged pull request or a closed issue as availability
+
+**Influence**:
+A maintainer's record that a contribution clarified a need, changed a priority, or changed the solution of a decision.
+_Avoid_: Measuring influence by vote counts alone

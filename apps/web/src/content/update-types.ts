@@ -19,6 +19,8 @@ export interface PublicUpdate {
 
 export interface Update {
   slug: string;
+  /** GitHub issue whose community conversation led to this update. */
+  communityIssue?: number;
   date: string;
   kind: UpdateKind;
   historic?: boolean;

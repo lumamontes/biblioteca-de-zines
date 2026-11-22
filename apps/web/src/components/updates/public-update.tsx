@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Update } from "@/content/update-types";
+import { COMMUNITY_PATH, communityEnabled } from "@/app/config/site";
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -35,7 +36,7 @@ export function PublicUpdate({ update }: { update: Update }) {
   if (!update.public) return null;
 
   return (
-    <article className="border-t border-neutral-200 py-8 first:border-t-0 first:pt-0">
+    <article id={`novidade-${update.slug}`} className="scroll-mt-24 border-t border-neutral-200 py-8 first:border-t-0 first:pt-0">
       <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <time dateTime={update.date} className="text-sm text-neutral-500">
           {formatDate(update.date)}
@@ -48,6 +49,13 @@ export function PublicUpdate({ update }: { update: Update }) {
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
+      {communityEnabled && update.communityIssue ? (
+        <p className="mt-4 text-sm">
+          <a href={`${COMMUNITY_PATH}/issues/${update.communityIssue}`} className="underline">
+            Ver a conversa na comunidade
+          </a>
+        </p>
+      ) : null}
       {update.public.media && update.public.media.length > 0 && (
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {update.public.media.map((media, index) =>

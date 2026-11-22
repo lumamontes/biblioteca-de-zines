@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-
-type PublicationView = "blog" | "updates" | "nerds";
+import { useEffect, useState, type ReactNode } from "react";
+import { initialViewFromHash } from "./publications-hub.helpers";
+import type { PublicationView } from "./publications-hub.types";
 
 interface PublicationsHubProps {
   latestUpdate: ReactNode;
@@ -24,6 +24,14 @@ export function PublicationsHub({
   nerds,
 }: PublicationsHubProps) {
   const [activeView, setActiveView] = useState<PublicationView>("blog");
+
+  // Links like /publicacoes#novidade-<slug> (from the community) open the Novidades tab at that update.
+  useEffect(() => {
+    const view = initialViewFromHash(window.location.hash);
+    if (!view) return;
+    setActiveView(view);
+    requestAnimationFrame(() => document.getElementById(window.location.hash.slice(1))?.scrollIntoView());
+  }, []);
   const content = { blog, updates, nerds }[activeView];
 
   return (

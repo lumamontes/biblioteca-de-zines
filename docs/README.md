@@ -36,6 +36,12 @@ ativação, entrega, reprocessamento e limpeza.
 
 ### Pesquisa e versões posteriores
 
+A [especificação do portal da comunidade](./specs/community-portal.md)
+e a [decisão sobre o portal independente](./decisions/17-independent-community-portal.md)
+descrevem como a comunidade sugere, vota e comenta sem conta no GitHub, enquanto
+as decisões continuam registradas no GitHub. O primeiro incremento roda
+localmente em `apps/community`, com o GitHub simulado.
+
 A [especificação de upload direto e intake de metadados](./specs/direct-upload-and-metadata-intake.md)
 documenta a versão posterior para upload de PDFs, extração de metadados,
 proveniência e revisão humana.
