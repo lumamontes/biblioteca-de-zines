@@ -30,6 +30,12 @@ export function createProposalQueryService({ repository, clock }: Pick<Community
       return { notes: [...open, ...suggestions, ...decided] };
     },
 
+    async pathForIssue(issueNumber: number): Promise<string | null> {
+      const state = await repository.read();
+      const proposal = state.proposals.find((item) => item.principalIssue?.number === issueNumber);
+      return proposal ? proposalPath(proposal.number, proposal.publicTitle) : null;
+    },
+
     async getProposal(number: number, voterHash: string | null): Promise<ProposalDetailView | null> {
       const state = await repository.read();
       const proposal = findProposal(state, number);

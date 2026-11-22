@@ -27,9 +27,11 @@ export const siteExternalLinks = {
 };
 
 /**
- * Public address of the community portal (apps/community). The header shows the
- * "Participe" link only when it is set, so the catalogue never links to an undeployed portal.
+ * The community (apps/community) is served at /comunidade through a rewrite in next.config.ts.
+ * The header links to it only when COMMUNITY_ORIGIN is configured, so the catalogue never
+ * links to an undeployed page.
  */
-export const communityPortalUrl: string | null = process.env.NEXT_PUBLIC_COMMUNITY_URL || null;
+export const COMMUNITY_PATH = "/comunidade";
+export const communityEnabled = process.env.NEXT_PUBLIC_COMMUNITY_ENABLED === "true";
 
 export const PLACEHOLDER_COVER_IMAGE = "./zines.png"

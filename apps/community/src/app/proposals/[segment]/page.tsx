@@ -8,13 +8,14 @@ import { parseProposalSegment } from '@/domain/proposal-path.helpers';
 import { ContributionForm } from '@/components/proposal/contribution-form.component';
 import { ContributionList } from '@/components/proposal/contribution-list.component';
 import { OfficialResponseBlock } from '@/components/proposal/official-response.component';
-import { formatDate, formatDateTime, noteColor, paragraphs } from '@/components/proposal/proposal-formatting.helpers';
+import { formatDate, formatDateTime, noteColor, novidadeUrl, paragraphs } from '@/components/proposal/proposal-formatting.helpers';
 import { TechnicalDetails } from '@/components/proposal/technical-details.component';
 import { UpvoteButton } from '@/components/proposal/upvote-button.component';
 import { getCommunityServer } from '@/composition/server/community-server.service';
 import { readVoterHash } from '@/composition/server/voter-session.service';
 import { contributeAction, voteAction } from './actions';
 import { contributionResultFromQuery } from './proposal-page.helpers';
+import { withBasePath } from '@/app/base-path.helpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,6 +49,7 @@ export default async function ProposalPage({ params, searchParams }: ProposalPag
     permanentRedirect(search ? `${proposal.canonicalPath}?${search}` : proposal.canonicalPath);
   }
   const noScriptResult = contributionResultFromQuery(proposal, query);
+  const { settings: catalogueSettings } = await getCommunityServer();
 
   const decided = isDecidedStage(proposal.stage) && proposal.decision !== null;
 
@@ -86,7 +88,10 @@ export default async function ProposalPage({ params, searchParams }: ProposalPag
 
       {proposal.awaitingRelease ? <p className="muted">Pronto! Aparece como disponível assim que estiver no ar.</p> : null}
       {proposal.release && proposal.stage === 'available' ? (
-        <p className="muted">✓ No ar desde <time dateTime={proposal.release.confirmedAt}>{formatDate(proposal.release.confirmedAt)}</time>.</p>
+        <p className="muted">
+          ✓ No ar desde <time dateTime={proposal.release.confirmedAt}>{formatDate(proposal.release.confirmedAt)}</time>.
+          {proposal.updateSlug ? <> <a href={novidadeUrl(catalogueSettings.catalogueUrl, proposal.updateSlug)}>Ler a novidade</a></> : null}
+        </p>
       ) : null}
       {proposal.archiveReason ? <p className="muted">Arquivada: {proposal.archiveReason}</p> : null}
       {!proposal.presentedByTeam ? <p className="muted">A equipe deixou de apresentar esta pergunta. O histórico continua aqui.</p> : null}
@@ -116,7 +121,7 @@ export default async function ProposalPage({ params, searchParams }: ProposalPag
           <h2 id="contribute-title" className="section-title">Comentar</h2>
           <ContributionForm
             proposalNumber={proposal.number}
-            fallbackAction={`${proposal.canonicalPath}/contribute`}
+            fallbackAction={withBasePath(`${proposal.canonicalPath}/contribute`)}
             initialState={noScriptResult.state}
             initialText={noScriptResult.text}
             initialDisplayName={noScriptResult.displayName}

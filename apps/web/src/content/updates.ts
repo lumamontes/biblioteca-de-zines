@@ -3,6 +3,7 @@ import type { Update } from "./update-types";
 export const updates: Update[] = [
   {
     slug: "leitura-com-mais-contraste",
+    communityIssue: 191,
     date: "2026-10-21",
     kind: "site",
     public: {

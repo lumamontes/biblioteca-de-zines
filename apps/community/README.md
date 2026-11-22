@@ -13,35 +13,49 @@ or maintainer sign-in yet. The interface says so in a demonstration notice.
 
 ## Routes
 
-- `/`: the team's highlighted question and three tabs: open conversations,
-  suggestions in triage, and recent decisions (`?tab=suggestions|decided`).
+All routes live under the base path `/comunidade`.
+
+
+- `/`: the board of paper notes, with upvotes.
 - `/proposals/:number-:slug`: permanent proposal address. Any slug resolves by
   number and redirects (308) to the current one.
-- `/suggest`: new suggestion.
+- `/suggest`: new idea.
+- `/issues/:number`: redirects to the proposal linked to that GitHub issue.
 - `/triage`: local triage and GitHub simulator. Enabled only with
   `COMMUNITY_LOCAL_TRIAGE=1`.
 
 ## Local development
 
+The community is served by the catalogue at `/comunidade`. Run both:
+
 ```bash
-cp env.example .env.local
-pnpm dev            # http://localhost:4200
+cp apps/community/env.example apps/community/.env.local
+echo 'COMMUNITY_ORIGIN=http://localhost:4200' >> apps/web/.env.local
+pnpm dev:all        # catalogue on :3000, community on :4200
 ```
 
-The first request seeds `.data/` from `fixtures/` and syncs with the simulated
-GitHub. Delete `.data/` to start over. Useful variations:
+Open http://localhost:3000/comunidade. The header and its links work as one
+site. The app alone also answers at http://localhost:4200/comunidade.
 
-- `COMMUNITY_GITHUB_FAILURE=lost-confirmation`: the first publication of
-  each comment reaches GitHub but its confirmation is lost. The person sees a
-  recoverable failure; retrying finds the comment by its marker instead of
-  posting again.
+The first request seeds `.data/` from `fixtures/` and syncs with the simulated
+GitHub. Delete `apps/community/.data/` to start over. Useful variations:
+
+- `COMMUNITY_GITHUB_FAILURE=lost-confirmation`: the first publication of each
+  comment reaches GitHub but its confirmation is lost. Retrying finds the
+  comment by its marker instead of posting again.
 - `COMMUNITY_GITHUB_FAILURE=unavailable`: the first attempt fails before
   reaching GitHub.
 - `COMMUNITY_SEED=extreme`: adds a proposal with a very long title,
-  pseudonym, unbroken URL, and 40 contributions.
+  pseudonym, unbroken URL, and 40 comments.
 
-To see the catalogue link, set `NEXT_PUBLIC_COMMUNITY_URL=http://localhost:4200`
-in `apps/web/.env.local`.
+## Links with the catalogue's novidades
+
+- A shipped proposal links to its novidade when the issue's `portal` block has
+  `update: <slug>` (the slug in `apps/web/src/content/updates.ts`). The link is
+  `/publicacoes#novidade-<slug>`, which opens the Novidades tab at that update.
+- A novidade links back when it has `communityIssue: <number>`. The link is
+  `/comunidade/issues/<number>`, which redirects to the proposal linked to that
+  issue.
 
 ## Layers
 

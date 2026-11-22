@@ -1,6 +1,7 @@
 import type { ProposalDetailView } from '@/application/community-view.types';
 import { DELIVERY_MESSAGES } from '@/application/contribution.config';
 import type { ContributionFormState } from '@/components/proposal/contribution-form.types';
+import { withBasePath } from '@/app/base-path.helpers';
 
 const FIELD_ERRORS: Readonly<Record<string, string>> = {
   text: 'Escreva seu comentário antes de enviar.',
@@ -33,7 +34,7 @@ export function contributionResultFromQuery(
 
 /** Relative 303 redirect, so the browser keeps the host it used (and its cookies) behind any proxy. */
 export function seeOther(path: string): Response {
-  return new Response(null, { status: 303, headers: { Location: path } });
+  return new Response(null, { status: 303, headers: { Location: withBasePath(path) } });
 }
 
 /**
@@ -44,8 +45,11 @@ export function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get('origin');
   if (!origin) return true; // Older browsers omit Origin on same-origin form posts.
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
+  // Through the catalogue's rewrite, the browser's origin is the catalogue's host.
+  const allowed = (process.env.COMMUNITY_ALLOWED_ORIGINS ?? 'localhost:3000').split(',').map((item) => item.trim());
   try {
-    return new URL(origin).host === host;
+    const originHost = new URL(origin).host;
+    return originHost === host || allowed.includes(originHost);
   } catch {
     return false;
   }

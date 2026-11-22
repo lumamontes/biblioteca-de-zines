@@ -60,7 +60,7 @@ export interface GitHubGateway {
 }
 
 export type CommunityConfig = {
-  publicOrigin: string;
+  publicUrl: string;
   maintainers: readonly string[];
   voterSecret: string;
 };

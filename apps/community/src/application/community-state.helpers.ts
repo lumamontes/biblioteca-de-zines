@@ -20,8 +20,9 @@ export function requireProposal(state: CommunityState, number: number): Proposal
   return proposal;
 }
 
-export function absoluteProposalUrl(origin: string, proposal: Pick<Proposal, 'number' | 'publicTitle'>): string {
-  return new URL(proposalPath(proposal.number, proposal.publicTitle), origin).toString();
+/** `publicUrl` is where the community is served, base path included (for example https://biblioteca-de-zines.com.br/comunidade). */
+export function absoluteProposalUrl(publicUrl: string, proposal: Pick<Proposal, 'number' | 'publicTitle'>): string {
+  return `${publicUrl.replace(/\/+$/, '')}${proposalPath(proposal.number, proposal.publicTitle)}`;
 }
 
 export function toSummary(state: CommunityState, proposal: Proposal, voterHash: string | null = null): ProposalSummary {
@@ -41,6 +42,7 @@ export function toSummary(state: CommunityState, proposal: Proposal, voterHash: 
     viewerVoted: voterHash !== null && state.votes.some((vote) => vote.proposalNumber === proposal.number && vote.voterHash === voterHash && vote.value === 1),
     contributionCount,
     hasOfficialResponse: (proposal.cache?.officialResponses.length ?? 0) > 0,
+    updateSlug: proposal.updateSlug ?? null,
     createdAt: proposal.createdAt,
     lastActivityAt: proposal.lastActivityAt,
   };

@@ -38,6 +38,9 @@ pode ser adotado por outra comunidade no futuro.
    autorizadas, com uma marcação textual no início do comentário.
 7. Uma instalação atende uma comunidade e um repositório, configurado por
    variável de ambiente.
+8. O app é servido pelo catálogo em `/comunidade`, por meio de um rewrite
+   (`COMMUNITY_ORIGIN`) e de `basePath`. Para quem visita, é uma página da
+   Biblioteca de Zines.
 
 ## Alternativas Consideradas
 

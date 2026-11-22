@@ -16,7 +16,7 @@ export function createTestCommunity(options: { failureMode?: FixtureFailureMode;
   const community = createCommunity({
     repository,
     github,
-    config: { publicOrigin: 'https://participe.example', maintainers: ['lumamontes'], voterSecret: 'test' },
+    config: { publicUrl: 'https://biblioteca.example/comunidade', maintainers: ['lumamontes'], voterSecret: 'test' },
     clock,
     newId: randomUUID,
   });

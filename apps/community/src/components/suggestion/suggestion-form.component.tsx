@@ -1,16 +1,34 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useRouter } from 'next/navigation';
+import { startTransition, useActionState, useEffect } from 'react';
+import { withBasePath } from '@/app/base-path.helpers';
 import { INITIAL_SUGGESTION_FORM_STATE } from './suggestion-form.config';
 import type { SuggestionAction } from './suggestion-form.types';
 
-export function SuggestionForm({ action }: { action: SuggestionAction }) {
+export function SuggestionForm({ action, incomplete = false }: { action: SuggestionAction; incomplete?: boolean }) {
   const [state, formAction, isPending] = useActionState(action, INITIAL_SUGGESTION_FORM_STATE);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.status === 'created') router.push(state.path);
+  }, [state, router]);
   const errors = state.status === 'invalid' ? state.errors : {};
-  const values = state.status === 'idle' ? { title: '', report: '', displayName: '' } : state.values;
+  const values = state.status === 'idle' || state.status === 'created' ? { title: '', report: '', displayName: '' } : state.values;
 
   return (
-    <form action={formAction} className="form" noValidate>
+    <form
+      action={withBasePath('/suggest/submit')}
+      method="post"
+      className="form"
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (isPending) return;
+        const formData = new FormData(event.currentTarget);
+        startTransition(() => formAction(formData));
+      }}
+    >
       <div className="field field--trap" aria-hidden="true">
         <label htmlFor="website">Não preencha este campo</label>
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
@@ -91,7 +109,9 @@ export function SuggestionForm({ action }: { action: SuggestionAction }) {
             ? state.message
             : state.status === 'invalid'
               ? 'Confira os campos marcados.'
-              : ''}
+              : incomplete
+                ? 'Preencha a ideia, o texto e seu nome.'
+                : ''}
       </p>
     </form>
   );

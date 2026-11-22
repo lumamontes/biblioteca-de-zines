@@ -74,7 +74,7 @@ test('journey B: a portal suggestion keeps its address and history when linked; 
 
   const issueComments = await portal.commentsOn(186);
   assert.equal(issueComments.length, issueCommentsBefore + 1, 'one link comment, even after repeating the operation');
-  assert.match(issueComments.at(-1)!.body, new RegExp(`participe\\.example/proposals/${number}-`));
+  assert.match(issueComments.at(-1)!.body, new RegExp(`biblioteca\\.example/comunidade/proposals/${number}-`));
 
   const after = await portal.queries.getProposal(number, 'voter-a');
   assert.equal(after?.canonicalPath, before?.canonicalPath);
@@ -127,7 +127,7 @@ test('only authorized maintainers answer officially, and earlier answers survive
 
   // Lose access: rebuild with no maintainers, sharing the same repository and GitHub.
   const { createSyncService } = await import('@/application/sync.service');
-  const sync = createSyncService({ repository: portal.repository, github: portal.github, config: { publicOrigin: 'https://participe.example', maintainers: [], voterSecret: 'x' }, clock: () => new Date(), newId: randomUUID });
+  const sync = createSyncService({ repository: portal.repository, github: portal.github, config: { publicUrl: 'https://biblioteca.example/comunidade', maintainers: [], voterSecret: 'x' }, clock: () => new Date(), newId: randomUUID });
   await sync.syncProposal(2);
   proposal = await portal.queries.getProposal(2, null);
   assert.deepEqual(proposal?.responses.map((response) => response.authorLogin), ['lumamontes']);
@@ -161,6 +161,9 @@ test('the list keeps team questions with few votes visible ahead of the rest', a
   assert.deepEqual(list.notes.map((item) => item.number), [5, 2, 1, 6, 4, 3], 'team questions, the rest, suggestions, then decisions');
   assert.equal(list.notes[1].votes.support, 0, '#89 has no votes and still comes before non-featured proposals');
   assert.equal(list.notes.at(-1)?.stage, 'available');
+  assert.equal(list.notes.at(-1)?.updateSlug, 'leitura-com-mais-contraste', 'the shipped note points to its novidade');
+  assert.equal(await portal.queries.pathForIssue(191), '/proposals/3-como-voce-prefere-ler-uma-zine-no-site');
+  assert.equal(await portal.queries.pathForIssue(999), null);
 });
 
 test('votes close on terminal stages and the outbox retry is safe to repeat', async () => {

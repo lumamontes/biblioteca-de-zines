@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { InfluenceKind } from '@/domain/proposal.types';
+import { withBasePath } from '@/app/base-path.helpers';
 import { GitHubUnavailableError } from '@/application/github-unavailable.error';
 import type { TriageResult } from '@/application/triage.service';
 import { LOCAL_MAINTAINER } from '@/composition/server/community-server.config';
@@ -39,7 +40,7 @@ async function attempt(operation: () => Promise<TriageResult>): Promise<TriageRe
 }
 
 async function finish(result: TriageResult): Promise<never> {
-  (await cookies()).set(FLASH_COOKIE, JSON.stringify(result), { httpOnly: true, sameSite: 'lax', maxAge: 30, path: '/triage' });
+  (await cookies()).set(FLASH_COOKIE, JSON.stringify(result), { httpOnly: true, sameSite: 'lax', maxAge: 30, path: withBasePath('/triage') });
   revalidatePath('/', 'layout');
   redirect('/triage');
 }

@@ -677,16 +677,35 @@ apps/community/
   incremento 1, o repositório vem do fixture do GitHub simulado. No incremento
   2, ele passa a vir de `COMMUNITY_GITHUB_REPOSITORY`.
 
-**Implantação:** **[recomendação]** projeto Vercel próprio, como o viewer, no
-subdomínio `comunidade.biblioteca-de-zines.com.br`.
+**Implantação:** **[decidido em 22/11/2026]** o app tem projeto Vercel
+próprio, como o visualizador, e é servido pelo catálogo em
+`biblioteca-de-zines.com.br/comunidade`:
 
-| Critério | Subdomínio próprio | Caminho no catálogo (`/comunidade`) |
+- **Na comunidade:** `basePath: '/comunidade'`.
+- **No catálogo:** um rewrite de `/comunidade/*` para o deploy da comunidade,
+  ligado por `COMMUNITY_ORIGIN`.
+
+Para quem visita, é uma página da Biblioteca de Zines. No código, as duas
+aplicações continuam independentes.
+
+| Critério | Subdomínio próprio | Caminho no catálogo (`/comunidade`, escolhido) |
 |---|---|---|
-| URLs permanentes | Estáveis e independentes do catálogo | Dependem de rewrites do catálogo |
-| Autenticação | Cookies isolados do Supabase do catálogo | Cookies compartilhados por domínio, com risco de conflito |
-| Desenvolvimento local | Porta 4200 independente | Precisa do catálogo rodando |
-| Operação | Deploy separado, falha isolada | Um deploy do catálogo pode quebrar o portal |
-| Descoberta | Precisa do link no catálogo | Natural |
+| Para quem visita | Parece outro site | Mesma Biblioteca de Zines, mesmo endereço |
+| URLs permanentes | Estáveis e independentes do catálogo | Estáveis enquanto o rewrite existir. `/comunidade/issues/:número` dá um endereço estável por issue |
+| Cookies | Isolados | Mesmo domínio. O cookie de voto (`bz_participant`) não colide com os do Supabase |
+| Formulários | Sem configuração | `COMMUNITY_ALLOWED_ORIGINS` autoriza o host do catálogo nas server actions e nas rotas sem JavaScript |
+| Desenvolvimento local | Porta 4200 sozinha | `pnpm dev:all` e http://localhost:3000/comunidade |
+| Operação | Deploy separado | Deploy separado. Sem `COMMUNITY_ORIGIN`, o catálogo não mostra o link nem o rewrite |
+
+**Ligação com as novidades do catálogo:**
+
+- **Da comunidade para o catálogo:** o post-it verde “já está no ar” leva a
+  `/publicacoes#novidade-<slug>` quando o bloco `portal` da issue tem
+  `update: <slug>`. A página abre direto na aba Novidades.
+- **Do catálogo para a comunidade:** a novidade com `communityIssue` mostra
+  “Ver a conversa na comunidade”, que leva a `/comunidade/issues/<número>`.
+- **O que não muda:** as novidades continuam no catálogo. A comunidade mostra
+  o caminho da ideia até a entrega, sem duplicar o changelog.
 
 **Adoção futura pelo Viveiro Digital** exigiria:
 
@@ -767,6 +786,9 @@ Executadas em 21/11/2026 sobre um build de produção (`next build`) do app.
 | Percurso B no navegador: vínculo com a #186, nova tentativa sem duplicar o comentário de vínculo, resposta oficial e etapa no mesmo endereço | Chrome headless | **Executada** |
 | Sem JavaScript: sugerir, votar, comentar e repetir após falha, com um único comentário na issue | Chrome headless com JavaScript desligado | **Executada** |
 | POST sem JavaScript vindo de outra origem é recusado (403); da mesma origem, redireciona com 303 | `curl` com cabeçalho `Origin` | **Executada** |
+| Catálogo real (`apps/web`, `next dev`) com `COMMUNITY_ORIGIN`: `/comunidade` responde 200 pelo rewrite, os arquivos estáticos carregam, o link “Comunidade” aparece no cabeçalho, `/comunidade/issues/191` redireciona (303) para a proposta, slug antigo redireciona (308) mantendo `/comunidade`, apoio sem JavaScript pelo catálogo volta ao mural (303), POST de outra origem recebe 403 | `curl` contra os dois apps rodando no Mac | **Executada** |
+| Mural e formulários com `basePath`: sugerir com e sem JavaScript leva a `/comunidade/proposals/…`; o post-it verde aponta para `/publicacoes#novidade-leitura-com-mais-contraste` | Chrome headless | **Executada** |
+| `/publicacoes#novidade-<slug>` abre a aba Novidades na novidade certa | Revisão de código. A página depende do Substack, que não carrega sem rede | **Planejada** (conferir no preview da Vercel) |
 | Viewport baixo (390×300) como aproximação do teclado virtual: botão focado visível e sem elementos fixos | Chrome headless | **Executada** (aproximação) |
 | Teclado virtual real em iOS e Android, VoiceOver no Safari do Mac, axe-core, Lighthouse móvel, validação de compreensão com a comunidade | Seções 5.3, 6 e 7.1 | **Planejada** |
 
@@ -794,6 +816,6 @@ Playwright em `apps/community/e2e` faz parte do incremento 4.
    resposta oficial (seções 2.5, 3.3 e 3.5).
 4. **Identificação de votantes:** cookie anônimo (recomendado) e, se for o
    caso, código de retorno.
-5. **Domínio:** `comunidade.biblioteca-de-zines.com.br` (recomendado).
+5. **Endereço:** decidido como `biblioteca-de-zines.com.br/comunidade`. Falta criar o projeto na Vercel e definir `COMMUNITY_ORIGIN` no catálogo.
 6. **Lista de mantenedoras** autorizadas a responder.
 7. **Retenção** de conteúdo moderado (30 dias proposto) e uso de Turnstile.

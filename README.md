@@ -90,8 +90,10 @@ pnpm dev:all
 
 Abra [http://localhost:3000](http://localhost:3000) para ver o site e
 [http://localhost:4100](http://localhost:4100) para testar o viewer isolado.
-O portal da comunidade abre em [http://localhost:4200](http://localhost:4200);
-veja `apps/community/README.md` para usar a triagem local.
+A comunidade abre dentro do site em
+[http://localhost:3000/comunidade](http://localhost:3000/comunidade) quando
+`COMMUNITY_ORIGIN=http://localhost:4200` está em `apps/web/.env.local`. Veja
+`apps/community/README.md` para usar a triagem local.
 
 Se quiser rodar somente o site, use:
 

@@ -33,7 +33,7 @@ function build(): CommunityServer {
   const community = createCommunity({
     repository,
     github,
-    config: { publicOrigin: settings.publicOrigin, maintainers: settings.maintainers, voterSecret: settings.voterSecret },
+    config: { publicUrl: settings.publicUrl, maintainers: settings.maintainers, voterSecret: settings.voterSecret },
     clock,
     newId: randomUUID,
   });

@@ -58,7 +58,8 @@ test('reads the official response convention from the first line only', () => {
 
 test('reads the hidden portal block that presents an issue to the community', () => {
   const block = parsePortalBlock('<!-- portal\ntitle: Título público\nquestion: Pergunta?\nopen-decision: O que decidir.\n-->\nCorpo técnico');
-  assert.deepEqual(block, { title: 'Título público', question: 'Pergunta?', openDecision: 'O que decidir.' });
+  assert.deepEqual(block, { title: 'Título público', question: 'Pergunta?', openDecision: 'O que decidir.', update: null });
+  assert.equal(parsePortalBlock('<!-- portal\ntitle: T\nquestion: Q?\nupdate: leitura-com-mais-contraste\n-->')?.update, 'leitura-com-mais-contraste');
   assert.equal(parsePortalBlock('<!-- portal\ntitle: Sem pergunta\n-->'), null);
   assert.equal(parsePortalBlock('Corpo sem bloco'), null);
 });
@@ -68,4 +69,10 @@ test('choosing the active vote again withdraws it', () => {
   assert.equal(resolveVote(1, 'support'), null);
   assert.equal(resolveVote(1, 'oppose'), -1);
   assert.deepEqual(tallyVotes([{ value: 1 }, { value: 1 }, { value: -1 }]), { support: 2, oppose: 1 });
+});
+
+test('the app base path matches next.config.ts', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { BASE_PATH } = await import('@/app/base-path.config');
+  assert.match(readFileSync(new URL('../next.config.ts', import.meta.url), 'utf8'), new RegExp(`const BASE_PATH = '${BASE_PATH}'`));
 });

@@ -28,6 +28,7 @@ export type ProposalSummary = {
   viewerVoted: boolean;
   contributionCount: number;
   hasOfficialResponse: boolean;
+  updateSlug: string | null;
   createdAt: string;
   lastActivityAt: string;
 };

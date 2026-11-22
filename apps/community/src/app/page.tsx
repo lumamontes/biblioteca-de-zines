@@ -7,7 +7,7 @@ import { voteAction } from './proposals/[segment]/actions';
 export const dynamic = 'force-dynamic';
 
 export default async function CommunityPage() {
-  const { queries } = await getCommunityServer();
+  const { queries, settings } = await getCommunityServer();
   const { notes } = await queries.listProposals(await readVoterHash());
 
   return (
@@ -19,7 +19,7 @@ export default async function CommunityPage() {
       </header>
       {notes.length > 0 ? (
         <ul className="mural">
-          {notes.map((proposal) => <ProposalNote key={proposal.number} proposal={proposal} action={voteAction} />)}
+          {notes.map((proposal) => <ProposalNote key={proposal.number} proposal={proposal} catalogueUrl={settings.catalogueUrl} action={voteAction} />)}
         </ul>
       ) : (
         <p className="lead">Ainda não há ideias por aqui. Que tal sugerir a primeira?</p>

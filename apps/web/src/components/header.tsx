@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback } from "react";
 import SuggestZineLink from "./suggest-zine-link";
-import { communityPortalUrl } from "@/app/config/site";
+import { COMMUNITY_PATH, communityEnabled } from "@/app/config/site";
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
@@ -49,9 +49,9 @@ export default function Header() {
               Publicações
             </Link>
           </li>
-          {communityPortalUrl ? (
+          {communityEnabled ? (
             <li>
-              <a href={communityPortalUrl} className="hover:underline focus-visible:underline">
+              <a href={COMMUNITY_PATH} className="hover:underline focus-visible:underline">
                 Comunidade
               </a>
             </li>
@@ -102,9 +102,9 @@ export default function Header() {
                 Publicações
               </Link>
             </li>
-            {communityPortalUrl ? (
+            {communityEnabled ? (
               <li>
-                <a href={communityPortalUrl} className="hover:underline focus-visible:underline">
+                <a href={COMMUNITY_PATH} className="hover:underline focus-visible:underline">
                   Comunidade
                 </a>
               </li>

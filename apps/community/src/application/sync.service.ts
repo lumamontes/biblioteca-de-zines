@@ -50,6 +50,7 @@ function applySnapshot(state: CommunityState, proposal: Proposal, snapshot: GitH
     proposal.publicTitle = block.title;
     proposal.publicQuestion = block.question;
     proposal.openDecision = block.openDecision;
+    proposal.updateSlug = block.update;
     proposal.presentedByTeam = true;
   } else if (proposal.origin === 'team') {
     proposal.presentedByTeam = false;

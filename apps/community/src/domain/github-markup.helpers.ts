@@ -47,6 +47,8 @@ export type PortalBlock = {
   title: string;
   question: string;
   openDecision: string | null;
+  /** Slug of the catalogue's novidade that announced the result, when there is one. */
+  update: string | null;
 };
 
 /** Reads the hidden `<!-- portal ... -->` block that maintainers add to an issue body. */
@@ -61,7 +63,7 @@ export function parsePortalBlock(issueBody: string): PortalBlock | null {
   const title = fields.get('title');
   const question = fields.get('question');
   if (!title || !question) return null;
-  return { title, question, openDecision: fields.get('open-decision') ?? null };
+  return { title, question, openDecision: fields.get('open-decision') ?? null, update: fields.get('update') ?? null };
 }
 
 export function contributionCommentBody(input: {

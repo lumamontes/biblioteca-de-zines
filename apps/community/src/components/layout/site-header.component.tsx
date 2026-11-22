@@ -24,7 +24,7 @@ export function SiteHeader({ catalogueUrl }: { catalogueUrl: string }) {
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <a href={catalogueUrl} className="site-header__brand">Biblioteca de Zines</a>
+        <a href={catalogueUrl || '/'} className="site-header__brand">Biblioteca de Zines</a>
         <nav className="site-nav site-nav--desktop" aria-label="Principal">
           <NavLinks catalogueUrl={catalogueUrl} />
         </nav>

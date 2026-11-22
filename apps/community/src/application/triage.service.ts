@@ -53,7 +53,7 @@ export function createTriageService(deps: CommunityDependencies & { sync: Return
       const state = await repository.read();
       const proposal = requireProposal(state, input.proposalNumber);
       const marker = proposalMarker(proposal.number);
-      const proposalUrl = absoluteProposalUrl(config.publicOrigin, proposal);
+      const proposalUrl = absoluteProposalUrl(config.publicUrl, proposal);
 
       if (proposal.principalIssue) {
         const sameTarget = input.target.kind === 'create' || input.target.issueNumber === proposal.principalIssue.number;

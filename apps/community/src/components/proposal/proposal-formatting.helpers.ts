@@ -34,3 +34,8 @@ export function noteColor(proposal: Pick<ProposalSummary, 'stage' | 'number'>): 
 export function paragraphs(text: string): string[] {
   return text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
 }
+
+/** The novidade on the catalogue's /publicacoes page, which opens on the "Novidades" tab. */
+export function novidadeUrl(catalogueUrl: string, slug: string): string {
+  return `${catalogueUrl}/publicacoes#novidade-${slug}`;
+}

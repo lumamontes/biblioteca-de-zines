@@ -24,7 +24,7 @@ export function createContributionService(deps: CommunityDependencies) {
       if (!isDeliverable(contribution, clock().getTime())) return null;
       const proposal = requireProposal(state, contribution.proposalNumber);
       contribution.delivery = { ...delivery, state: 'sending', attempts: delivery.attempts + 1, lastAttemptAt: clock().toISOString(), lastError: null };
-      return { contribution: structuredClone(contribution), proposalUrl: absoluteProposalUrl(config.publicOrigin, proposal) };
+      return { contribution: structuredClone(contribution), proposalUrl: absoluteProposalUrl(config.publicUrl, proposal) };
     });
     if (!claimed) return (await repository.read()).contributions.find((item) => item.id === contributionId)!;
 

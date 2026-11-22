@@ -105,6 +105,8 @@ export type Proposal = {
   relatedTasks: RelatedTask[];
   questionRevisions: QuestionRevision[];
   presentedByTeam: boolean;
+  /** Slug of the catalogue's novidade announcing the result (from the issue's `portal` block). */
+  updateSlug?: string | null;
   cache: ProposalSyncCache | null;
 };
 

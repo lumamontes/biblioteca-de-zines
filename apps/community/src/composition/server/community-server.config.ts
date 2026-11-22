@@ -5,7 +5,7 @@ import type { FixtureFailureMode } from '@/infrastructure/github/fixture-github.
 const FAILURE_MODES: readonly FixtureFailureMode[] = ['none', 'lost-confirmation', 'unavailable'];
 
 export type ServerSettings = {
-  publicOrigin: string;
+  publicUrl: string;
   catalogueUrl: string;
   maintainers: string[];
   voterSecret: string;
@@ -21,8 +21,9 @@ export function readServerSettings(env: NodeJS.ProcessEnv = process.env): Server
   const onServerless = Boolean(env.VERCEL);
   const failureMode = (env.COMMUNITY_GITHUB_FAILURE ?? 'none') as FixtureFailureMode;
   return {
-    publicOrigin: env.COMMUNITY_PUBLIC_ORIGIN ?? 'http://localhost:4200',
-    catalogueUrl: env.COMMUNITY_CATALOGUE_URL ?? 'https://biblioteca-de-zines.com.br',
+    // The community is served by the catalogue at /comunidade, so both share one origin.
+    publicUrl: env.COMMUNITY_PUBLIC_URL ?? 'http://localhost:3000/comunidade',
+    catalogueUrl: env.COMMUNITY_CATALOGUE_URL ?? '',
     maintainers: (env.COMMUNITY_MAINTAINERS ?? 'lumamontes').split(',').map((login) => login.trim()).filter(Boolean),
     // Only the simulated GitHub runs today, so a development secret is acceptable. The real
     // gateway (increment 2) must refuse to start without COMMUNITY_VOTER_SECRET.

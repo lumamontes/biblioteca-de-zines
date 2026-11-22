@@ -10,12 +10,13 @@ export const SEED_CONTRIBUTION_IDS = {
   authorFilterLocal: 'b2d4f6a8-1c3e-4a5b-8d7f-9e0a1b2c3d44',
 } as const;
 
-function portalBlock(fields: { title: string; question: string; openDecision?: string }): string {
+function portalBlock(fields: { title: string; question: string; openDecision?: string; update?: string }): string {
   return [
     '<!-- portal',
     `title: ${fields.title}`,
     `question: ${fields.question}`,
     ...(fields.openDecision ? [`open-decision: ${fields.openDecision}`] : []),
+    ...(fields.update ? [`update: ${fields.update}`] : []),
     '-->',
   ].join('\n');
 }
@@ -124,6 +125,7 @@ export function githubFixture(): FixtureGitHubState {
           portalBlock({
             title: 'Como você prefere ler uma zine no site?',
             question: 'Na página da zine, o que ajuda mais: uma área de leitura grande, ler página por página ou ter as informações sempre ao lado?',
+            update: 'leitura-com-mais-contraste',
           }),
           'Reorganizar a página de detalhes com painel de leitura e coluna lateral.',
         ].join('\n'),
