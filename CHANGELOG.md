@@ -29,7 +29,8 @@ entraram em `main`. Versões formais seguirão o
   GitHub. Cada comentário chega à issue uma única vez. O que já está no ar
   leva à novidade em Publicações, e a novidade leva de volta à conversa. O
   GitHub ainda é simulado, e o catálogo só mostra a comunidade quando
-  `COMMUNITY_ORIGIN` está configurado.
+  `COMMUNITY_ORIGIN` está configurado. O mural pode ser aberto pelo endereço
+  direto e pelos links nas novidades relacionadas.
   [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198) [PR #211](https://github.com/lumamontes/biblioteca-de-zines/pull/211)
 - **Novas menções na mídia**: a seção “Na Mídia” da página inicial passa a
   ampliar a visibilidade da Biblioteca e a reunir referências recentes sobre o

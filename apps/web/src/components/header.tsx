@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback } from "react";
 import SuggestZineLink from "./suggest-zine-link";
-import { COMMUNITY_PATH, communityEnabled } from "@/app/config/site";
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
@@ -49,13 +48,6 @@ export default function Header() {
               Publicações
             </Link>
           </li>
-          {communityEnabled ? (
-            <li>
-              <a href={COMMUNITY_PATH} className="hover:underline focus-visible:underline">
-                Comunidade
-              </a>
-            </li>
-          ) : null}
           <li>
             <SuggestZineLink />
           </li>
@@ -102,13 +94,6 @@ export default function Header() {
                 Publicações
               </Link>
             </li>
-            {communityEnabled ? (
-              <li>
-                <a href={COMMUNITY_PATH} className="hover:underline focus-visible:underline">
-                  Comunidade
-                </a>
-              </li>
-            ) : null}
             <li>
               <SuggestZineLink />
             </li>

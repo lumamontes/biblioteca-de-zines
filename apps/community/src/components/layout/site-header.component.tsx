@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { CATALOGUE_NAV_LINKS, SUGGEST_ZINE_PATH } from './site-header.config';
 
 function NavLinks({ catalogueUrl }: { catalogueUrl: string }) {
@@ -9,9 +8,6 @@ function NavLinks({ catalogueUrl }: { catalogueUrl: string }) {
           <a href={`${catalogueUrl}${link.path}`}>{link.label}</a>
         </li>
       ))}
-      <li>
-        <Link href="/" aria-current="page">Comunidade</Link>
-      </li>
       <li>
         <a href={`${catalogueUrl}${SUGGEST_ZINE_PATH}`}>Sugerir Zine</a>
       </li>
