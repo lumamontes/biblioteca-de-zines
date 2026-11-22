@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { isViewerEvent } from '@/application/reader/viewer-events';
+import { NextRequest } from 'next/server';
+import { POST } from '@/app/api/public-reader/events/route';
+import { isViewerEvent, MAX_VIEWER_EVENT_BYTES } from '@/application/reader/viewer-events';
 import { resolveViewerAccess } from '@/application/reader/viewer-access';
 import { createViewerRolloutConfig, validateViewerRolloutConfig } from '@/application/reader/viewer-rollout';
 import { createViewerPreflightHeaders } from '@/application/reader/viewer-cors';
@@ -81,6 +83,19 @@ test('accepts only bounded public-reader telemetry', () => {
   assert.equal(isViewerEvent({ slug: 'zine', surface: 'embed', type: 'request-database' }), false);
   assert.equal(isViewerEvent({ slug: 'zine', surface: 'embed', type: 'page-load', durationMs: -1 }), false);
   assert.equal(isViewerEvent({ slug: 'zine', surface: 'embed', type: 'ready', memoryBytes: 10_000_000_001 }), false);
+});
+
+test('rejects oversized telemetry with or without a content length', async () => {
+  const url = 'http://localhost/api/public-reader/events';
+  const payload = JSON.stringify({ slug: 'zine', surface: 'embed', type: 'page-load', padding: 'x'.repeat(MAX_VIEWER_EVENT_BYTES) });
+  for (const headers of [new Headers({ 'content-length': String(payload.length) }), new Headers()]) {
+    const request = new NextRequest(url, { method: 'POST', body: payload, headers });
+    assert.equal((await POST(request)).status, 413);
+  }
+  const invalidMetric = new NextRequest(url, { method: 'POST', body: JSON.stringify({
+    slug: 'zine', surface: 'embed', type: 'ready', durationMs: 86_400_001, metadataBytes: 100_000_001,
+  }) });
+  assert.equal((await POST(invalidMetric)).status, 400);
 });
 
 test('limits traffic per key and resets after the window', () => {

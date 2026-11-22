@@ -27,13 +27,13 @@ test.beforeEach(async ({ page }) => {
 test('initializes from the public manifest and loads BookReader only in the viewer', async ({ page }) => {
   const bookReaderRequests: string[] = [];
   page.on('request', (request) => {
-    if (request.url().includes('@internetarchive/bookreader')) bookReaderRequests.push(request.url());
+    if (request.url().includes('@internetarchive/bookreader') || request.url().includes('/jquery@3.7.1/')) bookReaderRequests.push(request.url());
   });
   await mockBookReaderAssets(page);
   await page.goto('/p/zine');
 
   await expect(page.locator('.reader__canvas')).toBeVisible();
-  expect(bookReaderRequests).toEqual(expect.arrayContaining([
+  await expect.poll(() => bookReaderRequests).toEqual(expect.arrayContaining([
     expect.stringContaining('/jquery@3.7.1/dist/jquery.min.js'),
     expect.stringContaining('/BookReader/BookReader.js'),
     expect.stringContaining('/BookReader/BookReader.css'),
@@ -46,7 +46,8 @@ test('translates navigation through the isolated BookReader adapter', async ({ p
   await page.goto('/p/zine');
   await expect(page.locator('.reader__canvas')).toBeVisible();
 
-  await page.evaluate(() => window.__bibliotecaBookReaderInstances[0]?.next());
+  await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderInstances?.length ?? 0)).toBeGreaterThan(0);
+  await page.evaluate(() => window.__bibliotecaBookReaderInstances[0].next());
   await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderEvents)).toContain('next');
 });
 
@@ -55,11 +56,17 @@ test('forwards viewport resize events to BookReader', async ({ page }) => {
   await page.goto('/p/zine');
   await expect(page.locator('.reader__canvas')).toBeVisible();
 
+  await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderInstances?.length ?? 0)).toBeGreaterThan(0);
   await page.evaluate(() => window.dispatchEvent(new Event('resize')));
   await expect.poll(() => page.evaluate(() => window.__bibliotecaBookReaderEvents)).toContain('resize');
 });
 
 test('preserves the PDF fallback when BookReader initialization fails', async ({ page }) => {
+  const events: string[] = [];
+  await page.route('**/api/public-reader/events', (route) => {
+    events.push(route.request().postDataJSON().type);
+    return route.fulfill({ status: 204 });
+  });
   await page.route('**/@internetarchive/bookreader@5.0.0-87/BookReader/BookReader.js', (route) => route.fulfill({
     contentType: 'application/javascript',
     body: 'window.BookReader = function() { this.bind = function() {}; this.init = function() { throw new Error("init failed"); }; };',
@@ -70,15 +77,48 @@ test('preserves the PDF fallback when BookReader initialization fails', async ({
 
   await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: /Abrir o PDF original/ })).toHaveAttribute('href', readyResponse.fallback.url);
+  await expect.poll(() => [...events].sort()).toEqual(['fallback', 'page-error']);
 });
+
+test('attributes an old reader link to the canonical publication', async ({ page }) => {
+  await mockBookReaderAssets(page);
+  const ready = page.waitForRequest(request => request.url().endsWith('/events')
+    && request.method() === 'POST' && request.postDataJSON().type === 'ready');
+  await page.goto('/p/old-zine');
+  expect((await ready).postDataJSON()).toMatchObject({ slug: 'zine', surface: 'standalone' });
+});
+
+for (const { reason, url, types } of [
+  { reason: 'page-generation-failed', url: readyResponse.fallback.url, types: ['fallback', 'page-error'] },
+  { reason: 'source-unavailable', url: '', types: ['page-error'] },
+  { reason: 'page-generation-unavailable', url: readyResponse.fallback.url, types: ['fallback'] },
+]) {
+  test(`reports the expected events for ${reason}`, async ({ page }) => {
+    const events: Array<{ slug: string; type: string }> = [];
+    await page.route('**/api/public-reader/events', route => {
+      events.push(route.request().postDataJSON());
+      return route.fulfill({ status: 204 });
+    });
+    await page.route('**/api/public-reader/v1/**', route => route.fulfill({ json: {
+      fallback: { ...readyResponse.fallback, url },
+      publication: readyResponse.publication,
+      reason,
+      status: 'fallback',
+    } }));
+    await page.goto('/embed/p/old-zine');
+    await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
+    await expect.poll(() => events.map(event => event.type).sort()).toEqual(types);
+    expect(events.every(event => event.slug === 'zine')).toBe(true);
+  });
+}
 
 test('serves the unbranded embed and optional Biblioteca branding', async ({ page }) => {
   await mockBookReaderAssets(page);
   await page.goto('/embed/p/zine');
-  await expect(page.locator('.reader--branded')).toHaveCount(0);
+  await expect(page.getByRole('img', { name: 'Biblioteca de Zines' })).toHaveCount(0);
 
   await page.goto('/embed/p/zine?branding=biblioteca');
-  await expect(page.locator('.reader--branded')).toHaveCount(1);
+  await expect(page.getByRole('img', { name: 'Biblioteca de Zines' })).toHaveCount(1);
 });
 
 test('shows the PDF fallback when the endpoint is unavailable', async ({ page }) => {
