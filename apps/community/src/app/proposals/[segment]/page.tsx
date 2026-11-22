@@ -1,3 +1,4 @@
+import { VoteIcon } from '@/components/proposal/vote-icon.component';
 import { randomUUID } from 'node:crypto';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -82,7 +83,7 @@ export default async function ProposalPage({ params, searchParams }: ProposalPag
             <span className="muted">{proposal.viewerVote === 1 ? 'Você apoiou. Toque de novo para retirar.' : 'Apoie se você também quer isso.'}</span>
           </>
         ) : (
-          <span className="muted">▲ {proposal.votes.support} · {STAGE_LABEL[proposal.stage].toLowerCase()}</span>
+          <span className="muted vote-count"><VoteIcon /> {proposal.votes.support} · {STAGE_LABEL[proposal.stage].toLowerCase()}</span>
         )}
       </div>
 

@@ -1,3 +1,4 @@
+import { VoteIcon } from './vote-icon.component';
 import { withBasePath } from '@/app/base-path.helpers';
 import { ProgressiveForm } from './progressive-form.component';
 
@@ -18,7 +19,7 @@ export function UpvoteButton({ proposalNumber, proposalPath, count, pressed, ret
       <input type="hidden" name="proposalNumber" value={proposalNumber} />
       {returnTo === '/' ? <input type="hidden" name="returnTo" value="/" /> : null}
       <button type="submit" name="intent" value="support" className={`up${pressed ? ' up--on' : ''}`} aria-pressed={pressed}>
-        <span aria-hidden="true">▲</span> {count}
+        <VoteIcon /> {count}
         <span className="visually-hidden">{pressed ? ', você apoiou. Apoiar de novo retira o apoio.' : count === 1 ? ' apoio. Apoiar esta ideia' : ' apoios. Apoiar esta ideia'}</span>
       </button>
     </ProgressiveForm>

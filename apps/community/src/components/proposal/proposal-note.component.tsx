@@ -1,3 +1,4 @@
+import { VoteIcon } from './vote-icon.component';
 import Link from 'next/link';
 import type { ProposalSummary } from '@/application/community-view.types';
 import { countLabel, noteColor, novidadeUrl } from './proposal-formatting.helpers';
@@ -28,7 +29,7 @@ export function ProposalNote({ proposal, catalogueUrl, action }: ProposalNotePro
             action={action}
           />
         ) : (
-          <span className="up up--static" aria-label={countLabel(proposal.votes.support, 'apoio', 'apoios')}>▲ {proposal.votes.support}</span>
+          <span className="up up--static" aria-label={countLabel(proposal.votes.support, 'apoio', 'apoios')}><VoteIcon /> {proposal.votes.support}</span>
         )}
         <span className="note__meta">
           {proposal.stage === 'available' && proposal.updateSlug ? (

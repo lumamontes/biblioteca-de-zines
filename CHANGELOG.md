@@ -22,9 +22,10 @@ entraram em `main`. Versões formais seguirão o
   [Spec](docs/specs/community-portal.md) [PR #211](https://github.com/lumamontes/biblioteca-de-zines/pull/211)
 - **Primeiro incremento do portal da comunidade**: a Biblioteca de Zines ganha
   um mural em `/comunidade`, servido pelo catálogo a partir do app
-  independente `apps/community`. As propostas aparecem como post-its de papel
-  nas cores da marca, e as perguntas vêm das issues reais, como a impressão de
-  zines e a navegação por teclado. Quem visita apoia ideias com um ▲, comenta
+  independente `apps/community`. O mural tem um cabeçalho próprio com um link
+  para o catálogo. As propostas usam uma textura de papel do ambientCG e vêm
+  de issues reais, como a impressão de zines e a navegação por teclado. Quem
+  visita apoia ideias com um botão de seta para cima, comenta
   com o rascunho preservado e acompanha as respostas da equipe sem conta no
   GitHub. Cada comentário chega à issue uma única vez. O que já está no ar
   leva à novidade em Publicações, e a novidade leva de volta à conversa. O
