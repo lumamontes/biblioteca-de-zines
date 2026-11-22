@@ -13,6 +13,9 @@ entraram em `main` (UTC). Versões formais seguirão o
 - O monitor semanal volta a localizar a configuração de verificação dos recursos publicados após a reorganização do monorepo. [Issue #204](https://github.com/lumamontes/biblioteca-de-zines/issues/204)
 ### Alterado
 
+- **Diagnóstico de descoberta no catálogo**: A documentação reúne 17 fichas públicas e 20 buscas reproduzidas na Biblioteca. A equipe passa a ter uma base para comparar descrição, categorias e ordenação sem alterar a busca publicada.
+  [Issue #202](https://github.com/lumamontes/biblioteca-de-zines/issues/202) [Issue #203](https://github.com/lumamontes/biblioteca-de-zines/issues/203)
+
 - **Cronologia do catálogo e do leitor**: a página de novidades técnicas passa a distinguir a escolha do BookReader, a integração na Biblioteca e as correções posteriores. As datas registram a entrada na branch principal em UTC e os links permitem consultar cada entrega.
   [PR #199](https://github.com/lumamontes/biblioteca-de-zines/pull/199) [Histórico do changelog](https://github.com/lumamontes/biblioteca-de-zines/commits/main/CHANGELOG.md)
 
@@ -610,3 +613,4 @@ entraram em `main` (UTC). Versões formais seguirão o
   a aplicação web e a prática de registrar decisões arquiteturais, em vez de
   manter o projeto apenas como uma ideia distribuída.
   [commit b08b129](https://github.com/lumamontes/biblioteca-de-zines/commit/b08b129) [ADR 1](docs/decisions/1-adr.md)
+
