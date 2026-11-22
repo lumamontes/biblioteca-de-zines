@@ -39,6 +39,9 @@ export type GitHubIssueSnapshot = {
   url: string;
   title: string;
   body: string;
+  /** Only issues written by maintainers (or the portal bot) are trusted for `portal` blocks and markers. */
+  authorLogin: string;
+  authorAssociation: GitHubComment['authorAssociation'];
   state: 'open' | 'closed';
   stateReason: 'completed' | 'not_planned' | 'reopened' | null;
   labels: string[];

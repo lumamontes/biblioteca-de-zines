@@ -32,8 +32,9 @@ export class FixtureGitHubGateway implements GitHubGateway {
     return this.state.issues.filter((issue) => /<!--\s*portal\s*\n/.test(issue.body)).map((issue) => issue.number);
   }
 
+  /** Only issues the portal itself created count, so nobody can plant a marker in their own issue. */
   async findIssueByMarker(marker: string) {
-    const issue = this.state.issues.find((item) => item.body.includes(marker));
+    const issue = this.state.issues.find((item) => item.authorLogin === PORTAL_BOT_LOGIN && item.body.startsWith(marker));
     return issue ? { number: issue.number, url: issue.url, title: issue.title } : null;
   }
 
@@ -44,6 +45,8 @@ export class FixtureGitHubGateway implements GitHubGateway {
       url: this.issueUrl(number),
       title: input.title,
       body: input.body,
+      authorLogin: PORTAL_BOT_LOGIN,
+      authorAssociation: 'NONE',
       state: 'open',
       stateReason: null,
       labels: [],
@@ -57,7 +60,8 @@ export class FixtureGitHubGateway implements GitHubGateway {
   }
 
   async findCommentByMarker(issueNumber: number, marker: string) {
-    const comment = this.requireIssue(issueNumber).comments.find((item) => item.body.includes(marker));
+    // Only the portal's own comments, with the marker on the first line, so a quoted marker cannot match.
+    const comment = this.requireIssue(issueNumber).comments.find((item) => item.isPortalBot && item.body.startsWith(marker));
     return comment ? { id: comment.id, url: comment.url } : null;
   }
 
@@ -90,6 +94,24 @@ export class FixtureGitHubGateway implements GitHubGateway {
 
   simulateComment(issueNumber: number, input: FixtureCommentInput): GitHubComment {
     return this.addComment(issueNumber, input);
+  }
+
+  simulateIssue(input: { title: string; body: string; authorLogin: string; authorAssociation: GitHubComment['authorAssociation'] }): GitHubIssueSnapshot {
+    const number = this.state.nextIssueNumber++;
+    const issue: GitHubIssueSnapshot = {
+      number,
+      url: this.issueUrl(number),
+      ...input,
+      state: 'open',
+      stateReason: null,
+      labels: [],
+      comments: [],
+      pullRequests: [],
+      release: null,
+    };
+    this.state.issues.push(issue);
+    this.persist();
+    return structuredClone(issue);
   }
 
   simulateDeleteComment(commentId: number): void {

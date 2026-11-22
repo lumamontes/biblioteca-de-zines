@@ -633,6 +633,41 @@ Regras:
 | Notificações já enviadas pelo GitHub | **Não podem ser recolhidas.** Por isso o aviso é mostrado antes do envio |
 | Histórico de edição do GitHub | O texto anterior fica no histórico da edição. Para remover de vez, uma mantenedora apaga o comentário no GitHub. O portal detecta e grava `deleted_on_github` |
 
+### 7.5.1 Auditoria do incremento 1 (22/11/2026)
+
+**Corrigido**, com teste em `apps/community/test/security.test.ts`. Os dois
+primeiros testes falhavam no código anterior à correção.
+
+| Achado | Risco | Correção |
+|---|---|---|
+| Um comentário podia conter o marcador `<!-- portal:contribution:<id> -->` de outra contribuição pendente (os ids aparecem no HTML) | A nova tentativa da vítima “encontrava” o comentário do atacante e não publicava o dela | O texto da comunidade tem `<!--` escapado. A busca por marcador só considera comentários do bot do portal, com o marcador na primeira linha |
+| Menções `@login` e referências `#123` no texto ou no nome iam para o GitHub como markdown ativo | Notificar qualquer pessoa no GitHub e escrever na linha do tempo de outras issues | Menções e referências são neutralizadas com um espaço de largura zero. O nome perde a sintaxe de markdown e HTML |
+| Qualquer pessoa podia abrir uma issue com um bloco `<!-- portal -->` | A issue aparecia no mural como pergunta da equipe, ou mudava o título de uma proposta vinculada | O bloco só vale em issues escritas por mantenedoras (login na lista e associação OWNER, MEMBER ou COLLABORATOR) |
+| Uma issue de terceiros com o marcador `<!-- portal:proposal:N -->` | Capturava “Criar issue e vincular”, ligando a proposta à issue do atacante | Só valem issues criadas pelo bot do portal, com o marcador na primeira linha |
+| O `update:` do bloco ia para um link | Defesa em profundidade | Só aceita caracteres de slug |
+| As rotas sem JavaScript montavam o `Location` com o segmento da URL | Cabeçalho malformado (500) com caracteres de controle | Redirecionam pelo número da proposta. A página acrescenta o slug atual |
+| Sem `COMMUNITY_VOTER_SECRET` em produção, o HMAC usa um segredo público | Hashes de votante previsíveis | Aviso no log do servidor. A variável faz parte do deploy |
+
+**Em aberto**, antes do GitHub real (incremento 2):
+
+- **Limite de envios:** não há limite por votante nem por IP. Hoje dá para
+  inflar apoios apagando o cookie ou mandando POSTs sem cookie, e cada envio
+  sem cookie cria um votante novo. Com o gateway real, o mesmo vale para
+  comentários publicados no GitHub. É preciso limitar por HMAC e por IP
+  (Upstash ou tabela no banco) antes de ligar o GitHub real, e considerar
+  Turnstile.
+- **Triagem:** a triagem local não tem login. `COMMUNITY_LOCAL_TRIAGE=1` num
+  deploy público deixa qualquer pessoa mexer nos dados de demonstração. Não
+  ligue essa variável em deploy público até existir o OAuth (incremento 3).
+- **Rotas sem JavaScript:** aceitam POST sem o cabeçalho `Origin`, o que
+  cobre navegadores antigos. O cookie `SameSite=Lax` limita o impacto.
+- **CSP:** mantém `'unsafe-inline'` para os scripts do Next. Trocar por nonce
+  quando houver tempo.
+- **Variável de build:** `NEXT_PUBLIC_COMMUNITY_ENABLED` é calculada no build
+  do catálogo. Mudar `COMMUNITY_ORIGIN` exige um novo deploy do catálogo.
+- **Envios pendentes:** nenhum job agendado reprocessa envios `pending`. Hoje
+  só o botão da triagem faz isso. Fica para o incremento 2.
+
 ### 7.6 Operação
 
 | Operação | Consumo | Monitoramento |

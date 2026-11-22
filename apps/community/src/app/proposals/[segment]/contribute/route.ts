@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
+import { parseProposalSegment } from '@/domain/proposal-path.helpers';
 import { isSameOrigin, seeOther } from '../proposal-page.helpers';
 import { contributeFromForm } from '@/composition/server/proposal-commands.service';
 
@@ -18,5 +19,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       ? { contribution: result.contributionId }
       : { contributionError: result.status === 'invalid' ? Object.keys(result.errors).join(',') : result.status },
   );
-  return seeOther(`/proposals/${segment}?${query}#contribute-title`);
+  // Redirect by number only; the proposal page then adds the current slug and keeps the query.
+  return seeOther(`/proposals/${parseProposalSegment(segment) ?? ''}?${query}#contribute-title`);
 }

@@ -18,6 +18,9 @@ export type ServerSettings = {
 };
 
 export function readServerSettings(env: NodeJS.ProcessEnv = process.env): ServerSettings {
+  if (env.NODE_ENV === 'production' && !env.COMMUNITY_VOTER_SECRET && env.NEXT_PHASE !== 'phase-production-build') {
+    console.warn('[community] COMMUNITY_VOTER_SECRET is not set: voter hashes use a public development secret.');
+  }
   const onServerless = Boolean(env.VERCEL);
   const failureMode = (env.COMMUNITY_GITHUB_FAILURE ?? 'none') as FixtureFailureMode;
   return {

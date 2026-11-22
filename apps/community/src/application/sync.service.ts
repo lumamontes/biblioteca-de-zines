@@ -39,8 +39,14 @@ function officialResponsesFrom(
   return { responses, unauthorizedMarker };
 }
 
+/** A `portal` block is trusted only on issues written by a maintainer, who are the only ones (with the author) able to edit it. */
+function trustedPortalBlock(snapshot: GitHubIssueSnapshot, maintainers: ReadonlySet<string>) {
+  const writtenByMaintainer = maintainers.has(snapshot.authorLogin.toLowerCase()) && MAINTAINER_ASSOCIATIONS.has(snapshot.authorAssociation);
+  return writtenByMaintainer ? parsePortalBlock(snapshot.body) : null;
+}
+
 function applySnapshot(state: CommunityState, proposal: Proposal, snapshot: GitHubIssueSnapshot, maintainers: ReadonlySet<string>, now: string) {
-  const block = parsePortalBlock(snapshot.body);
+  const block = trustedPortalBlock(snapshot, maintainers);
   if (block) {
     const changed = block.title !== proposal.publicTitle || block.question !== proposal.publicQuestion;
     // Only record a revision when the earlier text was ever public (team rows start empty until the first sync).
@@ -126,7 +132,7 @@ export function createSyncService({ repository, github, config, clock }: Communi
         const known = (await repository.read()).proposals.some((proposal) => proposal.principalIssue?.number === issueNumber);
         if (known) continue;
         const snapshot = await github.getIssue(issueNumber);
-        const block = snapshot ? parsePortalBlock(snapshot.body) : null;
+        const block = snapshot ? trustedPortalBlock(snapshot, maintainers) : null;
         if (!snapshot || !block) continue;
         const now = clock().toISOString();
         await repository.update((state) => {

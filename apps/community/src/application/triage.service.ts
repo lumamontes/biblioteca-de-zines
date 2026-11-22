@@ -1,4 +1,4 @@
-import { linkCommentBody, moderatedCommentBody, proposalMarker } from '@/domain/github-markup.helpers';
+import { linkCommentBody, moderatedCommentBody, neutralizeForGitHub, proposalMarker } from '@/domain/github-markup.helpers';
 import { INPUT_LIMITS } from '@/domain/input-validation.config';
 import type { InfluenceKind } from '@/domain/proposal.types';
 import { tallyVotes } from '@/domain/voting.service';
@@ -78,7 +78,7 @@ export function createTriageService(deps: CommunityDependencies & { sync: Return
           (await github.findIssueByMarker(marker)) ??
           (await github.createIssue({
             title: proposal.publicTitle,
-            body: `${marker}\nSugestão enviada pela comunidade no portal da comunidade: ${proposalUrl}\n\n> ${(proposal.originalReport?.text ?? proposal.publicQuestion).split('\n').join('\n> ')}`,
+            body: `${marker}\nSugestão enviada na comunidade da Biblioteca de Zines: ${proposalUrl}\n\n> ${neutralizeForGitHub(proposal.originalReport?.text ?? proposal.publicQuestion).split('\n').join('\n> ')}`,
           }));
       }
 

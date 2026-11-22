@@ -21,8 +21,10 @@ function portalBlock(fields: { title: string; question: string; openDecision?: s
   ].join('\n');
 }
 
-function issue(fields: Omit<GitHubIssueSnapshot, 'url' | 'comments' | 'pullRequests' | 'release' | 'stateReason'> & Partial<GitHubIssueSnapshot>): GitHubIssueSnapshot {
-  return { url: issueUrl(fields.number), comments: [], pullRequests: [], release: null, stateReason: null, ...fields };
+function issue(
+  fields: Omit<GitHubIssueSnapshot, 'url' | 'comments' | 'pullRequests' | 'release' | 'stateReason' | 'authorLogin' | 'authorAssociation'> & Partial<GitHubIssueSnapshot>,
+): GitHubIssueSnapshot {
+  return { url: issueUrl(fields.number), comments: [], pullRequests: [], release: null, stateReason: null, authorLogin: 'lumamontes', authorAssociation: 'OWNER', ...fields };
 }
 
 function comment(issueNumber: number, id: number, fields: Pick<GitHubComment, 'body' | 'authorLogin' | 'authorAssociation' | 'createdAt'>): GitHubComment {

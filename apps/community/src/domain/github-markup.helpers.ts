@@ -63,7 +63,28 @@ export function parsePortalBlock(issueBody: string): PortalBlock | null {
   const title = fields.get('title');
   const question = fields.get('question');
   if (!title || !question) return null;
-  return { title, question, openDecision: fields.get('open-decision') ?? null, update: fields.get('update') ?? null };
+  const update = fields.get('update');
+  // The slug ends up in a link to /publicacoes; accept only slug characters.
+  return { title, question, openDecision: fields.get('open-decision') ?? null, update: update && /^[a-z0-9-]{1,100}$/.test(update) ? update : null };
+}
+
+const ZERO_WIDTH_SPACE = '\u200b';
+
+/**
+ * Community text goes into GitHub as markdown written by the portal bot. Neutralize what would
+ * act on GitHub rather than read as text: HTML comments (which could imitate portal markers),
+ * @mentions (which notify people) and #123 references (which write into other issues' timelines).
+ */
+export function neutralizeForGitHub(text: string): string {
+  return text
+    .replace(/<!--/g, '&lt;!--')
+    .replace(/(^|[^\w`])@(?=[A-Za-z0-9-])/g, `$1@${ZERO_WIDTH_SPACE}`)
+    .replace(/(^|[^\w&`])#(?=\d)/g, `$1#${ZERO_WIDTH_SPACE}`);
+}
+
+/** Display names are shown in bold; strip markdown and HTML syntax so a name stays a name. */
+export function plainDisplayName(name: string): string {
+  return neutralizeForGitHub(name.replace(/[*_~`[\]()<>|\\!]/g, '').trim()) || 'Pessoa da comunidade';
 }
 
 export function contributionCommentBody(input: {
@@ -72,10 +93,10 @@ export function contributionCommentBody(input: {
   text: string;
   proposalUrl: string;
 }): string {
-  const quoted = input.text.split('\n').map((line) => `> ${line}`).join('\n');
+  const quoted = neutralizeForGitHub(input.text).split('\n').map((line) => `> ${line}`).join('\n');
   return [
     contributionMarker(input.contributionId),
-    `**${input.displayName}** comentou pela [comunidade da Biblioteca de Zines](${input.proposalUrl}):`,
+    `**${plainDisplayName(input.displayName)}** comentou pela [comunidade da Biblioteca de Zines](${input.proposalUrl}):`,
     '',
     quoted,
   ].join('\n');

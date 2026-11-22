@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
+import { parseProposalSegment } from '@/domain/proposal-path.helpers';
 import { isSameOrigin, seeOther } from '../proposal-page.helpers';
 import { voteFromForm } from '@/composition/server/proposal-commands.service';
 
@@ -11,5 +12,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   await voteFromForm(formData);
   revalidatePath('/', 'layout');
   // Votes cast from the board return to the board; everything else returns to the proposal.
-  return seeOther(formData.get('returnTo') === '/' ? '/' : `/proposals/${segment}#votes`);
+  // Redirect by number only; the proposal page then adds the current slug.
+  return seeOther(formData.get('returnTo') === '/' ? '/' : `/proposals/${parseProposalSegment(segment) ?? ''}#votes`);
 }
