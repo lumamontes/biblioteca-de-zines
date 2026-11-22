@@ -10,6 +10,24 @@ entraram em `main`. Versões formais seguirão o
 
 ### Adicionado
 
+- **Decisão sobre o portal de participação**: a Biblioteca passa a planejar um
+  portal independente em que a comunidade sugere, vota e comenta pelo celular,
+  sem conta no GitHub. O GitHub continua sendo a fonte de verdade para decisões,
+  etapas e respostas oficiais, e cada comentário feito depois do vínculo chega à
+  issue principal uma única vez. A especificação reúne glossário, transições,
+  autoridade dos dados, wireframes, matriz responsiva, acessibilidade, operação e
+  as escolhas que dependem das mantenedoras.
+  [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198)
+  [ADR 17](docs/decisions/17-independent-participation-portal.md)
+  [Spec](docs/specs/participation-portal.md)
+- **Primeiro incremento do portal de participação**: `apps/participation` mostra
+  a lista de perguntas, propostas com endereço permanente, sugestões, votos que
+  podem ser trocados ou retirados e comentários com rascunho preservado e envio
+  idempotente para o GitHub. A triagem local vincula sugestões a issues, modera
+  contribuições e registra influência nas decisões. O GitHub ainda é simulado e
+  os dados ficam em arquivos locais, e o catálogo mostra o link “Participe” só
+  quando `NEXT_PUBLIC_PARTICIPATION_URL` está configurado.
+  [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198)
 - **Novas menções na mídia**: a seção “Na Mídia” da página inicial passa a
   ampliar a visibilidade da Biblioteca e a reunir referências recentes sobre o
   acervo, sua proposta de catalogação e o acesso a publicações independentes,

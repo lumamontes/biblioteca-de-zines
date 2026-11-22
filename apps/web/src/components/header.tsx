@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback } from "react";
 import SuggestZineLink from "./suggest-zine-link";
+import { participationPortalUrl } from "@/app/config/site";
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
@@ -48,6 +49,13 @@ export default function Header() {
               Publicações
             </Link>
           </li>
+          {participationPortalUrl ? (
+            <li>
+              <a href={participationPortalUrl} className="hover:underline focus-visible:underline">
+                Participe
+              </a>
+            </li>
+          ) : null}
           <li>
             <SuggestZineLink />
           </li>
@@ -94,6 +102,13 @@ export default function Header() {
                 Publicações
               </Link>
             </li>
+            {participationPortalUrl ? (
+              <li>
+                <a href={participationPortalUrl} className="hover:underline focus-visible:underline">
+                  Participe
+                </a>
+              </li>
+            ) : null}
             <li>
               <SuggestZineLink />
             </li>

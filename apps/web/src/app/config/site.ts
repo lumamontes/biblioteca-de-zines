@@ -26,4 +26,10 @@ export const siteExternalLinks = {
   INSTAGRAM: "https://www.instagram.com/bibliotecadezines/",
 };
 
+/**
+ * Public address of the participation portal (apps/participation). The header shows the
+ * "Participe" link only when it is set, so the catalogue never links to an undeployed portal.
+ */
+export const participationPortalUrl: string | null = process.env.NEXT_PUBLIC_PARTICIPATION_URL || null;
+
 export const PLACEHOLDER_COVER_IMAGE = "./zines.png"
