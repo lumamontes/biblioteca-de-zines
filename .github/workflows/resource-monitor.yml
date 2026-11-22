@@ -35,7 +35,7 @@ jobs:
         run: |
           node .monitor-cli/dist/cli.js \
             --input monitor-resources.json \
-            --config monitor/config.yml \
+            --config apps/web/monitor/config.yml \
             --output resource-report.json \
             --markdown-output resource-report.md
       - name: Update known failures
