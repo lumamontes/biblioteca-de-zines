@@ -68,8 +68,9 @@ de rede para esses registros.
 
 ### Como rodar
 
-O projeto é um monorepo com duas aplicações: o site e seus workers ficam em
-`apps/web`, enquanto o viewer isolado fica em `apps/viewer`.
+O projeto é um monorepo com três aplicações: o site e seus workers ficam em
+`apps/web`, o viewer isolado fica em `apps/viewer` e o portal de participação
+fica em `apps/participation`.
 
 As variáveis de ambiente são separadas por aplicação. Para configurar o site e
 os workers, use `apps/web/.env.local` como base no arquivo
@@ -89,6 +90,8 @@ pnpm dev:all
 
 Abra [http://localhost:3000](http://localhost:3000) para ver o site e
 [http://localhost:4100](http://localhost:4100) para testar o viewer isolado.
+O portal de participação abre em [http://localhost:4200](http://localhost:4200);
+veja `apps/participation/README.md` para usar a triagem local.
 
 Se quiser rodar somente o site, use:
 
