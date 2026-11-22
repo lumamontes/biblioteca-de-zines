@@ -27,9 +27,9 @@ export const siteExternalLinks = {
 };
 
 /**
- * Public address of the participation portal (apps/participation). The header shows the
+ * Public address of the community portal (apps/community). The header shows the
  * "Participe" link only when it is set, so the catalogue never links to an undeployed portal.
  */
-export const participationPortalUrl: string | null = process.env.NEXT_PUBLIC_PARTICIPATION_URL || null;
+export const communityPortalUrl: string | null = process.env.NEXT_PUBLIC_COMMUNITY_URL || null;
 
 export const PLACEHOLDER_COVER_IMAGE = "./zines.png"

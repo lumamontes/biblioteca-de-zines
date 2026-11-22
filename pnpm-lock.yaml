@@ -12,7 +12,7 @@ importers:
         specifier: ^2.11.7
         version: 2.11.7
 
-  apps/participation:
+  apps/community:
     dependencies:
       next:
         specifier: 15.1.11

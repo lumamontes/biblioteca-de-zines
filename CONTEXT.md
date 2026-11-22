@@ -266,9 +266,9 @@ _Avoid_: Treating news and product updates as identical editorial records
 **Editorial source**: The original publication or platform URL from which an adapted public record was prepared, retained for provenance and attribution.
 _Avoid_: Treating public availability on another platform as automatic authorization for every reuse
 
-## Participation
+## Community
 
-**Participation portal**:
+**Community portal**:
 The Biblioteca application where readers, creators, and submitters suggest, vote on, and discuss proposals without a GitHub account. GitHub remains the source of truth for team decisions and progress.
 _Avoid_: Treating the portal as a second place where the team records decisions
 
