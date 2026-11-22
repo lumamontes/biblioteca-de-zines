@@ -1,0 +1,22 @@
+name: Monitor production reader
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --filter viewer...
+      - name: Check the direct reader and catalog embed
+        run: pnpm --filter viewer test:e2e --config playwright.production.config.ts
