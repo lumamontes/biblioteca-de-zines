@@ -78,6 +78,38 @@ test('preserves the PDF fallback when BookReader initialization fails', async ({
   await expect.poll(() => [...events].sort()).toEqual(['fallback', 'page-error']);
 });
 
+test('attributes an old reader link to the canonical publication', async ({ page }) => {
+  await mockBookReaderAssets(page);
+  const ready = page.waitForRequest(request => request.url().endsWith('/events')
+    && request.method() === 'POST' && request.postDataJSON().type === 'ready');
+  await page.goto('/p/old-zine');
+  expect((await ready).postDataJSON()).toMatchObject({ slug: 'zine', surface: 'standalone' });
+});
+
+for (const { reason, url, types } of [
+  { reason: 'page-generation-failed', url: readyResponse.fallback.url, types: ['fallback', 'page-error'] },
+  { reason: 'source-unavailable', url: '', types: ['page-error'] },
+  { reason: 'page-generation-unavailable', url: readyResponse.fallback.url, types: ['fallback'] },
+]) {
+  test(`reports the expected events for ${reason}`, async ({ page }) => {
+    const events: Array<{ slug: string; type: string }> = [];
+    await page.route('**/api/public-reader/events', route => {
+      events.push(route.request().postDataJSON());
+      return route.fulfill({ status: 204 });
+    });
+    await page.route('**/api/public-reader/v1/**', route => route.fulfill({ json: {
+      fallback: { ...readyResponse.fallback, url },
+      publication: readyResponse.publication,
+      reason,
+      status: 'fallback',
+    } }));
+    await page.goto('/embed/p/old-zine');
+    await expect(page.getByText('A leitura em páginas não pôde ser carregada.', { exact: true })).toBeVisible();
+    await expect.poll(() => events.map(event => event.type).sort()).toEqual(types);
+    expect(events.every(event => event.slug === 'zine')).toBe(true);
+  });
+}
+
 test('serves the unbranded embed and optional Biblioteca branding', async ({ page }) => {
   await mockBookReaderAssets(page);
   await page.goto('/embed/p/zine');

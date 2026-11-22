@@ -18,17 +18,19 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
     let disposed = false;
     let destroySession = () => {};
     const request = createReaderRequestController();
-    const telemetry = createReaderTelemetry(READER_API_ORIGIN, slug, surface);
+    let publicationSlug = slug;
+    const telemetry = createReaderTelemetry(READER_API_ORIGIN, () => publicationSlug, surface);
 
     setReaderState(INITIAL_READER_STATE);
 
     let reportedFailure = false;
     let hasOriginal = false;
-    function reportFailure() {
+    function reportFailure(metadataBytes?: number) {
       if (disposed || reportedFailure) return;
       reportedFailure = true;
-      telemetry.report('page-error');
-      if (hasOriginal) telemetry.report('fallback');
+      const metrics = metadataBytes === undefined ? undefined : { metadataBytes };
+      telemetry.report('page-error', metrics);
+      if (hasOriginal) telemetry.report('fallback', metrics);
     }
 
     async function loadReader() {
@@ -36,6 +38,7 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
         const { data, metadataBytes } = await fetchPublicReader(READER_API_ORIGIN, slug, surface, request.signal).finally(request.cancel);
         if (disposed) return;
 
+        publicationSlug = data.publication?.slug ?? slug;
         hasOriginal = Boolean(data.fallback.url);
         setReaderState({
           fallback: data.fallback,
@@ -44,7 +47,11 @@ export function useReaderController({ mode, page, slug, surface }: ReaderControl
         });
 
         if (data.status === 'fallback') {
-          if (hasOriginal) telemetry.report('fallback', { metadataBytes });
+          if (data.reason === 'page-generation-unavailable') {
+            if (hasOriginal) telemetry.report('fallback', { metadataBytes });
+          } else {
+            reportFailure(metadataBytes);
+          }
           return;
         }
 
