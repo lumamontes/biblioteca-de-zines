@@ -29,6 +29,7 @@
     "reading:derivative-spike": "pnpm --filter biblioteca-zines reading:derivative-spike",
     "reading:derivative-benchmark": "pnpm --filter biblioteca-zines reading:derivative-benchmark",
     "reader:performance-benchmark": "pnpm --filter biblioteca-zines reader:performance-benchmark",
+    "reader:events-report": "node apps/web/scripts/reader-events-report.mjs",
     "migrate:pdf-covers": "pnpm --filter biblioteca-zines migrate:pdf-covers",
     "migrate:pdf-pages": "pnpm --filter biblioteca-zines migrate:pdf-pages",
     "generate:form-upload-cover": "pnpm --filter biblioteca-zines generate:form-upload-cover",
