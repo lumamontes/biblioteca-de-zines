@@ -1,7 +1,7 @@
 import { VoteIcon } from './vote-icon.component';
 import Link from 'next/link';
 import type { ProposalSummary } from '@/application/community-view.types';
-import { countLabel, noteColor, novidadeUrl } from './proposal-formatting.helpers';
+import { countLabel, novidadeUrl } from './proposal-formatting.helpers';
 import { UpvoteButton } from './upvote-button.component';
 
 type ProposalNoteProps = {
@@ -10,11 +10,10 @@ type ProposalNoteProps = {
   action: (formData: FormData) => Promise<void>;
 };
 
-/** A proposal on the board, drawn as a paper note. */
 export function ProposalNote({ proposal, catalogueUrl, action }: ProposalNoteProps) {
   const votingOpen = proposal.stage !== 'available' && proposal.stage !== 'not_planned' && proposal.stage !== 'archived';
   return (
-    <li className={`note note--${noteColor(proposal)}`}>
+    <li className="proposal-row">
       <h2 className="note__title">
         <Link href={proposal.path}>{proposal.title}</Link>
       </h2>

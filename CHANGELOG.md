@@ -23,8 +23,8 @@ entraram em `main`. Versões formais seguirão o
 - **Primeiro incremento do portal da comunidade**: a Biblioteca de Zines ganha
   um mural em `/comunidade`, servido pelo catálogo a partir do app
   independente `apps/community`. O mural tem um cabeçalho próprio com um link
-  para o catálogo. As propostas usam uma textura de papel do ambientCG e vêm
-  de issues reais, como a impressão de zines e a navegação por teclado. Quem
+  para o catálogo. As propostas aparecem em uma lista e vêm de issues reais,
+  como a impressão de zines e a navegação por teclado. Quem
   visita apoia ideias com um botão de seta para cima, comenta
   com o rascunho preservado e acompanha as respostas da equipe sem conta no
   GitHub. Cada comentário chega à issue uma única vez. O que já está no ar

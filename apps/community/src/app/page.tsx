@@ -14,8 +14,8 @@ export default async function CommunityPage() {
     <div className="board">
       <header className="board__intro">
         <h1 className="title">Comunidade</h1>
-        <p className="lead">O que a Biblioteca de Zines deve fazer agora? Apoie as ideias que você quer ver e comente.</p>
-        <Link href="/suggest" className="button">Sugerir uma ideia</Link>
+        <p className="lead">Sugira, apoie e comente ideias para a Biblioteca de Zines.</p>
+        <Link href="/suggest" className="link">Sugerir uma ideia</Link>
       </header>
       {notes.length > 0 ? (
         <ul className="mural">

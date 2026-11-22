@@ -1,6 +1,5 @@
 # Third-party notices
 
-- `public/paper-001.jpg` is a resized copy of the color map from [Paper 001 by ambientCG](https://ambientcg.com/view?id=Paper001) under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 - `VoteIcon` uses [Arrow Up from Heroicons v2.2.0](https://github.com/tailwindlabs/heroicons/blob/v2.2.0/optimized/24/outline/arrow-up.svg).
 
 ```text
