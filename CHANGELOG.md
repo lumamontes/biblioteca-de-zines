@@ -19,7 +19,7 @@ entraram em `main`. Versões formais seguirão o
   as escolhas que dependem das mantenedoras.
   [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198)
   [ADR 17](docs/decisions/17-independent-community-portal.md)
-  [Spec](docs/specs/community-portal.md) [PR #209](https://github.com/lumamontes/biblioteca-de-zines/pull/209)
+  [Spec](docs/specs/community-portal.md) [PR #211](https://github.com/lumamontes/biblioteca-de-zines/pull/211)
 - **Primeiro incremento do portal da comunidade**: `apps/community` mostra
   a lista de perguntas, propostas com endereço permanente, sugestões, votos que
   podem ser trocados ou retirados e comentários com rascunho preservado e envio
@@ -27,7 +27,7 @@ entraram em `main`. Versões formais seguirão o
   contribuições e registra influência nas decisões. O GitHub ainda é simulado e
   os dados ficam em arquivos locais, e o catálogo mostra o link “Participe” só
   quando `NEXT_PUBLIC_COMMUNITY_URL` está configurado.
-  [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198) [PR #209](https://github.com/lumamontes/biblioteca-de-zines/pull/209)
+  [Issue #198](https://github.com/lumamontes/biblioteca-de-zines/issues/198) [PR #211](https://github.com/lumamontes/biblioteca-de-zines/pull/211)
 - **Novas menções na mídia**: a seção “Na Mídia” da página inicial passa a
   ampliar a visibilidade da Biblioteca e a reunir referências recentes sobre o
   acervo, sua proposta de catalogação e o acesso a publicações independentes,
