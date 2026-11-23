@@ -8,10 +8,16 @@ export type PublicationEmail = {
   text: string;
 };
 
+export type PublicationEmailHistory = {
+  recipient: string;
+  sentAt: string | null;
+  message?: PublicationEmail;
+};
+
 export type PublicationEmailRecipient = {
   id: number;
   name: string;
-  history?: { recipient: string; sentAt: string | null };
+  history?: PublicationEmailHistory;
 };
 
 export type PublicationEmailRepository = {
@@ -21,8 +27,8 @@ export type PublicationEmailRepository = {
     sourceUrl?: string | null;
     authors: Pick<PublicationEmailRecipient, "id" | "name">[];
   }>;
-  history(zineId: number): Promise<{ author_id: number; recipient: string; sent_at: string | null }[]>;
-  reserve(zineId: number, authorId: number, recipient: string): Promise<void>;
+  history(zineId: number): Promise<(PublicationEmailHistory & { authorId: number })[]>;
+  reserve(zineId: number, authorId: number, message: PublicationEmail): Promise<void>;
   release(zineId: number, authorId: number): Promise<void>;
   complete(zineId: number, authorId: number, providerId: string): Promise<string>;
 };

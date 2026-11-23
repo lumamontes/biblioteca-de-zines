@@ -8,20 +8,20 @@ import type {
 } from "../src/application/publication-email/publication-email.types";
 
 function setup(send: PublicationEmailSender, kind: "published" | "invalid-link" = "published") {
-  let record: { author_id: number; recipient: string; sent_at: string | null } | undefined;
+  let record: { authorId: number; recipient: string; sentAt: string | null; message: PublicationEmail } | undefined;
   const publication = { title: "Minha zine", slug: "minha-zine", sourceUrl: "https://example.org/old.pdf", authors: [{ id: 2, name: "Jo" }] };
   const repository: PublicationEmailRepository = {
     async publication() { return publication; },
     async history() { return record ? [record] : []; },
-    async reserve(_, authorId, recipient) {
+    async reserve(_, authorId, message) {
       if (record) throw new Error("Já existe um envio");
-      record = { author_id: authorId, recipient, sent_at: null };
+      record = { authorId, recipient: message.to, sentAt: null, message };
     },
     async release() { record = undefined; },
     async complete() {
       assert.ok(record);
-      record.sent_at = "2026-11-22T12:00:00Z";
-      return record.sent_at;
+      record.sentAt = "2026-11-22T12:00:00Z";
+      return record.sentAt;
     },
   };
   const service = createPublicationEmailService(repository, send, {
@@ -56,7 +56,7 @@ test("requires the previewed recipient and content and reserves only one concurr
   assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
   assert.deepEqual(messages, [current.message]);
   assert.deepEqual((await service.recipients(1)).authors[0].history, {
-    recipient: address, sentAt: "2026-11-22T12:00:00Z",
+    recipient: address, sentAt: "2026-11-22T12:00:00Z", message: current.message,
   });
 });
 

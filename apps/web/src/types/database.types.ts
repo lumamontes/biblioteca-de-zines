@@ -11,38 +11,30 @@ export type Database = {
     Tables: {
       publication_emails: {
         Row: {
-          zine_id: number
-          author_id: number
+          id: number
+          template: "published" | "invalid-link"
+          zine_id: number | null
+          author_id: number | null
+          upload_id: number | null
           recipient: string
+          from_address: string | null
+          reply_to: string | null
+          subject: string | null
+          body: string | null
           reserved_at: string
           sent_at: string | null
           provider_id: string | null
         }
         Insert: {
-          zine_id: number
-          author_id: number
+          template?: "published" | "invalid-link"
+          zine_id?: number | null
+          author_id?: number | null
+          upload_id?: number | null
           recipient: string
-          reserved_at?: string
-          sent_at?: string | null
-          provider_id?: string | null
-        }
-        Update: {
-          sent_at?: string | null
-          provider_id?: string | null
-        }
-        Relationships: []
-      }
-      submission_review_emails: {
-        Row: {
-          upload_id: number
-          recipient: string
-          reserved_at: string
-          sent_at: string | null
-          provider_id: string | null
-        }
-        Insert: {
-          upload_id: number
-          recipient: string
+          from_address?: string | null
+          reply_to?: string | null
+          subject?: string | null
+          body?: string | null
           reserved_at?: string
           sent_at?: string | null
           provider_id?: string | null

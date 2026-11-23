@@ -56,10 +56,10 @@ export function createPublicationEmailService(
       return {
         title: publication.title,
         authors: publication.authors.map((author) => {
-          const record = history.find(({ author_id }) => author_id === author.id);
+          const record = history.find(({ authorId }) => authorId === author.id);
           return {
             ...author,
-            history: record && { recipient: record.recipient, sentAt: record.sent_at },
+            history: record && { recipient: record.recipient, sentAt: record.sentAt, message: record.message },
           };
         }),
       };
@@ -72,11 +72,15 @@ export function createPublicationEmailService(
         throw new Error("A mensagem mudou. Abra uma nova prévia antes de enviar.");
       }
 
-      await repository.reserve(zineId, authorId, preview.message.to);
+      await repository.reserve(zineId, authorId, preview.message);
       try {
         const result = await send(preview.message);
         if (result.status === "accepted") {
-          return { recipient: preview.message.to, sentAt: await repository.complete(zineId, authorId, result.id) };
+          return {
+            recipient: preview.message.to,
+            sentAt: await repository.complete(zineId, authorId, result.id),
+            message: preview.message,
+          };
         }
         await repository.release(zineId, authorId);
       } catch {

@@ -1,7 +1,6 @@
 import "server-only";
 
 import type { PublicationEmailKind } from "@/application/publication-email/publication-email.types";
-import { createSubmissionReviewEmailRepository } from "@/infrastructure/publication-email/submission-review-email.repository";
 import { siteConfig } from "@/app/config/site";
 import { createPublicationEmailService } from "@/application/publication-email/publication-email.service";
 import { createPublicationEmailRepository } from "@/infrastructure/publication-email/publication-email.repository";
@@ -23,13 +22,8 @@ export async function createPublicationEmailModule(kind: PublicationEmailKind = 
   if (!key || !from || !replyTo) throw new Error("O envio de e-mails ainda não foi configurado.");
 
   if (kind !== "published" && kind !== "invalid-link") throw new Error("Tipo de e-mail inválido.");
-  const client = createAdminClient();
-  const repository = kind === "invalid-link"
-    ? createSubmissionReviewEmailRepository(client)
-    : createPublicationEmailRepository(client);
-
   return createPublicationEmailService(
-    repository,
+    createPublicationEmailRepository(createAdminClient(), kind),
     createResendPublicationEmailSender(key),
     { from, replyTo, siteUrl: siteConfig.url, signingKey: key, adminId: admin.id, kind },
   );

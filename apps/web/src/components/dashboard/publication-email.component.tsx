@@ -51,11 +51,25 @@ export function PublicationEmailPanel({
               <li key={author.id} className="space-y-1 break-words">
                 <p className="font-medium">{author.name}</p>
                 {author.history ? (
-                  <p role="status">
-                    {author.history.sentAt
-                      ? `Enviado para ${author.history.recipient} em ${new Date(author.history.sentAt).toLocaleString("pt-BR")}`
-                      : `Envio sem confirmação para ${author.history.recipient}. Consulte o Resend.`}
-                  </p>
+                  <>
+                    <p role="status">
+                      {author.history.sentAt
+                        ? `Enviado para ${author.history.recipient} em ${new Date(author.history.sentAt).toLocaleString("pt-BR")}`
+                        : `Envio sem confirmação para ${author.history.recipient}. Consulte o Resend.`}
+                    </p>
+                    {author.history.message && (
+                      <details>
+                        <summary>Ver mensagem registrada</summary>
+                        <dl className="space-y-1 break-words">
+                          <div><dt>De</dt><dd>{author.history.message.from}</dd></div>
+                          <div><dt>Para</dt><dd>{author.history.message.to}</dd></div>
+                          <div><dt>Responder a</dt><dd>{author.history.message.replyTo}</dd></div>
+                          <div><dt>Assunto</dt><dd>{author.history.message.subject}</dd></div>
+                        </dl>
+                        <p className="whitespace-pre-wrap break-words">{author.history.message.text}</p>
+                      </details>
+                    )}
+                  </>
                 ) : (
                   <>
                     <p>Nenhum envio registrado</p>
