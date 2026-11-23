@@ -1,3 +1,5 @@
+export type PublicationEmailKind = "published" | "invalid-link";
+
 export type PublicationEmail = {
   from: string;
   replyTo: string;
@@ -16,6 +18,7 @@ export type PublicationEmailRepository = {
   publication(zineId: number): Promise<{
     title: string;
     slug: string;
+    sourceUrl?: string | null;
     authors: Pick<PublicationEmailRecipient, "id" | "name">[];
   }>;
   history(zineId: number): Promise<{ author_id: number; recipient: string; sent_at: string | null }[]>;

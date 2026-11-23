@@ -32,6 +32,27 @@ export type Database = {
         }
         Relationships: []
       }
+      submission_review_emails: {
+        Row: {
+          upload_id: number
+          recipient: string
+          reserved_at: string
+          sent_at: string | null
+          provider_id: string | null
+        }
+        Insert: {
+          upload_id: number
+          recipient: string
+          reserved_at?: string
+          sent_at?: string | null
+          provider_id?: string | null
+        }
+        Update: {
+          sent_at?: string | null
+          provider_id?: string | null
+        }
+        Relationships: []
+      }
       authors: {
         Row: {
           bio: string | null

@@ -352,8 +352,11 @@ export const EditableUploadPreview = ({ upload, zine, canSendPublicationEmail }:
             ))}
           </div>
         )}
+        {canSendPublicationEmail && (
+          <PublicationEmailPanel key={`review-${upload.id}`} id={upload.id} kind="invalid-link" submissionEmail={upload.author_email} />
+        )}
         {zine?.is_published && canSendPublicationEmail && (
-          <PublicationEmailPanel key={zine.id} zineId={zine.id} />
+          <PublicationEmailPanel key={`published-${zine.id}`} id={zine.id} kind="published" submissionEmail={upload.author_email} />
         )}
       </div>
 

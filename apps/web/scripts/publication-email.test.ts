@@ -7,9 +7,9 @@ import type {
   PublicationEmailSender,
 } from "../src/application/publication-email/publication-email.types";
 
-function setup(send: PublicationEmailSender) {
+function setup(send: PublicationEmailSender, kind: "published" | "invalid-link" = "published") {
   let record: { author_id: number; recipient: string; sent_at: string | null } | undefined;
-  const publication = { title: "Minha zine", slug: "minha-zine", authors: [{ id: 2, name: "Jo" }] };
+  const publication = { title: "Minha zine", slug: "minha-zine", sourceUrl: "https://example.org/old.pdf", authors: [{ id: 2, name: "Jo" }] };
   const repository: PublicationEmailRepository = {
     async publication() { return publication; },
     async history() { return record ? [record] : []; },
@@ -30,6 +30,7 @@ function setup(send: PublicationEmailSender) {
     siteUrl: "https://example.org",
     signingKey: "test-key",
     adminId: "test-admin",
+    kind,
   });
   return { service, publication };
 }
@@ -74,4 +75,26 @@ test("allows a retry after rejection and keeps a reservation after uncertain acc
   await assert.rejects(service.confirm(1, 2, address, token), /Já existe um envio/);
   assert.equal(calls, 2);
   assert.equal((await service.recipients(1)).authors[0].history?.sentAt, null);
+});
+
+test("previews the submitted link and requires a fresh preview if that link changes", async () => {
+  const messages: PublicationEmail[] = [];
+  const { service, publication } = setup(async (message) => {
+    messages.push(message);
+    return { status: "accepted", id: "review-1" };
+  }, "invalid-link");
+
+  const address = "jo@example.org";
+  const first = await service.preview(1, 2, address);
+  assert.match(first.message.subject, /novo link/);
+  assert.ok(first.message.text.includes(publication.sourceUrl));
+  assert.equal(messages.length, 0);
+
+  publication.sourceUrl = "https://example.org/replacement.pdf";
+  await assert.rejects(service.confirm(1, 2, address, first.token), /mensagem mudou/);
+  assert.equal(messages.length, 0);
+
+  const current = await service.preview(1, 2, address);
+  await service.confirm(1, 2, address, current.token);
+  assert.deepEqual(messages, [current.message]);
 });

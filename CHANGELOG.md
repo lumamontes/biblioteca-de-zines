@@ -21,6 +21,9 @@ entraram em `main` (UTC). Versões formais seguirão o
 
 ### Corrigido
 
+- **E-mails da inscrição**: o painel reaproveita o endereço informado no formulário e oferece uma prévia do pedido de novo link, com confirmação e histórico separados do aviso de publicação. [PR #215](https://github.com/lumamontes/biblioteca-de-zines/pull/215)
+
+
 - O monitor semanal volta a localizar a configuração de verificação dos recursos publicados após a reorganização do monorepo. [Issue #204](https://github.com/lumamontes/biblioteca-de-zines/issues/204)
 ### Alterado
 

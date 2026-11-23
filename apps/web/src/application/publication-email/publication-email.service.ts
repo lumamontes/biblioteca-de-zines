@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import type {
   PublicationEmail,
+  PublicationEmailKind,
   PublicationEmailRepository,
   PublicationEmailSender,
 } from "./publication-email.types";
@@ -9,7 +10,7 @@ import type {
 export function createPublicationEmailService(
   repository: PublicationEmailRepository,
   send: PublicationEmailSender,
-  config: { from: string; replyTo: string; siteUrl: string; signingKey: string; adminId: string },
+  config: { from: string; replyTo: string; siteUrl: string; signingKey: string; adminId: string; kind?: PublicationEmailKind },
 ) {
   async function draft(zineId: number, authorId: number, address: string) {
     const recipient = z.string().trim().max(254).email().safeParse(address);
@@ -18,21 +19,32 @@ export function createPublicationEmailService(
     const author = publication.authors.find(({ id }) => id === authorId);
     if (!author) throw new Error("Esta autoria não está vinculada à zine.");
 
+    const invalidLink = config.kind === "invalid-link";
     const message: PublicationEmail = {
       from: config.from,
       replyTo: config.replyTo,
       to: recipient.data,
-      subject: "Sua zine foi publicada na Biblioteca de Zines",
-      text: [
+      subject: invalidLink
+        ? "Precisamos de um novo link para sua zine"
+        : "Sua zine foi publicada na Biblioteca de Zines",
+      text: (invalidLink ? [
+        `Olá, ${author.name}!`,
+        `Não conseguimos acessar o arquivo da zine “${publication.title}”.`,
+        publication.sourceUrl
+          ? `Link informado na inscrição: ${publication.sourceUrl}`
+          : "A inscrição não tem um link para o arquivo.",
+        "Você pode responder a este e-mail com um novo link que permita o acesso ao arquivo sem solicitar permissão?",
+        "Equipe Biblioteca de Zines",
+      ] : [
         `Olá, ${author.name}!`,
         `Sua zine “${publication.title}” foi publicada na Biblioteca de Zines.`,
         `Leia a zine: ${config.siteUrl}/zines/${encodeURIComponent(publication.slug)}`,
         "Se tiver dúvidas, responda a este e-mail.",
         "Equipe Biblioteca de Zines",
-      ].join("\n\n"),
+      ]).join("\n\n"),
     };
     const token = createHmac("sha256", config.signingKey)
-      .update(JSON.stringify([config.adminId, zineId, authorId, message])).digest("hex");
+      .update(JSON.stringify([config.adminId, config.kind ?? "published", zineId, authorId, message])).digest("hex");
     return { message, token };
   }
 

@@ -9,10 +9,20 @@ import {
 } from "@/app/(admin)/dashboard/publication-email-actions";
 import type {
   PublicationEmail,
+  PublicationEmailKind,
   PublicationEmailRecipient,
 } from "@/application/publication-email/publication-email.types";
 
-export function PublicationEmailPanel({ zineId }: { zineId: number }) {
+export function PublicationEmailPanel({
+  id,
+  kind,
+  submissionEmail,
+}: {
+  id: number;
+  kind: PublicationEmailKind;
+  submissionEmail: string | null;
+}) {
+  const contactEmail = submissionEmail?.trim() ?? "";
   const [publication, setPublication] = useState<{ title: string; authors: PublicationEmailRecipient[] }>();
   const [selection, setSelection] = useState<PublicationEmailRecipient>();
   const [address, setAddress] = useState("");
@@ -27,11 +37,11 @@ export function PublicationEmailPanel({ zineId }: { zineId: number }) {
         setSelection(undefined);
         setPreview(undefined);
         startTransition(async () => {
-          const result = await loadPublicationEmailRecipients(zineId);
+          const result = await loadPublicationEmailRecipients(id, kind);
           if (result.ok) setPublication(result.data);
           else setError(result.error);
         });
-      }}>E-mails da publicação</Button>
+      }}>{kind === "invalid-link" ? "Link inválido" : "E-mails da publicação"}</Button>
       {publication && (
         <>
           <p className="font-semibold break-words">{publication.title}</p>
@@ -51,7 +61,7 @@ export function PublicationEmailPanel({ zineId }: { zineId: number }) {
                     <p>Nenhum envio registrado</p>
                     <Button disabled={pending} onClick={() => {
                       setSelection(author);
-                      setAddress("");
+                      setAddress(publication.authors.length === 1 ? contactEmail : "");
                       setPreview(undefined);
                       setError("");
                     }}>Preparar e-mail</Button>
@@ -67,17 +77,22 @@ export function PublicationEmailPanel({ zineId }: { zineId: number }) {
           event.preventDefault();
           setError("");
           startTransition(async () => {
-            const result = await previewPublicationEmail(zineId, selection.id, address);
+            const result = await previewPublicationEmail(id, selection.id, address, kind);
             if (result.ok) setPreview(result.data);
             else setError(result.error);
           });
         }}>
           <label className="block break-words">
-            E-mail de {selection.name}
+            {kind === "invalid-link" ? "E-mail de contato" : `E-mail de ${selection.name}`}
             <input className="mt-1 block w-full rounded border border-gray-400 p-2"
               type="email" required maxLength={254} disabled={pending}
               value={address} onChange={(event) => setAddress(event.target.value)} />
           </label>
+          {contactEmail && publication && publication.authors.length > 1 && (
+            <Button type="button" disabled={pending} onClick={() => setAddress(contactEmail)}>
+              Usar e-mail de contato da inscrição
+            </Button>
+          )}
           <Button type="submit" disabled={pending}>Ver prévia</Button>
         </form>
       )}
@@ -97,7 +112,7 @@ export function PublicationEmailPanel({ zineId }: { zineId: number }) {
               setError("");
               startTransition(async () => {
                 const result = await confirmPublicationEmail(
-                  zineId, selection.id, preview.message.to, preview.token,
+                  id, selection.id, preview.message.to, preview.token, kind,
                 );
                 setPreview(undefined);
                 setSelection(undefined);
@@ -110,7 +125,7 @@ export function PublicationEmailPanel({ zineId }: { zineId: number }) {
                   }));
                 } else {
                   setError(result.error);
-                  const refreshed = await loadPublicationEmailRecipients(zineId);
+                  const refreshed = await loadPublicationEmailRecipients(id, kind);
                   if (refreshed.ok) setPublication(refreshed.data);
                 }
               });
