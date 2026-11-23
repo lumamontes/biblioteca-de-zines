@@ -50,41 +50,44 @@ export function createPublicationEmailRepository(
     },
     async history(id) {
       const { data, error } = await db.from("publication_emails")
-        .select("author_id, recipient, sent_at, from_address, reply_to, subject, body")
-        .match(target(id));
+        .select("author_id, recipient, sent_at, from_address, reply_to, subject, body, rejection")
+        .match(target(id)).order("id", { ascending: false });
       if (error) throw error;
-      return data.map(({ author_id, recipient, sent_at, from_address, reply_to, subject, body }) => ({
+      return data.map(({ author_id, recipient, sent_at, from_address, reply_to, subject, body, rejection }) => ({
         authorId: author_id ?? id,
         recipient,
         sentAt: sent_at,
+        rejection: rejection ?? undefined,
         message: from_address !== null && reply_to !== null && subject !== null && body !== null
           ? { from: from_address, replyTo: reply_to, to: recipient, subject, text: body }
           : undefined,
       }));
     },
-    async reserve(id, authorId, message) {
+    async reserve(id, authorId, message, attemptKey) {
       const { error } = await db.from("publication_emails").insert({
         ...recipientTarget(id, authorId),
         recipient: message.to,
+        attempt_key: attemptKey,
         from_address: message.from,
         reply_to: message.replyTo,
         subject: message.subject,
         body: message.text,
       });
+      if (error?.code === "PBD01") throw new Error("Limite de tentativas de envio atingido. Aguarde antes de tentar novamente.");
       if (error?.code === "23505") throw new Error("Já existe um envio registrado para esta mensagem.");
       if (error) throw error;
     },
-    async release(id, authorId) {
-      const { error } = await db.from("publication_emails").delete()
-        .match(recipientTarget(id, authorId)).is("sent_at", null);
+    async reject(attemptKey, rejection) {
+      const { error } = await db.from("publication_emails").update({ rejection })
+        .eq("attempt_key", attemptKey).is("sent_at", null).is("rejection", null).select("id").single();
       if (error) throw error;
     },
-    async complete(id, authorId, providerId) {
+    async complete(attemptKey, providerId) {
       const sentAt = new Date().toISOString();
       const { error } = await db.from("publication_emails")
         .update({ provider_id: providerId, sent_at: sentAt })
-        .match(recipientTarget(id, authorId))
-        .is("sent_at", null).select("sent_at").single();
+        .eq("attempt_key", attemptKey)
+        .is("sent_at", null).is("rejection", null).select("sent_at").single();
       if (error) throw error;
       return sentAt;
     },

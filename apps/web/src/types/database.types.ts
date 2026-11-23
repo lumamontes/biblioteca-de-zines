@@ -12,6 +12,8 @@ export type Database = {
       publication_emails: {
         Row: {
           id: number
+          attempt_key: string | null
+          rejection: "recipient" | "configuration" | "rate-limit" | null
           template: "published" | "invalid-link"
           zine_id: number | null
           author_id: number | null
@@ -26,6 +28,7 @@ export type Database = {
           provider_id: string | null
         }
         Insert: {
+          attempt_key?: string | null
           template?: "published" | "invalid-link"
           zine_id?: number | null
           author_id?: number | null
@@ -40,6 +43,7 @@ export type Database = {
           provider_id?: string | null
         }
         Update: {
+          rejection?: "recipient" | "configuration" | "rate-limit" | null
           sent_at?: string | null
           provider_id?: string | null
         }

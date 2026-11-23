@@ -53,8 +53,10 @@ export function PublicationEmailPanel({
                 {author.history ? (
                   <>
                     <p role="status">
-                      {author.history.sentAt
-                        ? `Enviado para ${author.history.recipient} em ${new Date(author.history.sentAt).toLocaleString("pt-BR")}`
+                      {author.history.rejection
+                        ? `Envio recusado para ${author.history.recipient}.`
+                        : author.history.sentAt
+                        ? `Aceito pelo Resend para ${author.history.recipient} em ${new Date(author.history.sentAt).toLocaleString("pt-BR")}`
                         : `Envio sem confirmação para ${author.history.recipient}. Consulte o Resend.`}
                     </p>
                     {author.history.message && (
@@ -71,15 +73,15 @@ export function PublicationEmailPanel({
                     )}
                   </>
                 ) : (
-                  <>
-                    <p>Nenhum envio registrado</p>
+                  <p>Nenhum envio registrado</p>
+                )}
+                {(!author.history || author.history.rejection) && (
                     <Button disabled={pending} onClick={() => {
                       setSelection(author);
                       setAddress(publication.authors.length === 1 ? contactEmail : "");
                       setPreview(undefined);
                       setError("");
                     }}>Preparar e-mail</Button>
-                  </>
                 )}
               </li>
             ))}

@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import type {
   PublicationEmail,
@@ -43,9 +43,13 @@ export function createPublicationEmailService(
         "Equipe Biblioteca de Zines",
       ]).join("\n\n"),
     };
-    const token = createHmac("sha256", config.signingKey)
-      .update(JSON.stringify([config.adminId, config.kind ?? "published", zineId, authorId, message])).digest("hex");
-    return { message, token };
+    return message;
+  }
+
+  function sign(zineId: number, authorId: number, message: PublicationEmail, confirmation: string) {
+    return createHmac("sha256", config.signingKey)
+      .update(JSON.stringify([config.adminId, config.kind ?? "published", zineId, authorId, message, confirmation]))
+      .digest("hex");
   }
 
   return {
@@ -59,35 +63,57 @@ export function createPublicationEmailService(
           const record = history.find(({ authorId }) => authorId === author.id);
           return {
             ...author,
-            history: record && { recipient: record.recipient, sentAt: record.sentAt, message: record.message },
+            history: record && { recipient: record.recipient, sentAt: record.sentAt, message: record.message, rejection: record.rejection },
           };
         }),
       };
     },
-    preview: draft,
+    async preview(zineId: number, authorId: number, address: string) {
+      const message = await draft(zineId, authorId, address);
+      const expiresAt = Date.now() + 10 * 60_000;
+      const confirmation = `${randomUUID()}.${expiresAt}`;
+      return { message, token: `${confirmation}.${sign(zineId, authorId, message, confirmation)}` };
+    },
     async confirm(zineId: number, authorId: number, address: string, token: string) {
-      const preview = await draft(zineId, authorId, address);
-      if (typeof token !== "string" || !/^[a-f0-9]{64}$/.test(token) ||
-        !timingSafeEqual(Buffer.from(token, "hex"), Buffer.from(preview.token, "hex"))) {
+      const parts = typeof token === "string"
+        ? /^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\.(\d{13})\.([a-f0-9]{64})$/.exec(token)
+        : null;
+      if (!parts || Number(parts[2]) <= Date.now()) {
+        throw new Error("A prévia expirou ou é inválida. Abra uma nova prévia antes de enviar.");
+      }
+      const [, attemptKey, expiresAt, signature] = parts;
+      const message = await draft(zineId, authorId, address);
+      const expected = sign(zineId, authorId, message, `${attemptKey}.${expiresAt}`);
+      if (!timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expected, "hex"))) {
         throw new Error("A mensagem mudou. Abra uma nova prévia antes de enviar.");
       }
+      if (Number(expiresAt) <= Date.now()) {
+        throw new Error("A prévia expirou. Abra uma nova prévia antes de enviar.");
+      }
 
-      await repository.reserve(zineId, authorId, preview.message);
+      await repository.reserve(zineId, authorId, message, attemptKey);
+      let rejection;
       try {
-        const result = await send(preview.message);
+        const result = await send(message, attemptKey);
         if (result.status === "accepted") {
           return {
-            recipient: preview.message.to,
-            sentAt: await repository.complete(zineId, authorId, result.id),
-            message: preview.message,
+            recipient: message.to,
+            sentAt: await repository.complete(attemptKey, result.id),
+            message,
           };
         }
-        await repository.release(zineId, authorId);
+        await repository.reject(attemptKey, result.reason);
+        rejection = result.reason;
       } catch {
         // Keep the reservation when provider acceptance or persistence is uncertain.
         throw new Error("Envio sem confirmação. Consulte o Resend antes de tentar novamente.");
       }
-      throw new Error("O Resend recusou o envio. Confira o endereço e a configuração de envio.");
+      const errors = {
+        recipient: "O Resend recusou o envio. Confira o endereço antes de abrir uma nova prévia.",
+        configuration: "O Resend recusou o envio. Confira a configuração do remetente antes de tentar novamente.",
+        "rate-limit": "O Resend limitou os envios. Aguarde antes de abrir uma nova prévia.",
+      };
+      throw new Error(errors[rejection]);
     },
   };
 }

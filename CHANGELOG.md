@@ -21,6 +21,9 @@ entraram em `main` (UTC). Versões formais seguirão o
 
 ### Corrigido
 
+- **Envio de e-mails da inscrição**: a confirmação expira e só pode ser utilizada uma vez. O banco limita as tentativas, inclusive as recusadas, e mantém envios de resultado incerto bloqueados para conferência no Resend. [PR #215](https://github.com/lumamontes/biblioteca-de-zines/pull/215)
+
+
 - **E-mails da inscrição**: o painel reaproveita o endereço informado no formulário e oferece uma prévia do pedido de novo link, com confirmação explícita. O histórico registra o modelo e a mensagem confirmada. [PR #215](https://github.com/lumamontes/biblioteca-de-zines/pull/215)
 
 
