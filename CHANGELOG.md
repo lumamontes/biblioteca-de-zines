@@ -10,6 +10,8 @@ entraram em `main` (UTC). Versões formais seguirão o
 
 ### Adicionado
 
+- **Notificações de publicação**: a equipe pode revisar a mensagem e o destinatário antes de confirmar o envio e consultar o histórico por autoria na zine. [Issue #46](https://github.com/lumamontes/biblioteca-de-zines/issues/46) [PR original #60](https://github.com/lumamontes/biblioteca-de-zines/pull/60)
+
 - **Contadores operacionais do leitor**: a API agrega por dia, publicação e superfície as aberturas, falhas e ofertas de PDF. A equipe pode consultar o período desejado no Supabase e acompanhar as ocorrências sem registrar sessões individuais na tabela. Links antigos são atribuídos à publicação atual, falhas são contadas mesmo sem PDF e a API limita o tamanho dos eventos. A CI verifica em Chromium que o leitor oferece o PDF e registra os eventos esperados quando o BookReader falha ao iniciar.
   [Issue #190](https://github.com/lumamontes/biblioteca-de-zines/issues/190) [PR #200](https://github.com/lumamontes/biblioteca-de-zines/pull/200)
 
@@ -18,6 +20,12 @@ entraram em `main` (UTC). Versões formais seguirão o
 - **Relatório interno do leitor**: a equipe pode exportar contagens por zine e superfície em JSON ou Markdown. Um teste de navegador confere os contadores de falha e oferta de PDF com a migração num banco descartável. [Issue #205](https://github.com/lumamontes/biblioteca-de-zines/issues/205)
 
 ### Corrigido
+
+- **Envio de e-mails da inscrição**: a confirmação expira e só pode ser utilizada uma vez. O banco limita as tentativas, inclusive as recusadas, e mantém envios de resultado incerto bloqueados para conferência no Resend. [PR #215](https://github.com/lumamontes/biblioteca-de-zines/pull/215)
+
+
+- **E-mails da inscrição**: o painel reaproveita o endereço informado no formulário e oferece uma prévia do pedido de novo link, com confirmação explícita. O histórico registra o modelo e a mensagem confirmada. [PR #215](https://github.com/lumamontes/biblioteca-de-zines/pull/215)
+
 
 - O monitor semanal volta a localizar a configuração de verificação dos recursos publicados após a reorganização do monorepo. [Issue #204](https://github.com/lumamontes/biblioteca-de-zines/issues/204)
 ### Alterado

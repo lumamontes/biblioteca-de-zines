@@ -9,6 +9,46 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      publication_emails: {
+        Row: {
+          id: number
+          attempt_key: string | null
+          rejection: "recipient" | "configuration" | "rate-limit" | null
+          template: "published" | "invalid-link"
+          zine_id: number | null
+          author_id: number | null
+          upload_id: number | null
+          recipient: string
+          from_address: string | null
+          reply_to: string | null
+          subject: string | null
+          body: string | null
+          reserved_at: string
+          sent_at: string | null
+          provider_id: string | null
+        }
+        Insert: {
+          attempt_key?: string | null
+          template?: "published" | "invalid-link"
+          zine_id?: number | null
+          author_id?: number | null
+          upload_id?: number | null
+          recipient: string
+          from_address?: string | null
+          reply_to?: string | null
+          subject?: string | null
+          body?: string | null
+          reserved_at?: string
+          sent_at?: string | null
+          provider_id?: string | null
+        }
+        Update: {
+          rejection?: "recipient" | "configuration" | "rate-limit" | null
+          sent_at?: string | null
+          provider_id?: string | null
+        }
+        Relationships: []
+      }
       authors: {
         Row: {
           bio: string | null
